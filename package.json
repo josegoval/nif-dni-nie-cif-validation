@@ -2,11 +2,23 @@
   "name": "dni-nif-nie-validation",
   "version": "1.0.0",
   "description": "Validates DNI, NIF and NIE documents",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "repository": "https://github.com/josegoval/dni-nif-nie-validation.git",
   "author": "josegoval <josegovalmusic@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
+    "jest": "^27.4.5",
     "typescript": "^4.5.4"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.16.5",
+    "@types/jest": "^27.0.3"
   }
 }
