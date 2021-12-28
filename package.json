@@ -11,6 +11,7 @@
   "author": "josegoval <josegovalmusic@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "test": "jest"
   },
   "dependencies": {
