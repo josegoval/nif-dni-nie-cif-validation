@@ -1,4 +1,4 @@
-import { isValidNie } from ".";
+import { isValidNie } from "..";
 
 const testCases = [
   { text: "whatever", expect: false },

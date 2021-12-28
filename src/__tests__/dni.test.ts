@@ -1,4 +1,4 @@
-import { isValidDni } from ".";
+import { isValidDni } from "..";
 
 const testCases = [
   { text: "whatever", expect: false },
