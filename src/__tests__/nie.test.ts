@@ -1,10 +1,10 @@
 import { isValidNie } from "..";
 
 const testCases = [
-  { text: "whatever", expect: false },
   { text: "Z9332057L", expect: true },
   { text: "X9864761S", expect: true },
   { text: "Y2541026T", expect: true },
+  { text: "whatever", expect: false },
   { text: "Y2541026A", expect: false },
   { text: "U2541026T", expect: false },
   { text: "22541026T", expect: false },

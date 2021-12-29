@@ -1,5 +1,8 @@
 const LEGAL_ENTITY_LETTERS = "JABCDEFGHI";
-const LEGAL_ENTITY_NIF_REGEX = /^[A-J][\d]{7}[\dA-J]$/i;
+const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJKLMNPQRSUVW][\d]{7}[\dA-J]$/i;
+const HAS_CONTROL_LETTER_REGEX = /^[PQRSW]/;
+const HAS_CONTROL_LETTER_IDENTIFIER = "00";
+const HAS_CONTROL_NUMBER_REGEX = /^[ABEH]/;
 
 function sumEvenPositions(legalEntityNumbers: string): number {
   return (
@@ -28,14 +31,38 @@ function getLegalEntityNumbers(legalEntityNif: string): string {
   return legalEntityNif.slice(1, -1);
 }
 
-function isValidLegalEntityNifControlCode(legalEntityNif: string): boolean {
-  const legalEntityNumbers = getLegalEntityNumbers(legalEntityNif);
+export function getLegalEntityNifControlNumber(nif: string): number {
+  const legalEntityNumbers = getLegalEntityNumbers(nif);
   const keyNumber = +`${
     sumEvenPositions(legalEntityNumbers) +
     calculateOddPositions(legalEntityNumbers)
   }`.slice(-1);
-  const controlNumber = keyNumber === 0 ? keyNumber : 10 - keyNumber;
+  return keyNumber === 0 ? keyNumber : 10 - keyNumber;
+}
+
+function isControlCodeLetter(legalEntityNif: string): boolean {
+  return (
+    HAS_CONTROL_LETTER_REGEX.test(legalEntityNif) ||
+    legalEntityNif[0] === HAS_CONTROL_LETTER_IDENTIFIER
+  );
+}
+
+function isControlCodeNumber(legalEntityNif: string): boolean {
+  return HAS_CONTROL_NUMBER_REGEX.test(legalEntityNif);
+}
+
+export function isValidLegalEntityNifControlCode(
+  legalEntityNif: string
+): boolean {
   const controlCodeToVerify = legalEntityNif.slice(-1);
+  const controlNumber = getLegalEntityNifControlNumber(legalEntityNif);
+
+  if (isControlCodeLetter(legalEntityNif))
+    return LEGAL_ENTITY_LETTERS[controlNumber] === controlCodeToVerify;
+
+  if (isControlCodeNumber(legalEntityNif))
+    return controlNumber === +controlCodeToVerify;
+
   return isNaN(+controlCodeToVerify)
     ? LEGAL_ENTITY_LETTERS[controlNumber] === controlCodeToVerify
     : controlNumber === +controlCodeToVerify;
