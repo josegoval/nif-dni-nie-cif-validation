@@ -1,5 +1,5 @@
-const LEGAL_ENTITY_LETTERS = "JABCDEFGHI";
-const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJKLMNPQRSUVW][\d]{7}[\dA-J]$/i;
+export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
+export const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJKLMNPQRSUVW][\d]{7}[\dA-J]$/i;
 const HAS_CONTROL_LETTER_REGEX = /^[PQRSW]/;
 const HAS_CONTROL_LETTER_IDENTIFIER = "00";
 const HAS_CONTROL_NUMBER_REGEX = /^[ABEH]/;
@@ -31,7 +31,7 @@ function getLegalEntityNumbers(legalEntityNif: string): string {
   return legalEntityNif.slice(1, -1);
 }
 
-export function getLegalEntityNifControlNumber(nif: string): number {
+function getLegalEntityNifControlNumber(nif: string): number {
   const legalEntityNumbers = getLegalEntityNumbers(nif);
   const keyNumber = +`${
     sumEvenPositions(legalEntityNumbers) +
@@ -51,6 +51,15 @@ function isControlCodeNumber(legalEntityNif: string): boolean {
   return HAS_CONTROL_NUMBER_REGEX.test(legalEntityNif);
 }
 
+/**
+ * Checks if the legal entity nif control code (letter or number)
+ * provided is valid.
+ *
+ * @WARNING It does not check the `LEGAL_ENITY_NIF_REGEX`.
+ * @throws May throw an error if the string is not long enough (9 characters)
+ * @param legalEntityNif
+ * @returns
+ */
 export function isValidLegalEntityNifControlCode(
   legalEntityNif: string
 ): boolean {
@@ -58,16 +67,23 @@ export function isValidLegalEntityNifControlCode(
   const controlNumber = getLegalEntityNifControlNumber(legalEntityNif);
 
   if (isControlCodeLetter(legalEntityNif))
-    return LEGAL_ENTITY_LETTERS[controlNumber] === controlCodeToVerify;
+    return LEGAL_ENTITY_CONTROL_LETTERS[controlNumber] === controlCodeToVerify;
 
   if (isControlCodeNumber(legalEntityNif))
     return controlNumber === +controlCodeToVerify;
 
   return isNaN(+controlCodeToVerify)
-    ? LEGAL_ENTITY_LETTERS[controlNumber] === controlCodeToVerify
+    ? LEGAL_ENTITY_CONTROL_LETTERS[controlNumber] === controlCodeToVerify
     : controlNumber === +controlCodeToVerify;
 }
 
+/**
+ * Checks if the legalEntityNif provided is valid.
+ *
+ * It does not include old K,L and M formats.
+ * @param legalEntityNif
+ * @returns true for valid input and false for invalid input.
+ */
 export function isValidLegalEntityNif(legalEntityNif: string): boolean {
   return (
     LEGAL_ENTITY_NIF_REGEX.test(legalEntityNif) &&

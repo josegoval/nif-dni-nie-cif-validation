@@ -1,15 +1,17 @@
-import { isValidLegalEntityNif } from "..";
+import { isValidNif } from "..";
 
 const testCases = [
   { text: "whatever", expect: false },
-  { text: "Z9332057L", expect: false },
-  { text: "X9864761S", expect: false },
-  { text: "Y2541026T", expect: false },
-  { text: "Y2541026A", expect: false },
-  { text: "U2541026T", expect: false },
-  { text: "22541026T", expect: false },
   { text: "9332057L", expect: false },
-  { text: "04618341X", expect: false },
+  { text: "36698729K", expect: true },
+  { text: "57655929N", expect: true },
+  { text: "41989851Q", expect: true },
+  { text: "K0867756N", expect: true },
+  { text: "L3453453A", expect: true },
+  { text: "M5566542J", expect: true },
+  { text: "Z9332057L", expect: true },
+  { text: "X9864761S", expect: true },
+  { text: "Y2541026T", expect: true },
   { text: "A07727886", expect: true },
   { text: "B91662627", expect: true },
   { text: "B72327000", expect: true },
@@ -28,15 +30,11 @@ const testCases = [
   { text: "U07984792", expect: true },
   { text: "V23932064", expect: true },
   { text: "W7759996G", expect: true },
-  // does not alloes old cases
-  // { text: "K3841569T", expect: true },
-  // { text: "L2841589T", expect: true },
-  // { text: "M5275115T", expect: true },
 ];
 
-describe("legal enitity nif validation", () => {
+describe("nif validation", () => {
   testCases.forEach((testCase) =>
     it(`test case ${testCase.text}`, () =>
-      expect(isValidLegalEntityNif(testCase.text)).toBe(testCase.expect))
+      expect(isValidNif(testCase.text)).toBe(testCase.expect))
   );
 });

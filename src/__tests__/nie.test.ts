@@ -14,8 +14,8 @@ const testCases = [
 ];
 
 describe("nie validation", () => {
-  testCases.forEach((testCase, index) =>
-    it(`test case ${index}`, () =>
+  testCases.forEach((testCase) =>
+    it(`test case ${testCase.text}`, () =>
       expect(isValidNie(testCase.text)).toBe(testCase.expect))
   );
 });
