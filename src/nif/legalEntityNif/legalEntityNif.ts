@@ -1,5 +1,5 @@
 export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
-export const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJKLMNPQRSUVW][\d]{7}[\dA-J]$/i;
+export const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJNPQRSUVW][\d]{7}[\dA-J]$/i;
 const HAS_CONTROL_LETTER_REGEX = /^[PQRSW]/;
 const HAS_CONTROL_LETTER_IDENTIFIER = "00";
 const HAS_CONTROL_NUMBER_REGEX = /^[ABEH]/;
@@ -80,7 +80,7 @@ export function isValidLegalEntityNifControlCode(
 /**
  * Checks if the legalEntityNif provided is valid.
  *
- * It does not include old K,L and M formats.
+ * It does not include old K, L and M formats.
  * @param legalEntityNif
  * @returns true for valid input and false for invalid input.
  */

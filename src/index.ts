@@ -12,7 +12,11 @@ export {
 } from "./nif/naturalPersonNif/nie";
 export {
   isValidLegalEntityNifControlCode,
+  isValidLegalEntityNifControlCode as isValidCifControlCode,
   isValidLegalEntityNif,
+  isValidLegalEntityNif as isValidCif,
   LEGAL_ENTITY_CONTROL_LETTERS,
+  LEGAL_ENTITY_CONTROL_LETTERS as CIF_CONTROL_LETTERS,
   LEGAL_ENTITY_NIF_REGEX,
+  LEGAL_ENTITY_NIF_REGEX as CIF_REGEX,
 } from "./nif/legalEntityNif/legalEntityNif";
