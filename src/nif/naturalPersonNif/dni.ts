@@ -1,6 +1,6 @@
 import { isValidDniLetter } from "./shared";
 
-export const DNI_REGEX = /^[KLM\d]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
+export const DNI_REGEX = /^([KLM][\d]{7}|[\d]{8})[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
 
 /**
  * Checks if the given dni is valid.
