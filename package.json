@@ -5,6 +5,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "readme": "README.md",
+  "keywords": [
+    "nif",
+    "dni",
+    "nie",
+    "cif",
+    "nif validation",
+    "dni validation",
+    "nie validation",
+    "cif validation",
+    "nif-dni-nie-cif-validation"
+  ],
   "files": [
     "/dist"
   ],
