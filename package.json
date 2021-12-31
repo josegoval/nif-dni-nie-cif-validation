@@ -4,6 +4,7 @@
   "description": "Validate NIF, DNI, NIE and CIF documents easily.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "readme": "README.md",
   "files": [
     "/dist"
   ],
@@ -14,15 +15,14 @@
     "build": "tsc",
     "test": "jest"
   },
-  "dependencies": {
-    "typescript": "^4.5.4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
     "@babel/preset-typescript": "^7.16.5",
     "@types/jest": "^27.0.3",
     "babel-jest": "^27.4.5",
-    "jest": "^27.4.5"
+    "jest": "^27.4.5",
+    "typescript": "^4.5.4"
   }
 }
