@@ -17,7 +17,7 @@
     "nif-dni-nie-cif-validation"
   ],
   "files": [
-    "/dist"
+    "/dist/**/*"
   ],
   "repository": "https://github.com/josegoval/nif-dni-nie-cif-validation.git",
   "author": "josegoval <josegovalmusic@gmail.com>",
