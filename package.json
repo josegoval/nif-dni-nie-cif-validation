@@ -1,13 +1,13 @@
 {
-  "name": "dni-nif-nie-validation",
+  "name": "nif-dni-nie-cif-validation",
   "version": "1.0.0",
-  "description": "Validates DNI, NIF and NIE documents",
+  "description": "Validate NIF, DNI, NIE and CIF documents easily.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "/dist"
   ],
-  "repository": "https://github.com/josegoval/dni-nif-nie-validation.git",
+  "repository": "https://github.com/josegoval/nif-dni-nie-cif-validation.git",
   "author": "josegoval <josegovalmusic@gmail.com>",
   "license": "MIT",
   "scripts": {
