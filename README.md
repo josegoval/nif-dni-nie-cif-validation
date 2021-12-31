@@ -69,7 +69,3 @@ CIF was a legal entity id used in Spain up to 2008. However, nowadays it's renam
 not described by legal authorities (at least what I found, if you find more information about it, please feel free to comment, make a pull or open an issue).
 
 Nevertheless, this library also exports `isValidLegalEntityNif` renamed to `isValidCif`, and all related terms with it to make easier to those who need it.
-
-- upload to npm
-- README.me
-- buy me a coffe
