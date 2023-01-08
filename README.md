@@ -14,6 +14,7 @@ with NIF (spanish identifiers) easier.
 **Table of Contents**
 
 - [Installation](#installation)
+- [Example usage](#example-usage)
 - [Main Functions](#main-functions)
 - [Utility functions](#utility-functions)
 - [Other utilities](#other-utilities)
@@ -30,6 +31,28 @@ or
 ```bash
 yarn add nif-dni-nie-cif-validation
 ```
+
+## Example usage
+
+Import and use as follow with ES6 syntax:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+console.log(isValidNif("36698729K")) // true
+console.log(isValidNif("9332057M")) // false
+```
+
+For previous versions use `require` as follows:
+
+```ts
+const { isValidNif } = require("nif-dni-nie-cif-validation")
+
+console.log(isValidNif("36698729K")) // true
+console.log(isValidNif("9332057M")) // false
+```
+
+The following sections cover all the features and utilities of this package.
 
 ## Main functions
 
