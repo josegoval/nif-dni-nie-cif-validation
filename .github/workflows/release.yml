@@ -16,14 +16,14 @@ jobs:
         with:
           node-version: "14"
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --immutable
+        run: yarn install --frozen-lockfile --immutable --ignore-engines
       - name: Run tests
         run: yarn test
       - name: Build package
         run: yarn build
       - name: Setup Node 18
         uses: actions/setup-node@v3
-         with:
+        with:
           node-version: "18"
       - name: Release
         env:
