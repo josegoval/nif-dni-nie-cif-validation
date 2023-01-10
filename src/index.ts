@@ -1,4 +1,3 @@
-// Copyright (c) 2021 josegoval
 export { isValidNif } from "./nif/nif";
 export { isValidNaturalPersonNif } from "./nif/naturalPersonNif/naturalPersonNif";
 export {
