@@ -16,7 +16,15 @@ jobs:
         with:
           node-version: "14"
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --immutable
+      - name: Run tests
+        run: yarn test
+      - name: Build package
+        run: yarn build
+      - name: Setup Node 18
+        uses: actions/setup-node@v3
+         with:
+          node-version: "18"
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
