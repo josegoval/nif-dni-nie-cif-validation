@@ -20,7 +20,7 @@
     [
       "@semantic-release/github",
       {
-        "assets": ["*"]
+        "assets": ["dist/**", "CHANGELOG.md", "LICENSE", "package.json"]
       }
     ],
     ["@semantic-release/git", {
