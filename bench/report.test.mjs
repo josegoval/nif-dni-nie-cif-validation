@@ -49,6 +49,9 @@ describe("renderMarkdown", () => {
     expect(markdown).toContain(
       "Documented SPEC decision: the old 10-character NIE form is valid."
     );
+    expect(markdown).toContain(
+      "expected invalid (INVALID_CONTROL_CHARACTER), got valid (DNI-2, wrong letter)"
+    );
     expect(markdown).toContain("- **this package (this build)**: none.");
   });
 

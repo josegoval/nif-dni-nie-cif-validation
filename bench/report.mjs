@@ -221,7 +221,7 @@ function accuracySection(report) {
         ? ` *Documented SPEC decision: ${item.documentedDecision}.*`
         : "";
       out.push(
-        `  - ${code(JSON.stringify(item.input))}: expected ${item.expected}, got ${item.got} (${item.rule}, ${item.note}).${decision}`
+        `  - ${code(JSON.stringify(item.input))}: expected ${item.expected === "valid" ? "valid" : `invalid (${item.expected})`}, got ${item.got} (${item.rule}, ${item.note}).${decision}`
       );
     }
   }

@@ -199,8 +199,8 @@ export function sampleResults() {
         },
         "lib-a": {
           all: {
-            overall: stats(14, 0, 4, 1),
-            DNI: stats(6, 0, 2, 1),
+            overall: stats(14, 1, 4, 1),
+            DNI: stats(6, 1, 2, 1),
             NIE: stats(4, 0, 1),
             CIF: UNSUPPORTED,
             KLM: stats(2, 0, 1),
@@ -225,6 +225,15 @@ export function sampleResults() {
               documentedDecision: "the old 10-character NIE form is valid",
             },
             {
+              input: "12345678A",
+              expected: "INVALID_CONTROL_CHARACTER",
+              got: "valid",
+              kind: "falseAccept",
+              rule: "DNI-2",
+              note: "wrong letter",
+              documentedDecision: null,
+            },
+            {
               input: "K1234567L",
               expected: "valid",
               got: "invalid",
@@ -234,7 +243,7 @@ export function sampleResults() {
               documentedDecision: null,
             },
           ],
-          disagreementCount: 4,
+          disagreementCount: 5,
         },
       },
     },
