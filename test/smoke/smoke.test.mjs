@@ -36,6 +36,14 @@ import {
   replaceNieLetter,
   validate,
 } from "nif-dni-nie-cif-validation";
+import {
+  createGenerator,
+  generateCif,
+  generateDni,
+  generateInvalid,
+  generateNie,
+  generateNif,
+} from "nif-dni-nie-cif-validation/generate";
 import esDefault, { es } from "nif-dni-nie-cif-validation/locales/es";
 
 const cjs = createRequire(import.meta.url)("nif-dni-nie-cif-validation");
@@ -164,6 +172,50 @@ describe("ES module build", () => {
     assert.equal(normalize(" x-0123456-7l "), "X1234567L");
     assert.equal(format("12345678z"), "12345678-Z");
     assert.equal(computeControlCharacter("B1234567"), "4");
+  });
+
+  it("generate loads the ES module build, and the core does not export it", async () => {
+    assert.equal(esm.generateDni, undefined);
+    const cjsGenerate = createRequire(import.meta.url)(
+      "nif-dni-nie-cif-validation/generate"
+    );
+    assert.deepEqual(Object.keys(cjsGenerate).sort(), [
+      "createGenerator",
+      "generateCif",
+      "generateDni",
+      "generateInvalid",
+      "generateNie",
+      "generateNif",
+    ]);
+  });
+
+  it("generate gives valid values, the same for the same seed on every platform", () => {
+    assert.equal(generateDni({ seed: 1 }), "62707394X");
+    assert.equal(generateNie({ seed: 1 }), "Y0027357R");
+    assert.equal(generateCif({ seed: 1 }), "P0027357C");
+    assert.equal(generateNif({ seed: 1 }), "X5274470H");
+    for (let i = 0; i < 50; i++) {
+      assert.equal(isValidNif(generateNif()), true);
+      assert.equal(isValidNif(generateNif({ seed: i })), true);
+    }
+    const gen = createGenerator(1);
+    assert.equal(gen.dni(), "62707394X");
+    assert.equal(gen.dni(), "00273574N");
+  });
+
+  it("generateInvalid gives the requested error code", () => {
+    assert.equal(
+      validate(generateInvalid("DNI", { seed: 1 })).error.code,
+      "INVALID_CONTROL_CHARACTER"
+    );
+    assert.equal(
+      validate(generateInvalid("CIF", { seed: 1, reason: "INVALID_LENGTH" }))
+        .error.code,
+      "INVALID_LENGTH"
+    );
+    assert.throws(() => generateCif({ orgKey: "B", control: "letter" }), {
+      name: "RangeError",
+    });
   });
 
   it("only the documented entry points can be imported", async () => {

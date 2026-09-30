@@ -67,12 +67,25 @@
         "default": "./dist/cjs/locales/gl.cjs"
       }
     },
+    "./generate": {
+      "import": {
+        "types": "./dist/esm/generate/index.d.mts",
+        "default": "./dist/esm/generate/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/generate/index.d.cts",
+        "default": "./dist/cjs/generate/index.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
       "locales/*": [
         "./dist/cjs/locales/*.d.cts"
+      ],
+      "generate": [
+        "./dist/cjs/generate/index.d.cts"
       ]
     }
   },

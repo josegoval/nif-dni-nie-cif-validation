@@ -5,7 +5,10 @@
 // - `validate` and `describeCifOrganisation` bundle English (built in) and no
 //   other language;
 // - a language (`<package>/locales/<code>`) bundles only itself, and with
-//   `validate` only itself and English.
+//   `validate` only itself and English;
+// - the opt-in entry points (`<package>/generate`) are not part of the core:
+//   no core import bundles any of their modules or code, and each one bundles
+//   itself when it is imported.
 //
 // Usage: node scripts/check-tree-shaking.mjs <package tarball>
 //
@@ -42,6 +45,19 @@ const LOCALES = {
 };
 const CODES = Object.keys(LOCALES);
 const localeModule = (code) => `locales/${code}.mjs`;
+
+/**
+ * The opt-in entry points: a snippet that imports something from each, and a
+ * string only its code contains (an error message), for bundlers that inline
+ * modules. Its modules live in the folder of the same name in `dist/esm`.
+ */
+const OPT_IN = {
+  generate: {
+    snippet: `import { generateDni } from "${PACKAGE}/generate"; console.log(generateDni());`,
+    marker: "seed must be an integer",
+  },
+};
+const OPT_IN_NAMES = Object.keys(OPT_IN);
 
 /** Modules that only validate() and describeCifOrganisation() need. */
 const TEXT_MODULES = ["localize.mjs", "organisations.mjs"];
@@ -111,6 +127,14 @@ try {
         inputs.some((file) => file.endsWith(localeModule(code)))
     );
 
+  /** Which opt-in entry points a bundle contains, by module or by marker. */
+  const optInIn = ({ text, inputs }) =>
+    OPT_IN_NAMES.filter(
+      (name) =>
+        text.includes(OPT_IN[name].marker) ||
+        inputs.some((file) => file.includes(`dist/esm/${name}/`))
+    );
+
   const problems = [];
   const check = (label, ok, problem) => {
     console.log(`${(ok ? "ok" : "FAIL").padEnd(4)} ${label}`);
@@ -131,6 +155,12 @@ try {
       found.length === 0,
       `pulls in ${found.join(", ")}`
     );
+    const optIn = optInIn(result);
+    check(
+      `${name} bundles no opt-in entry point`,
+      optIn.length === 0,
+      `pulls in ${optIn.join(", ")}`
+    );
     if (!result.inputs.some((f) => f.includes("dist/esm/"))) {
       problems.push(
         `${name} was not bundled from dist/esm (the import condition)`
@@ -139,14 +169,30 @@ try {
   }
 
   for (const name of ENGLISH_ONLY) {
-    const found = localesIn(
-      await bundle(
-        `import { ${name} } from "${PACKAGE}"; console.log(${name});`
-      )
+    const result = await bundle(
+      `import { ${name} } from "${PACKAGE}"; console.log(${name});`
     );
+    const found = localesIn(result);
     check(
       `${name} bundles English only`,
       same(found, ["en"]),
+      `bundles [${found.join(", ")}]`
+    );
+    const optIn = optInIn(result);
+    check(
+      `${name} bundles no opt-in entry point`,
+      optIn.length === 0,
+      `pulls in ${optIn.join(", ")}`
+    );
+  }
+
+  for (const name of OPT_IN_NAMES) {
+    const found = optInIn(await bundle(OPT_IN[name].snippet));
+    // The positive control: the checks above can only pass if the script can
+    // see an entry point when it is there.
+    check(
+      `${PACKAGE}/${name} bundles itself`,
+      same(found, [name]),
       `bundles [${found.join(", ")}]`
     );
   }
@@ -182,7 +228,7 @@ try {
     process.exit(1);
   }
   console.log(
-    `\nTree shaking OK: ${LEAN.length} lean imports, ${CODES.length} locales.`
+    `\nTree shaking OK: ${LEAN.length} lean imports, ${CODES.length} locales, ${OPT_IN_NAMES.length} opt-in entry points.`
   );
 } finally {
   rmSync(project, { recursive: true, force: true });

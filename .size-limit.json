@@ -56,5 +56,26 @@
     "import": "*",
     "gzip": true,
     "limit": "4790 B"
+  },
+  {
+    "name": "import { generateDni } from /generate",
+    "path": "dist/esm/generate/index.mjs",
+    "import": "{ generateDni }",
+    "gzip": true,
+    "limit": "1955 B"
+  },
+  {
+    "name": "import { generateInvalid } from /generate",
+    "path": "dist/esm/generate/index.mjs",
+    "import": "{ generateInvalid }",
+    "gzip": true,
+    "limit": "2100 B"
+  },
+  {
+    "name": "import * from /generate (every generator)",
+    "path": "dist/esm/generate/index.mjs",
+    "import": "*",
+    "gzip": true,
+    "limit": "3225 B"
   }
 ]

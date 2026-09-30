@@ -184,6 +184,66 @@ describe("locales", () => {
   }
 });
 
+// The opt-in test-data generators (`nif-dni-nie-cif-validation/generate`).
+describe("generate", () => {
+  const generate = require("nif-dni-nie-cif-validation/generate");
+
+  it("loads the CommonJS build", () => {
+    assert.match(
+      require.resolve("nif-dni-nie-cif-validation/generate"),
+      /dist[\\/]cjs[\\/]generate[\\/]index\.cjs$/
+    );
+    for (const name of [
+      "generateDni",
+      "generateNie",
+      "generateCif",
+      "generateNif",
+      "generateInvalid",
+      "createGenerator",
+    ]) {
+      assert.equal(typeof generate[name], "function", name);
+    }
+  });
+  it("the core does not export the generators", () => {
+    assert.equal(lib.generateDni, undefined);
+  });
+  it("gives valid values, the same for the same seed on every platform", () => {
+    assert.equal(generate.generateDni({ seed: 1 }), "62707394X");
+    assert.equal(generate.generateNie({ seed: 1 }), "Y0027357R");
+    assert.equal(generate.generateCif({ seed: 1 }), "P0027357C");
+    assert.equal(generate.generateNif({ seed: 1 }), "X5274470H");
+    for (let i = 0; i < 50; i++) {
+      assert.equal(lib.isValidNif(generate.generateNif()), true);
+      assert.equal(lib.isValidNif(generate.generateNif({ seed: i })), true);
+    }
+  });
+  it("generateInvalid gives the requested error code", () => {
+    assert.equal(
+      lib.validate(generate.generateInvalid("DNI", { seed: 1 })).error.code,
+      "INVALID_CONTROL_CHARACTER"
+    );
+    assert.equal(
+      lib.validate(
+        generate.generateInvalid("CIF", { seed: 1, reason: "INVALID_LENGTH" })
+      ).error.code,
+      "INVALID_LENGTH"
+    );
+  });
+  it("createGenerator makes a stream of different values", () => {
+    const gen = generate.createGenerator(1);
+    assert.equal(gen.dni(), "62707394X");
+    assert.equal(gen.dni(), "00273574N");
+  });
+  it("a bad option throws a RangeError", () => {
+    assert.throws(
+      () => generate.generateCif({ orgKey: "B", control: "letter" }),
+      {
+        name: "RangeError",
+      }
+    );
+  });
+});
+
 describe("package entry points", () => {
   it("require() loads the CommonJS build", () => {
     assert.match(
