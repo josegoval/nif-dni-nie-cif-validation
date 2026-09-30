@@ -175,6 +175,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^21.2.3
         version: 21.2.3
+      '@cspell/dict-es-es':
+        specifier: ^3.0.8
+        version: 3.0.8
       '@kreyo/nif-validator':
         specifier: 0.1.0
         version: 0.1.0
@@ -530,6 +533,9 @@ packages:
 
   '@cspell/dict-en_us@4.4.40':
     resolution: {integrity: sha512-TGyOaWP1dD28GRHH2Lt04ciMZC8Z6UX+5kJsi04pbQHq6uRxv14/bBVCBeSsajUXRZsJYUqXyHaHB9O0ODuFuQ==}
+
+  '@cspell/dict-es-es@3.0.8':
+    resolution: {integrity: sha512-tj4zYKYWtAFc+JWtJo0DxLAve7I0UJM5+6we3hvLyzQlhGCBF41cTihPa/cbLHUkTD6PkrVGf1hgOKuSR9hkMQ==}
 
   '@cspell/dict-filetypes@3.0.18':
     resolution: {integrity: sha512-yU7RKD/x1IWmDLzWeiItMwgV+6bUcU/af23uS0+uGiFUbsY1qWV/D4rxlAAO6Z7no3J2z8aZOkYIOvUrJq0Rcw==}
@@ -3203,6 +3209,8 @@ snapshots:
   '@cspell/dict-en-gb-mit@3.1.29': {}
 
   '@cspell/dict-en_us@4.4.40': {}
+
+  '@cspell/dict-es-es@3.0.8': {}
 
   '@cspell/dict-filetypes@3.0.18': {}
 
