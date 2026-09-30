@@ -42,6 +42,21 @@ export function hasDniDigitsAndLetter(
 const MAX_EXACT_DIGITS = 15;
 
 /**
+ * Checks a DNI or K/L/M NIF. Internal helper: the caller has checked that
+ * `dni` is a 9-character string, and passes the UTF-16 code of its first
+ * character.
+ */
+export function isValidNineCharDni(dni: string, first: number): boolean {
+  // DNI-1: 8 digits + DNI-2 letter.
+  if ((first - 48) >>> 0 < 10) return hasDniDigitsAndLetter(dni, 1, first - 48);
+  // KLM-1 / KLM-3: K, L or M + 7 digits + letter. KLM-2: the letter is
+  // computed over the 7 digits only, so the prefix counts as nothing.
+  if ((toUpperAsciiLetter(first) - 75) >>> 0 < 3)
+    return hasDniDigitsAndLetter(dni, 1, 0);
+  return false;
+}
+
+/**
  * Checks if the given dni is valid.
  *
  * It does include checks for DNI K, L and M.
@@ -52,14 +67,7 @@ const MAX_EXACT_DIGITS = 15;
  */
 export function isValidDni(dni: string): boolean {
   if (typeof dni !== "string" || dni.length !== DNI_LENGTH) return false;
-  const first = dni.charCodeAt(0);
-  // DNI-1: 8 digits + DNI-2 letter.
-  if ((first - 48) >>> 0 < 10) return hasDniDigitsAndLetter(dni, 1, first - 48);
-  // KLM-1 / KLM-3: K, L or M + 7 digits + letter. KLM-2: the letter is
-  // computed over the 7 digits only, so the prefix counts as nothing.
-  if ((toUpperAsciiLetter(first) - 75) >>> 0 < 3)
-    return hasDniDigitsAndLetter(dni, 1, 0);
-  return false;
+  return isValidNineCharDni(dni, dni.charCodeAt(0));
 }
 
 /**

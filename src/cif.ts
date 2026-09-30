@@ -13,7 +13,7 @@ const CIF_LENGTH = 9;
 
 // CIF-3 (AEAT D.I.T. 2008): the control type depends only on the
 // organisation key. There is no "number starts with 00" rule.
-const NOT_A_KEY = 0;
+export const NOT_A_KEY = 0;
 /** A B E H: digit control. */
 const DIGIT_CONTROL = 1;
 /** N P Q R S W: letter control. */

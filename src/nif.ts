@@ -1,6 +1,11 @@
-import { isValidLegalEntityNif } from "./cif";
-import { isValidDni } from "./dni";
-import { isValidNie } from "./nie";
+import { cifKeyKind, hasValidCifDigitsAndControl, NOT_A_KEY } from "./cif";
+import { isValidNineCharDni } from "./dni";
+import { isValidNineCharNie, isValidOldNie } from "./nie";
+
+/** DNI, K/L/M, NIE and CIF all have 9 characters. */
+const NIF_LENGTH = 9;
+/** NIE-3: old NIEs, `X0` + 7 digits + letter. */
+const OLD_NIE_LENGTH = 10;
 
 /**
  * Checks if the given naturalPersonNif is either a valid DNI (including DNI K, L and M) or a valid NIE.
@@ -11,9 +16,17 @@ import { isValidNie } from "./nie";
  */
 export function isValidNaturalPersonNif(naturalPersonNif: string): boolean {
   if (typeof naturalPersonNif !== "string") return false;
-  // NORM-1: each validator upper-cases the input itself. Pass the raw value so
-  // their format regexes see it unchanged.
-  return isValidDni(naturalPersonNif) || isValidNie(naturalPersonNif);
+  const length = naturalPersonNif.length;
+  if (length === NIF_LENGTH) {
+    const first = naturalPersonNif.charCodeAt(0);
+    // DNI-1 / KLM-1 or NIE-1: the first character decides the format.
+    return (
+      isValidNineCharDni(naturalPersonNif, first) ||
+      isValidNineCharNie(naturalPersonNif, first)
+    );
+  }
+  // NIE-3: old 10-character NIE.
+  return length === OLD_NIE_LENGTH && isValidOldNie(naturalPersonNif);
 }
 
 /**
@@ -26,7 +39,16 @@ export function isValidNaturalPersonNif(naturalPersonNif: string): boolean {
  */
 export function isValidNif(nif: string): boolean {
   if (typeof nif !== "string") return false;
-  // NORM-1: each validator upper-cases the input itself. Pass the raw value so
-  // their format regexes see it unchanged.
-  return isValidNaturalPersonNif(nif) || isValidLegalEntityNif(nif);
+  const length = nif.length;
+  if (length === NIF_LENGTH) {
+    const first = nif.charCodeAt(0);
+    // CIF-2: the organisation keys never overlap with the natural person
+    // prefixes (digits, K L M, X Y Z), so the first character picks one
+    // format and only that one is checked.
+    const kind = cifKeyKind(first);
+    if (kind !== NOT_A_KEY) return hasValidCifDigitsAndControl(nif, kind);
+    return isValidNineCharDni(nif, first) || isValidNineCharNie(nif, first);
+  }
+  // NIE-3: old 10-character NIE.
+  return length === OLD_NIE_LENGTH && isValidOldNie(nif);
 }

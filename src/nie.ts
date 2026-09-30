@@ -18,10 +18,22 @@ const OLD_NIE_LENGTH = 10;
 
 /**
  * NIE-2 value of a NIE prefix (X -> 0, Y -> 1, Z -> 2, either case), or a
- * number outside 0-2 for anything else. Internal helper.
+ * number outside 0-2 for anything else.
  */
-export function niePrefixValue(code: number): number {
+function niePrefixValue(code: number): number {
   return toUpperAsciiLetter(code) - 88;
+}
+
+/**
+ * Checks a 9-character NIE. Internal helper: the caller has checked that
+ * `nie` is a 9-character string, and passes the UTF-16 code of its first
+ * character.
+ */
+export function isValidNineCharNie(nie: string, first: number): boolean {
+  // NIE-1: X, Y or Z + 7 digits + letter. NIE-2: the prefix counts as its
+  // digit (X -> 0, Y -> 1, Z -> 2), then DNI-2.
+  const prefix = niePrefixValue(first);
+  return prefix >>> 0 < 3 && hasDniDigitsAndLetter(nie, 1, prefix);
 }
 
 /**
@@ -74,12 +86,8 @@ export function replaceNieLetter(nie: string): string {
 export function isValidNie(nie: string): boolean {
   if (typeof nie !== "string") return false;
   const length = nie.length;
-  if (length === NIE_LENGTH) {
-    // NIE-1: X, Y or Z + 7 digits + letter. NIE-2: the prefix counts as its
-    // digit (X -> 0, Y -> 1, Z -> 2), then DNI-2.
-    const prefix = niePrefixValue(nie.charCodeAt(0));
-    return prefix >>> 0 < 3 && hasDniDigitsAndLetter(nie, 1, prefix);
-  }
+  // NIE-1 / NIE-2.
+  if (length === NIE_LENGTH) return isValidNineCharNie(nie, nie.charCodeAt(0));
   // NIE-3: old 10-character form.
   return length === OLD_NIE_LENGTH && isValidOldNie(nie);
 }
