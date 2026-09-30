@@ -22,11 +22,9 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
 // Rules that no test references yet, on purpose. Keep this list short and
-// explain every entry. VAT-1 goes with the VAT support of the validate()
-// API (#56).
+// explain every entry.
 const NOT_TESTED_YET = new Map([
   ["CIF-5", "nothing to implement: province codes are not validated"],
-  ["VAT-1", "ES + NIF VAT numbers are not supported yet (#56)"],
 ]);
 
 const SOURCE_EXTENSIONS = /\.(?:ts|mts|cts|js|mjs|cjs)$/;

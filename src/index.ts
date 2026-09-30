@@ -14,6 +14,7 @@
  * - validate.ts: validate() and getNifType(), the detailed API.
  * - messages.ts: error messages in English and Spanish (validate() only).
  * - organisations.ts: describeCifOrganisation(), the CIF organisation keys.
+ * - vat.ts: isValidSpanishVat() (VAT-1).
  */
 export { isValidNif, isValidNaturalPersonNif } from "./nif";
 export {
@@ -36,6 +37,7 @@ export {
 export { normalize } from "./normalize";
 export { describeCifOrganisation } from "./organisations";
 export { getNifType, validate } from "./validate";
+export { isValidSpanishVat } from "./vat";
 export type {
   CifControlMode,
   CifOrganisationMeta,

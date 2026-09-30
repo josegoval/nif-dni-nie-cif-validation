@@ -92,6 +92,12 @@ export interface ValidateOptions {
    * @see SPEC.md#policy-1
    */
   rejectPlaceholders?: boolean;
+  /**
+   * Accept a Spanish VAT number, `ES` + NIF, as well as a bare NIF
+   * (default `false`). `normalized` is always the NIF, without `ES`.
+   * @see SPEC.md#vat-1
+   */
+  allowVatPrefix?: boolean;
   /** Language of `error.message` (default `"en"`). */
   locale?: NifLocale;
 }
@@ -106,7 +112,10 @@ export type IsValidOptions = Pick<
 >;
 
 /** Options of `getNifType()`: the options that change what is parsed. */
-export type GetNifTypeOptions = Pick<ValidateOptions, "normalize">;
+export type GetNifTypeOptions = Pick<
+  ValidateOptions,
+  "normalize" | "allowVatPrefix"
+>;
 
 /** Why a value is invalid. */
 export interface NifValidationError {
@@ -149,8 +158,8 @@ export interface ValidationResult {
   type: NifType | null;
   /**
    * The canonical official form (upper case, no separators, old NIE form
-   * collapsed, short DNI padded), when the format is recognisable. `null`
-   * otherwise.
+   * collapsed, short DNI padded, no `ES` VAT prefix), when the format is
+   * recognisable. `null` otherwise.
    */
   normalized: string | null;
   /** Why the value is invalid; absent when it is valid. */

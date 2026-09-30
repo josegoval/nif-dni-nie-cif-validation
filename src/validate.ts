@@ -8,7 +8,8 @@
  * The steps, in order (the first failure wins):
  *
  * 1. INPUT-1: only strings. INPUT-2: not empty after cleanup.
- * 2. NORM-1 to NORM-4 and NIE-3: the canonical form.
+ * 2. NORM-1 to NORM-4 and NIE-3: the canonical form. VAT-1: an `ES`
+ *    prefix only with `allowVatPrefix`.
  * 3. NIF-1: the first character selects one format: a digit (DNI-1), K L M
  *    (KLM-1), X Y Z (NIE-1) or an organisation key (CIF-2).
  * 4. That format's length, digits and control position (DNI-1, KLM-1,
@@ -86,6 +87,16 @@ function formatProblem(rule: FormatRule): FormatProblem {
   return { code: "INVALID_FORMAT", rule };
 }
 
+/** NORM-1..3, or NORM-1 only with `normalize: false`. Internal helper. */
+export function cleanNif(value: string, normalize: boolean): string {
+  return normalize ? cleanup(value) : upperCase(value);
+}
+
+/** VAT-1: does the cleaned value start with the `ES` prefix? */
+export function hasVatPrefix(clean: string): boolean {
+  return clean.charCodeAt(0) === 69 && clean.charCodeAt(1) === 83;
+}
+
 /** NIF-1: the type selected by the first character of a canonical value. */
 function typeOf(first: number): NifType | null {
   // DNI-1: a digit.
@@ -161,12 +172,20 @@ function checkCifControl(value: string, lenient: boolean): Document {
 export function inspect(
   value: string,
   normalize: boolean,
-  lenient: boolean
+  lenient: boolean,
+  allowVatPrefix: boolean
 ): Inspection {
   // NORM-1..3 (or NORM-1 only, as v1 did, with normalize: false).
-  const clean = normalize ? cleanup(value) : upperCase(value);
+  let clean = cleanNif(value, normalize);
   // INPUT-2: nothing left.
   if (clean.length === 0) return EMPTY;
+  // VAT-1: "ES" + NIF. No NIF starts with "ES" (an E key is followed by a
+  // digit), so the prefix is unambiguous.
+  if (hasVatPrefix(clean)) {
+    if (!allowVatPrefix) return formatProblem("VAT-1");
+    clean = clean.slice(2);
+    if (clean.length === 0) return lengthProblem("VAT-1");
+  }
   // NIE-3 always; NORM-4 only when normalizing.
   const canonical = canonicalize(clean, normalize);
   // NIF-1: the first character selects the format.
@@ -247,7 +266,7 @@ function withMeta(
  *
  * @param value The value to validate, typically untrusted form input.
  * @param opts `types`, `normalize`, `cifControl`, `rejectPlaceholders`,
- * `locale`. See {@link ValidateOptions}.
+ * `allowVatPrefix`, `locale`. See {@link ValidateOptions}.
  * @returns The result; allocated on every call.
  * @example
  * validate("12345678A");
@@ -280,7 +299,8 @@ export function validate(
   const found = inspect(
     value,
     opts?.normalize !== false,
-    opts?.cifControl === "lenient"
+    opts?.cifControl === "lenient",
+    opts?.allowVatPrefix === true
   );
   if (!("type" in found)) {
     const message =
@@ -334,10 +354,12 @@ function check(
  * Returns `null` when the format isn't recognisable: an unknown first
  * character (NIF-1), the wrong length, non-digits in the number, or a
  * control character of the wrong class. The input is normalized first
- * unless `{ normalize: false }`. Never throws.
+ * unless `{ normalize: false }`. An `ES` VAT prefix is accepted only with
+ * `{ allowVatPrefix: true }`. Never throws.
  *
  * @param value The value to inspect.
- * @param opts `normalize` (default `true`).
+ * @param opts `normalize` (default `true`), `allowVatPrefix` (default
+ * `false`).
  * @returns `"DNI"`, `"NIF_KLM"`, `"NIE"`, `"CIF"` or `null`.
  * @example
  * getNifType("12345678Z"); // "DNI"
@@ -354,6 +376,11 @@ export function getNifType(
   opts: GetNifTypeOptions = NO_VALIDATE_OPTIONS
 ): NifType | null {
   if (typeof value !== "string") return null;
-  const found = inspect(value, opts?.normalize !== false, false);
+  const found = inspect(
+    value,
+    opts?.normalize !== false,
+    false,
+    opts?.allowVatPrefix === true
+  );
   return "type" in found ? found.type : null;
 }
