@@ -13,6 +13,7 @@
  * - policy.ts: opt-in policies (POLICY-1, placeholders).
  * - validate.ts: validate() and getNifType(), the detailed API.
  * - messages.ts: error messages in English and Spanish (validate() only).
+ * - organisations.ts: describeCifOrganisation(), the CIF organisation keys.
  */
 export { isValidNif, isValidNaturalPersonNif } from "./nif";
 export {
@@ -33,9 +34,11 @@ export {
   LEGAL_ENTITY_NIF_REGEX as CIF_REGEX,
 } from "./cif";
 export { normalize } from "./normalize";
+export { describeCifOrganisation } from "./organisations";
 export { getNifType, validate } from "./validate";
 export type {
   CifControlMode,
+  CifOrganisationMeta,
   GetNifTypeOptions,
   IsValidOptions,
   NifErrorCode,

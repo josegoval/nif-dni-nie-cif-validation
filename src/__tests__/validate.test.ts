@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getNifType, type NifErrorCode, validate } from "..";
+import {
+  describeCifOrganisation,
+  getNifType,
+  type NifErrorCode,
+  validate,
+} from "..";
 import { MESSAGES } from "../messages";
 
 // validate() and getNifType() (#56). Every test name starts with the SPEC.md
@@ -26,6 +31,7 @@ describe("validate(): acceptance criteria of #56", () => {
       valid: true,
       type: "CIF",
       normalized: "G1234567D",
+      meta: { orgKey: "G", orgDescription: "Association" },
     });
   });
 
@@ -53,13 +59,18 @@ describe("validate(): valid documents", () => {
     ["12345678Z", "DNI", "12345678Z"],
     ["K1234567L", "NIF_KLM", "K1234567L"],
     ["X1234567L", "NIE", "X1234567L"],
-    ["P2807900B", "CIF", "P2807900B"],
-  ])(
-    "DNI-2 / KLM-2 / NIE-2 / CIF-4: %s is a valid %s",
-    (value, type, normalized) => {
-      expect(validate(value)).toEqual({ valid: true, type, normalized });
-    }
-  );
+  ])("DNI-2 / KLM-2 / NIE-2: %s is a valid %s", (value, type, normalized) => {
+    expect(validate(value)).toEqual({ valid: true, type, normalized });
+  });
+
+  it("CIF-4: P2807900B (Ayuntamiento de Madrid) is a valid CIF, with meta", () => {
+    expect(validate("P2807900B")).toEqual({
+      valid: true,
+      type: "CIF",
+      normalized: "P2807900B",
+      meta: { orgKey: "P", orgDescription: "Local authority" },
+    });
+  });
 
   it("NIE-3: the old NIE form is normalized, with or without normalize", () => {
     expect(validate("X01234567L").normalized).toBe("X1234567L");
@@ -288,5 +299,56 @@ describe("getNifType(): format-based detection", () => {
     expect(getNifType(" 12.345.678-Z ")).toBe("DNI");
     expect(getNifType(" 12.345.678-Z ", { normalize: false })).toBeNull();
     expect(getNifType("12345678Z", null as never)).toBe("DNI");
+  });
+});
+
+describe("validate(): CIF organisation (meta)", () => {
+  it("CIF-2: meta is set whenever the type is CIF, valid or not, localized", () => {
+    expect(validate(" b-1234567-4 ", { locale: "es" }).meta).toEqual({
+      orgKey: "B",
+      orgDescription: "Sociedad de responsabilidad limitada",
+    });
+    expect(validate("B12345675").meta?.orgKey).toBe("B");
+    expect(validate("Q2826000H", { types: ["DNI"] }).meta?.orgKey).toBe("Q");
+  });
+
+  it("CIF-2: no meta for other types or unrecognised formats", () => {
+    expect(validate("12345678Z").meta).toBeUndefined();
+    expect(validate("B123").meta).toBeUndefined();
+  });
+});
+
+describe("describeCifOrganisation()", () => {
+  const KEYS = "ABCDEFGHJNPQRSUVW";
+
+  it.each(Array.from(KEYS))(
+    "CIF-2: key %s has a description in English and Spanish",
+    (key) => {
+      const en = describeCifOrganisation(key);
+      const es = describeCifOrganisation(key.toLowerCase(), "es");
+      expect(en).toMatch(/^[A-Z]/);
+      expect(es).toMatch(/^[A-ZÁÉÍÓÚ]/);
+      expect(en).not.toBe(es);
+    }
+  );
+
+  it("CIF-2: the descriptions follow Orden EHA/451/2008", () => {
+    expect(describeCifOrganisation("B")).toBe("Limited liability company");
+    expect(describeCifOrganisation("b", "es")).toBe(
+      "Sociedad de responsabilidad limitada"
+    );
+    expect(describeCifOrganisation("N", "es")).toBe("Entidad extranjera");
+    expect(describeCifOrganisation("W", "es")).toMatch(/^Establecimiento/);
+    expect(describeCifOrganisation("J", "es")).toBe("Sociedad civil");
+  });
+
+  it("CIF-2: anything else returns null", () => {
+    for (const key of ["I", "K", "L", "M", "X", "Y", "Z", "O", "T", "1"])
+      expect(describeCifOrganisation(key)).toBeNull();
+    for (const key of ["", "BB", "B12345674", "ſ", null, 66, {}])
+      expect(describeCifOrganisation(key)).toBeNull();
+    expect(describeCifOrganisation("B", "fr" as never)).toBe(
+      "Limited liability company"
+    );
   });
 });

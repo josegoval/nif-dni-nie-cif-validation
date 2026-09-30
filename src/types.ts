@@ -123,6 +123,21 @@ export interface NifValidationError {
   expected?: string;
 }
 
+/**
+ * What the organisation key of a legal entity NIF (CIF) says about the
+ * entity (Orden EHA/451/2008 arts. 3 to 5, as amended by Orden HAP/5/2016).
+ */
+export interface CifOrganisationMeta {
+  /** The organisation key, for example `"B"`. */
+  orgKey: string;
+  /**
+   * Its description in the requested locale, for example
+   * `"Limited liability company"` / `"Sociedad de responsabilidad
+   * limitada"`.
+   */
+  orgDescription: string;
+}
+
 /** The result of `validate()`. */
 export interface ValidationResult {
   /** Whether the value is a valid document (with the given options). */
@@ -140,4 +155,10 @@ export interface ValidationResult {
   normalized: string | null;
   /** Why the value is invalid; absent when it is valid. */
   error?: NifValidationError;
+  /**
+   * For a legal entity NIF (CIF) only, whenever `type` is `"CIF"` (valid
+   * or not): its organisation key and what it means.
+   * @see SPEC.md#cif-2
+   */
+  meta?: CifOrganisationMeta;
 }

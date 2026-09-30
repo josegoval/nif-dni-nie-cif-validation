@@ -28,7 +28,12 @@ import {
   NOT_A_KEY,
 } from "./cif";
 import { DNI_CONTROL_LETTERS } from "./dni";
-import { type FormatRule, type LengthRule, MESSAGES } from "./messages";
+import {
+  type FormatRule,
+  type LengthRule,
+  MESSAGES,
+  type Messages,
+} from "./messages";
 import {
   areDigits,
   canonicalize,
@@ -36,9 +41,11 @@ import {
   isUpperLetter,
   upperCase,
 } from "./normalize";
+import { describeCifOrganisation } from "./organisations";
 import { PLACEHOLDERS } from "./policy";
 import type {
   GetNifTypeOptions,
+  NifLocale,
   NifType,
   NifValidationError,
   ValidateOptions,
@@ -206,6 +213,21 @@ function invalid(
   return { valid: false, type, normalized, error };
 }
 
+/** CIF-2: adds the organisation key and its description to a CIF result. */
+function withMeta(
+  result: ValidationResult,
+  locale: NifLocale
+): ValidationResult {
+  if (result.type === "CIF") {
+    const orgKey = (result.normalized as string).charAt(0);
+    result.meta = {
+      orgKey,
+      orgDescription: describeCifOrganisation(orgKey, locale) as string,
+    };
+  }
+  return result;
+}
+
 /**
  * Validates a Spanish NIF (DNI, K/L/M NIF, NIE or legal entity NIF, formerly
  * CIF) and explains the result.
@@ -217,6 +239,8 @@ function invalid(
  * - `error`: `code`, the SPEC.md `rule` that failed, a `message` for the
  *   user (English or Spanish), and `expected` (the right control
  *   character) when the control character is wrong.
+ * - `meta`: for a CIF, its organisation key and what it means (Orden
+ *   EHA/451/2008 arts. 3 to 5), in the requested locale.
  *
  * Defaults follow SPEC.md: the input is normalized (NORM-1 to NORM-4, NIE-3)
  * and CIFs follow CIF-3. Never throws.
@@ -231,8 +255,9 @@ function invalid(
  * //   error: { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2",
  * //            expected: "Z", message: "The control character is not ..." } }
  * @example
- * validate(" x-0123456-7l ", { locale: "es" });
- * // { valid: true, type: "NIE", normalized: "X1234567L" }
+ * validate(" b-1234567-4 ", { locale: "es" });
+ * // { valid: true, type: "CIF", normalized: "B12345674",
+ * //   meta: { orgKey: "B", orgDescription: "Sociedad de responsabilidad limitada" } }
  * @example
  * validate("G1234567D").error?.rule;                    // "CIF-3"
  * validate("G1234567D", { cifControl: "lenient" }).valid; // true
@@ -243,7 +268,8 @@ export function validate(
   value: unknown,
   opts: ValidateOptions = NO_VALIDATE_OPTIONS
 ): ValidationResult {
-  const messages = MESSAGES[opts?.locale === "es" ? "es" : "en"];
+  const locale: NifLocale = opts?.locale === "es" ? "es" : "en";
+  const messages = MESSAGES[locale];
   // INPUT-1: only strings, never converted.
   if (typeof value !== "string")
     return invalid(null, null, {
@@ -265,6 +291,15 @@ export function validate(
           : messages.INVALID_FORMAT[found.rule];
     return invalid(null, null, { code: found.code, message, rule: found.rule });
   }
+  return withMeta(check(found, opts, messages), locale);
+}
+
+/** Steps 5 to 7 of `validate`, on a recognised document. */
+function check(
+  found: Document,
+  opts: ValidateOptions,
+  messages: Messages
+): ValidationResult {
   const { type, normalized, control } = found;
   // POLICY-2: the caller accepts only some types.
   const types = opts?.types;
