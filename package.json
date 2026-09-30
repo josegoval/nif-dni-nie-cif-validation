@@ -37,6 +37,7 @@
     "test": "vitest run",
     "lint": "biome check .",
     "spell": "cspell --no-progress",
+    "bench": "pnpm build && node bench/run.mjs",
     "format": "biome check --write ."
   },
   "devDependencies": {
@@ -51,6 +52,7 @@
     "husky": "^9.1.7",
     "nif-v1": "npm:nif-dni-nie-cif-validation@1.0.11",
     "semantic-release": "^25.0.9",
+    "tinybench": "^6.2.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.2"
   }

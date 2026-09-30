@@ -1,0 +1,136 @@
+{
+  "date": "2026-09-30T12:53:00.181Z",
+  "machine": {
+    "cpu": "Apple M1",
+    "cores": 8,
+    "memoryGiB": 16,
+    "platform": "darwin 25.3.0 (arm64)"
+  },
+  "node": "v22.22.3",
+  "tinybench": "6.2.0",
+  "timePerTaskMs": 2000,
+  "warmupPerTaskMs": 500,
+  "inputs": {
+    "count": 1001,
+    "mix": {
+      "valid": 500,
+      "validLowerCase": 100,
+      "wrongControl": 250,
+      "junk": 151
+    }
+  },
+  "results": [
+    {
+      "function": "isValidNif",
+      "v1": {
+        "validationsPerSecond": 2029625,
+        "rmePercent": 1.81,
+        "samples": 1682
+      },
+      "current": {
+        "validationsPerSecond": 17290038,
+        "rmePercent": 0.22,
+        "samples": 22128
+      },
+      "speedup": 8.52,
+      "target": 5,
+      "meetsTarget": true
+    },
+    {
+      "function": "isValidNaturalPersonNif",
+      "v1": {
+        "validationsPerSecond": 3544026,
+        "rmePercent": 0.97,
+        "samples": 4058
+      },
+      "current": {
+        "validationsPerSecond": 24386204,
+        "rmePercent": 0.24,
+        "samples": 22026
+      },
+      "speedup": 6.88,
+      "target": null,
+      "meetsTarget": null
+    },
+    {
+      "function": "isValidDni",
+      "v1": {
+        "validationsPerSecond": 6759934,
+        "rmePercent": 0.61,
+        "samples": 6732
+      },
+      "current": {
+        "validationsPerSecond": 32750908,
+        "rmePercent": 0.15,
+        "samples": 42433
+      },
+      "speedup": 4.84,
+      "target": 2.5,
+      "meetsTarget": true
+    },
+    {
+      "function": "isValidNie",
+      "v1": {
+        "validationsPerSecond": 7606723,
+        "rmePercent": 0.44,
+        "samples": 9065
+      },
+      "current": {
+        "validationsPerSecond": 39509015,
+        "rmePercent": 0.13,
+        "samples": 47513
+      },
+      "speedup": 5.19,
+      "target": 2.5,
+      "meetsTarget": true
+    },
+    {
+      "function": "isValidCif",
+      "v1": {
+        "validationsPerSecond": 4860057,
+        "rmePercent": 0.64,
+        "samples": 5517
+      },
+      "current": {
+        "validationsPerSecond": 28532454,
+        "rmePercent": 0.18,
+        "samples": 35506
+      },
+      "speedup": 5.87,
+      "target": 2.5,
+      "meetsTarget": true
+    },
+    {
+      "function": "isValidDniLetter",
+      "v1": {
+        "validationsPerSecond": 2940959,
+        "rmePercent": 1.07,
+        "samples": 2863
+      },
+      "current": {
+        "validationsPerSecond": 13760313,
+        "rmePercent": 0.33,
+        "samples": 13764
+      },
+      "speedup": 4.68,
+      "target": null,
+      "meetsTarget": null
+    },
+    {
+      "function": "isValidCifControlCode",
+      "v1": {
+        "validationsPerSecond": 1612639,
+        "rmePercent": 1.5,
+        "samples": 1914
+      },
+      "current": {
+        "validationsPerSecond": 9277102,
+        "rmePercent": 0.35,
+        "samples": 12417
+      },
+      "speedup": 5.75,
+      "target": null,
+      "meetsTarget": null
+    }
+  ]
+}
