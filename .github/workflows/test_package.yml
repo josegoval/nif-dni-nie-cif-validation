@@ -55,3 +55,29 @@ jobs:
           use_oidc: true
           files: ./coverage/lcov.info
           fail_ci_if_error: false
+
+  package:
+    name: Package (publint, attw)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Use Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      # `prepack` builds dist/ before the tarball is created.
+      - name: Pack
+        id: pack
+        run: echo "tarball=$(npm pack --silent | tail -n 1)" >> "$GITHUB_OUTPUT"
+      - name: Lint package with publint
+        run: npx --yes publint run "${{ steps.pack.outputs.tarball }}" --strict
+      # The package is CJS-only until the dual ESM/CJS build lands (#48).
+      # attw reports no problems today. If it ever flags a rule that only
+      # #48 can fix (for example FalseESM or CJSResolvesToESM), add it with
+      # `--ignore-rules <rule>` and a comment referencing #48.
+      - name: Check types with attw
+        run: npx --yes @arethetypeswrong/cli "${{ steps.pack.outputs.tarball }}"
