@@ -1,3 +1,21 @@
+/**
+ * NIE: Número de Identidad de Extranjero, the ID number of foreigners, which
+ * is also their NIF.
+ *
+ * Format:
+ * - NIE-1: X, Y or Z + 7 digits + a check letter: `X1234567L` (Orden
+ *   INT/2058/2008). After the X series ran out, Y came next, then Z.
+ * - NIE-3: old 10-character NIEs, X + 8 digits + letter, stay valid. Their
+ *   canonical form drops the zero right after the X: `X01234567L` is
+ *   `X1234567L`.
+ *
+ * Check letter:
+ * - NIE-2: X -> 0, Y -> 1, Z -> 2, then the DNI-2 letter of the resulting
+ *   8-digit number (Ministerio del Interior; AEAT D.I.T. note).
+ * - NORM-1: a lower-case ASCII letter is accepted too (convention).
+ *
+ * Rule IDs refer to SPEC.md.
+ */
 import { hasDniDigitsAndLetter } from "./dni";
 import { toUpperAsciiLetter } from "./shared";
 

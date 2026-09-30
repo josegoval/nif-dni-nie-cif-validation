@@ -1,4 +1,12 @@
 /**
+ * Internal helpers shared by the validators. Nothing here is exported from
+ * the package entry point.
+ *
+ * The validators read the input with `charCodeAt`, one UTF-16 code unit at a
+ * time, and never build new strings on their hot path.
+ */
+
+/**
  * Upper-cases the UTF-16 code of an ASCII letter (`a`-`z`, `A`-`Z`) and
  * returns -1 for anything else. Internal helper.
  *

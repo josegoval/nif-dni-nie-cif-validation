@@ -1,3 +1,17 @@
+/**
+ * NIF: Número de Identificación Fiscal, the Spanish tax ID (RD 1065/2007
+ * arts. 18-22). Every person or entity has one:
+ *
+ * - natural persons: a DNI, a K/L/M NIF (see dni.ts) or a NIE (see nie.ts);
+ * - legal entities: a legal entity NIF, formerly CIF (see cif.ts).
+ *
+ * All of them have 9 characters, except old 10-character NIEs (NIE-3). The
+ * first character tells them apart: a digit (DNI-1), K L M (KLM-1), X Y Z
+ * (NIE-1) or an organisation key (CIF-2). These never overlap, so only one
+ * format is ever checked.
+ *
+ * Rule IDs refer to SPEC.md.
+ */
 import { cifKeyKind, hasValidCifDigitsAndControl, NOT_A_KEY } from "./cif";
 import { isValidNineCharDni } from "./dni";
 import { isValidNineCharNie, isValidOldNie } from "./nie";

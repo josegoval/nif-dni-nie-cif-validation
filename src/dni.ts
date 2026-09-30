@@ -1,5 +1,26 @@
+/**
+ * DNI and K/L/M NIF: the tax ID (NIF) of Spanish natural persons.
+ *
+ * The number of the DNI (Documento Nacional de Identidad, RD 255/2025) is
+ * the NIF of Spaniards (RD 1065/2007 art. 19.1). Spaniards without a DNI get
+ * a K NIF (under 14, living in Spain) or an L NIF (resident abroad), and
+ * foreigners without a NIE an M NIF (RD 1065/2007 arts. 19.2 and 20.2).
+ *
+ * Format:
+ * - DNI-1: 8 digits (leading zeros allowed) + a check letter: `12345678Z`.
+ * - KLM-1, KLM-3: K, L or M + 7 digits + a check letter: `K1234567L`.
+ *
+ * Check letter:
+ * - DNI-2: `TRWAGMYFPDXBNJZSQVHLCKE`[number mod 23] (Ministerio del Interior;
+ *   AEAT D.I.T. note). DNI-3 follows: I, Ñ, O and U are never check letters.
+ * - KLM-2: for K/L/M the number is the 7 digits; the prefix doesn't count.
+ * - NORM-1: a lower-case ASCII letter is accepted too (convention).
+ *
+ * Rule IDs refer to SPEC.md.
+ */
 import { toUpperAsciiLetter } from "./shared";
 
+/** DNI-2: the check letter of `number` is the one at index `number mod 23`. */
 export const DNI_CONTROL_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
 
 /**

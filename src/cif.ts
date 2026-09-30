@@ -1,5 +1,28 @@
+/**
+ * Legal entity NIF, formerly CIF (Código de Identificación Fiscal): the tax
+ * ID of companies, associations, public bodies and other entities.
+ *
+ * Format:
+ * - CIF-1: organisation key + 7 digits + a control character: `A58818501`
+ *   (Orden EHA/451/2008 art. 2; RD 1065/2007 art. 22.1).
+ * - CIF-2: the keys are A B C D E F G H J N P Q R S U V W (Orden
+ *   EHA/451/2008 arts. 3-5). K L M X Y Z are natural persons, never entities.
+ * - CIF-5: the 7 digits are random since 2008, so no province code check.
+ *
+ * Control character:
+ * - CIF-4 (convention, no official text): add the digits in even positions
+ *   (2, 4, 6); double each digit in odd positions (1, 3, 5, 7) and add the
+ *   digits of the result; control = (10 - total mod 10) mod 10.
+ * - CIF-3 (AEAT D.I.T. 2008): the key decides the type. A B E H take the
+ *   digit; N P Q R S W take the letter `JABCDEFGHI`[control]. C D F G J U V
+ *   take the digit too, but v1 still accepts either (TODO(v2, #38)).
+ * - NORM-1: lower-case ASCII letters are accepted too (convention).
+ *
+ * Rule IDs refer to SPEC.md.
+ */
 import { toUpperAsciiLetter } from "./shared";
 
+/** CIF-3: the control letter for control digit `n` is the one at index `n`. */
 export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
 
 /**
