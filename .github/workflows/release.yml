@@ -40,6 +40,10 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # Fails on high or critical advisories in the dependency tree. Moderate
+      # and low ones are visible with `pnpm audit` but do not block a PR.
+      - name: Audit dependencies
+        run: pnpm audit --audit-level high
       - name: Lint commit messages
         if: github.event_name == 'pull_request'
         env:

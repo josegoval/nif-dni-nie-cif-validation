@@ -21,6 +21,8 @@ pnpm build                       # compiles to dist/
 
 ### Supply-chain settings
 
+Run `pnpm audit` to see known vulnerabilities in the dependency tree; CI runs `pnpm audit --audit-level high` and fails on high or critical advisories. If a transitive dependency has a fix upstream has not picked up yet, pin the patched version with `overrides` in `pnpm-workspace.yaml` and explain why in a comment next to it.
+
 `pnpm-workspace.yaml` holds the pnpm settings:
 
 - `minimumReleaseAge: 4320` only installs versions that are at least 3 days old, so a compromised release is usually pulled before we can install it. Dependabot has a matching 3-day `cooldown`.
@@ -66,7 +68,7 @@ Keep commits atomic: one logical change per commit, with a message that explains
 ## Pull requests
 
 - Open PRs against `master`. The **CI** workflow (`.github/workflows/release.yml`) must pass before merging:
-  - `Check (Node 24)`: commit lint, Biome lint, type check, tests with 100% coverage enforced, coverage summary and report, then packs the tarball, checks it with `publint` and `@arethetypeswrong/cli` and uploads it as the `package-tarball` artifact.
+  - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, type check, tests with 100% coverage enforced, coverage summary and report, then packs the tarball, checks it with `publint` and `@arethetypeswrong/cli` and uploads it as the `package-tarball` artifact.
   - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke test in `test/smoke/smoke.test.cjs` with Node's built-in test runner. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` a copy of the file from there.
   - `PR title`: checks that the pull request title is a valid Conventional Commit (see `.github/workflows/pr-title.yml`).
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.
