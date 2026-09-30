@@ -52,6 +52,13 @@ jobs:
         run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
       - name: Lint (Biome)
         run: pnpm lint
+      # Words cspell doesn't know go in .cspell/project-words.txt.
+      - name: Spell check (cspell)
+        run: pnpm spell
+      # Every rule ID in src/ and the tests exists in SPEC.md, and every SPEC
+      # rule has a test (scripts/check-spec-rules.mjs).
+      - name: Check SPEC rule IDs
+        run: pnpm spec:check
       - name: Typecheck
         run: pnpm typecheck
       - name: Test with coverage (100% enforced)

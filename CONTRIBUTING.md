@@ -13,11 +13,49 @@ pnpm format                      # Biome: fix what it can (formatting, import or
 pnpm typecheck                   # tsc --noEmit
 pnpm test                        # Vitest, with coverage (100% enforced)
 pnpm build                       # compiles to dist/
+pnpm spell                       # cspell: spelling of code, tests, docs and CI files
+pnpm spec:check                  # rule IDs in src/ and tests match SPEC.md
+pnpm bench                       # builds, then benchmarks against v1.0.11
 ```
 
 `tsconfig.json` type-checks the library, the tests and the Vitest config without emitting anything. `tsconfig.build.json` extends it and emits the CommonJS build and type declarations of `src/` (without tests) into `dist/`. Both use `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
 
 `pnpm install` runs `husky` through the `prepare` script, which installs the git hooks. If you installed with `HUSKY=0` or cloned without running install, run `pnpm prepare` once.
+
+## Project structure
+
+```
+src/
+  index.ts      entry point: the public exports (keep the names stable)
+  nif.ts        isValidNif, isValidNaturalPersonNif: pick the format from the first character
+  dni.ts        DNI and K/L/M NIF (DNI-*, KLM-*)
+  nie.ts        NIE (NIE-*)
+  cif.ts        legal entity NIF, formerly CIF (CIF-*)
+  shared.ts     internal helpers
+  types.ts      public types (NifType)
+  __tests__/    Vitest tests, one file per module plus cross-cutting suites
+test/smoke/     smoke test of the packed tarball (plain Node, see Pull requests)
+bench/          benchmark against v1.0.11 (see Performance)
+scripts/        CI helpers: coverage summary, SPEC rule check
+```
+
+Each module starts with a header comment: what the document is, its format and its control algorithm, with the [SPEC.md](SPEC.md) rule IDs. The `isValid*` functions validate in a single pass with `charCodeAt`: no regex, no `split`/`replace`/template strings and no allocations on the hot path. The exported regexes (`DNI_REGEX` and so on) are public constants kept for compatibility; the validators don't use them.
+
+### Rule IDs and SPEC.md
+
+Every validation branch in `src/` cites the rule it implements in a comment (`// CIF-3`), and every rule has a test whose name starts with its ID (`it("CIF-3: ...")`, or a case table with `rule: "CIF-3"`). `pnpm spec:check` (`scripts/check-spec-rules.mjs`, also run in CI) fails if an ID in `src/` or in a test is not defined in SPEC.md, or if a SPEC rule has no test. Rules that can't have a test yet are listed, with a reason, in `NOT_TESTED_YET` inside the script; remove an entry when its test lands.
+
+### Behaviour guarantee: the differential test
+
+`src/__tests__/differential.test.ts` compares every export with the published v1.0.11, installed as the `nif-v1` dev dependency alias. It checks export names, aliases and constants, and runs every function on about 490,000 seeded inputs (valid IDs, mutations, case variants, look-alikes, every BMP code unit at the first and last position, long strings, non-strings), expecting identical results and identical errors. A refactor or performance change must keep it green. An intended behaviour change must update the test and say so in the PR, and is a breaking change if it changes what is accepted by default (see SPEC.md).
+
+### Performance
+
+`pnpm bench` builds `dist/` and runs `bench/run.mjs` with [tinybench](https://github.com/tinylibs/tinybench): every validator of the current build against v1.0.11, on the fixed, seeded, mixed input set in `bench/inputs.mjs`. It prints a table and writes `bench/results/baseline.json` (with machine, Node and tinybench versions) and `bench/results/baseline.md`. Commit the new results when a change affects performance, and run it on an otherwise idle machine. `BENCH_TIME_MS` and `BENCH_WARMUP_MS` change the time per task (defaults: 2000 and 500).
+
+### Spelling
+
+`pnpm spell` runs [cspell](https://cspell.org/) with `cspell.config.yaml` (English, British spelling). Real words it doesn't know, such as the Spanish legal terms quoted from the sources, go in `.cspell/project-words.txt`.
 
 ### Supply-chain settings
 
@@ -25,7 +63,7 @@ Run `pnpm audit` to see known vulnerabilities in the dependency tree; CI runs `p
 
 `pnpm-workspace.yaml` holds the pnpm settings:
 
-- `minimumReleaseAge: 4320` only installs versions that are at least 3 days old, so a compromised release is usually pulled before we can install it. Dependabot has a matching 3-day `cooldown`.
+- `minimumReleaseAge: 4320` only installs versions that are at least 3 days old, so a compromised release is usually pulled before we can install it. Dependabot has a matching 3-day `cooldown`. `minimumReleaseAgeExclude` lists exact versions exempted from it, each with a reason; today only our own `nif-dni-nie-cif-validation@1.0.11` (the `nif-v1` alias of the differential test and the benchmark), which can go once it is 3 days old.
 - `allowBuilds` is an allow-list of dependencies that may run install scripts. Everything else is blocked, and the install fails if a new dependency ships an unreviewed script. Add a package there only after reviewing its script.
 
 ## Commit convention
@@ -40,12 +78,14 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/). The
 <optional footer>
 ```
 
-| Type                                                             | Effect on the next release |
-| ---------------------------------------------------------------- | -------------------------- |
-| `fix`                                                            | patch (`1.0.10` to `1.0.11`) |
-| `feat`                                                           | minor (`1.0.10` to `1.1.0`)  |
-| `feat!`, `fix!`, or a `BREAKING CHANGE:` footer                  | major (`1.0.10` to `2.0.0`)  |
-| `docs`, `chore`, `ci`, `build`, `test`, `refactor`, `perf`, `style` | no release                 |
+| Type                                                     | Effect on the next release   |
+| -------------------------------------------------------- | ---------------------------- |
+| `fix`, `perf`                                            | patch (`1.0.11` to `1.0.12`) |
+| `feat`                                                   | minor (`1.0.11` to `1.1.0`)  |
+| `feat!`, `fix!`, or a `BREAKING CHANGE:` footer          | major (`1.0.11` to `2.0.0`)  |
+| `docs`, `chore`, `ci`, `build`, `test`, `refactor`, `style` | no release                |
+
+`perf` releases a patch (semantic-release's default rules), so use it only for a change that ships in `dist/` and keeps behaviour identical.
 
 Examples:
 
@@ -68,7 +108,7 @@ Keep commits atomic: one logical change per commit, with a message that explains
 ## Pull requests
 
 - Open PRs against `master`. The **CI** workflow (`.github/workflows/release.yml`) must pass before merging:
-  - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, type check, tests with 100% coverage enforced, coverage summary and report, then packs the tarball, checks it with `publint` and `@arethetypeswrong/cli` and uploads it as the `package-tarball` artifact.
+  - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, spell check (`pnpm spell`), SPEC rule ID check (`pnpm spec:check`), type check, tests with 100% coverage enforced (including the differential test against v1.0.11), coverage summary and report, then packs the tarball, checks it with `publint` and `@arethetypeswrong/cli` and uploads it as the `package-tarball` artifact.
   - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke test in `test/smoke/smoke.test.cjs` with Node's built-in test runner. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` a copy of the file from there.
   - `PR title`: checks that the pull request title is a valid Conventional Commit (see `.github/workflows/pr-title.yml`).
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.

@@ -36,6 +36,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
     "lint": "biome check .",
+    "spell": "cspell --no-progress",
+    "spec:check": "node scripts/check-spec-rules.mjs",
+    "bench": "pnpm build && node bench/run.mjs",
     "format": "biome check --write ."
   },
   "devDependencies": {
@@ -46,8 +49,11 @@
     "@semantic-release/git": "^11.0.1",
     "@types/node": "^22.20.4",
     "@vitest/coverage-v8": "^5.0.2",
+    "cspell": "^10.3.4",
     "husky": "^9.1.7",
+    "nif-v1": "npm:nif-dni-nie-cif-validation@1.0.11",
     "semantic-release": "^25.0.9",
+    "tinybench": "^6.2.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.2"
   }

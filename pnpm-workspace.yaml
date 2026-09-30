@@ -9,3 +9,13 @@ minimumReleaseAge: 4320
 # `strictDepBuilds` (default) fails the install if a new dependency ships an
 # unreviewed install script. Only list packages that really need to build.
 allowBuilds: {}
+
+# Exception to minimumReleaseAge for one exact version: v1.0.11 of this very
+# package, installed as the `nif-v1` dev alias. The differential test and the
+# benchmark compare the current code against it. It is our own release (built
+# from this repository by the release workflow with provenance), so the
+# waiting period protects nothing here. Pinned to the exact version so no
+# other release of the package skips the check. Can be removed once 1.0.11 is
+# older than 3 days.
+minimumReleaseAgeExclude:
+  - nif-dni-nie-cif-validation@1.0.11
