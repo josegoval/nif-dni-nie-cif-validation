@@ -1,7 +1,9 @@
 // Builds the package into dist/ with no dependency besides TypeScript:
 //
-//   dist/esm/*.mjs, *.d.mts   ES modules (tsconfig.build.json)
-//   dist/cjs/*.cjs, *.d.cts   CommonJS   (tsconfig.build.cjs.json)
+//   dist/esm/**/*.mjs, *.d.mts   ES modules (tsconfig.build.json)
+//   dist/cjs/**/*.cjs, *.d.cts   CommonJS   (tsconfig.build.cjs.json)
+//
+// Subdirectories of src/ (src/locales/) keep their place in dist/.
 //
 // TypeScript emits .js and .d.ts files whose relative imports have no file
 // extension, because the sources are written that way. Node resolves ES module
@@ -20,7 +22,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -45,6 +47,14 @@ const builds = [
 const RELATIVE_SPECIFIER =
   /(\bfrom\s*|\bimport\s*\(\s*|\brequire\s*\(\s*)(["'])(\.{1,2}\/[^"']*)\2/g;
 
+/** Every file under `dir`, in subdirectories too, as absolute paths. */
+function listFiles(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name);
+    return entry.isDirectory() ? listFiles(path) : [path];
+  });
+}
+
 rmSync(join(root, "dist"), { recursive: true, force: true });
 
 for (const { project, dir, js, dts } of builds) {
@@ -53,14 +63,14 @@ for (const { project, dir, js, dts } of builds) {
   });
 
   const outDir = join(root, dir);
-  for (const name of readdirSync(outDir)) {
+  for (const file of listFiles(outDir)) {
+    const name = relative(outDir, file);
     const isDts = name.endsWith(".d.ts");
     if (!isDts && !name.endsWith(".js")) {
       throw new Error(
         `${dir}/${name}: unexpected file in the TypeScript output`
       );
     }
-    const file = join(outDir, name);
     const code = readFileSync(file, "utf8").replace(
       RELATIVE_SPECIFIER,
       (_match, before, quote, specifier) => {
@@ -72,19 +82,23 @@ for (const { project, dir, js, dts } of builds) {
         return `${before}${quote}${specifier}${js}${quote}`;
       }
     );
-    const base = name.slice(0, name.length - (isDts ? ".d.ts" : ".js").length);
+    const base = file.slice(0, file.length - (isDts ? ".d.ts" : ".js").length);
     writeFileSync(file, code);
-    renameSync(file, join(outDir, base + (isDts ? dts : js)));
+    renameSync(file, base + (isDts ? dts : js));
   }
 
-  // Every relative import must point to a file that exists.
-  for (const name of readdirSync(outDir)) {
-    const code = readFileSync(join(outDir, name), "utf8");
+  // Every relative import must point to a file that exists, relative to the
+  // file that imports it.
+  const files = listFiles(outDir);
+  for (const file of files) {
+    const code = readFileSync(file, "utf8");
     for (const [, , , specifier] of code.matchAll(RELATIVE_SPECIFIER)) {
-      if (!existsSync(join(outDir, specifier))) {
-        throw new Error(`${dir}/${name}: "${specifier}" does not exist`);
+      if (!existsSync(join(dirname(file), specifier))) {
+        throw new Error(
+          `${dir}/${relative(outDir, file)}: "${specifier}" does not exist`
+        );
       }
     }
   }
-  console.log(`${dir}: ${readdirSync(outDir).length} files`);
+  console.log(`${dir}: ${files.length} files`);
 }
