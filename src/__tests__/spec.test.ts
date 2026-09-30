@@ -56,21 +56,21 @@ const invalid: Case[] = [
 const label = ({ value, why }: Case) => (why ? `${value} (${why})` : value);
 
 describe("SPEC test values: valid", () => {
-  valid.forEach((c) =>
+  valid.forEach((c) => {
     it(`${c.rule}: ${label(c)} is valid`, () => {
       expect(c.validate(c.value)).toBe(true);
       expect(isValidNif(c.value)).toBe(true);
-    })
-  );
+    });
+  });
 });
 
 describe("SPEC test values: invalid", () => {
-  invalid.forEach((c) =>
+  invalid.forEach((c) => {
     it(`${c.rule}: ${label(c)} is invalid`, () => {
       expect(c.validate(c.value)).toBe(false);
       expect(isValidNif(c.value)).toBe(false);
-    })
-  );
+    });
+  });
 });
 
 describe("SPEC test values: v1 differences, pending v2 (#38)", () => {

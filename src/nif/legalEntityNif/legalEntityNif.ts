@@ -69,7 +69,7 @@ function hasValidControlCode(legalEntityNif: string): boolean {
     return controlNumber === +controlCodeToVerify;
 
   // C D F G J U V: v1 still accepts either a letter or a digit (see TODO).
-  return isNaN(+controlCodeToVerify)
+  return Number.isNaN(+controlCodeToVerify)
     ? LEGAL_ENTITY_CONTROL_LETTERS[controlNumber] === controlCodeToVerify
     : controlNumber === +controlCodeToVerify;
 }

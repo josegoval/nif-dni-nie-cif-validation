@@ -19,8 +19,8 @@ const testCases = [
 ];
 
 describe("natural person nif validation", () => {
-  testCases.forEach((testCase) =>
+  testCases.forEach((testCase) => {
     it(`test case ${testCase.text}`, () =>
-      expect(isValidNaturalPersonNif(testCase.text)).toBe(testCase.expect))
-  );
+      expect(isValidNaturalPersonNif(testCase.text)).toBe(testCase.expect));
+  });
 });

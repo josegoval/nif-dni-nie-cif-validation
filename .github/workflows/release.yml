@@ -46,6 +46,8 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+      - name: Lint (Biome)
+        run: pnpm lint
       - name: Typecheck
         run: pnpm typecheck
       - name: Test with coverage (100% enforced)

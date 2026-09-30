@@ -62,9 +62,9 @@ const randomStrings = Array.from({ length: 500 }, (_, i) =>
 
 const longStrings = [
   "9".repeat(100_000),
-  "X" + "0".repeat(100_000) + "L",
+  `X${"0".repeat(100_000)}L`,
   "A".repeat(1_000_000),
-  "B" + "1".repeat(1_000_000) + "4",
+  `B${"1".repeat(1_000_000)}4`,
   "36698729K".repeat(10_000),
 ];
 
@@ -130,9 +130,9 @@ describe("#40: validators never throw and always return a boolean", () => {
     });
 
     it(`${name}: empty and short strings return false`, () => {
-      ["", " ", "A", "A1", "X", "12345678"].forEach((value) =>
-        expect(validate(value)).toBe(false)
-      );
+      ["", " ", "A", "A1", "X", "12345678"].forEach((value) => {
+        expect(validate(value)).toBe(false);
+      });
     });
   });
 });

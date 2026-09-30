@@ -36,10 +36,10 @@ const testCases = [
 ];
 
 describe("legal enitity nif validation", () => {
-  testCases.forEach((testCase) =>
+  testCases.forEach((testCase) => {
     it(`test case ${testCase.text}`, () =>
-      expect(isValidLegalEntityNif(testCase.text)).toBe(testCase.expect))
-  );
+      expect(isValidLegalEntityNif(testCase.text)).toBe(testCase.expect));
+  });
 });
 
 describe("CIF-3: the control type depends only on the organisation key (#33)", () => {

@@ -34,8 +34,8 @@ const testCases = [
 ];
 
 describe("nif validation", () => {
-  testCases.forEach((testCase) =>
+  testCases.forEach((testCase) => {
     it(`test case ${testCase.text}`, () =>
-      expect(isValidNif(testCase.text)).toBe(testCase.expect))
-  );
+      expect(isValidNif(testCase.text)).toBe(testCase.expect));
+  });
 });

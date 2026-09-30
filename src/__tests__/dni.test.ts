@@ -16,8 +16,8 @@ const testCases = [
 ];
 
 describe("dni validation", () => {
-  testCases.forEach((testCase) =>
+  testCases.forEach((testCase) => {
     it(`test case ${testCase.text}`, () =>
-      expect(isValidDni(testCase.text)).toBe(testCase.expect))
-  );
+      expect(isValidDni(testCase.text)).toBe(testCase.expect));
+  });
 });
