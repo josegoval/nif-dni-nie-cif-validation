@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { isValidNaturalPersonNif, isValidNie, isValidNif, NIE_REGEX } from "..";
 
 const testCases = [
@@ -14,10 +15,10 @@ const testCases = [
 ];
 
 describe("nie validation", () => {
-  testCases.forEach((testCase) =>
+  testCases.forEach((testCase) => {
     it(`test case ${testCase.text}`, () =>
-      expect(isValidNie(testCase.text)).toBe(testCase.expect))
-  );
+      expect(isValidNie(testCase.text)).toBe(testCase.expect));
+  });
 });
 
 describe("NIE-3: old 10-character NIEs (#39)", () => {

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { isValidNif } from "..";
 
 const testCases = [
@@ -33,8 +34,8 @@ const testCases = [
 ];
 
 describe("nif validation", () => {
-  testCases.forEach((testCase) =>
+  testCases.forEach((testCase) => {
     it(`test case ${testCase.text}`, () =>
-      expect(isValidNif(testCase.text)).toBe(testCase.expect))
-  );
+      expect(isValidNif(testCase.text)).toBe(testCase.expect));
+  });
 });

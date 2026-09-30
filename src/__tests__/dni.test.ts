@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { isValidDni } from "..";
 
 const testCases = [
@@ -15,8 +16,8 @@ const testCases = [
 ];
 
 describe("dni validation", () => {
-  testCases.forEach((testCase) =>
+  testCases.forEach((testCase) => {
     it(`test case ${testCase.text}`, () =>
-      expect(isValidDni(testCase.text)).toBe(testCase.expect))
-  );
+      expect(isValidDni(testCase.text)).toBe(testCase.expect));
+  });
 });

@@ -28,7 +28,7 @@ const OLD_NIE_LENGTH = 10;
  * @returns A new string with the nie letter (XYZ) replaced.
  */
 export function replaceNieLetter(nie: string): string {
-  let nieLetter: string | number = nie.charAt(0).toUpperCase();
+  const nieLetter = nie.charAt(0).toUpperCase();
   if (nieLetter === "X") return 0 + nie.substring(1);
   if (nieLetter === "Y") return 1 + nie.substring(1);
   if (nieLetter === "Z") return 2 + nie.substring(1);

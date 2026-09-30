@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import {
   DNI_REGEX,
   isValidCif,
@@ -55,13 +56,13 @@ function mixedCase(value: string): string {
 }
 
 describe("NORM-1: every exported validator ignores case (#33, #37)", () => {
-  Object.entries(validators).forEach(([name, validate]) =>
+  Object.entries(validators).forEach(([name, validate]) => {
     it.each(fixtures)(`NORM-1: ${name}(%s) === lower === mixed case`, (s) => {
       const expected = validate(s);
       expect(validate(s.toLowerCase())).toBe(expected);
       expect(validate(mixedCase(s))).toBe(expected);
-    })
-  );
+    });
+  });
 });
 
 describe("NORM-1: DNI, K/L/M and NIE reproduction from #37", () => {

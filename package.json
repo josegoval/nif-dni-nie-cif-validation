@@ -25,27 +25,30 @@
   },
   "author": "josegoval <josegovalmusic@gmail.com>",
   "license": "MIT",
-  "scripts": {
-    "build": "tsc",
-    "prepare": "husky",
-    "prepack": "yarn build",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "jest --config jest.config.json"
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=20"
   },
-  "dependencies": {},
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepare": "husky",
+    "prepack": "pnpm build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "biome check .",
+    "format": "biome check --write ."
+  },
   "devDependencies": {
-    "@babel/core": "^7.16.5",
-    "@babel/preset-env": "^7.16.5",
-    "@babel/preset-typescript": "^7.16.5",
-    "@commitlint/cli": "^20.5.3",
-    "@commitlint/config-conventional": "^20.5.3",
+    "@biomejs/biome": "2.5.14",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/git": "^11.0.1",
-    "@types/jest": "^27.0.3",
-    "babel-jest": "^27.4.5",
+    "@types/node": "^22.20.4",
+    "@vitest/coverage-v8": "^5.0.2",
     "husky": "^9.1.7",
-    "jest": "^27.4.5",
     "semantic-release": "^25.0.9",
-    "typescript": "^4.5.4"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
   }
 }

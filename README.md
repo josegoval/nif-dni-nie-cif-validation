@@ -34,6 +34,18 @@ or
 yarn add nif-dni-nie-cif-validation
 ```
 
+or
+
+```bash
+pnpm add nif-dni-nie-cif-validation
+```
+
+or
+
+```bash
+bun add nif-dni-nie-cif-validation
+```
+
 ## Example usage
 
 Import and use as follow with ES6 syntax:

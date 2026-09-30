@@ -4,16 +4,29 @@ Thanks for helping improve `nif-dni-nie-cif-validation`.
 
 ## Development setup
 
-The package manager is Yarn classic (v1) and the release pipeline needs Node 24 (any Node 20, 22 or 24 works for development).
+The package manager is [pnpm](https://pnpm.io/). The exact version is pinned in `packageManager` in `package.json`; with [Corepack](https://nodejs.org/api/corepack.html) enabled (`corepack enable`) or a recent pnpm, the right version is used automatically. Development needs Node 22.12 or newer (Vitest 5 requires it) and the release pipeline runs on Node 24, which `.nvmrc` pins (`nvm use`). The published package itself supports Node 20 and newer. `.editorconfig` sets the basic editor settings; Biome enforces the formatting.
 
 ```sh
-yarn install --frozen-lockfile   # also installs the Husky commit-msg hook
-yarn typecheck                   # tsc --noEmit
-yarn test                        # Jest, with coverage
-yarn build                       # compiles to dist/
+pnpm install --frozen-lockfile   # also installs the Husky commit-msg hook
+pnpm lint                        # Biome: lint rules, formatting and import order
+pnpm format                      # Biome: fix what it can (formatting, import order, safe lint fixes)
+pnpm typecheck                   # tsc --noEmit
+pnpm test                        # Vitest, with coverage (100% enforced)
+pnpm build                       # compiles to dist/
 ```
 
-`yarn install` runs `husky` through the `prepare` script, which installs the git hooks. If you installed with `HUSKY=0` or cloned without running install, run `yarn prepare` once.
+`tsconfig.json` type-checks the library, the tests and the Vitest config without emitting anything. `tsconfig.build.json` extends it and emits the CommonJS build and type declarations of `src/` (without tests) into `dist/`. Both use `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
+
+`pnpm install` runs `husky` through the `prepare` script, which installs the git hooks. If you installed with `HUSKY=0` or cloned without running install, run `pnpm prepare` once.
+
+### Supply-chain settings
+
+Run `pnpm audit` to see known vulnerabilities in the dependency tree; CI runs `pnpm audit --audit-level high` and fails on high or critical advisories. If a transitive dependency has a fix upstream has not picked up yet, pin the patched version with `overrides` in `pnpm-workspace.yaml` and explain why in a comment next to it.
+
+`pnpm-workspace.yaml` holds the pnpm settings:
+
+- `minimumReleaseAge: 4320` only installs versions that are at least 3 days old, so a compromised release is usually pulled before we can install it. Dependabot has a matching 3-day `cooldown`.
+- `allowBuilds` is an allow-list of dependencies that may run install scripts. Everything else is blocked, and the install fails if a new dependency ships an unreviewed script. Add a package there only after reviewing its script.
 
 ## Commit convention
 
@@ -55,8 +68,9 @@ Keep commits atomic: one logical change per commit, with a message that explains
 ## Pull requests
 
 - Open PRs against `master`. The **CI** workflow (`.github/workflows/release.yml`) must pass before merging:
-  - `Check (Node 24)`: commit lint, type check, tests with 100% coverage enforced, coverage summary and report, then packs the tarball and checks it with `publint` and `@arethetypeswrong/cli`.
-  - `Compat (Node 20)` and `Compat (Node 22)`: the tests on older Node versions.
+  - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, type check, tests with 100% coverage enforced, coverage summary and report, then packs the tarball, checks it with `publint` and `@arethetypeswrong/cli` and uploads it as the `package-tarball` artifact.
+  - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke test in `test/smoke/smoke.test.cjs` with Node's built-in test runner. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` a copy of the file from there.
+  - `PR title`: checks that the pull request title is a valid Conventional Commit (see `.github/workflows/pr-title.yml`).
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.
 
 ### How to merge
@@ -83,4 +97,4 @@ Do not run `npm publish` by hand. The `prepack` script builds `dist/` so a tarba
 Coverage never leaves GitHub; there is no third-party service:
 
 - Every CI run on Node 24 writes a coverage table to the run's **job summary** (`scripts/coverage-summary.mjs`) and uploads the HTML report as the `coverage-report` artifact.
-- Run `yarn test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/lcov-report/index.html`.
+- Run `pnpm test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/html/index.html`.

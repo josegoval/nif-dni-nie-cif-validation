@@ -10,7 +10,9 @@ const HAS_CONTROL_NUMBER_REGEX = /^[ABEH]/;
 
 function sumEvenPositions(legalEntityNumbers: string): number {
   return (
-    +legalEntityNumbers[1] + +legalEntityNumbers[3] + +legalEntityNumbers[5]
+    Number(legalEntityNumbers[1]) +
+    Number(legalEntityNumbers[3]) +
+    Number(legalEntityNumbers[5])
   );
 }
 
@@ -19,15 +21,15 @@ function calculateOddPosition(num: number): number {
   if (doubledNum < 10) return doubledNum;
 
   const splittedNum = `${doubledNum}`.split("");
-  return +splittedNum[0] + +splittedNum[1];
+  return Number(splittedNum[0]) + Number(splittedNum[1]);
 }
 
 function calculateOddPositions(legalEntityNumbers: string): number {
   return (
-    calculateOddPosition(+legalEntityNumbers[0]) +
-    calculateOddPosition(+legalEntityNumbers[2]) +
-    calculateOddPosition(+legalEntityNumbers[4]) +
-    calculateOddPosition(+legalEntityNumbers[6])
+    calculateOddPosition(Number(legalEntityNumbers[0])) +
+    calculateOddPosition(Number(legalEntityNumbers[2])) +
+    calculateOddPosition(Number(legalEntityNumbers[4])) +
+    calculateOddPosition(Number(legalEntityNumbers[6]))
   );
 }
 
@@ -69,7 +71,7 @@ function hasValidControlCode(legalEntityNif: string): boolean {
     return controlNumber === +controlCodeToVerify;
 
   // C D F G J U V: v1 still accepts either a letter or a digit (see TODO).
-  return isNaN(+controlCodeToVerify)
+  return Number.isNaN(+controlCodeToVerify)
     ? LEGAL_ENTITY_CONTROL_LETTERS[controlNumber] === controlCodeToVerify
     : controlNumber === +controlCodeToVerify;
 }

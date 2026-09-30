@@ -1,0 +1,12 @@
+{
+  // Builds the published package: library sources only, CommonJS plus
+  // declarations in `dist/`.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "./src",
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/**/__tests__/**", "src/**/*.test.ts"]
+}
