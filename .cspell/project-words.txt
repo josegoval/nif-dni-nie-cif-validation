@@ -188,3 +188,4 @@ publint
 releaserc
 stdnum
 valibot
+vitest
