@@ -7,10 +7,10 @@
  *
  * Rule IDs refer to SPEC.md.
  */
-import { acceptsValid } from "./policy";
-import { NO_OPTIONS } from "./shared";
+import { isValidNif } from "./nif";
+import { removeSeparators } from "./normalize";
+import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
-import { cleanNif, hasVatPrefix, inspect } from "./validate";
 
 /**
  * Checks the format of a Spanish VAT number: `ES` followed by a valid NIF
@@ -42,13 +42,14 @@ export function isValidSpanishVat(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof value !== "string") return false;
-  const normalize = opts?.normalize !== false;
-  // VAT-1: the prefix is required here.
-  if (!hasVatPrefix(cleanNif(value, normalize))) return false;
-  const found = inspect(value, normalize, opts?.cifControl === "lenient", true);
+  // NORM-2 / NORM-3 come first, so a separator inside the prefix goes too
+  // ("E-S..."), as in validate().
+  const clean = opts?.normalize === false ? value : removeSeparators(value);
+  // VAT-1: the prefix is required here (NORM-1: either case), then the rest
+  // is a NIF with the same options.
   return (
-    "control" in found &&
-    found.control === null &&
-    acceptsValid(found.normalized, opts)
+    toUpperAsciiLetter(clean.charCodeAt(0)) === 69 &&
+    toUpperAsciiLetter(clean.charCodeAt(1)) === 83 &&
+    isValidNif(clean.slice(2), opts)
   );
 }

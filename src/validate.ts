@@ -88,12 +88,12 @@ function formatProblem(rule: FormatRule): FormatProblem {
 }
 
 /** NORM-1..3, or NORM-1 only with `normalize: false`. Internal helper. */
-export function cleanNif(value: string, normalize: boolean): string {
+function cleanNif(value: string, normalize: boolean): string {
   return normalize ? cleanup(value) : upperCase(value);
 }
 
 /** VAT-1: does the cleaned value start with the `ES` prefix? */
-export function hasVatPrefix(clean: string): boolean {
+function hasVatPrefix(clean: string): boolean {
   return clean.charCodeAt(0) === 69 && clean.charCodeAt(1) === 83;
 }
 
