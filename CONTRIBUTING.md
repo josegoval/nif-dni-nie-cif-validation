@@ -124,6 +124,7 @@ Every validation branch in `src/` cites the rule it implements in a comment (`//
 - `properties.test.ts` (fast-check, seeded): nothing throws, generated documents validate, `computeControlCharacter` completes them, single-character substitutions (documented exceptions in SPEC.md), `normalize` is idempotent, and the booleans always agree with `validate()`.
 - `stdnum.test.ts` compares `validate()` with stdnum on about 50,000 inputs; every difference must be in its allow-list and in SPEC.md, "Differences from other libraries".
 - Every error's `rule` must be defined in SPEC.md (tested).
+- `readme-examples.test.ts` runs every ```` ```ts ````, ```` ```tsx ```` and ```` ```js ```` block of README.md, README.es.md and llms.txt against `src/`, and type-checks the TypeScript ones with tsc. A top-level statement followed by a comment that starts with a value (`isValidNif("12345678Z"); // true`, or an object over several `//` lines) must evaluate to that value; prose comments are not checked. A block that can't run here (it needs a library that is not a dev dependency) gets `<!-- readme-test: skip (reason) -->` on the line before it and an entry in `SKIP_ALLOWED`. The test also checks that both READMEs have the same blocks, that they name every export of every entry point, and that llms.txt stays under about 2,000 tokens.
 
 ### Behaviour guarantee: the differential test
 
