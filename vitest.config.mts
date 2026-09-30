@@ -10,7 +10,7 @@ export default defineConfig({
       enabled: true,
       provider: "v8",
       include: ["src/**/*.ts"],
-      exclude: ["src/**/*.test.ts"],
+      exclude: ["src/**/*.test.ts", "src/**/__tests__/**"],
       // `text` for the terminal, `json-summary` for scripts/coverage-summary.mjs,
       // `html` for the CI artifact, `lcovonly` for editors and other tools.
       reporter: [

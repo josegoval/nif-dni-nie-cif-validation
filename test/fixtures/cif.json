@@ -1,0 +1,401 @@
+[
+  {
+    "input": "A58818501",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "A takes a digit"
+  },
+  {
+    "input": "B12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "B takes a digit"
+  },
+  {
+    "input": "B00123455",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "no '00 needs a letter' rule"
+  },
+  {
+    "input": "P2807900B",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-4",
+    "note": "Ayuntamiento de Madrid"
+  },
+  {
+    "input": "Q2826000H",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-4",
+    "note": "AEAT"
+  },
+  {
+    "input": "N1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "N takes a letter"
+  },
+  {
+    "input": "W1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "W takes a letter"
+  },
+  {
+    "input": "B1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "B needs a digit"
+  },
+  {
+    "input": "G1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "G needs a digit (valid only in lenient mode)"
+  },
+  {
+    "input": "Q12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "Q needs a letter"
+  },
+  {
+    "input": "N12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "N needs a letter"
+  },
+  {
+    "input": "B0012345E",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "B needs a digit; the 00 rule is folklore"
+  },
+  {
+    "input": "B12345675",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-4",
+    "note": "wrong control digit"
+  },
+  {
+    "input": "P2807900C",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-4",
+    "note": "wrong control letter"
+  },
+  {
+    "input": "I1234567D",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "NIF-1",
+    "note": "I is not an organisation key (CIF-2)"
+  },
+  {
+    "input": "K1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "NIF_KLM",
+    "rule": "KLM-2",
+    "note": "K is a natural-person prefix, not an entity key (CIF-2)"
+  },
+  {
+    "input": "X1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "NIE",
+    "rule": "NIE-2",
+    "note": "X is a natural-person prefix, not an entity key (CIF-2)"
+  },
+  {
+    "input": "B1234567",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "CIF-1",
+    "note": "too short"
+  },
+  {
+    "input": "B123456745",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "CIF-1",
+    "note": "too long"
+  },
+  {
+    "input": "B123456A4",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "CIF-1",
+    "note": "7 digits after the key"
+  },
+  {
+    "input": "C90684846",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-2",
+    "note": "C is an organisation key"
+  },
+  {
+    "input": "B00000000",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-5",
+    "note": "province code 00 never existed: no province check"
+  },
+  {
+    "input": "B99123457",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-5",
+    "note": "province code 99 never existed: no province check"
+  },
+  {
+    "input": "A12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "A with a digit control, official mode"
+  },
+  {
+    "input": "A1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "A with a letter control, official mode"
+  },
+  {
+    "input": "B12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "B with a digit control, official mode"
+  },
+  {
+    "input": "B1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "B with a letter control, official mode"
+  },
+  {
+    "input": "C12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "C with a digit control, official mode"
+  },
+  {
+    "input": "C1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "C with a letter control, official mode"
+  },
+  {
+    "input": "D12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "D with a digit control, official mode"
+  },
+  {
+    "input": "D1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "D with a letter control, official mode"
+  },
+  {
+    "input": "E12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "E with a digit control, official mode"
+  },
+  {
+    "input": "E1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "E with a letter control, official mode"
+  },
+  {
+    "input": "F12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "F with a digit control, official mode"
+  },
+  {
+    "input": "F1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "F with a letter control, official mode"
+  },
+  {
+    "input": "G12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "G with a digit control, official mode"
+  },
+  {
+    "input": "G1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "G with a letter control, official mode"
+  },
+  {
+    "input": "H12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "H with a digit control, official mode"
+  },
+  {
+    "input": "H1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "H with a letter control, official mode"
+  },
+  {
+    "input": "J12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "J with a digit control, official mode"
+  },
+  {
+    "input": "J1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "J with a letter control, official mode"
+  },
+  {
+    "input": "N12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "N with a digit control, official mode"
+  },
+  {
+    "input": "N1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "N with a letter control, official mode"
+  },
+  {
+    "input": "P12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "P with a digit control, official mode"
+  },
+  {
+    "input": "P1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "P with a letter control, official mode"
+  },
+  {
+    "input": "Q12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "Q with a digit control, official mode"
+  },
+  {
+    "input": "Q1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "Q with a letter control, official mode"
+  },
+  {
+    "input": "R12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "R with a digit control, official mode"
+  },
+  {
+    "input": "R1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "R with a letter control, official mode"
+  },
+  {
+    "input": "S12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "S with a digit control, official mode"
+  },
+  {
+    "input": "S1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "S with a letter control, official mode"
+  },
+  {
+    "input": "U12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "U with a digit control, official mode"
+  },
+  {
+    "input": "U1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "U with a letter control, official mode"
+  },
+  {
+    "input": "V12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "V with a digit control, official mode"
+  },
+  {
+    "input": "V1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "V with a letter control, official mode"
+  },
+  {
+    "input": "W12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "W with a digit control, official mode"
+  },
+  {
+    "input": "W1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "W with a letter control, official mode"
+  }
+]

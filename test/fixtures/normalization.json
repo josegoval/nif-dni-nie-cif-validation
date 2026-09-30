@@ -1,0 +1,149 @@
+[
+  {
+    "input": "12345678z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-1",
+    "note": "lower case"
+  },
+  {
+    "input": "x1234567l",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NORM-1",
+    "note": "lower case"
+  },
+  {
+    "input": "b12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "NORM-1",
+    "note": "lower case"
+  },
+  {
+    "input": " 12345678Z ",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-2",
+    "note": "surrounding spaces"
+  },
+  {
+    "input": "12 345 678 Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-2",
+    "note": "inner spaces"
+  },
+  {
+    "input": "12.345.678Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-2",
+    "note": "dots"
+  },
+  {
+    "input": "\t12345678Z ",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-2",
+    "note": "tab and no-break space"
+  },
+  {
+    "input": "12345678-Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-3",
+    "note": "hyphen"
+  },
+  {
+    "input": "B-1234567-4",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "NORM-3",
+    "note": "hyphens"
+  },
+  {
+    "input": "X/1234567/L",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NORM-3",
+    "note": "slashes"
+  },
+  {
+    "input": " b-1234567-4 ",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "NORM-3",
+    "note": "the example of #56"
+  },
+  {
+    "input": "1234567L",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-4",
+    "note": "7-digit DNI, canonical 01234567L"
+  },
+  {
+    "input": "1.234.567-l",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-4",
+    "note": "7 digits with separators"
+  },
+  {
+    "input": "8P",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-4",
+    "note": "1 digit, canonical 00000008P"
+  },
+  {
+    "input": "X01234567L",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIE-3",
+    "note": "old NIE form"
+  },
+  {
+    "input": "x-0123456-7l",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIE-3",
+    "note": "old NIE form with separators"
+  },
+  {
+    "input": " 12.345.678-A ",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "DNI",
+    "rule": "DNI-2",
+    "note": "cleanup doesn't fix a wrong letter"
+  },
+  {
+    "input": "12345678_Z",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "DNI-1",
+    "note": "underscores are not separators"
+  },
+  {
+    "input": " - . ",
+    "expected": "EMPTY",
+    "type": null,
+    "rule": "INPUT-2",
+    "note": "only separators"
+  },
+  {
+    "input": "",
+    "expected": "EMPTY",
+    "type": null,
+    "rule": "INPUT-2",
+    "note": "empty"
+  },
+  {
+    "input": "12345678ſ",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "DNI-1",
+    "note": "long s is not folded to S"
+  }
+]

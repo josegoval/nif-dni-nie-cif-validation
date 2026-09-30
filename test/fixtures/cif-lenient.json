@@ -1,0 +1,268 @@
+[
+  {
+    "input": "G1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "lenient: G accepts a letter"
+  },
+  {
+    "input": "B1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "lenient doesn't change B"
+  },
+  {
+    "input": "N12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "lenient doesn't change N"
+  },
+  {
+    "input": "G1234567E",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-4",
+    "note": "lenient: a letter, but the wrong one"
+  },
+  {
+    "input": "A12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "A with a digit control, lenient mode"
+  },
+  {
+    "input": "A1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "A with a letter control, lenient mode"
+  },
+  {
+    "input": "B12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "B with a digit control, lenient mode"
+  },
+  {
+    "input": "B1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "B with a letter control, lenient mode"
+  },
+  {
+    "input": "C12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "C with a digit control, lenient mode"
+  },
+  {
+    "input": "C1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "C with a letter control, lenient mode"
+  },
+  {
+    "input": "D12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "D with a digit control, lenient mode"
+  },
+  {
+    "input": "D1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "D with a letter control, lenient mode"
+  },
+  {
+    "input": "E12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "E with a digit control, lenient mode"
+  },
+  {
+    "input": "E1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "E with a letter control, lenient mode"
+  },
+  {
+    "input": "F12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "F with a digit control, lenient mode"
+  },
+  {
+    "input": "F1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "F with a letter control, lenient mode"
+  },
+  {
+    "input": "G12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "G with a digit control, lenient mode"
+  },
+  {
+    "input": "G1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "G with a letter control, lenient mode"
+  },
+  {
+    "input": "H12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "H with a digit control, lenient mode"
+  },
+  {
+    "input": "H1234567D",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "H with a letter control, lenient mode"
+  },
+  {
+    "input": "J12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "J with a digit control, lenient mode"
+  },
+  {
+    "input": "J1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "J with a letter control, lenient mode"
+  },
+  {
+    "input": "N12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "N with a digit control, lenient mode"
+  },
+  {
+    "input": "N1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "N with a letter control, lenient mode"
+  },
+  {
+    "input": "P12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "P with a digit control, lenient mode"
+  },
+  {
+    "input": "P1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "P with a letter control, lenient mode"
+  },
+  {
+    "input": "Q12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "Q with a digit control, lenient mode"
+  },
+  {
+    "input": "Q1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "Q with a letter control, lenient mode"
+  },
+  {
+    "input": "R12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "R with a digit control, lenient mode"
+  },
+  {
+    "input": "R1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "R with a letter control, lenient mode"
+  },
+  {
+    "input": "S12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "S with a digit control, lenient mode"
+  },
+  {
+    "input": "S1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "S with a letter control, lenient mode"
+  },
+  {
+    "input": "U12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "U with a digit control, lenient mode"
+  },
+  {
+    "input": "U1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "U with a letter control, lenient mode"
+  },
+  {
+    "input": "V12345674",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "V with a digit control, lenient mode"
+  },
+  {
+    "input": "V1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "V with a letter control, lenient mode"
+  },
+  {
+    "input": "W12345674",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "W with a digit control, lenient mode"
+  },
+  {
+    "input": "W1234567D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "W with a letter control, lenient mode"
+  }
+]

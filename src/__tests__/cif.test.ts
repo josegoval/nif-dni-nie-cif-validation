@@ -166,3 +166,27 @@ describe("CIF-3: control type of every organisation key, official and lenient", 
     });
   }
 });
+
+// CIF-5 (Orden EHA/451/2008 art. 2.b): the 7 digits are random since 2008,
+// so the first two, once a province code, are never checked.
+describe("CIF-5: no province code check", () => {
+  // CIF-4, written independently of src/.
+  function control(digits: string): number {
+    let sum = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = Number(digits[i]);
+      sum += i % 2 === 0 ? Math.floor((2 * d) / 10) + ((2 * d) % 10) : d;
+    }
+    return (10 - (sum % 10)) % 10;
+  }
+
+  it("CIF-5: every two-digit prefix 00-99 is accepted", () => {
+    for (let prefix = 0; prefix < 100; prefix++) {
+      const digits = `${String(prefix).padStart(2, "0")}12345`;
+      expect(isValidCif(`B${digits}${control(digits)}`)).toBe(true);
+      expect(isValidCif(`P${digits}${"JABCDEFGHI"[control(digits)]}`)).toBe(
+        true
+      );
+    }
+  });
+});

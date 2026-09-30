@@ -1,0 +1,16 @@
+[
+  {
+    "input": "ES12345678Z",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "VAT-1",
+    "note": "the ES prefix needs allowVatPrefix"
+  },
+  {
+    "input": "12345678Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "DNI-2",
+    "note": "a bare NIF is fine"
+  }
+]

@@ -1,0 +1,79 @@
+[
+  {
+    "input": "X1234567L",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIE-2",
+    "note": "X counts as 0"
+  },
+  {
+    "input": "Y1234567X",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIE-2",
+    "note": "Y counts as 1"
+  },
+  {
+    "input": "Z1234567R",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIE-2",
+    "note": "Z counts as 2"
+  },
+  {
+    "input": "X01234567L",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIE-3",
+    "note": "old 10-character form, canonical X1234567L"
+  },
+  {
+    "input": "Y1234567L",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "NIE",
+    "rule": "NIE-2",
+    "note": "the prefix changes the letter"
+  },
+  {
+    "input": "X11234567L",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "NIE-3",
+    "note": "only a leading 0 may be dropped"
+  },
+  {
+    "input": "Y01234567X",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "NIE-3",
+    "note": "the old form is X only"
+  },
+  {
+    "input": "X123456AL",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "NIE-1",
+    "note": "7 digits after the prefix"
+  },
+  {
+    "input": "X12345678",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "NIE-1",
+    "note": "the check character is a letter"
+  },
+  {
+    "input": "X123456L",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "NIE-1",
+    "note": "6 digits"
+  },
+  {
+    "input": "T12345678",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "NIF-1",
+    "note": "no official T prefix"
+  }
+]

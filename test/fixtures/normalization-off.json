@@ -1,0 +1,44 @@
+[
+  {
+    "input": "12345678z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NORM-1",
+    "note": "lower case is accepted without normalization too, as in v1"
+  },
+  {
+    "input": "X01234567L",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIE-3",
+    "note": "the old NIE form is accepted without normalization too"
+  },
+  {
+    "input": " 12345678Z ",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "NIF-1",
+    "note": "no trimming without normalization"
+  },
+  {
+    "input": "12345678-Z",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "DNI-1",
+    "note": "no separators without normalization"
+  },
+  {
+    "input": "B-1234567-4",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "CIF-1",
+    "note": "no separators without normalization"
+  },
+  {
+    "input": "1234567L",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "DNI-1",
+    "note": "no padding without normalization"
+  }
+]

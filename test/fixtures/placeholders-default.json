@@ -1,0 +1,30 @@
+[
+  {
+    "input": "00000000T",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "POLICY-1",
+    "note": "a placeholder is a valid document by default"
+  },
+  {
+    "input": "00000001R",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "POLICY-1",
+    "note": "a placeholder is a valid document by default"
+  },
+  {
+    "input": "99999999R",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "POLICY-1",
+    "note": "a placeholder is a valid document by default"
+  },
+  {
+    "input": "X0000000T",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "POLICY-1",
+    "note": "a placeholder is a valid document by default"
+  }
+]
