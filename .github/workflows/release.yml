@@ -1,32 +1,55 @@
 name: Release
+
 on:
   push:
     branches: [master, next, next-major, beta, alpha]
+
+# Serialize releases so two pushes never publish concurrently.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write # publish the GitHub release, push the release commit and tag
+  issues: write # comment on released issues
+  pull-requests: write # comment on released pull requests
+  id-token: write # npm Trusted Publishing (OIDC) and provenance
+
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    env:
+      HUSKY: "0"
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
-          node-version: "14"
+          # semantic-release 25 and its plugins require Node ^22.22.2 || >=24.15.
+          # Node 24 also bundles an npm new enough for Trusted Publishing.
+          node-version: "24"
+          cache: yarn
+      - name: Check npm supports Trusted Publishing (>= 11.5.1)
+        run: |
+          npm --version
+          node -e "const [a,b,c]=process.argv[1].split('.').map(Number);process.exit(a>11||(a===11&&(b>5||(b===5&&c>=1)))?0:1)" "$(npm --version)" \
+            || { echo "::error::npm >= 11.5.1 is required for npm Trusted Publishing"; exit 1; }
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --immutable --ignore-engines
+        run: yarn install --frozen-lockfile
+      - name: Typecheck
+        run: yarn typecheck
       - name: Run tests
         run: yarn test
       - name: Build package
         run: yarn build
-      - name: Setup Node 18
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # No NPM_TOKEN: @semantic-release/npm authenticates through OIDC
+          # (Trusted Publishing), which also attaches provenance automatically.
+          NPM_CONFIG_PROVENANCE: "true"
         run: npx semantic-release
