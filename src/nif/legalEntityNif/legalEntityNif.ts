@@ -1,7 +1,11 @@
 export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
 export const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJNPQRSUVW][\d]{7}[\dA-J]$/i;
-const HAS_CONTROL_LETTER_REGEX = /^[PQRSW]/;
-const HAS_CONTROL_LETTER_IDENTIFIER = "00";
+// CIF-3 (AEAT D.I.T. 2008): the control type depends only on the
+// organisation key. There is no "number starts with 00" rule.
+// Letter control: N P Q R S W.
+const HAS_CONTROL_LETTER_REGEX = /^[NPQRSW]/;
+// Digit control: A B E H.
+// TODO(v2, #38): C D F G J U V are digit-only per CIF-3
 const HAS_CONTROL_NUMBER_REGEX = /^[ABEH]/;
 
 function sumEvenPositions(legalEntityNumbers: string): number {
@@ -41,10 +45,7 @@ function getLegalEntityNifControlNumber(nif: string): number {
 }
 
 function isControlCodeLetter(legalEntityNif: string): boolean {
-  return (
-    HAS_CONTROL_LETTER_REGEX.test(legalEntityNif) ||
-    legalEntityNif[0] === HAS_CONTROL_LETTER_IDENTIFIER
-  );
+  return HAS_CONTROL_LETTER_REGEX.test(legalEntityNif);
 }
 
 function isControlCodeNumber(legalEntityNif: string): boolean {
@@ -52,41 +53,61 @@ function isControlCodeNumber(legalEntityNif: string): boolean {
 }
 
 /**
- * Checks if the legal entity nif control code (letter or number)
- * provided is valid.
- *
- * @WARNING It does not check the `LEGAL_ENITY_NIF_REGEX`.
- * @throws May throw an error if the string is not long enough (9 characters)
- * @param legalEntityNif
- * @returns
+ * Checks the control code of a legal entity NIF that is already upper case.
  */
-export function isValidLegalEntityNifControlCode(
-  legalEntityNif: string
-): boolean {
+function hasValidControlCode(legalEntityNif: string): boolean {
   const controlCodeToVerify = legalEntityNif.slice(-1);
+  // CIF-4: control arithmetic (convention, no official text).
   const controlNumber = getLegalEntityNifControlNumber(legalEntityNif);
 
+  // CIF-3 (AEAT D.I.T. 2008): these keys take a letter control.
   if (isControlCodeLetter(legalEntityNif))
     return LEGAL_ENTITY_CONTROL_LETTERS[controlNumber] === controlCodeToVerify;
 
+  // CIF-3 (AEAT D.I.T. 2008): these keys take a digit control.
   if (isControlCodeNumber(legalEntityNif))
     return controlNumber === +controlCodeToVerify;
 
+  // C D F G J U V: v1 still accepts either a letter or a digit (see TODO).
   return isNaN(+controlCodeToVerify)
     ? LEGAL_ENTITY_CONTROL_LETTERS[controlNumber] === controlCodeToVerify
     : controlNumber === +controlCodeToVerify;
 }
 
 /**
+ * Checks if the legal entity nif control code (letter or number)
+ * provided is valid.
+ *
+ * @WARNING It does not check the `LEGAL_ENTITY_NIF_REGEX`.
+ *
+ * Never throws, whatever the length of the string. Typed `string`, but any
+ * other value (e.g. `null`) returns `false`.
+ * @param legalEntityNif The value to check.
+ * @returns true for a valid control code and false otherwise.
+ */
+export function isValidLegalEntityNifControlCode(
+  legalEntityNif: string
+): boolean {
+  if (typeof legalEntityNif !== "string") return false;
+  // NORM-1: accept lower-case input. Upper-case once, check that value.
+  return hasValidControlCode(legalEntityNif.toUpperCase());
+}
+
+/**
  * Checks if the legalEntityNif provided is valid.
  *
  * It does not include old K, L and M formats.
- * @param legalEntityNif
+ *
+ * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * @param legalEntityNif The value to check.
  * @returns true for valid input and false for invalid input.
  */
 export function isValidLegalEntityNif(legalEntityNif: string): boolean {
-  return (
-    LEGAL_ENTITY_NIF_REGEX.test(legalEntityNif) &&
-    isValidLegalEntityNifControlCode(legalEntityNif)
-  );
+  if (typeof legalEntityNif !== "string") return false;
+  // CIF-1 / CIF-2. The /i regex runs on the raw input: without the `u` flag
+  // it only folds ASCII letters, so look-alikes that toUpperCase() maps to
+  // ASCII (U+0131 "ı" -> "I", U+017F "ſ" -> "S") stay invalid.
+  if (!LEGAL_ENTITY_NIF_REGEX.test(legalEntityNif)) return false;
+  // NORM-1: accept lower-case input. Upper-case once, check that value.
+  return hasValidControlCode(legalEntityNif.toUpperCase());
 }

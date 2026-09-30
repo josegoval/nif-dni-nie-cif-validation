@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="28" role="img" aria-label="coverage: 100%">
+  <title>coverage: 100%</title>
+  <rect width="96" height="28" fill="#555"/>
+  <rect x="96" width="54" height="28" fill="#2e7d32"/>
+  <g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" font-size="10" letter-spacing="1">
+    <text x="48" y="18">COVERAGE</text>
+    <text x="123" y="18" font-weight="bold">100%</text>
+  </g>
+</svg>
