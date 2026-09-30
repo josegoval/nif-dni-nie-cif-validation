@@ -208,6 +208,76 @@ createGenerator(seed: number): { dni, nie, cif, nif, invalid }   // the same opt
 - **Output.** Canonical (upper case, no separators) by default. `format: true` or `format: { separator }` uses `format()`. `generateInvalid` ignores it: an invalid value has no display form.
 - **Synthetic data.** The JSDoc of every generator says it: the numbers are made up, may match a real person or company by chance, and are for tests only.
 
+### D12. Schema adapters: `/zod`, `/valibot`, `/yup` (#58)
+
+Most forms validate through Zod, Valibot or Yup (React Hook Form, tRPC, server actions), so each library gets ready-made schemas as its own entry point. Each library is an **optional peer dependency** (`peerDependenciesMeta.optional`; `zod@^4`, `valibot@^1`, `yup@^1`): the package still has 0 dependencies, and nothing is installed unless the application uses that adapter. Importing the core never loads an adapter or a schema library (`scripts/check-tree-shaking.mjs` checks it on the tarball, with the libraries external), and each adapter's size budget leaves the library out (`pnpm size`).
+
+```ts
+// One set per library, the same names and the same rules:
+zNif(opts?: ValidateOptions)                       vNif(...)   yNif(...)    // any NIF; `types` restricts it
+zDni(opts?: Omit<ValidateOptions, "types">)        vDni(...)   yDni(...)    // DNI and K/L/M, like isValidDni
+zNie(opts?: Omit<ValidateOptions, "types">)        vNie(...)   yNie(...)
+zCif(opts?: Omit<ValidateOptions, "types">)        vCif(...)   yCif(...)
+zSpanishVat(opts?: Omit<ValidateOptions, "allowVatPrefix">)   vSpanishVat(...)   ySpanishVat(...)
+// Every schema: string in, the normalized string out.
+```
+
+- **One rule set.** The three adapters are a thin mapping onto `src/adapter.ts`, which calls `validate()`: a schema accepts exactly what `validate()` accepts with the same options (`types`, `normalize`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `locale`), and a property test compares them on arbitrary strings for each library. `locale` is a locale object, as everywhere else: `zNif({ locale: es })`.
+- **The output is the normalized value**: `" 12.345.678-z "` gives `"12345678Z"`, `X01234567L` gives `X1234567L`, `1234567L` gives `01234567L`. Input and output are both `string` (`z.input` and `z.output`, `InferInput` and `InferOutput`, `InferType`).
+- **The message, the code and the rule.** A refused value gives one issue whose message is `validate().error.message`, in the locale. The code and the SPEC.md rule go where the library allows it:
+
+  | Library | Where | Shape |
+  |---|---|---|
+  | Zod | the issue's `params` (a `custom` issue) | `{ code, rule, expected? }` (`NifIssueParams`) |
+  | Valibot | properties of the issue (`NifIssue`, `type: "nif"`) | `issue.code`, `issue.rule`, and `issue.expected` (the right control character, else `null`, Valibot's own property) |
+  | Yup | the `ValidationError`'s `params`, and `type: "nif"` | `{ code, rule, expected? }` (`NifErrorParams`) |
+
+  Valibot's `addIssue` (in `rawTransform` and `rawCheck`) takes no extra properties and its `_addIssue` is internal, so the Valibot adapter is a small custom transformation that builds its issue the way Valibot's own actions do. That relies on `"~run"`, the protocol of Valibot's actions, which its types mark `@internal` (it has been stable through all of v1, hence the `valibot@^1` peer range); the tests, `scripts/check-adapters.mjs` and the oldest supported version (1.0.0) would catch a change.
+- **Not a string.** INPUT-1 applies: a number is never read as a string. Zod and Valibot report their own invalid-type issue with the `NOT_A_STRING` message of the locale. Yup's `string()` would turn `12345678` into `"12345678"`, so the adapter refuses the original value instead, and the schema is required: `undefined`, `null` and other types give the `NOT_A_STRING` message, `""` gives `EMPTY`, and `.optional()` or `.nullable()` make the field optional. (Zod and Valibot are required by default; Yup's default is optional.)
+- **`zDni`, `zNie`, `zCif`** are `zNif` with `types` fixed (POLICY-2), so another valid document gives `UNSUPPORTED_TYPE` with its localized message. `zDni` takes a DNI and a K/L/M NIF, as `isValidDni` does (the library's `"DNI"` type alone would refuse a K NIF). Their `opts` type has no `types`, and a `types` passed from plain JavaScript is ignored.
+- **`zSpanishVat`** follows `isValidSpanishVat`: the `ES` prefix is **required** (VAT-1), the NIF after it must be valid (with its own error), and the output keeps the prefix: `ES` and the normalized NIF, so the output is a complete VAT number and validates again. A value without the prefix gives the VAT-1 length message of the locale ("A Spanish VAT number is ES followed by a 9-character NIF."), which is the message `validate("ES", { allowVatPrefix: true })` gives. `zNif({ allowVatPrefix: true })` is the schema that accepts both forms and outputs the NIF.
+- **Zod 4 only.** Zod 4 is the current major. The two majors have different types (`ZodEffects` in Zod 3, `ZodPipe` in Zod 4) and Zod 3.25 ships both APIs, so one implementation can't return a correct type for both; two would double the surface to maintain for a version that is being left behind. With Zod 3, `validate()` fits in one `transform`:
+
+  ```ts
+  import { z } from "zod"; // Zod 3
+  import { validate } from "nif-dni-nie-cif-validation";
+
+  const nif = z.string().transform((value, ctx) => {
+    const result = validate(value);
+    if (!result.valid) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: result.error?.message });
+      return z.NEVER;
+    }
+    return result.normalized as string;
+  });
+  ```
+- **Both module formats.** The adapters import their library by name (`import { string } from "zod"`, `require("zod")` in the CommonJS build). Yup has no `exports` map and is CommonJS, and Node can still find its named exports from an ES module, so the same code works in both; `scripts/check-adapters.mjs` runs each adapter from `import` and from `require` against the tarball and the real libraries, which the dependency-free smoke tests can't do. It also passes with the oldest supported versions (zod 4.0.0, valibot 1.0.0, yup 1.0.0).
+- **React Hook Form.** Input and output are both strings, so the resolvers work as they are (`@hookform/resolvers`), and `handleSubmit` receives the normalized value:
+
+  ```tsx
+  import { zodResolver } from "@hookform/resolvers/zod";
+  import { useForm } from "react-hook-form";
+  import { z } from "zod";
+  import { es } from "nif-dni-nie-cif-validation/locales/es";
+  import { zNif } from "nif-dni-nie-cif-validation/zod";
+
+  const schema = z.object({ nif: zNif({ types: ["DNI", "NIE"], locale: es }) });
+
+  export function NifForm({ save }: { save: (nif: string) => void }) {
+    const { register, handleSubmit, formState: { errors } } = useForm<
+      z.input<typeof schema>, unknown, z.output<typeof schema>
+    >({ resolver: zodResolver(schema) });
+    return (
+      <form onSubmit={handleSubmit(({ nif }) => save(nif))}>
+        <input {...register("nif")} />
+        {errors.nif && <p role="alert">{errors.nif.message}</p>}
+      </form>
+    );
+  }
+  ```
+
+  With Valibot, `import { valibotResolver } from "@hookform/resolvers/valibot"`, `v.object({ nif: vNif({ locale: es }) })` and `resolver: valibotResolver(schema)`; with Yup, `yupResolver(object({ nif: yNif({ locale: es }) }))`. `errors.nif.message` is the localized message in all three.
+
 ## Alternatives considered
 
 - **Languages selected by a string (`locale: "es"`)** from a table of all languages, as in the first v2 drafts. Rejected (#56): a bundler can't know which entries of the table are used, so every `validate()` user paid for every language (about 0.6 kB min+gz for Spanish alone), and each new language would have grown every bundle.
@@ -219,3 +289,7 @@ createGenerator(seed: number): { dni, nie, cif, nif, invalid }   // the same opt
 - **`normalized` keeping the `ES` prefix.** Rejected: `type` is a NIF type, and a normalized value that fails `validate` with default options is surprising. Callers who store VAT numbers prepend `ES`.
 - **A `types` restriction on the booleans.** Not needed: each boolean already has a fixed scope.
 - **Validation options on `format`.** Left out to keep the agreed signature; a lenient-mode CIF with a letter control for C D F G J U V is therefore not formatted. It can be added later without a breaking change.
+- **One adapter for Zod 3 and Zod 4.** Rejected (#58): the return types differ, and Zod 3.25 has both APIs in one package, so `import "zod"` is not enough to know which one the application uses. Zod 3 users get a recipe (D12) instead.
+- **Valibot's `rawTransform` or `rawCheck` for the schemas.** Rejected: their `addIssue` accepts no extra properties, so the error code and the SPEC rule would be lost. The code and the rule are the point of `validate()`, and a form library may want them for analytics or for its own messages.
+- **The schema libraries as dependencies, or the adapters as separate packages** (`nif-dni-nie-cif-validation-zod`). Rejected: a dependency would break "0 dependencies" for everyone, and separate packages would have to be published and versioned together for no gain over optional peers and entry points of the same package.
+- **Adapters that map `validate()`'s result without `transform`** (checking only, leaving the value as typed). Rejected: the normalized value is what should be stored, and a schema that returns the raw input would make every caller call `normalize()` again.

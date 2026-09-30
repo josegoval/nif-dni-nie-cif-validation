@@ -170,6 +170,8 @@ valencià
 # English words missing from the dictionaries
 alikes
 dotless
+subpath
+subpaths
 uncited
 
 # Tools, packages and accounts

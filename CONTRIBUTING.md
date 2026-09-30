@@ -19,6 +19,7 @@ pnpm spell                       # cspell: spelling of code, tests, docs and CI 
 pnpm spec:check                  # rule IDs in src/ and tests match SPEC.md
 pnpm bench                       # builds, then benchmarks against v1.0.11
 node scripts/check-tree-shaking.mjs <tarball>   # bundles the packed tarball, see Build and package layout
+node scripts/check-adapters.mjs <tarball>       # runs the /zod, /valibot and /yup adapters from import and require
 ```
 
 `tsconfig.json` type-checks the library, the tests and the Vitest config without emitting anything. `tsconfig.build.json` extends it and emits the ES modules and type declarations of `src/` (without tests) into `dist/esm`; `tsconfig.build.cjs.json` extends that one and emits CommonJS into `dist/cjs`. All use `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `verbatimModuleSyntax` (the CommonJS build turns the last one off, because TypeScript refuses ES module syntax in CommonJS output with it; the type check and the ES module build have already enforced it).
@@ -43,6 +44,8 @@ src/
   vat.ts        isValidSpanishVat() (VAT-1)
   format.ts     format() and computeControlCharacter()
   generate/     opt-in test-data generators, the `/generate` entry point: index.ts (public API), core.ts (valid values), invalid.ts (generateInvalid), random.ts (mulberry32)
+  adapter.ts    the core of the schema adapters: validate() mapped to a normalized value or an error
+  zod/ valibot/ yup/  the opt-in schema adapters (`/zod`, `/valibot`, `/yup`), one index.ts each
   shared.ts     internal helpers
   types.ts      public types
   __tests__/    Vitest tests, one file per module plus cross-cutting suites
@@ -69,13 +72,13 @@ The sources import each other without file extensions (`from "./nif"`) and the t
 `package.json` is what makes this work, so change it with care:
 
 - `"type": "module"`: `.js` files in the repository are ES modules. The published files all have explicit `.mjs` or `.cjs` extensions.
-- `exports`: `"."` and one `"./locales/<code>"` per language and `"./generate"`, each with an `import` and a `require` condition with its own `types`, plus `"./package.json"`. Nothing else is importable, so a file moved inside `dist/` is not a breaking change. `main`, `module` and `types` are fallbacks for tools that ignore `exports`; `typesVersions` does the same for the locale and generate entry points, so TypeScript's old `node10` resolution finds their types.
+- `exports`: `"."` and one `"./locales/<code>"` per language, `"./generate"` and one entry point per schema adapter (`"./zod"`, `"./valibot"`, `"./yup"`), each with an `import` and a `require` condition with its own `types`, plus `"./package.json"`. Nothing else is importable, so a file moved inside `dist/` is not a breaking change. `main`, `module` and `types` are fallbacks for tools that ignore `exports`; `typesVersions` does the same for the locale, generate and adapter entry points, so TypeScript's old `node10` resolution finds their types.
 - `"sideEffects": false`: every module only declares things, so a bundler may drop a module whose exports are unused. Don't add top-level code that does work when the module loads, not even filling a lookup table (see Size budgets).
 - `files`: `dist` plus the standard files (README, LICENSE, CHANGELOG).
 
 The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it runs in every current browser without transpiling. ES2018 would emit the same code, because the sources use nothing that TypeScript rewrites between the two. `pnpm check:es` runs `es-check` on both builds: no syntax and no built-in newer than ES2016 (ES2016 is a real floor: `Array.prototype.includes` is in `policy.ts`). Raise the `target` and that check together, and never to something your browser support doesn't cover.
 
-**Size budgets.** `pnpm size` builds and runs [size-limit](https://github.com/ai/size-limit) with its esbuild plugin and `.size-limit.json`: it bundles `import { x } from "dist/esm/index.mjs"` for each entry, minifies, gzips and fails if the result is over the `limit`. The entries are the four boolean validators, `isValidSpanishVat`, `validate` (with the English messages and organisation names, built in), `validate` with one more language (`locales/es`) and the whole ES module build (English only: the other languages are not in the root entry point), plus three entries for the opt-in `/generate` entry point (`generateDni`, `generateInvalid` and everything), bundled from `dist/esm/generate/index.mjs`. The budgets sit a few percent above the measured sizes, so they catch a real regression (for example a boolean that starts importing a locale, or `validate` pulling in a second language) and not noise. When a change is meant to grow the library, say why in the PR and raise the limit in the same commit. For reference, v1.0.11 measures 1308 B with the same tool (all its functions, CommonJS). The sizes are measured with esbuild; other bundlers differ by a few percent.
+**Size budgets.** `pnpm size` builds and runs [size-limit](https://github.com/ai/size-limit) with its esbuild plugin and `.size-limit.json`: it bundles `import { x } from "dist/esm/index.mjs"` for each entry, minifies, gzips and fails if the result is over the `limit`. The entries are the four boolean validators, `isValidSpanishVat`, `validate` (with the English messages and organisation names, built in), `validate` with one more language (`locales/es`) and the whole ES module build (English only: the other languages are not in the root entry point), plus three entries for the opt-in `/generate` entry point (`generateDni`, `generateInvalid` and everything), bundled from `dist/esm/generate/index.mjs`, and one per schema adapter (`zNif`, `vNif`, `yNif`) that leaves the schema library out with the entry's `"ignore"`, so the number is what the adapter adds. The budgets sit a few percent above the measured sizes, so they catch a real regression (for example a boolean that starts importing a locale, or `validate` pulling in a second language) and not noise. When a change is meant to grow the library, say why in the PR and raise the limit in the same commit. For reference, v1.0.11 measures 1308 B with the same tool (all its functions, CommonJS). The sizes are measured with esbuild; other bundlers differ by a few percent.
 
 | Entry (`.size-limit.json`) | Size | Limit |
 | --- | ---: | ---: |
@@ -90,10 +93,13 @@ The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it 
 | `import { generateDni }` from `/generate` | 1897 B | 1955 B |
 | `import { generateInvalid }` from `/generate` | 2040 B | 2100 B |
 | `import *` from `/generate` (every generator) | 3132 B | 3225 B |
+| `import { zNif }` from `/zod` (without Zod) | 3065 B | 3160 B |
+| `import { vNif }` from `/valibot` (without Valibot) | 3160 B | 3255 B |
+| `import { yNif }` from `/yup` (without Yup) | 3108 B | 3205 B |
 
 The booleans stay this small because they never reach `normalize()` or `validate()`: their slow path only removes separators (`removeSeparators`) and checks again, and POLICY-1 reads the number of the document (`isPlaceholderDocument`). Keep module-level code to declarations: a table filled by a loop when the module loads can't be dropped by a bundler, so prefer a string or arithmetic.
 
-**Tree shaking check.** `node scripts/check-tree-shaking.mjs <tarball>` unpacks the tarball into a temporary project, bundles one import at a time with esbuild (resolving the package and its locale entry points through `exports`, as a consumer does), and looks for each locale's marker strings and module in the output. It fails if the bundle of any boolean validator, `normalize`, `format`, `computeControlCharacter` or `getNifType` contains any locale or the `localize` or `organisations` module; if `validate` or `describeCifOrganisation` bundle anything but English; or if a locale entry point bundles another language (alone, only itself; with `validate`, only itself and English). The checks that expect a locale also prove its markers can be found, so the script can't pass by looking for strings it can't see. It also covers the opt-in entry points (`/generate`): no core import may bundle any of their modules or their code (an error message only they contain), and each of them must bundle itself when imported, which proves the check can see it. CI runs it on the tarball that `Check` packs.
+**Tree shaking check.** `node scripts/check-tree-shaking.mjs <tarball>` unpacks the tarball into a temporary project, bundles one import at a time with esbuild (resolving the package and its locale entry points through `exports`, as a consumer does), and looks for each locale's marker strings and module in the output. It fails if the bundle of any boolean validator, `normalize`, `format`, `computeControlCharacter` or `getNifType` contains any locale or the `localize` or `organisations` module; if `validate` or `describeCifOrganisation` bundle anything but English; or if a locale entry point bundles another language (alone, only itself; with `validate`, only itself and English). The checks that expect a locale also prove its markers can be found, so the script can't pass by looking for strings it can't see. It also covers the opt-in entry points (`/generate`, `/zod`, `/valibot`, `/yup`): no core import may bundle any of their modules, their code (an error message only they contain) or an import of a schema library, and each of them must bundle itself when imported, which proves the check can see it. The schema libraries are external in the check, as in an application; an adapter must bundle English only (and with `locales/es`, English and Spanish only), like `validate`. CI runs it on the tarball that `Check` packs.
 
 ### How to add a language
 
@@ -111,6 +117,7 @@ Every validation branch in `src/` cites the rule it implements in a comment (`//
 ### Tests
 
 - `fixtures.test.ts` runs every entry of `test/fixtures/*.json` (`{ input, expected, type, rule, note }`) against `validate()` and the booleans, with the options of its file. Add SPEC test values there.
+- `zod.test.ts`, `valibot.test.ts`, `yup.test.ts`: the adapters, run against the real libraries. Valid values normalize, every error code gives the localized message and the code and rule in the library's own place, every option is respected, a property test compares each schema with `validate()` on arbitrary strings, and `expectTypeOf` and `@ts-expect-error` check the types.
 - `generate.test.ts`: the generators. 100,000 values of each type validate (with `validate()`, stdnum and a separate copy of the algorithms), every CIF key and NIE prefix is generated, no value is a placeholder, `generateInvalid` fails with exactly the requested code (100,000 values per type and code), seeded values are golden (the same on every platform), and the mulberry32 output is compared with the published reference implementation.
 - `properties.test.ts` (fast-check, seeded): nothing throws, generated documents validate, `computeControlCharacter` completes them, single-character substitutions (documented exceptions in SPEC.md), `normalize` is idempotent, and the booleans always agree with `validate()`.
 - `stdnum.test.ts` compares `validate()` with stdnum on about 50,000 inputs; every difference must be in its allow-list and in SPEC.md, "Differences from other libraries".
@@ -133,6 +140,15 @@ Every validation branch in `src/` cites the rule it implements in a comment (`//
 ### Spelling
 
 `pnpm spell` runs [cspell](https://cspell.org/) with `cspell.config.yaml` (English, British spelling). Real words it doesn't know, such as the Spanish legal terms quoted from the sources, go in `.cspell/project-words.txt`. The string literals of the Catalan, Basque and Galician locales (and the tree-shaking markers) are not spell-checked, by an override in `cspell.config.yaml`, and docs/translations.md turns cspell off around its tables: the project has no dictionary for those languages, and the language review covers them.
+
+### Subpaths and peer dependencies
+
+The main entry point (`.`) is the library; everything else is opt-in and must not reach it:
+
+- **Opt-in subpaths**: `/generate` (test data), `/zod`, `/valibot` and `/yup` (schemas), and the `/locales/*` languages. Each is a folder of `src/` with an `index.ts`, its own `exports` and `typesVersions` entries (the four paths of the locales) and its own size budget(s). The main `src/index.ts` never imports them, and nothing in the core imports a subpath. `scripts/check-tree-shaking.mjs` fails if a core import bundles any of them.
+- **Schema libraries are optional peer dependencies**, never dependencies: `peerDependencies` with a caret range from the oldest version that works, `peerDependenciesMeta.<name>.optional: true`, and a dev dependency (for the tests, pinned by the lockfile and at least 3 days old). The core has 0 runtime dependencies, and that stays true. A new adapter imports its library by name only (no deep imports, no default import), so it works from `import` and `require`; `scripts/check-adapters.mjs` must run it in both formats against the tarball, and the oldest supported version must pass it (`PEERS_NODE_MODULES` points it at another node_modules folder).
+- **An adapter is a mapping, not a second implementation.** It calls `checkNif` in `src/adapter.ts` (which calls `validate()`), so every library accepts the same values, outputs the same normalized value and gives the same localized messages. Keep the names consistent (`zNif`, `vNif`, `yNif`, and `Dni`, `Nie`, `Cif`, `SpanishVat`), expose the error code and the SPEC rule where the library allows it, and add a property test that compares the schema with `validate()`.
+- **Do not add a schema library to `test/smoke`**: the smoke tests install only the tarball and stay dependency-free. The Vitest tests and `check-adapters.mjs` cover the adapters.
 
 ### Supply-chain settings
 

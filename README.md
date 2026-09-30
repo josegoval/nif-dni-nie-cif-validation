@@ -48,6 +48,27 @@ Messages and organisation names are in English by default. Each other language i
 
 Pass the object, not its code: `validate(value, { locale: es })`, `describeCifOrganisation("B", es)`. A string such as `"es"` is ignored and gives English.
 
+The package ships ES modules and CommonJS, each with its own type declarations, and tree-shakes: `import { isValidDni }` adds about 0.6 kB minified and gzipped, without the error messages; `import { validate }` about 2.7 kB, with the English messages.
+
+### Validating forms with Zod, Valibot or Yup
+
+Ready-made schemas for the three libraries: `nif-dni-nie-cif-validation/zod` (`zNif`, `zDni`, `zNie`, `zCif`, `zSpanishVat`), `/valibot` (`vNif`, ...) and `/yup` (`yNif`, ...). They take the options of `validate()`, output the normalized value and give its localized messages:
+
+```ts
+import { z } from "zod";
+import { zNif } from "nif-dni-nie-cif-validation/zod";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+
+const form = z.object({ nif: zNif({ types: ["DNI", "NIE"], locale: es }) });
+
+form.parse({ nif: " 12.345.678-z " }); // { nif: "12345678Z" }: the normalized value
+form.safeParse({ nif: "12345678A" }).error?.issues[0]?.message;
+// "El carácter de control no es correcto: para este DNI debería ser «Z»."
+// ...and its params are { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z" }
+```
+
+Each library is an optional peer dependency (`zod@^4`, `valibot@^1`, `yup@^1`): install the one you use, and the package still has no dependencies. Importing the core never loads an adapter or a schema library. Examples with React Hook Form: [docs/api-design.md](docs/api-design.md).
+
 ### Generating test data
 
 Need valid fake numbers for your tests, instead of a real person's? `nif-dni-nie-cif-validation/generate` makes them, and they are the same on every run and platform when you give a seed. It is opt-in: the main entry point doesn't include it.
@@ -64,8 +85,6 @@ generateInvalid("DNI", { reason: "INVALID_LENGTH" }); // for negative tests: val
 ```
 
 There are also `generateDni` (with `kind: "K" | "L" | "M"`), `generateNie` (with `prefix`) and `generateNif` (with `types`), and every one takes `format: true` for the `12345678-Z` form. The numbers follow [SPEC.md](SPEC.md) and are never a placeholder such as `00000000T`, but they are synthetic: one may match a real person or company by chance, so use them in tests only. See [docs/api-design.md](docs/api-design.md).
-
-The package ships ES modules and CommonJS, each with its own type declarations, and tree-shakes: `import { isValidDni }` adds about 0.6 kB minified and gzipped, without the error messages; `import { validate }` about 2.7 kB, with the English messages.
 
 **Feel like supporting this free plugin?**
 
