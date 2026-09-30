@@ -25,6 +25,7 @@
   "scripts": {
     "build": "tsc",
     "prepack": "yarn build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "jest --config jest.config.json"
   },
   "dependencies": {},
