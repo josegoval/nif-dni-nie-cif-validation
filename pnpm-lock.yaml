@@ -202,6 +202,9 @@ importers:
       semantic-release:
         specifier: ^25.0.9
         version: 25.0.9(supports-color@7.2.0)(typescript@7.0.2)
+      stdnum:
+        specifier: ^1.12.6
+        version: 1.12.6
       tinybench:
         specifier: ^6.2.0
         version: 6.2.0
@@ -2178,6 +2181,9 @@ packages:
 
   std-env@4.2.0:
     resolution: {integrity: sha512-oCUKSupKTHX53EyjDtuZQ64pjLJ6yYCtpmEw0goYxtjG9KpbRe8KAsl2tBUGU9DyMcJ0RwJ8GqJAFzMXcXW1Rw==}
+
+  stdnum@1.12.6:
+    resolution: {integrity: sha512-UhWlPQ0FCwMuNKEPvX42Hk0ddS/YivTvmJ8k7y0fxM0dea1Cx//AScKFNtT59lHCqYXIr3gfYI4EvqvH9DRrpQ==}
 
   stream-combiner2@1.1.1:
     resolution: {integrity: sha512-3PnJbYgS56AeWgtKF5jtJRT6uFJe56Z0Hc5Ngg/6sI6rIt8iiMBTa9cvdyFfpMQjaVHr8dusbNeFGIIonxOvKw==}
@@ -4343,6 +4349,8 @@ snapshots:
       through2: 2.0.5
 
   std-env@4.2.0: {}
+
+  stdnum@1.12.6: {}
 
   stream-combiner2@1.1.1:
     dependencies:

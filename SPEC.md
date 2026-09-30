@@ -23,6 +23,7 @@ Last verified: 2026-09-30
 - [Decisions](#decisions)
 - [Known conflicts between sources](#known-conflicts-between-sources)
 - [Open questions](#open-questions)
+- [Differences from other libraries](#differences-from-other-libraries)
 - [Test values](#test-values-all-computed-and-checked)
 - [Source URLs](#source-urls)
 
@@ -164,6 +165,21 @@ These rules are not in any official source. They never apply unless the caller a
 
 - **A 1975 circular we could not find.** A circular of the Subsecretaría de Hacienda from 1975 might mention a historical use of "00". We could not find it. Until it is found, the "CIF starting with `00` needs a letter" rule stays in [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis): no official list we checked has ever had province code 00.
 - **A written question to AEAT.** Option: ask the AEAT in writing to confirm (a) the control type per organisation key (CIF-3) and (b) the control arithmetic (CIF-4), since both come only from an internal technical note and from convention. Not done yet.
+
+## Differences from other libraries
+
+`src/__tests__/stdnum.test.ts` compares `validate()` (default options) with [stdnum](https://www.npmjs.com/package/stdnum) (the JavaScript port of python-stdnum, `stdnum.ES.nif`) on about 50,000 generated inputs. Every difference must be one of these decisions; any other difference fails the test.
+
+| Difference | stdnum | This library | Rule |
+|---|---|---|---|
+| Control of C D F G J U V (and every other key) | Accepts a letter or a digit for every organisation key | Digit for A B C D E F G H J U V, letter for N P Q R S W; `cifControl: "lenient"` accepts either for C D F G J U V only | [CIF-3](#cif-3) |
+| Old NIE form `X0nnnnnnnL` | Rejected | Valid, canonical `XnnnnnnnL` | [NIE-3](#nie-3) |
+| DNI with fewer than 8 digits (`1234567L`) | Rejected | Left-padded to `01234567L` | [NORM-4](#norm-4) |
+| White space other than a space (tab, no-break space, …) | Kept, so the value is invalid | Removed, like spaces | [NORM-2](#norm-2) |
+| Non-ASCII look-alikes (`０`, `ſ`, `ı`, …) | Folded to ASCII | Kept, so the value is invalid: the canonical form is ASCII upper case | [NORM-1](#norm-1) |
+| `ES` prefix | Always stripped | Only with `allowVatPrefix`, or `isValidSpanishVat` | [VAT-1](#vat-1) |
+| K/L/M NIF with non-digits after the prefix | Not checked (the number is read with `parseInt`) | Invalid | [KLM-3](#klm-3) |
+| Placeholders (`00000000T`, …) | Valid | Valid by default; rejected with `rejectPlaceholders` | [POLICY-1](#policy-1) |
 
 ## Test values (all computed and checked)
 
