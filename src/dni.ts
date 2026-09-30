@@ -18,8 +18,14 @@
  *
  * Rule IDs refer to SPEC.md.
  */
-import { normalize, normalizedForRetry } from "./normalize";
-import { acceptsValid } from "./policy";
+import {
+  FIRST_DIGIT,
+  FIRST_KLM,
+  isSeparator,
+  normalize,
+  normalizedForRetry,
+} from "./normalize";
+import { acceptsValid, isPlaceholder } from "./policy";
 import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -66,6 +72,25 @@ export function hasDniDigitsAndLetter(
 const MAX_EXACT_DIGITS = 15;
 
 /**
+ * DNI-1, DNI-2 on a 9-character value starting with a digit, for the fast
+ * path: 1 if valid, 0 if the 8 digits are there but the letter is wrong
+ * (so the value has no separator and normalizing can't fix it), -1
+ * otherwise. Internal helper.
+ */
+export function dniVerdict(value: string): number {
+  let number = 0;
+  for (let i = 0; i < 8; i++) {
+    const digit = value.charCodeAt(i) - 48;
+    if (digit >>> 0 > 9) return -1;
+    number = number * 10 + digit;
+  }
+  return toUpperAsciiLetter(value.charCodeAt(8)) ===
+    DNI_CONTROL_LETTERS.charCodeAt(number % 23)
+    ? 1
+    : 0;
+}
+
+/**
  * Checks a DNI or K/L/M NIF. Internal helper: the caller has checked that
  * `dni` is a 9-character string, and passes the UTF-16 code of its first
  * character.
@@ -103,10 +128,34 @@ export function isValidDni(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof dni !== "string") return false;
-  if (dni.length === DNI_LENGTH && isValidNineCharDni(dni, dni.charCodeAt(0)))
-    return acceptsValid(dni, opts);
-  // NORM-2..4: only when the raw check failed and cleanup could help.
-  const normalized = normalizedForRetry(dni, opts);
+  if (dni.length === DNI_LENGTH) {
+    const first = dni.charCodeAt(0);
+    // The fast path: a valid raw value, and placeholders only when asked.
+    // DNI-1: 8 digits and a wrong letter can't be fixed by normalizing.
+    // A failed 9-character value that starts with a letter can't be fixed
+    // (see nif.ts): normalizing keeps that letter first and only pads
+    // digits.
+    const verdict =
+      (first - 48) >>> 0 < 10
+        ? dniVerdict(dni)
+        : isValidNineCharDni(dni, first)
+          ? 1
+          : (first - 0x30) >>> 0 < 0x50
+            ? 0
+            : -1;
+    if (verdict === 1)
+      return opts?.rejectPlaceholders !== true || !isPlaceholder(dni);
+    if (verdict === 0) return false;
+  }
+  return retryDni(dni, opts);
+}
+
+/**
+ * NORM-2..4: the slow path of isValidDni, in its own function so the fast path
+ * stays small.
+ */
+function retryDni(value: string, opts: IsValidOptions | null): boolean {
+  const normalized = normalizedForRetry(value, opts, FIRST_DIGIT | FIRST_KLM);
   return (
     normalized !== null &&
     normalized.length === DNI_LENGTH &&
@@ -163,8 +212,14 @@ export function isValidDniLetter(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof value !== "string") return false;
-  // NORM-1..4. `normalize` returns the input itself when nothing changes.
-  const dni = opts?.normalize === false ? value : normalize(value);
+  // NORM-1..4. The check reads the digits wherever they are, and padding
+  // (NORM-4) or the old NIE form (NIE-3) don't change the number, so only a
+  // separator at the end, where the letter is read, changes the result.
+  const dni =
+    opts?.normalize === false ||
+    !isSeparator(value.charCodeAt(value.length - 1))
+      ? value
+      : normalize(value);
   // v1 behaviour, kept exactly: take every ASCII digit anywhere in the
   // string as one number (KLM-2: a K/L/M prefix counts as nothing) and
   // compare DNI-2's letter with the last character, upper-cased (NORM-1).

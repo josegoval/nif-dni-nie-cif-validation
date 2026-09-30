@@ -21,7 +21,12 @@
  *
  * Rule IDs refer to SPEC.md.
  */
-import { normalize, normalizedForRetry } from "./normalize";
+import {
+  FIRST_KEY,
+  isNineCharsFrom0x30,
+  normalize,
+  normalizedForRetry,
+} from "./normalize";
 import { isLenientCif, NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -232,7 +237,11 @@ export function isValidLegalEntityNifControlCode(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof value !== "string") return false;
-  // NORM-1..4. `normalize` returns the input itself when nothing changes.
+  // NORM-1..4. A 9-character value in 0x30-0x7F is ASCII, has no
+  // separator, and normalizing it only upper-cases, which the check does
+  // anyway: the fast path.
+  if (opts?.normalize !== false && isNineCharsFrom0x30(value))
+    return hasLooseControlCode(value, opts);
   const legalEntityNif = opts?.normalize === false ? value : normalize(value);
   // NORM-1: v1 upper-cased the whole string first. For ASCII that only
   // changes a-z, which the checks fold one character at a time. Other
@@ -270,8 +279,17 @@ export function isValidLegalEntityNif(
 ): boolean {
   if (typeof legalEntityNif !== "string") return false;
   if (checkCif(legalEntityNif, opts)) return true;
-  // NORM-2..3: only when the raw check failed and cleanup could help.
-  const normalized = normalizedForRetry(legalEntityNif, opts);
+  // Cleanup only shortens a value (NORM-4 pads DNIs only), so a failed
+  // value of 9 characters or fewer stays invalid.
+  return legalEntityNif.length > CIF_LENGTH && retryCif(legalEntityNif, opts);
+}
+
+/**
+ * NORM-2..3: the slow path of isValidLegalEntityNif, in its own function so
+ * the fast path stays small.
+ */
+function retryCif(value: string, opts: IsValidOptions | null): boolean {
+  const normalized = normalizedForRetry(value, opts, FIRST_KEY);
   return normalized !== null && checkCif(normalized, opts);
 }
 

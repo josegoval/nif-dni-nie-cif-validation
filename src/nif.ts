@@ -13,10 +13,16 @@
  * Rule IDs refer to SPEC.md.
  */
 import { cifKeyKind, hasValidCifDigitsAndControl, NOT_A_KEY } from "./cif";
-import { isValidNineCharDni } from "./dni";
+import { dniVerdict, isValidNineCharDni } from "./dni";
 import { isValidNineCharNie, isValidOldNie } from "./nie";
-import { normalizedForRetry } from "./normalize";
-import { acceptsValid } from "./policy";
+import {
+  FIRST_DIGIT,
+  FIRST_KEY,
+  FIRST_KLM,
+  FIRST_XYZ,
+  normalizedForRetry,
+} from "./normalize";
+import { acceptsValid, isPlaceholder } from "./policy";
 import { NO_OPTIONS } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -25,33 +31,58 @@ const NIF_LENGTH = 9;
 /** NIE-3: old NIEs, `X0` + 7 digits + letter. */
 const OLD_NIE_LENGTH = 10;
 
+/*
+ * The raw checks below return a verdict: 1 valid; 0 invalid, and
+ * normalizing can't change that; -1 invalid, but normalizing might help.
+ *
+ * A 9-character value that fails can only be fixed when it has a separator
+ * (the raw check already folds case, NORM-1). Removing it leaves 8
+ * characters or fewer, which only NORM-4 can make valid, and only from a
+ * digit. So a value whose first character is ASCII and at least "0" (never
+ * a separator) and not a digit gives 0; so does a DNI with all 8 digits and
+ * a wrong letter (see dniVerdict).
+ */
+
+/** 0 for a failed 9-character value whose first character is `first`. */
+function failedNineChars(first: number): number {
+  return (first - 0x30) >>> 0 < 0x50 ? 0 : -1;
+}
+
 /** DNI, K/L/M or NIE, on the raw string. */
-function checkNaturalPersonNif(value: string): boolean {
+function checkNaturalPersonNif(value: string): number {
   const length = value.length;
   if (length === NIF_LENGTH) {
     const first = value.charCodeAt(0);
-    // DNI-1 / KLM-1 or NIE-1: the first character decides the format.
-    return isValidNineCharDni(value, first) || isValidNineCharNie(value, first);
+    // DNI-1: a digit.
+    if ((first - 48) >>> 0 < 10) return dniVerdict(value);
+    // KLM-1 or NIE-1: the first character decides the format.
+    return isValidNineCharDni(value, first) || isValidNineCharNie(value, first)
+      ? 1
+      : failedNineChars(first);
   }
   // NIE-3: old 10-character NIE.
-  return length === OLD_NIE_LENGTH && isValidOldNie(value);
+  return length === OLD_NIE_LENGTH && isValidOldNie(value) ? 1 : -1;
 }
 
 /** Any NIF, on the raw string. */
-function checkNif(value: string, opts: IsValidOptions | null): boolean {
+function checkNif(value: string, opts: IsValidOptions | null): number {
   const length = value.length;
   if (length === NIF_LENGTH) {
     const first = value.charCodeAt(0);
+    // DNI-1: a digit.
+    if ((first - 48) >>> 0 < 10) return dniVerdict(value);
     // CIF-2: the organisation keys never overlap with the natural person
     // prefixes (digits, K L M, X Y Z), so the first character picks one
     // format and only that one is checked.
     const kind = cifKeyKind(first);
-    if (kind !== NOT_A_KEY)
-      return hasValidCifDigitsAndControl(value, kind, opts);
-    return isValidNineCharDni(value, first) || isValidNineCharNie(value, first);
+    const valid =
+      kind !== NOT_A_KEY
+        ? hasValidCifDigitsAndControl(value, kind, opts)
+        : isValidNineCharDni(value, first) || isValidNineCharNie(value, first);
+    return valid ? 1 : failedNineChars(first);
   }
   // NIE-3: old 10-character NIE.
-  return length === OLD_NIE_LENGTH && isValidOldNie(value);
+  return length === OLD_NIE_LENGTH && isValidOldNie(value) ? 1 : -1;
 }
 
 /**
@@ -75,13 +106,32 @@ export function isValidNaturalPersonNif(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof naturalPersonNif !== "string") return false;
-  if (checkNaturalPersonNif(naturalPersonNif))
-    return acceptsValid(naturalPersonNif, opts);
-  // NORM-2..4: only when the raw check failed and cleanup could help.
-  const normalized = normalizedForRetry(naturalPersonNif, opts);
+  // The fast path: a valid raw value, and placeholders only when asked.
+  const verdict = checkNaturalPersonNif(naturalPersonNif);
+  if (verdict === 1)
+    return (
+      opts?.rejectPlaceholders !== true || !isPlaceholder(naturalPersonNif)
+    );
+  if (verdict === 0) return false;
+  return retryNaturalPersonNif(naturalPersonNif, opts);
+}
+
+/**
+ * NORM-2..4: the slow path of isValidNaturalPersonNif, in its own function so the fast path
+ * stays small.
+ */
+function retryNaturalPersonNif(
+  value: string,
+  opts: IsValidOptions | null
+): boolean {
+  const normalized = normalizedForRetry(
+    value,
+    opts,
+    FIRST_DIGIT | FIRST_KLM | FIRST_XYZ
+  );
   return (
     normalized !== null &&
-    checkNaturalPersonNif(normalized) &&
+    checkNaturalPersonNif(normalized) === 1 &&
     acceptsValid(normalized, opts)
   );
 }
@@ -113,12 +163,27 @@ export function isValidNif(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof nif !== "string") return false;
-  if (checkNif(nif, opts)) return acceptsValid(nif, opts);
-  // NORM-2..4: only when the raw check failed and cleanup could help.
-  const normalized = normalizedForRetry(nif, opts);
+  // The fast path: a valid raw value, and placeholders only when asked.
+  const verdict = checkNif(nif, opts);
+  if (verdict === 1)
+    return opts?.rejectPlaceholders !== true || !isPlaceholder(nif);
+  if (verdict === 0) return false;
+  return retryNif(nif, opts);
+}
+
+/**
+ * NORM-2..4: the slow path of isValidNif, in its own function so the fast path
+ * stays small.
+ */
+function retryNif(value: string, opts: IsValidOptions | null): boolean {
+  const normalized = normalizedForRetry(
+    value,
+    opts,
+    FIRST_DIGIT | FIRST_KLM | FIRST_XYZ | FIRST_KEY
+  );
   return (
     normalized !== null &&
-    checkNif(normalized, opts) &&
+    checkNif(normalized, opts) === 1 &&
     acceptsValid(normalized, opts)
   );
 }
