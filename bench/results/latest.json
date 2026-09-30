@@ -1,0 +1,3030 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-30T22:52:13.798Z",
+  "git": {
+    "sha": "3177752b68b6333884fa34fbd95c9a547c0e1f71",
+    "dirty": false
+  },
+  "machine": {
+    "cpu": "Apple M1",
+    "cores": 8,
+    "memoryGiB": 16,
+    "os": "darwin 25.3.0",
+    "arch": "arm64",
+    "runner": null
+  },
+  "node": "v24.16.0",
+  "tinybench": "6.2.0",
+  "config": {
+    "timePerTaskMs": 2000,
+    "warmupPerTaskMs": 500,
+    "rounds": 3,
+    "order": "one run of the script, each task in its own process; the whole run repeats in rounds, and the order of the libraries rotates from set to set and from round to round; the figure is the median round"
+  },
+  "subject": "current",
+  "inputSets": {
+    "DNI": {
+      "count": 225,
+      "description": "225 DNI in canonical form (8 digits and a letter): 150 valid, plus 75 of them with a wrong control letter."
+    },
+    "NIE": {
+      "count": 150,
+      "description": "150 NIE in canonical form (X, Y or Z, 7 digits and a letter): 100 valid, plus 50 of them with a wrong control letter."
+    },
+    "CIF": {
+      "count": 270,
+      "description": "270 CIF in canonical form (organisation key, 7 digits and a control character), every organisation key: 180 valid, plus 90 of them with a wrong control character."
+    },
+    "mixed": {
+      "count": 1001,
+      "description": "1001 strings of every kind: 500 valid (DNI, K/L/M, NIE, old-form NIE and CIF), 100 of them again in lower case, 250 with a wrong control character, and 151 junk strings (wrong lengths, random characters, the empty string)."
+    }
+  },
+  "contenders": [
+    {
+      "id": "current",
+      "label": "nif-dni-nie-cif-validation (this build)",
+      "kind": "subject",
+      "package": "nif-dni-nie-cif-validation",
+      "version": "1.0.12+3177752",
+      "homepage": "https://github.com/josegoval/nif-dni-nie-cif-validation",
+      "calls": {
+        "DNI": "isValidDni(x)",
+        "NIE": "isValidNie(x)",
+        "CIF": "isValidCif(x)",
+        "any": "isValidNif(x)"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": true
+      },
+      "inputTransform": null,
+      "notes": [
+        "Default options: the input is normalized (NORM-1 to NORM-4) and CIF control characters follow CIF-3."
+      ]
+    },
+    {
+      "id": "v1",
+      "label": "nif-dni-nie-cif-validation (previous major)",
+      "kind": "previous",
+      "package": "nif-dni-nie-cif-validation",
+      "version": "1.0.11",
+      "homepage": "https://github.com/josegoval/nif-dni-nie-cif-validation",
+      "calls": {
+        "DNI": "isValidDni(x)",
+        "NIE": "isValidNie(x)",
+        "CIF": "isValidCif(x)",
+        "any": "isValidNif(x)"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": true
+      },
+      "inputTransform": null,
+      "notes": [
+        "The previous major version. It is published as CommonJS only, so a bundler cannot drop what an import doesn't use."
+      ]
+    },
+    {
+      "id": "spain-id",
+      "label": "spain-id",
+      "kind": "competitor",
+      "package": "spain-id",
+      "version": "1.1.14",
+      "homepage": "https://github.com/coixinet/spain-id",
+      "calls": {
+        "DNI": "validDNI(x)",
+        "NIE": "validNIE(x)",
+        "CIF": "validCIF(x)",
+        "any": "validateSpanishId(x)"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": true
+      },
+      "inputTransform": null,
+      "notes": []
+    },
+    {
+      "id": "better-dni",
+      "label": "better-dni",
+      "kind": "competitor",
+      "package": "better-dni",
+      "version": "4.4.2",
+      "homepage": "https://github.com/singuerinc/better-dni",
+      "calls": {
+        "DNI": "isNIF(x)",
+        "NIE": "isNIE(x)",
+        "CIF": null,
+        "any": "isValid(x)"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": false
+      },
+      "inputTransform": null,
+      "notes": [
+        "DNI and NIE only: no CIF. Its documentation says that it validates a DNI (NIE / NIF), and it doesn't normalize (spaces and separators are rejected)."
+      ]
+    },
+    {
+      "id": "dni-js",
+      "label": "dni-js",
+      "kind": "competitor",
+      "package": "dni-js",
+      "version": "1.0.0",
+      "homepage": "https://github.com/albertfdp/dni-js",
+      "calls": {
+        "DNI": "dni.isDNI(x)",
+        "NIE": "dni.isNIE(x)",
+        "CIF": null,
+        "any": "dni.isValid(x)"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": false
+      },
+      "inputTransform": null,
+      "notes": [
+        "DNI and NIE only: no CIF. It is published as CommonJS only."
+      ]
+    },
+    {
+      "id": "stdnum",
+      "label": "stdnum",
+      "kind": "competitor",
+      "package": "stdnum",
+      "version": "1.12.6",
+      "homepage": "https://github.com/koblas/stdnum-js",
+      "calls": {
+        "DNI": "stdnum.ES.dni.validate(x).isValid",
+        "NIE": "stdnum.ES.nie.validate(x).isValid",
+        "CIF": "stdnum.ES.cif.validate(x).isValid",
+        "any": "stdnum.ES.nif.validate(x).isValid"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": true
+      },
+      "inputTransform": null,
+      "notes": [
+        "A multi-country library (about 90 countries): its size is larger by design. `ES.nif` validates DNI, NIE, K/L/M and CIF."
+      ]
+    },
+    {
+      "id": "validator-identity-card",
+      "label": "validator.js isIdentityCard(x, \"ES\")",
+      "kind": "competitor",
+      "package": "validator",
+      "version": "13.15.35",
+      "homepage": "https://github.com/validatorjs/validator.js",
+      "calls": {
+        "DNI": "validator.isIdentityCard(x, \"ES\")",
+        "NIE": "validator.isIdentityCard(x, \"ES\")",
+        "CIF": null,
+        "any": "validator.isIdentityCard(x, \"ES\")"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": false
+      },
+      "inputTransform": null,
+      "notes": [
+        "Spanish DNI and NIE only: validator.js has no CIF check. The one call covers both, so the DNI and NIE rows use the same function. A multi-purpose library (emails, URLs, and more)."
+      ]
+    },
+    {
+      "id": "validator-tax-id",
+      "label": "validator.js isTaxID(x, \"es-ES\")",
+      "kind": "competitor",
+      "package": "validator",
+      "version": "13.15.35",
+      "homepage": "https://github.com/validatorjs/validator.js",
+      "calls": {
+        "DNI": "validator.isTaxID(x, \"es-ES\")",
+        "NIE": "validator.isTaxID(x, \"es-ES\")",
+        "CIF": null,
+        "any": "validator.isTaxID(x, \"es-ES\")"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": false
+      },
+      "inputTransform": null,
+      "notes": [
+        "Its source (`src/lib/isTaxID.js`, which the README points to for the exact support) says persons only: DNI and NIE, no CIF. The one call covers both. Its size includes the tax ID rules of every country it supports."
+      ]
+    },
+    {
+      "id": "maistik",
+      "label": "@maistik/validate-nif",
+      "kind": "competitor",
+      "package": "@maistik/validate-nif",
+      "version": "2.0.1",
+      "homepage": "https://github.com/Maistik-Studio/validate-nif",
+      "calls": {
+        "DNI": "isValidDNI(x)",
+        "NIE": "isValidNIE(x)",
+        "CIF": "isValidCIF(x)",
+        "any": "isValid(x)"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": true
+      },
+      "inputTransform": null,
+      "notes": []
+    },
+    {
+      "id": "kreyo",
+      "label": "@kreyo/nif-validator",
+      "kind": "competitor",
+      "package": "@kreyo/nif-validator",
+      "version": "0.1.0",
+      "homepage": "https://github.com/kreyo-io/nif-validator",
+      "calls": {
+        "DNI": "isValid(x)",
+        "NIE": "isValid(x)",
+        "CIF": "isValid(x)",
+        "any": "isValid(x)"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": true
+      },
+      "inputTransform": null,
+      "notes": [
+        "One function for every type, so every row uses `isValid`. K/L/M NIFs are only accepted with the option `includeDeprecated: true`; the benchmark uses the default, as its documentation does."
+      ]
+    },
+    {
+      "id": "jsvat",
+      "label": "jsvat (Spain)",
+      "kind": "competitor",
+      "package": "jsvat",
+      "version": "2.5.4",
+      "homepage": "https://github.com/se-panfilov/jsvat",
+      "calls": {
+        "DNI": "checkVAT(x, countries).isValid",
+        "NIE": "checkVAT(x, countries).isValid",
+        "CIF": "checkVAT(x, countries).isValid",
+        "any": "checkVAT(x, countries).isValid"
+      },
+      "supports": {
+        "DNI": true,
+        "NIE": true,
+        "CIF": true
+      },
+      "inputTransform": "prefix \"ES\" (outside the timed loop)",
+      "notes": [
+        "A VAT number validator (deprecated on npm, repository archived): every input is prefixed with \"ES\" before it is validated, and the prefix is added outside the timed loop and outside the agreement check of the library. It does not accept a bare NIF."
+      ]
+    }
+  ],
+  "throughput": {
+    "DNI": {
+      "current": {
+        "status": "ok",
+        "opsPerSecond": 60261910,
+        "rmePercent": 0.01,
+        "samples": 531581,
+        "rounds": [
+          60261910,
+          59865013,
+          60288976
+        ],
+        "rangePercent": 0.7,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 1
+      },
+      "v1": {
+        "status": "ok",
+        "opsPerSecond": 8826459,
+        "rmePercent": 0.04,
+        "samples": 77927,
+        "rounds": [
+          8834461,
+          8826459,
+          8820232
+        ],
+        "rangePercent": 0.16,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 6.83
+      },
+      "spain-id": {
+        "status": "ok",
+        "opsPerSecond": 7531102,
+        "rmePercent": 0.05,
+        "samples": 66375,
+        "rounds": [
+          7530126,
+          7531102,
+          7547225
+        ],
+        "rangePercent": 0.23,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 8
+      },
+      "better-dni": {
+        "status": "ok",
+        "opsPerSecond": 8043789,
+        "rmePercent": 0.04,
+        "samples": 70946,
+        "rounds": [
+          8043789,
+          8207304,
+          7911408
+        ],
+        "rangePercent": 3.68,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 7.49
+      },
+      "dni-js": {
+        "status": "ok",
+        "opsPerSecond": 9531653,
+        "rmePercent": 0.04,
+        "samples": 83922,
+        "rounds": [
+          9531653,
+          9563607,
+          9523361
+        ],
+        "rangePercent": 0.42,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 6.32
+      },
+      "stdnum": {
+        "status": "ok",
+        "opsPerSecond": 484063,
+        "rmePercent": 0.14,
+        "samples": 4292,
+        "rounds": [
+          487985,
+          484063,
+          481934
+        ],
+        "rangePercent": 1.25,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 124.49
+      },
+      "validator-identity-card": {
+        "status": "ok",
+        "opsPerSecond": 6654954,
+        "rmePercent": 0.06,
+        "samples": 58575,
+        "rounds": [
+          6660141,
+          6642456,
+          6654954
+        ],
+        "rangePercent": 0.27,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 9.06
+      },
+      "validator-tax-id": {
+        "status": "ok",
+        "opsPerSecond": 4714824,
+        "rmePercent": 0.06,
+        "samples": 41610,
+        "rounds": [
+          4714824,
+          4708703,
+          4716729
+        ],
+        "rangePercent": 0.17,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 12.78
+      },
+      "maistik": {
+        "status": "ok",
+        "opsPerSecond": 9693740,
+        "rmePercent": 0.04,
+        "samples": 85520,
+        "rounds": [
+          9673339,
+          9694184,
+          9693740
+        ],
+        "rangePercent": 0.22,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 6.22
+      },
+      "kreyo": {
+        "status": "ok",
+        "opsPerSecond": 2772367,
+        "rmePercent": 0.09,
+        "samples": 24456,
+        "rounds": [
+          2772367,
+          2776639,
+          2771541
+        ],
+        "rangePercent": 0.18,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 21.74
+      },
+      "jsvat": {
+        "status": "ok",
+        "opsPerSecond": 2708829,
+        "rmePercent": 0.1,
+        "samples": 23870,
+        "rounds": [
+          2708829,
+          2704432,
+          2720369
+        ],
+        "rangePercent": 0.59,
+        "accepted": 150,
+        "inputs": 225,
+        "subjectSpeedup": 22.25
+      }
+    },
+    "NIE": {
+      "current": {
+        "status": "ok",
+        "opsPerSecond": 60319874,
+        "rmePercent": 0.01,
+        "samples": 800982,
+        "rounds": [
+          60319874,
+          60450168,
+          59881954
+        ],
+        "rangePercent": 0.94,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 1
+      },
+      "v1": {
+        "status": "ok",
+        "opsPerSecond": 6555465,
+        "rmePercent": 0.02,
+        "samples": 87117,
+        "rounds": [
+          6618870,
+          6555465,
+          6520698
+        ],
+        "rangePercent": 1.5,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 9.2
+      },
+      "spain-id": {
+        "status": "ok",
+        "opsPerSecond": 4196112,
+        "rmePercent": 0.06,
+        "samples": 55443,
+        "rounds": [
+          4221640,
+          4177965,
+          4196112
+        ],
+        "rangePercent": 1.04,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 14.38
+      },
+      "better-dni": {
+        "status": "ok",
+        "opsPerSecond": 8004467,
+        "rmePercent": 0.03,
+        "samples": 105812,
+        "rounds": [
+          8004341,
+          8238243,
+          8004467
+        ],
+        "rangePercent": 2.92,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 7.54
+      },
+      "dni-js": {
+        "status": "ok",
+        "opsPerSecond": 5298745,
+        "rmePercent": 0.04,
+        "samples": 70078,
+        "rounds": [
+          5297643,
+          5298745,
+          5299966
+        ],
+        "rangePercent": 0.04,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 11.38
+      },
+      "stdnum": {
+        "status": "ok",
+        "opsPerSecond": 457608,
+        "rmePercent": 0.11,
+        "samples": 6088,
+        "rounds": [
+          455967,
+          457608,
+          462744
+        ],
+        "rangePercent": 1.48,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 131.82
+      },
+      "validator-identity-card": {
+        "status": "ok",
+        "opsPerSecond": 4264738,
+        "rmePercent": 0.06,
+        "samples": 56188,
+        "rounds": [
+          4257398,
+          4280890,
+          4264738
+        ],
+        "rangePercent": 0.55,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 14.14
+      },
+      "validator-tax-id": {
+        "status": "ok",
+        "opsPerSecond": 3717293,
+        "rmePercent": 0.06,
+        "samples": 49179,
+        "rounds": [
+          3717293,
+          3720733,
+          3701253
+        ],
+        "rangePercent": 0.52,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 16.23
+      },
+      "maistik": {
+        "status": "ok",
+        "opsPerSecond": 7842173,
+        "rmePercent": 0.03,
+        "samples": 103700,
+        "rounds": [
+          7842173,
+          7838736,
+          7853916
+        ],
+        "rangePercent": 0.19,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 7.69
+      },
+      "kreyo": {
+        "status": "ok",
+        "opsPerSecond": 2553561,
+        "rmePercent": 0.08,
+        "samples": 33731,
+        "rounds": [
+          2553561,
+          2558683,
+          2548887
+        ],
+        "rangePercent": 0.38,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 23.62
+      },
+      "jsvat": {
+        "status": "ok",
+        "opsPerSecond": 2151723,
+        "rmePercent": 0.09,
+        "samples": 28427,
+        "rounds": [
+          2155788,
+          2144740,
+          2151723
+        ],
+        "rangePercent": 0.51,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 28.03
+      }
+    },
+    "CIF": {
+      "better-dni": {
+        "status": "unsupported",
+        "reason": "does not validate a CIF"
+      },
+      "dni-js": {
+        "status": "unsupported",
+        "reason": "does not validate a CIF"
+      },
+      "validator-identity-card": {
+        "status": "unsupported",
+        "reason": "does not validate a CIF"
+      },
+      "validator-tax-id": {
+        "status": "unsupported",
+        "reason": "does not validate a CIF"
+      },
+      "current": {
+        "status": "ok",
+        "opsPerSecond": 43386026,
+        "rmePercent": 0.01,
+        "samples": 320427,
+        "rounds": [
+          43386026,
+          43420908,
+          43258725
+        ],
+        "rangePercent": 0.37,
+        "accepted": 180,
+        "inputs": 270,
+        "subjectSpeedup": 1
+      },
+      "v1": {
+        "status": "ok",
+        "opsPerSecond": 6179633,
+        "rmePercent": 0.06,
+        "samples": 45369,
+        "rounds": [
+          6164212,
+          6179633,
+          6214954
+        ],
+        "rangePercent": 0.82,
+        "accepted": 180,
+        "inputs": 270,
+        "subjectSpeedup": 7.02
+      },
+      "spain-id": {
+        "status": "ok",
+        "opsPerSecond": 4534248,
+        "rmePercent": 0.09,
+        "samples": 32817,
+        "rounds": [
+          4534248,
+          4513817,
+          4575185
+        ],
+        "rangePercent": 1.35,
+        "accepted": 180,
+        "inputs": 270,
+        "subjectSpeedup": 9.57
+      },
+      "stdnum": {
+        "status": "ok",
+        "opsPerSecond": 440774,
+        "rmePercent": 0.13,
+        "samples": 3260,
+        "rounds": [
+          439206,
+          444097,
+          440774
+        ],
+        "rangePercent": 1.11,
+        "accepted": 180,
+        "inputs": 270,
+        "subjectSpeedup": 98.43
+      },
+      "maistik": {
+        "status": "ok",
+        "opsPerSecond": 6787776,
+        "rmePercent": 0.04,
+        "samples": 50043,
+        "rounds": [
+          6753406,
+          6815179,
+          6787776
+        ],
+        "rangePercent": 0.91,
+        "accepted": 180,
+        "inputs": 270,
+        "subjectSpeedup": 6.39
+      },
+      "kreyo": {
+        "status": "ok",
+        "opsPerSecond": 2354388,
+        "rmePercent": 0.1,
+        "samples": 17343,
+        "rounds": [
+          2355296,
+          2345458,
+          2354388
+        ],
+        "rangePercent": 0.42,
+        "accepted": 180,
+        "inputs": 270,
+        "subjectSpeedup": 18.43
+      },
+      "jsvat": {
+        "status": "ok",
+        "opsPerSecond": 2771975,
+        "rmePercent": 0.1,
+        "samples": 20374,
+        "rounds": [
+          2738046,
+          2777364,
+          2771975
+        ],
+        "rangePercent": 1.42,
+        "accepted": 180,
+        "inputs": 270,
+        "subjectSpeedup": 15.65
+      }
+    },
+    "mixed": {
+      "better-dni": {
+        "status": "unsupported",
+        "reason": "does not cover DNI, NIE and CIF, so it cannot validate every input of the set"
+      },
+      "dni-js": {
+        "status": "unsupported",
+        "reason": "does not cover DNI, NIE and CIF, so it cannot validate every input of the set"
+      },
+      "validator-identity-card": {
+        "status": "unsupported",
+        "reason": "does not cover DNI, NIE and CIF, so it cannot validate every input of the set"
+      },
+      "validator-tax-id": {
+        "status": "unsupported",
+        "reason": "does not cover DNI, NIE and CIF, so it cannot validate every input of the set"
+      },
+      "current": {
+        "status": "ok",
+        "opsPerSecond": 39590490,
+        "rmePercent": 0.03,
+        "samples": 78828,
+        "rounds": [
+          39590490,
+          39644833,
+          39457095
+        ],
+        "rangePercent": 0.47,
+        "accepted": 600,
+        "inputs": 1001,
+        "subjectSpeedup": 1
+      },
+      "v1": {
+        "status": "ok",
+        "opsPerSecond": 6984514,
+        "rmePercent": 0.08,
+        "samples": 13914,
+        "rounds": [
+          6983670,
+          6995031,
+          6984514
+        ],
+        "rangePercent": 0.16,
+        "accepted": 600,
+        "inputs": 1001,
+        "subjectSpeedup": 5.67
+      },
+      "spain-id": {
+        "status": "ok",
+        "opsPerSecond": 2583269,
+        "rmePercent": 0.12,
+        "samples": 5151,
+        "rounds": [
+          2583269,
+          2602117,
+          2556641
+        ],
+        "rangePercent": 1.76,
+        "accepted": 520,
+        "inputs": 1001,
+        "subjectSpeedup": 15.33
+      },
+      "stdnum": {
+        "status": "ok",
+        "opsPerSecond": 334312,
+        "rmePercent": 0.26,
+        "samples": 668,
+        "rounds": [
+          333532,
+          336835,
+          334312
+        ],
+        "rangePercent": 0.99,
+        "accepted": 576,
+        "inputs": 1001,
+        "subjectSpeedup": 118.42
+      },
+      "maistik": {
+        "status": "ok",
+        "opsPerSecond": 4993080,
+        "rmePercent": 0.09,
+        "samples": 9949,
+        "rounds": [
+          4993080,
+          4953116,
+          5012301
+        ],
+        "rangePercent": 1.19,
+        "accepted": 516,
+        "inputs": 1001,
+        "subjectSpeedup": 7.93
+      },
+      "kreyo": {
+        "status": "ok",
+        "opsPerSecond": 2656606,
+        "rmePercent": 0.12,
+        "samples": 5296,
+        "rounds": [
+          2667213,
+          2656606,
+          2652030
+        ],
+        "rangePercent": 0.57,
+        "accepted": 516,
+        "inputs": 1001,
+        "subjectSpeedup": 14.9
+      },
+      "jsvat": {
+        "status": "ok",
+        "opsPerSecond": 2561196,
+        "rmePercent": 0.13,
+        "samples": 5104,
+        "rounds": [
+          2555721,
+          2568918,
+          2561196
+        ],
+        "rangePercent": 0.52,
+        "accepted": 576,
+        "inputs": 1001,
+        "subjectSpeedup": 15.46
+      }
+    }
+  },
+  "accuracy": {
+    "results": {
+      "current": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 117,
+            "agree": 117,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 29,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": true,
+            "total": 58,
+            "agree": 58,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 95,
+            "agree": 95,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": true,
+            "total": 55,
+            "agree": 55,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [],
+        "disagreementCount": 0
+      },
+      "v1": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 117,
+            "agree": 97,
+            "falseAccepts": 8,
+            "falseRejects": 12,
+            "onDocumentedDecisions": 13,
+            "threw": 0,
+            "agreementPercent": 82.91
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 21,
+            "falseAccepts": 0,
+            "falseRejects": 8,
+            "onDocumentedDecisions": 4,
+            "threw": 0,
+            "agreementPercent": 72.41
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 14,
+            "falseAccepts": 0,
+            "falseRejects": 2,
+            "onDocumentedDecisions": 1,
+            "threw": 0,
+            "agreementPercent": 87.5
+          },
+          "CIF": {
+            "supported": true,
+            "total": 58,
+            "agree": 48,
+            "falseAccepts": 8,
+            "falseRejects": 2,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 82.76
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 95,
+            "agree": 87,
+            "falseAccepts": 8,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 91.58
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": true,
+            "total": 55,
+            "agree": 47,
+            "falseAccepts": 8,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 85.45
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "G1234567D",
+            "expected": "INVALID_CONTROL_CHARACTER",
+            "got": "valid",
+            "kind": "falseAccept",
+            "rule": "CIF-3",
+            "note": "G needs a digit (valid only in lenient mode)",
+            "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
+          },
+          {
+            "input": " 12345678Z ",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-2",
+            "note": "surrounding spaces",
+            "documentedDecision": null
+          },
+          {
+            "input": "12345678-Z",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "hyphen",
+            "documentedDecision": null
+          },
+          {
+            "input": "1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7-digit DNI, canonical 01234567L",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
+          },
+          {
+            "input": "x-0123456-7l",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old NIE form with separators",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          }
+        ],
+        "disagreementCount": 20
+      },
+      "spain-id": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 117,
+            "agree": 97,
+            "falseAccepts": 9,
+            "falseRejects": 11,
+            "onDocumentedDecisions": 13,
+            "threw": 0,
+            "agreementPercent": 82.91
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 26,
+            "falseAccepts": 0,
+            "falseRejects": 3,
+            "onDocumentedDecisions": 2,
+            "threw": 0,
+            "agreementPercent": 89.66
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 12,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 75
+          },
+          "CIF": {
+            "supported": true,
+            "total": 58,
+            "agree": 50,
+            "falseAccepts": 8,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 86.21
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 4,
+            "falseAccepts": 1,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 44.44
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 95,
+            "agree": 82,
+            "falseAccepts": 9,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 86.32
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": true,
+            "total": 55,
+            "agree": 47,
+            "falseAccepts": 8,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 85.45
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 4,
+            "falseAccepts": 1,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 44.44
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "K1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-2",
+            "note": "K: Spaniard under 14 without DNI",
+            "documentedDecision": null
+          },
+          {
+            "input": "K0867756N",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-1",
+            "note": "v1 test value",
+            "documentedDecision": null
+          },
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": "G1234567D",
+            "expected": "INVALID_CONTROL_CHARACTER",
+            "got": "valid",
+            "kind": "falseAccept",
+            "rule": "CIF-3",
+            "note": "G needs a digit (valid only in lenient mode)",
+            "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
+          },
+          {
+            "input": "12.345.678Z",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-2",
+            "note": "dots",
+            "documentedDecision": null
+          },
+          {
+            "input": "X/1234567/L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "slashes",
+            "documentedDecision": null
+          }
+        ],
+        "disagreementCount": 20
+      },
+      "better-dni": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 59,
+            "agree": 43,
+            "falseAccepts": 0,
+            "falseRejects": 16,
+            "onDocumentedDecisions": 7,
+            "threw": 0,
+            "agreementPercent": 72.88
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 21,
+            "falseAccepts": 0,
+            "falseRejects": 8,
+            "onDocumentedDecisions": 4,
+            "threw": 0,
+            "agreementPercent": 72.41
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 12,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 75
+          },
+          "CIF": {
+            "supported": false
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 40,
+            "agree": 36,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 90
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": false
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "K1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-2",
+            "note": "K: Spaniard under 14 without DNI",
+            "documentedDecision": null
+          },
+          {
+            "input": "K0867756N",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-1",
+            "note": "v1 test value",
+            "documentedDecision": null
+          },
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": " 12345678Z ",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-2",
+            "note": "surrounding spaces",
+            "documentedDecision": null
+          },
+          {
+            "input": "12345678-Z",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "hyphen",
+            "documentedDecision": null
+          },
+          {
+            "input": "1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7-digit DNI, canonical 01234567L",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
+          }
+        ],
+        "disagreementCount": 16
+      },
+      "dni-js": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 59,
+            "agree": 44,
+            "falseAccepts": 0,
+            "falseRejects": 15,
+            "onDocumentedDecisions": 7,
+            "threw": 0,
+            "agreementPercent": 74.58
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 22,
+            "falseAccepts": 0,
+            "falseRejects": 7,
+            "onDocumentedDecisions": 4,
+            "threw": 0,
+            "agreementPercent": 75.86
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 12,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 75
+          },
+          "CIF": {
+            "supported": false
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 40,
+            "agree": 36,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 90
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": false
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "K1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-2",
+            "note": "K: Spaniard under 14 without DNI",
+            "documentedDecision": null
+          },
+          {
+            "input": "K0867756N",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-1",
+            "note": "v1 test value",
+            "documentedDecision": null
+          },
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": " 12345678Z ",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-2",
+            "note": "surrounding spaces",
+            "documentedDecision": null
+          },
+          {
+            "input": "X/1234567/L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "slashes",
+            "documentedDecision": null
+          },
+          {
+            "input": "1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7-digit DNI, canonical 01234567L",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
+          }
+        ],
+        "disagreementCount": 15
+      },
+      "stdnum": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 117,
+            "agree": 88,
+            "falseAccepts": 23,
+            "falseRejects": 6,
+            "onDocumentedDecisions": 29,
+            "threw": 0,
+            "agreementPercent": 75.21
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 26,
+            "falseAccepts": 0,
+            "falseRejects": 3,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 89.66
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 13,
+            "falseAccepts": 0,
+            "falseRejects": 3,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 81.25
+          },
+          "CIF": {
+            "supported": true,
+            "total": 58,
+            "agree": 36,
+            "falseAccepts": 22,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 22,
+            "threw": 0,
+            "agreementPercent": 62.07
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 4,
+            "falseAccepts": 1,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 1,
+            "threw": 0,
+            "agreementPercent": 80
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 95,
+            "agree": 72,
+            "falseAccepts": 23,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 23,
+            "threw": 0,
+            "agreementPercent": 75.79
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": true,
+            "total": 55,
+            "agree": 33,
+            "falseAccepts": 22,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 22,
+            "threw": 0,
+            "agreementPercent": 60
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 3,
+            "falseAccepts": 1,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 1,
+            "threw": 0,
+            "agreementPercent": 75
+          }
+        },
+        "disagreements": [
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": "B1234567D",
+            "expected": "INVALID_CONTROL_CHARACTER",
+            "got": "valid",
+            "kind": "falseAccept",
+            "rule": "CIF-3",
+            "note": "B needs a digit",
+            "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
+          },
+          {
+            "input": "1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7-digit DNI, canonical 01234567L",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
+          },
+          {
+            "input": "ES12345678Z",
+            "expected": "INVALID_FORMAT",
+            "got": "valid",
+            "kind": "falseAccept",
+            "rule": "VAT-1",
+            "note": "the ES prefix needs allowVatPrefix",
+            "documentedDecision": "an ES prefix is not a NIF (it needs allowVatPrefix)"
+          }
+        ],
+        "disagreementCount": 29
+      },
+      "validator-identity-card": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 59,
+            "agree": 45,
+            "falseAccepts": 0,
+            "falseRejects": 14,
+            "onDocumentedDecisions": 6,
+            "threw": 0,
+            "agreementPercent": 76.27
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 23,
+            "falseAccepts": 0,
+            "falseRejects": 6,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 79.31
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 12,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 75
+          },
+          "CIF": {
+            "supported": false
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 40,
+            "agree": 36,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 90
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": false
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "K1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-2",
+            "note": "K: Spaniard under 14 without DNI",
+            "documentedDecision": null
+          },
+          {
+            "input": "K0867756N",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-1",
+            "note": "v1 test value",
+            "documentedDecision": null
+          },
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": "12 345 678 Z",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-2",
+            "note": "inner spaces",
+            "documentedDecision": null
+          },
+          {
+            "input": "12345678-Z",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "hyphen",
+            "documentedDecision": null
+          },
+          {
+            "input": "1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7-digit DNI, canonical 01234567L",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
+          }
+        ],
+        "disagreementCount": 14
+      },
+      "validator-tax-id": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 59,
+            "agree": 49,
+            "falseAccepts": 0,
+            "falseRejects": 10,
+            "onDocumentedDecisions": 5,
+            "threw": 0,
+            "agreementPercent": 83.05
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 23,
+            "falseAccepts": 0,
+            "falseRejects": 6,
+            "onDocumentedDecisions": 2,
+            "threw": 0,
+            "agreementPercent": 79.31
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 12,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 75
+          },
+          "CIF": {
+            "supported": false
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 40,
+            "agree": 40,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": false
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": " 12345678Z ",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-2",
+            "note": "surrounding spaces",
+            "documentedDecision": null
+          },
+          {
+            "input": "12345678-Z",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "hyphen",
+            "documentedDecision": null
+          },
+          {
+            "input": "1.234.567-l",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7 digits with separators",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
+          }
+        ],
+        "disagreementCount": 10
+      },
+      "maistik": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 117,
+            "agree": 97,
+            "falseAccepts": 9,
+            "falseRejects": 11,
+            "onDocumentedDecisions": 14,
+            "threw": 0,
+            "agreementPercent": 82.91
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 25,
+            "falseAccepts": 1,
+            "falseRejects": 3,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 86.21
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 12,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 75
+          },
+          "CIF": {
+            "supported": true,
+            "total": 58,
+            "agree": 50,
+            "falseAccepts": 8,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 86.21
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 95,
+            "agree": 83,
+            "falseAccepts": 8,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 87.37
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": true,
+            "total": 55,
+            "agree": 47,
+            "falseAccepts": 8,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 85.45
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "K1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-2",
+            "note": "K: Spaniard under 14 without DNI",
+            "documentedDecision": null
+          },
+          {
+            "input": "K0867756N",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-1",
+            "note": "v1 test value",
+            "documentedDecision": null
+          },
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": "G1234567D",
+            "expected": "INVALID_CONTROL_CHARACTER",
+            "got": "valid",
+            "kind": "falseAccept",
+            "rule": "CIF-3",
+            "note": "G needs a digit (valid only in lenient mode)",
+            "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
+          },
+          {
+            "input": "X/1234567/L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "slashes",
+            "documentedDecision": null
+          },
+          {
+            "input": "1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7-digit DNI, canonical 01234567L",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
+          }
+        ],
+        "disagreementCount": 20
+      },
+      "kreyo": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 117,
+            "agree": 97,
+            "falseAccepts": 8,
+            "falseRejects": 12,
+            "onDocumentedDecisions": 14,
+            "threw": 0,
+            "agreementPercent": 82.91
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 25,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 86.21
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 12,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 75
+          },
+          "CIF": {
+            "supported": true,
+            "total": 58,
+            "agree": 50,
+            "falseAccepts": 8,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 86.21
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 95,
+            "agree": 83,
+            "falseAccepts": 8,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 87.37
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": true,
+            "total": 55,
+            "agree": 47,
+            "falseAccepts": 8,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 8,
+            "threw": 0,
+            "agreementPercent": 85.45
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 4,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 55.56
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "K1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-2",
+            "note": "K: Spaniard under 14 without DNI",
+            "documentedDecision": null
+          },
+          {
+            "input": "K0867756N",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-1",
+            "note": "v1 test value",
+            "documentedDecision": null
+          },
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": "G1234567D",
+            "expected": "INVALID_CONTROL_CHARACTER",
+            "got": "valid",
+            "kind": "falseAccept",
+            "rule": "CIF-3",
+            "note": "G needs a digit (valid only in lenient mode)",
+            "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
+          },
+          {
+            "input": "12.345.678Z",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-2",
+            "note": "dots",
+            "documentedDecision": null
+          },
+          {
+            "input": "X/1234567/L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "slashes",
+            "documentedDecision": null
+          }
+        ],
+        "disagreementCount": 20
+      },
+      "jsvat": {
+        "all": {
+          "overall": {
+            "supported": true,
+            "total": 117,
+            "agree": 100,
+            "falseAccepts": 11,
+            "falseRejects": 6,
+            "onDocumentedDecisions": 17,
+            "threw": 0,
+            "agreementPercent": 85.47
+          },
+          "DNI": {
+            "supported": true,
+            "total": 29,
+            "agree": 26,
+            "falseAccepts": 0,
+            "falseRejects": 3,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 89.66
+          },
+          "NIE": {
+            "supported": true,
+            "total": 16,
+            "agree": 13,
+            "falseAccepts": 0,
+            "falseRejects": 3,
+            "onDocumentedDecisions": 3,
+            "threw": 0,
+            "agreementPercent": 81.25
+          },
+          "CIF": {
+            "supported": true,
+            "total": 58,
+            "agree": 47,
+            "falseAccepts": 11,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 11,
+            "threw": 0,
+            "agreementPercent": 81.03
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 95,
+            "agree": 84,
+            "falseAccepts": 11,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 11,
+            "threw": 0,
+            "agreementPercent": 88.42
+          },
+          "DNI": {
+            "supported": true,
+            "total": 16,
+            "agree": 16,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "CIF": {
+            "supported": true,
+            "total": 55,
+            "agree": 44,
+            "falseAccepts": 11,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 11,
+            "threw": 0,
+            "agreementPercent": 80
+          },
+          "KLM": {
+            "supported": true,
+            "total": 9,
+            "agree": 9,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 4,
+            "agree": 4,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "disagreements": [
+          {
+            "input": "X01234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIE-3",
+            "note": "old 10-character form, canonical X1234567L",
+            "documentedDecision": "the old 10-character NIE form X0nnnnnnnL is valid"
+          },
+          {
+            "input": "B1234567D",
+            "expected": "INVALID_CONTROL_CHARACTER",
+            "got": "valid",
+            "kind": "falseAccept",
+            "rule": "CIF-3",
+            "note": "B needs a digit",
+            "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
+          },
+          {
+            "input": "1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7-digit DNI, canonical 01234567L",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
+          }
+        ],
+        "disagreementCount": 17
+      }
+    },
+    "fixtures": {
+      "files": [
+        "dni.json",
+        "klm.json",
+        "nie.json",
+        "cif.json",
+        "normalization.json",
+        "placeholders-default.json",
+        "vat-default.json"
+      ],
+      "total": 117,
+      "byBucket": {
+        "DNI": 29,
+        "NIE": 16,
+        "CIF": 58,
+        "KLM": 9,
+        "general": 5
+      }
+    }
+  },
+  "sizes": {
+    "current": {
+      "DNI": {
+        "import": "import { isValidDni } from \"dist/esm/index.mjs\";",
+        "minBytes": 1362,
+        "gzipBytes": 624
+      },
+      "NIE": {
+        "import": "import { isValidNie } from \"dist/esm/index.mjs\";",
+        "minBytes": 1231,
+        "gzipBytes": 586
+      },
+      "CIF": {
+        "import": "import { isValidCif } from \"dist/esm/index.mjs\";",
+        "minBytes": 1116,
+        "gzipBytes": 562
+      },
+      "any": {
+        "import": "import { isValidNif } from \"dist/esm/index.mjs\";",
+        "minBytes": 2130,
+        "gzipBytes": 929
+      },
+      "full": {
+        "import": "import * as lib from \"dist/esm/index.mjs\";",
+        "minBytes": 12976,
+        "gzipBytes": 4653
+      },
+      "alternatives": []
+    },
+    "v1": {
+      "DNI": {
+        "import": "import { isValidDni } from \"nif-v1\";",
+        "minBytes": 5697,
+        "gzipBytes": 1517
+      },
+      "NIE": {
+        "import": "import { isValidNie } from \"nif-v1\";",
+        "minBytes": 5697,
+        "gzipBytes": 1517
+      },
+      "CIF": {
+        "import": "import { isValidCif } from \"nif-v1\";",
+        "minBytes": 5697,
+        "gzipBytes": 1518
+      },
+      "any": {
+        "import": "import { isValidNif } from \"nif-v1\";",
+        "minBytes": 5697,
+        "gzipBytes": 1517
+      },
+      "full": {
+        "import": "import * as lib from \"nif-v1\";",
+        "minBytes": 5686,
+        "gzipBytes": 1514
+      },
+      "alternatives": []
+    },
+    "spain-id": {
+      "DNI": {
+        "import": "import { validDNI } from \"spain-id\";",
+        "minBytes": 192,
+        "gzipBytes": 165
+      },
+      "NIE": {
+        "import": "import { validNIE } from \"spain-id\";",
+        "minBytes": 335,
+        "gzipBytes": 237
+      },
+      "CIF": {
+        "import": "import { validCIF } from \"spain-id\";",
+        "minBytes": 551,
+        "gzipBytes": 363
+      },
+      "any": {
+        "import": "import { validateSpanishId } from \"spain-id\";",
+        "minBytes": 1069,
+        "gzipBytes": 583
+      },
+      "full": {
+        "import": "import * as lib from \"spain-id\";",
+        "minBytes": 1262,
+        "gzipBytes": 704
+      },
+      "alternatives": []
+    },
+    "better-dni": {
+      "DNI": {
+        "import": "import { isNIF } from \"better-dni\";",
+        "minBytes": 2618,
+        "gzipBytes": 1135
+      },
+      "NIE": {
+        "import": "import { isNIE } from \"better-dni\";",
+        "minBytes": 2618,
+        "gzipBytes": 1135
+      },
+      "CIF": null,
+      "any": {
+        "import": "import { isValid } from \"better-dni\";",
+        "minBytes": 2620,
+        "gzipBytes": 1134
+      },
+      "full": {
+        "import": "import * as lib from \"better-dni\";",
+        "minBytes": 2612,
+        "gzipBytes": 1132
+      },
+      "alternatives": []
+    },
+    "dni-js": {
+      "DNI": {
+        "import": "import { isDNI } from \"dni-js\";",
+        "minBytes": 1542,
+        "gzipBytes": 883
+      },
+      "NIE": {
+        "import": "import { isNIE } from \"dni-js\";",
+        "minBytes": 1542,
+        "gzipBytes": 882
+      },
+      "CIF": null,
+      "any": {
+        "import": "import { isValid } from \"dni-js\";",
+        "minBytes": 1544,
+        "gzipBytes": 882
+      },
+      "full": {
+        "import": "import * as lib from \"dni-js\";",
+        "minBytes": 1536,
+        "gzipBytes": 880
+      },
+      "alternatives": []
+    },
+    "stdnum": {
+      "DNI": {
+        "import": "import { stdnum } from \"stdnum\"; console.log(stdnum.ES.dni.validate);",
+        "minBytes": 210969,
+        "gzipBytes": 51063
+      },
+      "NIE": {
+        "import": "import { stdnum } from \"stdnum\"; console.log(stdnum.ES.nie.validate);",
+        "minBytes": 210969,
+        "gzipBytes": 51063
+      },
+      "CIF": {
+        "import": "import { stdnum } from \"stdnum\"; console.log(stdnum.ES.cif.validate);",
+        "minBytes": 210969,
+        "gzipBytes": 51063
+      },
+      "any": {
+        "import": "import { stdnum } from \"stdnum\"; console.log(stdnum.ES.nif.validate);",
+        "minBytes": 210969,
+        "gzipBytes": 51063
+      },
+      "full": {
+        "import": "import { stdnum } from \"stdnum\";",
+        "minBytes": 210953,
+        "gzipBytes": 51054
+      },
+      "alternatives": [
+        {
+          "label": "deep import of the Spanish NIF module (not documented)",
+          "import": "import { validate } from \"stdnum/lib/esm/es/nif.js\"; console.log(validate);",
+          "minBytes": 7694,
+          "gzipBytes": 2468
+        }
+      ]
+    },
+    "validator-identity-card": {
+      "DNI": {
+        "import": "import isIdentityCard from \"validator/es/lib/isIdentityCard\";",
+        "minBytes": 5670,
+        "gzipBytes": 2539
+      },
+      "NIE": {
+        "import": "import isIdentityCard from \"validator/es/lib/isIdentityCard\";",
+        "minBytes": 5670,
+        "gzipBytes": 2539
+      },
+      "CIF": null,
+      "any": {
+        "import": "import isIdentityCard from \"validator/es/lib/isIdentityCard\";",
+        "minBytes": 5670,
+        "gzipBytes": 2539
+      },
+      "full": {
+        "import": "import validator from \"validator\";",
+        "minBytes": 133464,
+        "gzipBytes": 44449
+      },
+      "alternatives": []
+    },
+    "validator-tax-id": {
+      "DNI": {
+        "import": "import isTaxID from \"validator/es/lib/isTaxID\";",
+        "minBytes": 18796,
+        "gzipBytes": 6537
+      },
+      "NIE": {
+        "import": "import isTaxID from \"validator/es/lib/isTaxID\";",
+        "minBytes": 18796,
+        "gzipBytes": 6537
+      },
+      "CIF": null,
+      "any": {
+        "import": "import isTaxID from \"validator/es/lib/isTaxID\";",
+        "minBytes": 18796,
+        "gzipBytes": 6537
+      },
+      "full": {
+        "import": "import validator from \"validator\";",
+        "minBytes": 133464,
+        "gzipBytes": 44449
+      },
+      "alternatives": []
+    },
+    "maistik": {
+      "DNI": {
+        "import": "import { isValidDNI } from \"@maistik/validate-nif\";",
+        "minBytes": 277,
+        "gzipBytes": 215
+      },
+      "NIE": {
+        "import": "import { isValidNIE } from \"@maistik/validate-nif\";",
+        "minBytes": 316,
+        "gzipBytes": 243
+      },
+      "CIF": {
+        "import": "import { isValidCIF } from \"@maistik/validate-nif\";",
+        "minBytes": 451,
+        "gzipBytes": 319
+      },
+      "any": {
+        "import": "import { isValid } from \"@maistik/validate-nif\";",
+        "minBytes": 813,
+        "gzipBytes": 456
+      },
+      "full": {
+        "import": "import * as lib from \"@maistik/validate-nif\";",
+        "minBytes": 2280,
+        "gzipBytes": 1189
+      },
+      "alternatives": []
+    },
+    "kreyo": {
+      "DNI": {
+        "import": "import { isValid } from \"@kreyo/nif-validator\";",
+        "minBytes": 935,
+        "gzipBytes": 533
+      },
+      "NIE": {
+        "import": "import { isValid } from \"@kreyo/nif-validator\";",
+        "minBytes": 935,
+        "gzipBytes": 533
+      },
+      "CIF": {
+        "import": "import { isValid } from \"@kreyo/nif-validator\";",
+        "minBytes": 935,
+        "gzipBytes": 533
+      },
+      "any": {
+        "import": "import { isValid } from \"@kreyo/nif-validator\";",
+        "minBytes": 935,
+        "gzipBytes": 533
+      },
+      "full": {
+        "import": "import * as lib from \"@kreyo/nif-validator\";",
+        "minBytes": 1403,
+        "gzipBytes": 746
+      },
+      "alternatives": []
+    },
+    "jsvat": {
+      "DNI": {
+        "import": "import { checkVAT, spain } from \"jsvat\"; console.log(checkVAT, spain);",
+        "minBytes": 2417,
+        "gzipBytes": 1186
+      },
+      "NIE": {
+        "import": "import { checkVAT, spain } from \"jsvat\"; console.log(checkVAT, spain);",
+        "minBytes": 2417,
+        "gzipBytes": 1186
+      },
+      "CIF": {
+        "import": "import { checkVAT, spain } from \"jsvat\"; console.log(checkVAT, spain);",
+        "minBytes": 2417,
+        "gzipBytes": 1186
+      },
+      "any": {
+        "import": "import { checkVAT, spain } from \"jsvat\"; console.log(checkVAT, spain);",
+        "minBytes": 2417,
+        "gzipBytes": 1186
+      },
+      "full": {
+        "import": "import * as lib from \"jsvat\";",
+        "minBytes": 16115,
+        "gzipBytes": 5266
+      },
+      "alternatives": []
+    }
+  }
+}
