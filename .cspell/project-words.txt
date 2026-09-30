@@ -4,6 +4,7 @@
 # Control-letter tables, organisation keys and format placeholders
 ABCDEFGHJNPQRSUVW
 ABEH
+CDFGJUV
 JABCDEFGHI
 KLMXYZ
 NPQRSW
