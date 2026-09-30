@@ -1,6 +1,5 @@
 # nif-dni-nie-cif-validation
 
-[![codecov](https://img.shields.io/codecov/c/github/josegoval/nif-dni-nie-cif-validation?style=for-the-badge)](https://codecov.io/gh/josegoval/nif-dni-nie-cif-validation)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/nif-dni-nie-cif-validation?style=for-the-badge)
 [![https://nodei.co/npm/nif-dni-nie-cif-validation.png?downloads=true&downloadRank=true&stars=true](https://nodei.co/npm/nif-dni-nie-cif-validation.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/nif-dni-nie-cif-validation)
 
