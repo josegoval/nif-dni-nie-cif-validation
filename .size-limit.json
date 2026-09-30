@@ -35,17 +35,26 @@
     "limit": "995 B"
   },
   {
-    "name": "import { validate } (with the messages)",
+    "name": "import { validate } (English built in)",
     "path": "dist/esm/index.mjs",
     "import": "{ validate }",
     "gzip": true,
-    "limit": "3420 B"
+    "limit": "2765 B"
+  },
+  {
+    "name": "import { validate } + locales/es",
+    "import": {
+      "dist/esm/index.mjs": "{ validate }",
+      "dist/esm/locales/es.mjs": "{ es }"
+    },
+    "gzip": true,
+    "limit": "3575 B"
   },
   {
     "name": "import * (the whole ES module build)",
     "path": "dist/esm/index.mjs",
     "import": "*",
     "gzip": true,
-    "limit": "5415 B"
+    "limit": "4755 B"
   }
 ]

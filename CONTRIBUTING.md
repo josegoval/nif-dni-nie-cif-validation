@@ -37,8 +37,9 @@ src/
   normalize.ts  normalize() and the boolean validators' retry path (NORM-*, NIE-3)
   policy.ts     opt-in policies: placeholders (POLICY-1)
   validate.ts   validate() and getNifType(): error codes and rules
-  messages.ts   error messages in English and Spanish (validate() only)
   organisations.ts  describeCifOrganisation(): CIF organisation keys
+  localize.ts   picks a text from the caller's locale, or English (validate() and describeCifOrganisation() only)
+  locales/      one locale object per language: en.ts (built in, the default), es.ts, ...
   vat.ts        isValidSpanishVat() (VAT-1)
   format.ts     format() and computeControlCharacter()
   shared.ts     internal helpers
@@ -51,15 +52,15 @@ scripts/        build script, CI helpers: coverage summary, SPEC rule check, tre
 .size-limit.json  bundle size budgets (see Build and package layout)
 ```
 
-Each module starts with a header comment: what the document is, its format and its control algorithm, with the [SPEC.md](SPEC.md) rule IDs. The `isValid*` functions validate in a single pass with `charCodeAt`: no regex, no `split`/`replace`/template strings and no allocations on the hot path. With normalization on (the default), a value that fails the raw check is normalized and checked again only when normalizing could change the verdict (see `normalizedForRetry` in normalize.ts); keep that retry out of the hot function. `validate()` may allocate. The messages and organisation names live in their own modules, which the booleans must not import, so they stay out of bundles that only use the booleans. The exported regexes (`DNI_REGEX` and so on) are public constants kept for compatibility; the validators don't use them.
+Each module starts with a header comment: what the document is, its format and its control algorithm, with the [SPEC.md](SPEC.md) rule IDs. The `isValid*` functions validate in a single pass with `charCodeAt`: no regex, no `split`/`replace`/template strings and no allocations on the hot path. With normalization on (the default), a value that fails the raw check is normalized and checked again only when normalizing could change the verdict (see `normalizedForRetry` in normalize.ts); keep that retry out of the hot function. `validate()` may allocate. The messages and organisation names live in the locale objects (`src/locales/`), which the booleans must not import, so they stay out of bundles that only use the booleans. Only English is imported by the library itself (`localize.ts`); every other language is imported by the application, so it only reaches the bundles that use it. The exported regexes (`DNI_REGEX` and so on) are public constants kept for compatibility; the validators don't use them.
 
 ### Build and package layout
 
 `pnpm build` runs `scripts/build.mjs`, which has no dependency besides TypeScript. It compiles twice and gives the output its final file names:
 
 ```
-dist/esm/   index.mjs, nif.mjs, ...    ES modules, with index.d.mts, nif.d.mts, ...
-dist/cjs/   index.cjs, nif.cjs, ...    CommonJS, with index.d.cts, nif.d.cts, ...
+dist/esm/   index.mjs, nif.mjs, ..., locales/es.mjs, ...    ES modules, with index.d.mts, ...
+dist/cjs/   index.cjs, nif.cjs, ..., locales/es.cjs, ...    CommonJS, with index.d.cts, ...
 ```
 
 The sources import each other without file extensions (`from "./nif"`) and the type check uses bundler module resolution. Node resolves ES module imports by exact file name, so after each compile the script renames `.js`/`.d.ts` to `.mjs`/`.d.mts` or `.cjs`/`.d.cts`, rewrites the relative imports to match and checks that each one points to a file that exists. Each `.d.mts` or `.d.cts` points to its own format, so TypeScript users get the right types with `import` and with `require`. The output is deliberately not one bundled file: modules stay separate so bundlers can drop what an application doesn't import.
@@ -67,13 +68,13 @@ The sources import each other without file extensions (`from "./nif"`) and the t
 `package.json` is what makes this work, so change it with care:
 
 - `"type": "module"`: `.js` files in the repository are ES modules. The published files all have explicit `.mjs` or `.cjs` extensions.
-- `exports`: `"."` with an `import` and a `require` condition, each with its own `types`, plus `"./package.json"`. Nothing else is importable, so a file moved inside `dist/` is not a breaking change. `main`, `module` and `types` are fallbacks for tools that ignore `exports`.
+- `exports`: `"."` and one `"./locales/<code>"` per language, each with an `import` and a `require` condition with its own `types`, plus `"./package.json"`. Nothing else is importable, so a file moved inside `dist/` is not a breaking change. `main`, `module` and `types` are fallbacks for tools that ignore `exports`; `typesVersions` does the same for the locale entry points, so TypeScript's old `node10` resolution finds their types.
 - `"sideEffects": false`: every module only declares things, so a bundler may drop a module whose exports are unused. Don't add top-level code that does work when the module loads, not even filling a lookup table (see Size budgets).
 - `files`: `dist` plus the standard files (README, LICENSE, CHANGELOG).
 
 The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it runs in every current browser without transpiling. ES2018 would emit the same code, because the sources use nothing that TypeScript rewrites between the two. `pnpm check:es` runs `es-check` on both builds: no syntax and no built-in newer than ES2016 (ES2016 is a real floor: `Array.prototype.includes` is in `policy.ts`). Raise the `target` and that check together, and never to something your browser support doesn't cover.
 
-**Size budgets.** `pnpm size` builds and runs [size-limit](https://github.com/ai/size-limit) with its esbuild plugin and `.size-limit.json`: it bundles `import { x } from "dist/esm/index.mjs"` for each entry, minifies, gzips and fails if the result is over the `limit`. The entries are the four boolean validators, `isValidSpanishVat`, `validate` (which includes the messages and organisation names) and the whole ES module build. The budgets sit a few percent above the measured sizes, so they catch a real regression (for example a boolean that starts importing `messages.ts`, about 2 kB) and not noise. When a change is meant to grow the library, say why in the PR and raise the limit in the same commit. For reference, v1.0.11 measures 1308 B with the same tool (all its functions, CommonJS). The sizes are measured with esbuild; other bundlers differ by a few percent.
+**Size budgets.** `pnpm size` builds and runs [size-limit](https://github.com/ai/size-limit) with its esbuild plugin and `.size-limit.json`: it bundles `import { x } from "dist/esm/index.mjs"` for each entry, minifies, gzips and fails if the result is over the `limit`. The entries are the four boolean validators, `isValidSpanishVat`, `validate` (with the English messages and organisation names, built in), `validate` with one more language (`locales/es`) and the whole ES module build (English only: the other languages are not in the root entry point). The budgets sit a few percent above the measured sizes, so they catch a real regression (for example a boolean that starts importing a locale, or `validate` pulling in a second language) and not noise. When a change is meant to grow the library, say why in the PR and raise the limit in the same commit. For reference, v1.0.11 measures 1308 B with the same tool (all its functions, CommonJS). The sizes are measured with esbuild; other bundlers differ by a few percent.
 
 | Entry (`.size-limit.json`) | Size | Limit |
 | --- | ---: | ---: |
@@ -82,12 +83,22 @@ The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it 
 | `import { isValidNie }` | 586 B | 605 B |
 | `import { isValidCif }` | 562 B | 580 B |
 | `import { isValidSpanishVat }` | 965 B | 995 B |
-| `import { validate }` (with the messages) | 3318 B | 3420 B |
-| `import *` (the whole ES module build) | 5257 B | 5415 B |
+| `import { validate }` (English built in) | 2685 B | 2765 B |
+| `import { validate }` + `locales/es` | 3471 B | 3575 B |
+| `import *` (the whole ES module build) | 4615 B | 4755 B |
 
 The booleans stay this small because they never reach `normalize()` or `validate()`: their slow path only removes separators (`removeSeparators`) and checks again, and POLICY-1 reads the number of the document (`isPlaceholderDocument`). Keep module-level code to declarations: a table filled by a loop when the module loads can't be dropped by a bundler, so prefer a string or arithmetic.
 
-**Tree shaking check.** `node scripts/check-tree-shaking.mjs <tarball>` unpacks the tarball into a temporary project, bundles one import at a time with esbuild (resolving the package through its `exports`, as a consumer does), and fails if the bundle of any boolean validator, `normalize` or `format` contains a message or an organisation name, or the `messages` or `organisations` module. It also bundles `validate` and `describeCifOrganisation`, which must contain them, so the check can't pass by looking for strings it can't find. CI runs it on the tarball that `Check` packs.
+**Tree shaking check.** `node scripts/check-tree-shaking.mjs <tarball>` unpacks the tarball into a temporary project, bundles one import at a time with esbuild (resolving the package and its locale entry points through `exports`, as a consumer does), and looks for each locale's marker strings and module in the output. It fails if the bundle of any boolean validator, `normalize`, `format`, `computeControlCharacter` or `getNifType` contains any locale or the `localize` or `organisations` module; if `validate` or `describeCifOrganisation` bundle anything but English; or if a locale entry point bundles another language (alone, only itself; with `validate`, only itself and English). The checks that expect a locale also prove its markers can be found, so the script can't pass by looking for strings it can't see. CI runs it on the tarball that `Check` packs.
+
+### How to add a language
+
+1. Copy `src/locales/es.ts` to `src/locales/<code>.ts` (`<code>` is the BCP 47 language code) and translate every text. Rename the object to `<code>`, set `code`, and keep `export default`. The `NifLocale` type makes TypeScript fail if a text is missing.
+2. Organisation names: look for an official text in that language that lists the keys of Orden EHA/451/2008 (the AEAT's pages in that language, a regional official bulletin), put the names in the singular and cite the URL in a comment. Mark every name without an official source `// translated (no official version found)`.
+3. Add the language to `LOCALES` in `src/__tests__/locales.test.ts`, the smoke tests (`test/smoke/`) and `scripts/check-tree-shaking.mjs` (two marker strings only that language has).
+4. Add `"./locales/<code>"` to `exports` in `package.json`, with the same four paths as the other languages.
+5. Document it: a section in [docs/translations.md](docs/translations.md) (source of each organisation name, terminology), the language tables in README.md and MIGRATION.md, and the `NifLocale` JSDoc in `src/types.ts`.
+6. Ask for a language review in the PR: a native speaker, or at least a second model, reads every message and organisation name.
 
 ### Rule IDs and SPEC.md
 

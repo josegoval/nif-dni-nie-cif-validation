@@ -5,7 +5,7 @@ import {
   type NifErrorCode,
   validate,
 } from "..";
-import { MESSAGES } from "../messages";
+import { es } from "../locales/es";
 
 // validate() and getNifType() (#56). Every test name starts with the SPEC.md
 // rule it exercises.
@@ -211,9 +211,9 @@ describe("validate(): types (POLICY-2)", () => {
 });
 
 describe("validate(): messages", () => {
-  it("INPUT-1: English by default, Spanish with locale: 'es'", () => {
+  it("INPUT-1: English by default, Spanish with locale: es", () => {
     expect(validate(null).error?.message).toBe("The value must be text.");
-    expect(validate(null, { locale: "es" }).error?.message).toBe(
+    expect(validate(null, { locale: es }).error?.message).toBe(
       "El valor debe ser un texto."
     );
     expect(validate(null, { locale: "fr" as never }).error?.message).toBe(
@@ -225,44 +225,23 @@ describe("validate(): messages", () => {
     expect(validate("12345678A").error?.message).toBe(
       'The control character is not correct: for this DNI it should be "Z".'
     );
-    expect(validate("12345678A", { locale: "es" }).error?.message).toBe(
+    expect(validate("12345678A", { locale: es }).error?.message).toBe(
       "El carácter de control no es correcto: para este DNI debería ser «Z»."
     );
   });
 
-  it.each(["en", "es"] as const)(
-    "INPUT-2: every code, rule and type has a message in %s",
-    (locale) => {
-      const m = MESSAGES[locale];
-      const texts = [
-        m.NOT_A_STRING,
-        m.EMPTY,
-        m.PLACEHOLDER,
-        ...Object.values(m.INVALID_LENGTH),
-        ...Object.values(m.INVALID_FORMAT),
-      ];
-      for (const type of ["DNI", "NIE", "CIF", "NIF_KLM"] as const) {
-        texts.push(m.UNSUPPORTED_TYPE(type));
-        texts.push(m.INVALID_CONTROL_CHARACTER(type, "Z"));
-      }
-      for (const text of texts) expect(text).toMatch(/^\S.*[.]$/);
-      expect(Object.keys(m.INVALID_LENGTH)).toHaveLength(6);
-      expect(Object.keys(m.INVALID_FORMAT)).toHaveLength(7);
-    }
-  );
-
   it("POLICY-2: every error message is localized", () => {
     const inputs: unknown[] = [null, "", "T1", "1", "1234567AZ", "12345678A"];
     for (const input of inputs) {
-      const en = validate(input).error?.message;
-      const es = validate(input, { locale: "es" }).error?.message;
-      expect(en).not.toBe(es);
+      const english = validate(input).error?.message;
+      const spanish = validate(input, { locale: es }).error?.message;
+      expect(english).not.toBe(spanish);
     }
     expect(
-      validate("12345678Z", { types: ["NIE"], locale: "es" }).error?.message
+      validate("12345678Z", { types: ["NIE"], locale: es }).error?.message
     ).toBe("Aquí no se admite un DNI.");
     expect(
-      validate("00000000T", { rejectPlaceholders: true, locale: "es" }).error
+      validate("00000000T", { rejectPlaceholders: true, locale: es }).error
         ?.message
     ).toMatch(/ejemplo/);
   });
@@ -304,7 +283,7 @@ describe("getNifType(): format-based detection", () => {
 
 describe("validate(): CIF organisation (meta)", () => {
   it("CIF-2: meta is set whenever the type is CIF, valid or not, localized", () => {
-    expect(validate(" b-1234567-4 ", { locale: "es" }).meta).toEqual({
+    expect(validate(" b-1234567-4 ", { locale: es }).meta).toEqual({
       orgKey: "B",
       orgDescription: "Sociedad de responsabilidad limitada",
     });
@@ -324,22 +303,22 @@ describe("describeCifOrganisation()", () => {
   it.each(Array.from(KEYS))(
     "CIF-2: key %s has a description in English and Spanish",
     (key) => {
-      const en = describeCifOrganisation(key);
-      const es = describeCifOrganisation(key.toLowerCase(), "es");
-      expect(en).toMatch(/^[A-Z]/);
-      expect(es).toMatch(/^[A-ZÁÉÍÓÚ]/);
-      expect(en).not.toBe(es);
+      const english = describeCifOrganisation(key);
+      const spanish = describeCifOrganisation(key.toLowerCase(), es);
+      expect(english).toMatch(/^[A-Z]/);
+      expect(spanish).toMatch(/^[A-ZÁÉÍÓÚ]/);
+      expect(english).not.toBe(spanish);
     }
   );
 
   it("CIF-2: the descriptions follow Orden EHA/451/2008", () => {
     expect(describeCifOrganisation("B")).toBe("Limited liability company");
-    expect(describeCifOrganisation("b", "es")).toBe(
+    expect(describeCifOrganisation("b", es)).toBe(
       "Sociedad de responsabilidad limitada"
     );
-    expect(describeCifOrganisation("N", "es")).toBe("Entidad extranjera");
-    expect(describeCifOrganisation("W", "es")).toMatch(/^Establecimiento/);
-    expect(describeCifOrganisation("J", "es")).toBe("Sociedad civil");
+    expect(describeCifOrganisation("N", es)).toBe("Entidad extranjera");
+    expect(describeCifOrganisation("W", es)).toMatch(/^Establecimiento/);
+    expect(describeCifOrganisation("J", es)).toBe("Sociedad civil");
   });
 
   it("CIF-2: anything else returns null", () => {

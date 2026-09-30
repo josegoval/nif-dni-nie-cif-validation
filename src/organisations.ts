@@ -1,59 +1,21 @@
 /**
  * What the organisation key (the first letter) of a legal entity NIF (CIF)
- * says about the entity, in English and Spanish.
+ * says about the entity.
  *
  * Source: Orden EHA/451/2008 arts. 3 to 5 (CIF-2), art. 3 as amended by
- * Orden HAP/5/2016 (in force 2016-01-16). The Spanish texts are the Order's
- * wording in the singular; the English texts translate them.
+ * Orden HAP/5/2016 (in force 2016-01-16). The texts, in the singular, are in
+ * each locale (src/locales/); docs/translations.md gives the source of each
+ * language.
  *
  * Only `validate()` (for `meta`) and `describeCifOrganisation()` import
  * this module, so the boolean validators don't bundle the descriptions.
  */
+import { localize } from "./localize";
 import { toUpperAsciiLetter } from "./shared";
-import type { NifLocale } from "./types";
+import type { CifOrganisationKey, NifLocale } from "./types";
 
-/** CIF-2: the organisation keys, in the order of the tables below. */
+/** CIF-2: the organisation keys. */
 const KEYS = "ABCDEFGHJNPQRSUVW";
-
-const ES: readonly string[] = [
-  "Sociedad anónima",
-  "Sociedad de responsabilidad limitada",
-  "Sociedad colectiva",
-  "Sociedad comanditaria",
-  "Comunidad de bienes, herencia yacente u otra entidad carente de personalidad jurídica no incluida expresamente en otras claves",
-  "Sociedad cooperativa",
-  "Asociación",
-  "Comunidad de propietarios en régimen de propiedad horizontal",
-  "Sociedad civil",
-  "Entidad extranjera",
-  "Corporación local",
-  "Organismo público",
-  "Congregación o institución religiosa",
-  "Órgano de la Administración del Estado o de una comunidad autónoma",
-  "Unión temporal de empresas",
-  "Otro tipo no definido en el resto de claves",
-  "Establecimiento permanente de una entidad no residente en territorio español",
-];
-
-const EN: readonly string[] = [
-  "Public limited company",
-  "Limited liability company",
-  "General partnership",
-  "Limited partnership",
-  "Community of property, estate in abeyance or other entity without legal personality not covered by another key",
-  "Cooperative society",
-  "Association",
-  "Community of owners under horizontal property",
-  "Civil partnership",
-  "Foreign entity",
-  "Local authority",
-  "Public body",
-  "Religious congregation or institution",
-  "Body of the State administration or of an autonomous community",
-  "Temporary joint venture",
-  "Other type not covered by another key",
-  "Permanent establishment of an entity not resident in Spain",
-];
 
 /**
  * Describes the kind of entity that a legal entity NIF (CIF) organisation
@@ -62,28 +24,31 @@ const EN: readonly string[] = [
  *
  * `key` is one organisation key, in either case (`"B"` or `"b"`). Anything
  * else, including a whole NIF and the natural-person prefixes K L M X Y Z,
- * returns `null`. An unknown `locale` falls back to English. Never throws.
+ * returns `null`. `locale` is a locale object from
+ * `nif-dni-nie-cif-validation/locales/<code>`; without one, or with
+ * anything else (a language code string such as `"es"` included), the
+ * description is in English. Never throws.
  *
  * @param key One organisation key: A B C D E F G H J N P Q R S U V W.
- * @param locale `"en"` (default) or `"es"`.
+ * @param locale A locale object (default: English). See {@link NifLocale}.
  * @returns The description, or `null`.
  * @example
- * describeCifOrganisation("B");       // "Limited liability company"
- * describeCifOrganisation("b", "es"); // "Sociedad de responsabilidad limitada"
+ * describeCifOrganisation("B"); // "Limited liability company"
+ * describeCifOrganisation("K"); // null (a natural-person prefix)
  * @example
- * describeCifOrganisation("P", "es"); // "Corporación local"
- * describeCifOrganisation("K");       // null (a natural-person prefix)
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * describeCifOrganisation("b", es); // "Sociedad de responsabilidad limitada"
+ * describeCifOrganisation("P", es); // "Corporación local"
  * @see SPEC.md#cif-2
  */
 export function describeCifOrganisation(
   key: unknown,
-  locale: NifLocale = "en"
+  locale?: NifLocale
 ): string | null {
   if (typeof key !== "string" || key.length !== 1) return null;
   // CIF-2 (NORM-1: either case, ASCII only).
-  const index = KEYS.indexOf(
-    String.fromCharCode(toUpperAsciiLetter(key.charCodeAt(0)))
-  );
-  if (index < 0) return null;
-  return (locale === "es" ? ES : EN)[index] as string;
+  const upper = String.fromCharCode(toUpperAsciiLetter(key.charCodeAt(0)));
+  if (KEYS.indexOf(upper) < 0) return null;
+  return localize(locale, (l) => l.organisations[upper as CifOrganisationKey]);
 }

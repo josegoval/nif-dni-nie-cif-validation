@@ -36,8 +36,12 @@ import {
   replaceNieLetter,
   validate,
 } from "nif-dni-nie-cif-validation";
+import esDefault, { es } from "nif-dni-nie-cif-validation/locales/es";
 
 const cjs = createRequire(import.meta.url)("nif-dni-nie-cif-validation");
+
+// Every locale subpath (`exports`).
+const LOCALES = ["en", "es"];
 
 describe("ES module build", () => {
   it("exports the same names as the CommonJS build", () => {
@@ -115,12 +119,44 @@ describe("ES module build", () => {
   });
 
   it("validate normalizes and describes a CIF, in Spanish", () => {
-    const result = validate(" b-1234567-4 ", { locale: "es" });
+    const result = validate(" b-1234567-4 ", { locale: es });
     assert.equal(result.valid, true);
     assert.equal(result.normalized, "B12345674");
     assert.equal(
       result.meta.orgDescription,
       "Sociedad de responsabilidad limitada"
+    );
+  });
+
+  it("locales/es loads the ES module build, with a default export", () => {
+    assert.equal(esDefault, es);
+    assert.equal(
+      validate("12345678A", { locale: es }).error.message,
+      "El carácter de control no es correcto: para este DNI debería ser «Z»."
+    );
+  });
+
+  it("every locale subpath imports, and validate uses it", async () => {
+    for (const code of LOCALES) {
+      const module = await import(`nif-dni-nie-cif-validation/locales/${code}`);
+      const locale = module[code];
+      assert.equal(locale.code, code);
+      assert.equal(module.default, locale);
+      assert.equal(
+        validate("12345678A", { locale }).error.message,
+        locale.messages.INVALID_CONTROL_CHARACTER("DNI", "Z")
+      );
+      assert.equal(
+        describeCifOrganisation("b", locale),
+        locale.organisations.B
+      );
+    }
+  });
+
+  it("a language code string is ignored: English", () => {
+    assert.match(
+      validate("12345678A", { locale: "es" }).error.message,
+      /^The control character/
     );
   });
 

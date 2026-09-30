@@ -14,6 +14,8 @@ import {
   type ValidateOptions,
   validate,
 } from "..";
+import { en } from "../locales/en";
+import { es } from "../locales/es";
 import { SPEC_RULES } from "./specRules";
 
 // Property-based tests (#41, #40) with fast-check. The generators build
@@ -109,7 +111,14 @@ const anyOptions = fc.oneof(
       cifControl: fc.constantFrom("official" as const, "lenient" as const),
       rejectPlaceholders: fc.boolean(),
       allowVatPrefix: fc.boolean(),
-      locale: fc.constantFrom("en" as const, "es" as const),
+      // Locale objects, and what plain JavaScript may pass instead.
+      locale: fc.constantFrom<unknown>(
+        en,
+        es,
+        "es",
+        {},
+        { messages: {}, organisations: {} }
+      ),
       types: fc.subarray(["DNI", "NIE", "CIF", "NIF_KLM"] as const),
     },
     { requiredKeys: [] }

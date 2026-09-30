@@ -17,12 +17,13 @@ Version 2 follows [SPEC.md](SPEC.md) by default and explains its answers. Upgrad
 import {
   validate, isValidNif, normalize, format, computeControlCharacter,
 } from "nif-dni-nie-cif-validation";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
 
 validate(" b-1234567-4 ");
 // { valid: true, type: "CIF", normalized: "B12345674",
 //   meta: { orgKey: "B", orgDescription: "Limited liability company" } }
 
-validate("12345678A", { locale: "es" }).error;
+validate("12345678A", { locale: es }).error;
 // { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
 //   message: "El carácter de control no es correcto: para este DNI debería ser «Z»." }
 
@@ -35,7 +36,16 @@ computeControlCharacter("B1234567"); // "4"
 
 Also new: `getNifType`, `describeCifOrganisation`, `isValidSpanishVat` (format only, not a VIES check), and the `rejectPlaceholders`, `types`, `allowVatPrefix` and `locale` options. Every function is fully typed and documented, and none throws on untrusted input (except the deprecated `replaceNieLetter`).
 
-The package ships ES modules and CommonJS, each with its own type declarations, and tree-shakes: `import { isValidDni }` adds about 0.6 kB minified and gzipped, without the error messages.
+Messages and organisation names are in English by default. Each other language is its own import, so your bundle only has the languages you use:
+
+| Language | Import |
+| --- | --- |
+| Spanish (español) | `import { es } from "nif-dni-nie-cif-validation/locales/es"` |
+| English (the default) | `import { en } from "nif-dni-nie-cif-validation/locales/en"` |
+
+Pass the object, not its code: `validate(value, { locale: es })`, `describeCifOrganisation("B", es)`. A string such as `"es"` is ignored and gives English.
+
+The package ships ES modules and CommonJS, each with its own type declarations, and tree-shakes: `import { isValidDni }` adds about 0.6 kB minified and gzipped, without the error messages; `import { validate }` about 2.7 kB, with the English messages.
 
 **Feel like supporting this free plugin?**
 

@@ -6,11 +6,11 @@ This document describes the public API of `nif-dni-nie-cif-validation` 2.0.0 and
 
 ## Goals
 
-- Tell the caller **why** a value failed (an error code, a SPEC rule ID and a message in English or Spanish), **which** document it is, its **normalized** form to store, and the **expected** control character for "did you mean…?" hints (#56).
+- Tell the caller **why** a value failed (an error code, a SPEC rule ID and a message in the caller's language), **which** document it is, its **normalized** form to store, and the **expected** control character for "did you mean…?" hints (#56).
 - Follow SPEC.md exactly. Only official rules (tiers T1 to T3) decide validity by default. Conventions (T4) are either input cleanup or opt-in.
 - Never throw on untrusted input (#40).
 - Keep the boolean validators as fast as in 1.x on canonical input, with no allocations (#47).
-- Stay zero-dependency and tree-shakable: the booleans don't pull the messages or the organisation names.
+- Stay zero-dependency and tree-shakable: the booleans don't pull the messages or the organisation names, and `validate()` only pulls the languages the application imports.
 
 ## API at a glance
 
@@ -19,8 +19,16 @@ type NifType = "DNI" | "NIE" | "CIF" | "NIF_KLM";
 type NifErrorCode =
   | "NOT_A_STRING" | "EMPTY" | "INVALID_LENGTH" | "INVALID_FORMAT"
   | "INVALID_CONTROL_CHARACTER" | "UNSUPPORTED_TYPE" | "PLACEHOLDER";
-type NifLocale = "en" | "es";
 type CifControlMode = "official" | "lenient";
+
+interface NifLocale {                        // a language, see D5
+  code: string;                              // "en", "es", ...
+  types: Record<NifType, string>;            // document type names used in messages
+  messages: NifMessages;                     // per error code (and per rule for length/format)
+  organisations: Record<CifOrganisationKey, string>;  // CIF-2, 17 keys
+}
+// English is built in; the other languages are separate entry points:
+import { es } from "nif-dni-nie-cif-validation/locales/es";
 
 interface ValidateOptions {
   types?: NifType[];             // accept only these types; others -> UNSUPPORTED_TYPE
@@ -28,7 +36,7 @@ interface ValidateOptions {
   cifControl?: CifControlMode;   // default "official" (CIF-3)
   rejectPlaceholders?: boolean;  // default false (POLICY-1)
   allowVatPrefix?: boolean;      // default false (VAT-1)
-  locale?: NifLocale;            // default "en"
+  locale?: NifLocale;            // default: English (anything else -> English)
 }
 
 interface ValidationResult {
@@ -44,7 +52,7 @@ getNifType(value: unknown, opts?: Pick<ValidateOptions, "normalize" | "allowVatP
 normalize(value: string): string
 format(value: unknown, opts?: { separator?: "-" | " " | "" }): string | null
 computeControlCharacter(partial: unknown): string | null
-describeCifOrganisation(key: unknown, locale?: NifLocale): string | null
+describeCifOrganisation(key: unknown, locale?: NifLocale): string | null   // default: English
 isValidSpanishVat(value: unknown, opts?: IsValidOptions): boolean
 
 // The v1 booleans, same names and aliases, new optional second argument:
@@ -120,12 +128,14 @@ It returns the input string itself (no copy) when nothing changes. It never thro
 - **POLICY-1**: the placeholder list, valid by default, rejected with `rejectPlaceholders`. Convention (ESNIC), already listed in SPEC's "Explicitly NOT implemented" table.
 - **POLICY-2**: the caller's `types` restriction.
 
-### D5. Messages and organisation names
+### D5. Messages, organisation names and languages
 
-- Messages exist for every error code in English (default) and Spanish, and include the expected character when there is one: `The control character is not correct: for this DNI it should be "Z".` / `El carácter de control no es correcto: para este DNI debería ser «Z».` `INVALID_LENGTH` and `INVALID_FORMAT` messages depend on the rule, so they describe the right document.
-- They live in `src/messages.ts` and the organisation names in `src/organisations.ts`, which only `validate()` and `describeCifOrganisation()` import. An app that only uses the booleans doesn't bundle them: the package ships ES modules with `sideEffects: false`, and CI checks it (`pnpm size`, `scripts/check-tree-shaking.mjs`).
-- `describeCifOrganisation(key, locale)` takes one organisation key, in either case, and returns its description from Orden EHA/451/2008 arts. 3 to 5 (art. 3 as amended by Orden HAP/5/2016), in the singular: `"B"` → `"Sociedad de responsabilidad limitada"` / `"Limited liability company"`. Anything else returns `null`.
-- An unknown `locale` falls back to English.
+- Messages exist for every error code and include the expected character when there is one: `The control character is not correct: for this DNI it should be "Z".` / `El carácter de control no es correcto: para este DNI debería ser «Z».` `INVALID_LENGTH` and `INVALID_FORMAT` messages depend on the rule, so they describe the right document.
+- `describeCifOrganisation(key, locale)` takes one organisation key, in either case, and returns its description from Orden EHA/451/2008 arts. 3 to 5 (art. 3 as amended by Orden HAP/5/2016), in the singular: `"B"` → `"Limited liability company"`, or `"Sociedad de responsabilidad limitada"` with `es`. Anything else returns `null`.
+- **Languages are objects, imported one by one** (the pattern of date-fns, Zod 4 and Valibot). A locale (`NifLocale`) carries every user-facing text: the messages, the document type names they use, and the 17 organisation descriptions. English (`src/locales/en.ts`) is built in and is the default. Every other language is its own module and its own `exports` entry point, `nif-dni-nie-cif-validation/locales/<code>`, with a named export (`es`) and a default export. `validate(x, { locale: es })` and `describeCifOrganisation(key, es)` use it. The package never selects a language from a runtime string, so a bundler drops every language the application doesn't import: `validate` alone bundles English only, and each language adds only itself (`pnpm size`, `scripts/check-tree-shaking.mjs`).
+- The texts live in `src/locales/` and are read through `src/localize.ts`; only `validate()` and `describeCifOrganisation()` import them. An app that only uses the booleans bundles no text at all: the package ships ES modules with `sideEffects: false`, and CI checks it.
+- **Anything that is not a locale object gives English, and nothing throws.** That includes a language code string such as `"es"`, which pre-release versions of these docs showed (MIGRATION.md, "Languages"). TypeScript rejects it; plain JavaScript gets English rather than an exception, because `validate()` must stay total (#40). A locale object that lacks a text, or whose message function throws or returns anything but a non-empty string, gives English for that text.
+- [translations.md](translations.md) gives the source of every organisation name per language (official translation or our own) and the terminology choices.
 
 ### D6. `getNifType`: format-based detection
 
@@ -164,6 +174,10 @@ The input goes through NORM-1 to NORM-3 cleanup first. By construction, `partial
 No official basis, see SPEC.md "Explicitly NOT implemented": the `T` prefix (reported as NIF-1), the CIF "00 needs a letter" rule, and province codes (CIF-5; a test proves no province check happens).
 
 ## Alternatives considered
+
+- **Languages selected by a string (`locale: "es"`)** from a table of all languages, as in the first v2 drafts. Rejected (#56): a bundler can't know which entries of the table are used, so every `validate()` user paid for every language (about 0.6 kB min+gz for Spanish alone), and each new language would have grown every bundle.
+- **One package per language** (`nif-dni-nie-cif-validation-es`). Rejected: more packages to publish and version together, for no gain over entry points of the same package.
+- **Throwing on a string `locale`.** Rejected: `validate()` never throws (#40), and plain JavaScript that follows the pre-release docs should degrade to English, not break a form.
 
 - **Throwing on non-strings in `normalize`.** Rejected: #40 asks for a total API on untrusted input, and `""` makes `validate` report `EMPTY`/`NOT_A_STRING` consistently.
 - **Keeping `normalize: false` as the boolean default.** Rejected: `isValidNif(x)` and `validate(x).valid` would disagree on the same input, which is a trap for users of both.

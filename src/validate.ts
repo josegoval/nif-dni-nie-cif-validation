@@ -2,8 +2,9 @@
  * `validate()` and `getNifType()`: the detailed API. Where the boolean
  * validators answer "valid or not" as fast as possible, `validate()` says
  * which document it is, its canonical form, and, when it is invalid, why:
- * an error code, the SPEC.md rule that failed, a message in English or
- * Spanish, and the expected control character.
+ * an error code, the SPEC.md rule that failed, a message in the caller's
+ * language (a locale object, src/locales/; English by default), and the
+ * expected control character.
  *
  * The steps, in order (the first failure wins):
  *
@@ -29,12 +30,7 @@ import {
   NOT_A_KEY,
 } from "./cif";
 import { DNI_CONTROL_LETTERS } from "./dni";
-import {
-  type FormatRule,
-  type LengthRule,
-  MESSAGES,
-  type Messages,
-} from "./messages";
+import { localize } from "./localize";
 import {
   areDigits,
   canonicalize,
@@ -45,8 +41,11 @@ import {
 import { describeCifOrganisation } from "./organisations";
 import { PLACEHOLDERS } from "./policy";
 import type {
+  NifFormatRule as FormatRule,
   GetNifTypeOptions,
+  NifLengthRule as LengthRule,
   NifLocale,
+  NifMessages,
   NifType,
   NifValidationError,
   ValidateOptions,
@@ -224,6 +223,14 @@ export function inspect(
 
 const NO_VALIDATE_OPTIONS: ValidateOptions = {};
 
+/** An error message in the caller's locale, or in English. */
+function text(
+  locale: NifLocale | undefined,
+  pick: (messages: NifMessages) => string
+): string {
+  return localize(locale, (l) => pick(l.messages));
+}
+
 function invalid(
   type: NifType | null,
   normalized: string | null,
@@ -235,7 +242,7 @@ function invalid(
 /** CIF-2: adds the organisation key and its description to a CIF result. */
 function withMeta(
   result: ValidationResult,
-  locale: NifLocale
+  locale: NifLocale | undefined
 ): ValidationResult {
   if (result.type === "CIF") {
     const orgKey = (result.normalized as string).charAt(0);
@@ -256,13 +263,19 @@ function withMeta(
  *   is recognisable, even if the control character is wrong.
  * - `normalized`: the canonical form to store (upper case, no separators).
  * - `error`: `code`, the SPEC.md `rule` that failed, a `message` for the
- *   user (English or Spanish), and `expected` (the right control
- *   character) when the control character is wrong.
+ *   user (in the `locale`, English by default), and `expected` (the right
+ *   control character) when the control character is wrong.
  * - `meta`: for a CIF, its organisation key and what it means (Orden
  *   EHA/451/2008 arts. 3 to 5), in the requested locale.
  *
  * Defaults follow SPEC.md: the input is normalized (NORM-1 to NORM-4, NIE-3)
  * and CIFs follow CIF-3. Never throws.
+ *
+ * Languages are locale objects, imported one by one so that a bundle only
+ * has the ones it uses: `import { es } from
+ * "nif-dni-nie-cif-validation/locales/es"`, then `{ locale: es }`. Anything
+ * else as `locale`, including a language code string such as `"es"`, gives
+ * English. See {@link NifLocale}.
  *
  * @param value The value to validate, typically untrusted form input.
  * @param opts `types`, `normalize`, `cifControl`, `rejectPlaceholders`,
@@ -274,7 +287,9 @@ function withMeta(
  * //   error: { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2",
  * //            expected: "Z", message: "The control character is not ..." } }
  * @example
- * validate(" b-1234567-4 ", { locale: "es" });
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * validate(" b-1234567-4 ", { locale: es });
  * // { valid: true, type: "CIF", normalized: "B12345674",
  * //   meta: { orgKey: "B", orgDescription: "Sociedad de responsabilidad limitada" } }
  * @example
@@ -287,13 +302,12 @@ export function validate(
   value: unknown,
   opts: ValidateOptions = NO_VALIDATE_OPTIONS
 ): ValidationResult {
-  const locale: NifLocale = opts?.locale === "es" ? "es" : "en";
-  const messages = MESSAGES[locale];
+  const locale = opts?.locale;
   // INPUT-1: only strings, never converted.
   if (typeof value !== "string")
     return invalid(null, null, {
       code: "NOT_A_STRING",
-      message: messages.NOT_A_STRING,
+      message: text(locale, (m) => m.NOT_A_STRING),
       rule: "INPUT-1",
     });
   const found = inspect(
@@ -303,22 +317,23 @@ export function validate(
     opts?.allowVatPrefix === true
   );
   if (!("type" in found)) {
-    const message =
+    const message = text(locale, (m) =>
       found.code === "EMPTY"
-        ? messages.EMPTY
+        ? m.EMPTY
         : found.code === "INVALID_LENGTH"
-          ? messages.INVALID_LENGTH[found.rule]
-          : messages.INVALID_FORMAT[found.rule];
+          ? m.INVALID_LENGTH[found.rule]
+          : m.INVALID_FORMAT[found.rule]
+    );
     return invalid(null, null, { code: found.code, message, rule: found.rule });
   }
-  return withMeta(check(found, opts, messages), locale);
+  return withMeta(check(found, opts, locale), locale);
 }
 
 /** Steps 5 to 7 of `validate`, on a recognised document. */
 function check(
   found: Document,
   opts: ValidateOptions,
-  messages: Messages
+  locale: NifLocale | undefined
 ): ValidationResult {
   const { type, normalized, control } = found;
   // POLICY-2: the caller accepts only some types.
@@ -326,13 +341,15 @@ function check(
   if (Array.isArray(types) && !types.includes(type))
     return invalid(type, normalized, {
       code: "UNSUPPORTED_TYPE",
-      message: messages.UNSUPPORTED_TYPE(type),
+      message: text(locale, (m) => m.UNSUPPORTED_TYPE(type)),
       rule: "POLICY-2",
     });
   if (control !== null)
     return invalid(type, normalized, {
       code: "INVALID_CONTROL_CHARACTER",
-      message: messages.INVALID_CONTROL_CHARACTER(type, control.expected),
+      message: text(locale, (m) =>
+        m.INVALID_CONTROL_CHARACTER(type, control.expected)
+      ),
       rule: control.rule,
       expected: control.expected,
     });
@@ -340,7 +357,7 @@ function check(
   if (opts?.rejectPlaceholders === true && PLACEHOLDERS.includes(normalized))
     return invalid(type, normalized, {
       code: "PLACEHOLDER",
-      message: messages.PLACEHOLDER,
+      message: text(locale, (m) => m.PLACEHOLDER),
       rule: "POLICY-1",
     });
   return { valid: true, type, normalized };

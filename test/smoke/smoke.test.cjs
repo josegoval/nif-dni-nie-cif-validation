@@ -124,13 +124,22 @@ describe("v2 API", () => {
     assert.equal(result.error.rule, "DNI-2");
     assert.equal(result.error.expected, "Z");
   });
-  it("validate normalizes and describes a CIF", () => {
-    const result = lib.validate(" b-1234567-4 ", { locale: "es" });
+  it("validate normalizes and describes a CIF, in Spanish", () => {
+    const { es } = require("nif-dni-nie-cif-validation/locales/es");
+    const result = lib.validate(" b-1234567-4 ", { locale: es });
     assert.equal(result.valid, true);
     assert.equal(result.normalized, "B12345674");
     assert.equal(
       result.meta.orgDescription,
       "Sociedad de responsabilidad limitada"
+    );
+  });
+  it("a language code string is ignored: English", () => {
+    const result = lib.validate("12345678A", { locale: "es" });
+    assert.match(result.error.message, /^The control character/);
+    assert.equal(
+      lib.describeCifOrganisation("B", "es"),
+      "Limited liability company"
     );
   });
   it("the booleans follow CIF-3 by default and restore v1 on request", () => {
@@ -146,6 +155,33 @@ describe("v2 API", () => {
     assert.equal(lib.computeControlCharacter("B1234567"), "4");
     assert.equal(lib.isValidSpanishVat("ES12345678Z"), true);
   });
+});
+
+// Every locale subpath (`exports`), required as CommonJS.
+const LOCALES = ["en", "es"];
+
+describe("locales", () => {
+  for (const code of LOCALES) {
+    it(`locales/${code} loads the CommonJS build, and validate uses it`, () => {
+      const path = `nif-dni-nie-cif-validation/locales/${code}`;
+      assert.match(
+        require.resolve(path),
+        new RegExp(`dist[\\\\/]cjs[\\\\/]locales[\\\\/]${code}\\.cjs$`)
+      );
+      const module = require(path);
+      const locale = module[code];
+      assert.equal(locale.code, code);
+      assert.equal(module.default, locale);
+      assert.equal(
+        lib.validate("12345678A", { locale }).error.message,
+        locale.messages.INVALID_CONTROL_CHARACTER("DNI", "Z")
+      );
+      assert.equal(
+        lib.describeCifOrganisation("B", locale),
+        locale.organisations.B
+      );
+    });
+  }
 });
 
 describe("package entry points", () => {

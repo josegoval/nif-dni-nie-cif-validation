@@ -55,17 +55,100 @@ export type NifErrorCode =
   | "UNSUPPORTED_TYPE"
   | "PLACEHOLDER";
 
+/** SPEC.md rules that an `INVALID_LENGTH` error can cite. */
+export type NifLengthRule =
+  | "DNI-1"
+  | "KLM-1"
+  | "NIE-1"
+  | "NIE-3"
+  | "CIF-1"
+  | "VAT-1";
+
+/** SPEC.md rules that an `INVALID_FORMAT` error can cite. */
+export type NifFormatRule =
+  | "NIF-1"
+  | "VAT-1"
+  | "DNI-1"
+  | "KLM-1"
+  | "KLM-3"
+  | "NIE-1"
+  | "CIF-1";
+
 /**
- * Language of the messages and organisation descriptions: English (the
- * default) or Spanish.
- * @example
- * validate("12345678A", { locale: "es" }).error?.message;
- * // 'El carácter de control no es correcto: para este DNI debería ser «Z».'
- * @example
- * describeCifOrganisation("B", "es"); // "Sociedad de responsabilidad limitada"
+ * The organisation keys of a legal entity NIF (CIF): its first letter
+ * (Orden EHA/451/2008 arts. 3 to 5, as amended by Orden HAP/5/2016).
  * @see SPEC.md#cif-2
  */
-export type NifLocale = "en" | "es";
+export type CifOrganisationKey =
+  | "A"
+  | "B"
+  | "C"
+  | "D"
+  | "E"
+  | "F"
+  | "G"
+  | "H"
+  | "J"
+  | "N"
+  | "P"
+  | "Q"
+  | "R"
+  | "S"
+  | "U"
+  | "V"
+  | "W";
+
+/**
+ * The error messages of one locale, keyed by error code and, for the length
+ * and format errors, by the SPEC.md rule that failed, so they describe the
+ * right document. Every message is a full sentence.
+ * @see SPEC.md
+ */
+export interface NifMessages {
+  NOT_A_STRING: string;
+  EMPTY: string;
+  INVALID_LENGTH: Record<NifLengthRule, string>;
+  INVALID_FORMAT: Record<NifFormatRule, string>;
+  /** Must include `expected`, the right control character. */
+  INVALID_CONTROL_CHARACTER: (type: NifType, expected: string) => string;
+  UNSUPPORTED_TYPE: (type: NifType) => string;
+  PLACEHOLDER: string;
+}
+
+/**
+ * A language: every text that `validate()` and `describeCifOrganisation()`
+ * return. English is built in and is the default. The other languages are
+ * separate imports, so a bundle only contains the languages it imports:
+ *
+ * - `nif-dni-nie-cif-validation/locales/es`: Spanish (`es`)
+ * - `nif-dni-nie-cif-validation/locales/en`: English (`en`), the default
+ *
+ * @example
+ * import { validate } from "nif-dni-nie-cif-validation";
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * validate("12345678A", { locale: es }).error?.message;
+ * // 'El carácter de control no es correcto: para este DNI debería ser «Z».'
+ * @example
+ * import { describeCifOrganisation } from "nif-dni-nie-cif-validation";
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * describeCifOrganisation("B", es); // "Sociedad de responsabilidad limitada"
+ * @see SPEC.md#cif-2
+ */
+export interface NifLocale {
+  /** The BCP 47 language code, for example `"es"`. */
+  code: string;
+  /** The name of each document type, as the messages use it. */
+  types: Record<NifType, string>;
+  /** The error messages. */
+  messages: NifMessages;
+  /**
+   * What each CIF organisation key stands for, in the singular (CIF-2).
+   * @see SPEC.md#cif-2
+   */
+  organisations: Record<CifOrganisationKey, string>;
+}
 
 /**
  * Which control characters a legal entity NIF (CIF) may have (CIF-3):
@@ -89,7 +172,8 @@ export type CifControlMode = "official" | "lenient";
  * Options of `validate()`. Every option is optional and defaults to the
  * official behaviour.
  * @example
- * validate(value, { types: ["DNI", "NIE"], locale: "es" });
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ * validate(value, { types: ["DNI", "NIE"], locale: es });
  * @example
  * // v1-compatible parsing, and VAT numbers accepted:
  * validate(value, { normalize: false, cifControl: "lenient", allowVatPrefix: true });
@@ -132,7 +216,16 @@ export interface ValidateOptions {
    * @see SPEC.md#vat-1
    */
   allowVatPrefix?: boolean;
-  /** Language of `error.message` and `meta` (default `"en"`). */
+  /**
+   * Language of `error.message` and `meta.orgDescription`: a locale object
+   * imported from `nif-dni-nie-cif-validation/locales/<code>` (default:
+   * English). See {@link NifLocale}.
+   *
+   * Anything else is ignored and gives English, without throwing. That
+   * includes a language code such as `"es"`, which pre-release versions of
+   * the v2 docs showed: import the locale object instead. A locale object
+   * that lacks a text (plain JavaScript) gives English for that text.
+   */
   locale?: NifLocale;
 }
 
@@ -198,7 +291,7 @@ export interface NifValidationError {
  * validate("B12345674").meta;
  * // { orgKey: "B", orgDescription: "Limited liability company" }
  * @example
- * validate("P2807900B", { locale: "es" }).meta?.orgDescription; // "Corporación local"
+ * validate("P2807900B", { locale: es }).meta?.orgDescription; // "Corporación local"
  * @see SPEC.md#cif-2
  */
 export interface CifOrganisationMeta {
@@ -218,7 +311,7 @@ export interface CifOrganisationMeta {
  * validate(" x-0123456-7l ");
  * // { valid: true, type: "NIE", normalized: "X1234567L" }
  * @example
- * const { valid, normalized, error } = validate(input, { locale: "es" });
+ * const { valid, normalized, error } = validate(input, { locale: es });
  * if (valid) save(normalized);
  * else showError(error?.message);
  * @see SPEC.md

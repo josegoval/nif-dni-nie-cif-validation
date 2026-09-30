@@ -101,7 +101,7 @@ At runtime nothing changes: a number (or `null`) as options is ignored, so plain
 
 ### 4. Only the package entry points can be imported (#48)
 
-v2 ships ES modules and CommonJS, each with its own type declarations, and declares them in an `exports` map. The map allows two entry points: the package itself (`nif-dni-nie-cif-validation`) and `nif-dni-nie-cif-validation/package.json`. Any other path is blocked, so code that reached into the v1 build output stops working:
+v2 ships ES modules and CommonJS, each with its own type declarations, and declares them in an `exports` map. The map allows the package itself (`nif-dni-nie-cif-validation`), its languages (`nif-dni-nie-cif-validation/locales/<code>`, see [Languages](#languages)) and `nif-dni-nie-cif-validation/package.json`. Any other path is blocked, so code that reached into the v1 build output stops working:
 
 ```ts
 // v1: worked, because the files of dist/ were importable
@@ -129,7 +129,7 @@ What else changes for consumers, none of it breaking:
 
 All of these are additions; see the JSDoc of each function and [docs/api-design.md](docs/api-design.md).
 
-- `validate(value, opts)` returns `{ valid, type, normalized, error?, meta? }`: the document type, its canonical form, and for invalid values an error code, the [SPEC.md](SPEC.md) rule that failed, a message in English or Spanish (`locale: "es"`), and the expected control character.
+- `validate(value, opts)` returns `{ valid, type, normalized, error?, meta? }`: the document type, its canonical form, and for invalid values an error code, the [SPEC.md](SPEC.md) rule that failed, a message in the language you pass as `locale` (English by default, see [Languages](#languages)), and the expected control character.
 
   ```ts
   validate("12345678A");
@@ -142,10 +142,46 @@ All of these are additions; see the JSDoc of each function and [docs/api-design.
 - `normalize(value)`: the canonical form to store, for example `"12345678Z"` for `" 12.345.678-z "`.
 - `format(value, { separator })`: `"12345678-Z"`, `"X-1234567-L"`, `"B-1234567-4"`, or `null` if invalid.
 - `computeControlCharacter(partial)`: `"Z"` for `"12345678"`, `"4"` for `"B1234567"`.
-- `describeCifOrganisation(key, locale)`: `"Limited liability company"` for `"B"`.
+- `describeCifOrganisation(key, locale)`: `"Limited liability company"` for `"B"`, `"Sociedad de responsabilidad limitada"` with `es`.
 - `isValidSpanishVat(value)`: `ES` + a valid NIF. It checks the format only, not whether the number is registered in VIES.
 - Options: `rejectPlaceholders` (reject `00000000T`, `00000001R`, `99999999R`, `X0000000T`), and for `validate` also `types`, `allowVatPrefix` and `locale`.
-- Types: `NifType`, `NifErrorCode`, `NifLocale`, `CifControlMode`, `ValidateOptions`, `IsValidOptions`, `GetNifTypeOptions`, `ValidationResult`, `NifValidationError`, `CifOrganisationMeta`, `FormatOptions`.
+- Locales: `nif-dni-nie-cif-validation/locales/es` (and `/locales/en`), see [Languages](#languages).
+- Types: `NifType`, `NifErrorCode`, `NifLocale`, `NifMessages`, `NifLengthRule`, `NifFormatRule`, `CifOrganisationKey`, `CifControlMode`, `ValidateOptions`, `IsValidOptions`, `GetNifTypeOptions`, `ValidationResult`, `NifValidationError`, `CifOrganisationMeta`, `FormatOptions`.
+
+## Languages
+
+`validate()` and `describeCifOrganisation()` answer in English unless you pass a locale object. Each language is a separate entry point of the package, so a bundle only contains the languages it imports (English is built in):
+
+```ts
+import { validate, describeCifOrganisation } from "nif-dni-nie-cif-validation";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+
+validate("12345678A", { locale: es }).error?.message;
+// "El carácter de control no es correcto: para este DNI debería ser «Z»."
+describeCifOrganisation("B", es); // "Sociedad de responsabilidad limitada"
+```
+
+| Language | Entry point | Object |
+| --- | --- | --- |
+| English (default) | `nif-dni-nie-cif-validation/locales/en` | `en` |
+| Spanish | `nif-dni-nie-cif-validation/locales/es` | `es` |
+
+Each entry point also has a default export, and works with `require()`: `const { es } = require("nif-dni-nie-cif-validation/locales/es")`.
+
+**Changed during the v2 pre-release.** Earlier drafts of the v2 docs showed `locale: "es"` (a language code) and `describeCifOrganisation(key, "es")`. That was never released. Pass the imported object instead:
+
+```ts
+// v2 pre-release docs
+validate(value, { locale: "es" });
+describeCifOrganisation("B", "es");
+
+// v2
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+validate(value, { locale: es });
+describeCifOrganisation("B", es);
+```
+
+A string is still accepted at runtime, so plain JavaScript that follows the old docs doesn't break, but it is ignored: the messages are in English. TypeScript reports it as an error. Nothing throws: anything that is not a locale object gives English, and a locale object that lacks a text gives English for that text.
 
 ## Checklist
 
@@ -154,3 +190,4 @@ All of these are additions; see the JSDoc of each function and [docs/api-design.
 3. If some code relied on `false` for values with separators (for example to force users to type the canonical form), pass `{ normalize: false }`, or better, store `normalize(value)`.
 4. In TypeScript, replace `array.filter(isValidX)` with an arrow function.
 5. If you import files from `nif-dni-nie-cif-validation/dist/...`, import from `nif-dni-nie-cif-validation` instead.
+6. If you want messages in Spanish, import the locale object (`nif-dni-nie-cif-validation/locales/es`) and pass it as `locale`.

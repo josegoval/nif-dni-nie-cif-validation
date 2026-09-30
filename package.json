@@ -17,7 +17,34 @@
         "default": "./dist/cjs/index.cjs"
       }
     },
+    "./locales/en": {
+      "import": {
+        "types": "./dist/esm/locales/en.d.mts",
+        "default": "./dist/esm/locales/en.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/locales/en.d.cts",
+        "default": "./dist/cjs/locales/en.cjs"
+      }
+    },
+    "./locales/es": {
+      "import": {
+        "types": "./dist/esm/locales/es.d.mts",
+        "default": "./dist/esm/locales/es.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/locales/es.d.cts",
+        "default": "./dist/cjs/locales/es.cjs"
+      }
+    },
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "locales/*": [
+        "./dist/cjs/locales/*.d.cts"
+      ]
+    }
   },
   "sideEffects": false,
   "readme": "README.md",
@@ -60,7 +87,7 @@
     "bench": "pnpm build && node bench/run.mjs",
     "format": "biome check --write .",
     "size": "pnpm build && size-limit",
-    "check:es": "pnpm build && es-check es2016 \"dist/cjs/*.cjs\" --checkFeatures && es-check es2016 \"dist/esm/*.mjs\" --module --checkFeatures"
+    "check:es": "pnpm build && es-check es2016 \"dist/cjs/**/*.cjs\" --checkFeatures && es-check es2016 \"dist/esm/**/*.mjs\" --module --checkFeatures"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

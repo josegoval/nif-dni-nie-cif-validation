@@ -12,8 +12,11 @@
  * - normalize.ts: input cleanup (NORM-1 to NORM-4, NIE-3).
  * - policy.ts: opt-in policies (POLICY-1, placeholders).
  * - validate.ts: validate() and getNifType(), the detailed API.
- * - messages.ts: error messages in English and Spanish (validate() only).
  * - organisations.ts: describeCifOrganisation(), the CIF organisation keys.
+ * - localize.ts, locales/: the texts of validate() and
+ *   describeCifOrganisation(). English is built in; every other language is
+ *   its own entry point (`nif-dni-nie-cif-validation/locales/es`), so it is
+ *   not exported here.
  * - vat.ts: isValidSpanishVat() (VAT-1).
  * - format.ts: format() and computeControlCharacter().
  */
@@ -43,11 +46,15 @@ export { computeControlCharacter, format } from "./format";
 export type { FormatOptions } from "./format";
 export type {
   CifControlMode,
+  CifOrganisationKey,
   CifOrganisationMeta,
   GetNifTypeOptions,
   IsValidOptions,
   NifErrorCode,
+  NifFormatRule,
+  NifLengthRule,
   NifLocale,
+  NifMessages,
   NifType,
   NifValidationError,
   ValidateOptions,
