@@ -22,7 +22,27 @@ const TYPES: Record<NifType, string> = {
   CIF: "NIF d'entitat (CIF)",
 };
 
-/** Catalan (català), also for Valencian. */
+/**
+ * Catalan (català), also for Valencian:
+ * a locale for `validate()` and `describeCifOrganisation()`, with the error
+ * messages, the names of the document types and the names of the CIF
+ * organisation keys. Import it from `nif-dni-nie-cif-validation/locales/ca` and
+ * pass it as `locale`.
+ * @example
+ * import { validate } from "nif-dni-nie-cif-validation";
+ * import { ca } from "nif-dni-nie-cif-validation/locales/ca";
+ *
+ * validate("12345678A", { locale: ca }).error?.message;
+ * // 'El caràcter de control no és correcte: per a aquest DNI hauria de ser «Z».'
+ * @example
+ * import { describeCifOrganisation } from "nif-dni-nie-cif-validation";
+ * import { ca } from "nif-dni-nie-cif-validation/locales/ca";
+ *
+ * describeCifOrganisation("B", ca); // "Societat de responsabilitat limitada"
+ * ca.code; // "ca"
+ * @see docs/translations.md
+ * @since 2.0.0
+ */
 export const ca: NifLocale = {
   code: "ca",
   types: TYPES,

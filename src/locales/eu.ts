@@ -26,7 +26,27 @@ const TYPES: Record<NifType, string> = {
   CIF: "pertsona juridiko edo erakunde baten IFZ (IFK)",
 };
 
-/** Basque (euskara). */
+/**
+ * Basque (euskara):
+ * a locale for `validate()` and `describeCifOrganisation()`, with the error
+ * messages, the names of the document types and the names of the CIF
+ * organisation keys. Import it from `nif-dni-nie-cif-validation/locales/eu` and
+ * pass it as `locale`.
+ * @example
+ * import { validate } from "nif-dni-nie-cif-validation";
+ * import { eu } from "nif-dni-nie-cif-validation/locales/eu";
+ *
+ * validate("12345678A", { locale: eu }).error?.message;
+ * // 'Kontrol-karakterea ez da zuzena: NAN honetan «Z» izan beharko luke.'
+ * @example
+ * import { describeCifOrganisation } from "nif-dni-nie-cif-validation";
+ * import { eu } from "nif-dni-nie-cif-validation/locales/eu";
+ *
+ * describeCifOrganisation("B", eu); // "Erantzukizun mugatuko sozietatea"
+ * eu.code; // "eu"
+ * @see docs/translations.md
+ * @since 2.0.0
+ */
 export const eu: NifLocale = {
   code: "eu",
   types: TYPES,

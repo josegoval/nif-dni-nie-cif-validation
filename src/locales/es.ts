@@ -19,7 +19,27 @@ const TYPES: Record<NifType, string> = {
   CIF: "NIF de persona jurídica o entidad (CIF)",
 };
 
-/** Spanish (español). */
+/**
+ * Spanish (español):
+ * a locale for `validate()` and `describeCifOrganisation()`, with the error
+ * messages, the names of the document types and the names of the CIF
+ * organisation keys. Import it from `nif-dni-nie-cif-validation/locales/es` and
+ * pass it as `locale`.
+ * @example
+ * import { validate } from "nif-dni-nie-cif-validation";
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * validate("12345678A", { locale: es }).error?.message;
+ * // 'El carácter de control no es correcto: para este DNI debería ser «Z».'
+ * @example
+ * import { describeCifOrganisation } from "nif-dni-nie-cif-validation";
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * describeCifOrganisation("B", es); // "Sociedad de responsabilidad limitada"
+ * es.code; // "es"
+ * @see docs/translations.md
+ * @since 2.0.0
+ */
 export const es: NifLocale = {
   code: "es",
   types: TYPES,

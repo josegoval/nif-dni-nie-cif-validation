@@ -23,7 +23,27 @@ const TYPES: Record<NifType, string> = {
   CIF: "NIF de entidade (CIF)",
 };
 
-/** Galician (galego). */
+/**
+ * Galician (galego):
+ * a locale for `validate()` and `describeCifOrganisation()`, with the error
+ * messages, the names of the document types and the names of the CIF
+ * organisation keys. Import it from `nif-dni-nie-cif-validation/locales/gl` and
+ * pass it as `locale`.
+ * @example
+ * import { validate } from "nif-dni-nie-cif-validation";
+ * import { gl } from "nif-dni-nie-cif-validation/locales/gl";
+ *
+ * validate("12345678A", { locale: gl }).error?.message;
+ * // 'O carácter de control non é correcto: para este DNI debería ser «Z».'
+ * @example
+ * import { describeCifOrganisation } from "nif-dni-nie-cif-validation";
+ * import { gl } from "nif-dni-nie-cif-validation/locales/gl";
+ *
+ * describeCifOrganisation("B", gl); // "Sociedade de responsabilidade limitada"
+ * gl.code; // "gl"
+ * @see docs/translations.md
+ * @since 2.0.0
+ */
 export const gl: NifLocale = {
   code: "gl",
   types: TYPES,
