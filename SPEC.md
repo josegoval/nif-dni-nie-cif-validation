@@ -16,6 +16,7 @@ Last verified: 2026-09-30
   - [Legal entities: NIF (formerly CIF)](#legal-entities-nif-formerly-cif)
   - [VAT (intra-EU)](#vat-intra-eu)
   - [Input cleanup](#input-cleanup-never-changes-validity-only-parsing)
+  - [Opt-in policies](#opt-in-policies-off-by-default)
 - [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis)
 - [Decisions](#decisions)
 - [Known conflicts between sources](#known-conflicts-between-sources)
@@ -100,6 +101,14 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 | <a id="norm-3"></a>NORM-3 | Hyphens and slashes are ignored | T4 | — |
 | <a id="norm-4"></a>NORM-4 | A DNI entered with fewer than 8 digits is left-padded with zeros to its canonical form | T2 (canonical) / T4 (padding input) | AEAT Sede: "los primeros pueden ser ceros" |
 
+### Opt-in policies (off by default)
+
+These rules are not in any official source. They never apply unless the caller asks for them, so the default result always follows the official rules above.
+
+| ID | Rule | Tier | Source |
+|---|---|---|---|
+| <a id="policy-1"></a>POLICY-1 | Placeholder numbers `00000000T`, `00000001R`, `99999999R` and `X0000000T` are valid documents by default. With `rejectPlaceholders: true` they are rejected (error `PLACEHOLDER`), in any accepted form (lower case, old NIE form `X00000000T`, with separators) | T4 | ESNIC (.es registry) filters them as obviously fake; no law forbids them. See [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis) |
+
 ## Explicitly NOT implemented (no official basis)
 
 | Folklore rule | Finding | Decision |
@@ -108,7 +117,7 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 | "C D F G J U V accept either letter or digit" | Contradicts CIF-3 (T3) | Off by default. Opt-in `cifControl: "lenient"` for legacy data (**decision approved 2026-09-30**; breaking change in v2) |
 | NIE / NIF with a `T` prefix | No official source | **Not supported** |
 | Province-code validation for CIFs | Repealed; random since 2008 | **Not implemented** |
-| Rejecting 00000000T, 00000001R, 99999999R, X0000000T | No law forbids them; ESNIC (.es registry) filters them as obviously fake | Valid by default. Opt-in `rejectPlaceholders: true` |
+| Rejecting 00000000T, 00000001R, 99999999R, X0000000T | No law forbids them; ESNIC (.es registry) filters them as obviously fake | Valid by default. Opt-in `rejectPlaceholders: true` ([POLICY-1](#policy-1)) |
 
 ## Decisions
 

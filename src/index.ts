@@ -10,6 +10,7 @@
  * - nie.ts: NIE.
  * - cif.ts: legal entity NIF (formerly CIF).
  * - normalize.ts: input cleanup (NORM-1 to NORM-4, NIE-3).
+ * - policy.ts: opt-in policies (POLICY-1, placeholders).
  */
 export { isValidNif, isValidNaturalPersonNif } from "./nif";
 export {

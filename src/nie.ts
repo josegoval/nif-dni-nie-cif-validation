@@ -18,6 +18,7 @@
  */
 import { hasDniDigitsAndLetter } from "./dni";
 import { normalizedForRetry } from "./normalize";
+import { acceptsValid } from "./policy";
 import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -103,9 +104,13 @@ export function replaceNieLetter(nie: string): string {
  * The input is normalized first (NORM-1 to NORM-3), so `"x-1234567-l"` is
  * valid. Pass `{ normalize: false }` for v1's strict parsing.
  *
+ * `{ rejectPlaceholders: true }` rejects the placeholder `X0000000T`
+ * (POLICY-1).
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param nie The value to check.
- * @param opts `normalize` (default `true`).
+ * @param opts `normalize` (default `true`), `rejectPlaceholders` (default
+ * `false`).
  * @returns true for valid input and false for invalid input.
  * @see SPEC.md#nie-3
  */
@@ -114,10 +119,14 @@ export function isValidNie(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof nie !== "string") return false;
-  if (checkNie(nie)) return true;
+  if (checkNie(nie)) return acceptsValid(nie, opts);
   // NORM-2..3: only when the raw check failed and cleanup could help.
   const normalized = normalizedForRetry(nie, opts);
-  return normalized !== null && checkNie(normalized);
+  return (
+    normalized !== null &&
+    checkNie(normalized) &&
+    acceptsValid(normalized, opts)
+  );
 }
 
 /** NIE, on the raw string. */

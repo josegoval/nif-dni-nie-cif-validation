@@ -52,4 +52,11 @@ export interface IsValidOptions {
    * @see SPEC.md#cif-3
    */
   cifControl?: CifControlMode;
+  /**
+   * Reject the placeholder numbers `00000000T`, `00000001R`, `99999999R`
+   * and `X0000000T` (default `false`). They are valid documents, so they
+   * are accepted by default; ESNIC filters them as obviously fake.
+   * @see SPEC.md#policy-1
+   */
+  rejectPlaceholders?: boolean;
 }

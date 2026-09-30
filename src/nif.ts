@@ -16,6 +16,7 @@ import { cifKeyKind, hasValidCifDigitsAndControl, NOT_A_KEY } from "./cif";
 import { isValidNineCharDni } from "./dni";
 import { isValidNineCharNie, isValidOldNie } from "./nie";
 import { normalizedForRetry } from "./normalize";
+import { acceptsValid } from "./policy";
 import { NO_OPTIONS } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -60,9 +61,12 @@ function checkNif(value: string, opts: IsValidOptions | null): boolean {
  * `" 12.345.678-z "` is valid. Pass `{ normalize: false }` for v1's strict
  * parsing.
  *
+ * `{ rejectPlaceholders: true }` rejects the placeholder numbers (POLICY-1).
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param naturalPersonNif The value to check.
- * @param opts `normalize` (default `true`).
+ * @param opts `normalize` (default `true`), `rejectPlaceholders` (default
+ * `false`).
  * @returns true for valid input and false for invalid input.
  * @see SPEC.md#norm-2
  */
@@ -71,10 +75,15 @@ export function isValidNaturalPersonNif(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof naturalPersonNif !== "string") return false;
-  if (checkNaturalPersonNif(naturalPersonNif)) return true;
+  if (checkNaturalPersonNif(naturalPersonNif))
+    return acceptsValid(naturalPersonNif, opts);
   // NORM-2..4: only when the raw check failed and cleanup could help.
   const normalized = normalizedForRetry(naturalPersonNif, opts);
-  return normalized !== null && checkNaturalPersonNif(normalized);
+  return (
+    normalized !== null &&
+    checkNaturalPersonNif(normalized) &&
+    acceptsValid(normalized, opts)
+  );
 }
 
 /**
@@ -89,10 +98,12 @@ export function isValidNaturalPersonNif(
  * `{ cifControl: "lenient" }` to also accept a letter control for
  * C D F G J U V, as v1 did.
  *
+ * `{ rejectPlaceholders: true }` rejects the placeholder numbers (POLICY-1).
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param nif The value to check.
  * @param opts `normalize` (default `true`), `cifControl` (default
- * `"official"`).
+ * `"official"`), `rejectPlaceholders` (default `false`).
  * @returns true for valid input and false for invalid input.
  * @see SPEC.md#cif-3
  * @see SPEC.md#norm-2
@@ -102,8 +113,12 @@ export function isValidNif(
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof nif !== "string") return false;
-  if (checkNif(nif, opts)) return true;
+  if (checkNif(nif, opts)) return acceptsValid(nif, opts);
   // NORM-2..4: only when the raw check failed and cleanup could help.
   const normalized = normalizedForRetry(nif, opts);
-  return normalized !== null && checkNif(normalized, opts);
+  return (
+    normalized !== null &&
+    checkNif(normalized, opts) &&
+    acceptsValid(normalized, opts)
+  );
 }

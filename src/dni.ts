@@ -19,6 +19,7 @@
  * Rule IDs refer to SPEC.md.
  */
 import { normalize, normalizedForRetry } from "./normalize";
+import { acceptsValid } from "./policy";
 import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -88,9 +89,12 @@ export function isValidNineCharDni(dni: string, first: number): boolean {
  * valid (as `01234567L`). Pass `{ normalize: false }` for v1's strict
  * parsing.
  *
+ * `{ rejectPlaceholders: true }` rejects the placeholder numbers (POLICY-1).
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param dni The value to check.
- * @param opts `normalize` (default `true`).
+ * @param opts `normalize` (default `true`), `rejectPlaceholders` (default
+ * `false`).
  * @returns true for valid input and false for invalid input.
  * @see SPEC.md#norm-4
  */
@@ -100,13 +104,14 @@ export function isValidDni(
 ): boolean {
   if (typeof dni !== "string") return false;
   if (dni.length === DNI_LENGTH && isValidNineCharDni(dni, dni.charCodeAt(0)))
-    return true;
+    return acceptsValid(dni, opts);
   // NORM-2..4: only when the raw check failed and cleanup could help.
   const normalized = normalizedForRetry(dni, opts);
   return (
     normalized !== null &&
     normalized.length === DNI_LENGTH &&
-    isValidNineCharDni(normalized, normalized.charCodeAt(0))
+    isValidNineCharDni(normalized, normalized.charCodeAt(0)) &&
+    acceptsValid(normalized, opts)
   );
 }
 
@@ -145,9 +150,12 @@ function parseDigitsAsDouble(value: string): number {
  * The input is normalized first (NORM-1 to NORM-4); pass
  * `{ normalize: false }` to read it as v1 did.
  *
+ * `{ rejectPlaceholders: true }` rejects the placeholder numbers (POLICY-1).
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param value The value to check.
- * @param opts `normalize` (default `true`).
+ * @param opts `normalize` (default `true`), `rejectPlaceholders` (default
+ * `false`).
  * @returns true for valid input and false for invalid input.
  */
 export function isValidDniLetter(
@@ -173,6 +181,7 @@ export function isValidDniLetter(
   // `Infinity % 23` is NaN, and v1's `charAt(NaN)` read index 0, like
   // `charCodeAt(NaN)` here.
   return (
-    lastCodeUnitUpperCased(dni) === DNI_CONTROL_LETTERS.charCodeAt(number % 23)
+    lastCodeUnitUpperCased(dni) ===
+      DNI_CONTROL_LETTERS.charCodeAt(number % 23) && acceptsValid(dni, opts)
   );
 }
