@@ -104,3 +104,30 @@ describe("NORM-1: CIF validation is case-insensitive (#33)", () => {
     (cif) => expect(isValidCif(cif)).toBe(false)
   );
 });
+
+// isValidCifControlCode does not check the format (see its @WARNING). These
+// pin its v1 behaviour, which the rewrite keeps exactly.
+describe("CIF-4: isValidCifControlCode keeps its v1 behaviour", () => {
+  it("CIF-4: white space in a digit position counts as 0, as `+' '` did", () => {
+    expect(isValidCifControlCode("A 7727886")).toBe(true);
+    expect(isValidCifControlCode("A0000000 ")).toBe(true);
+  });
+
+  it("CIF-1: a missing digit makes the control invalid", () =>
+    expect(isValidCifControlCode("A123456")).toBe(false));
+
+  it("CIF-3: a first character that is not a key takes a letter or a digit", () => {
+    // P1234567D is valid, so the control of 1234567 is 4 (D).
+    expect(isValidCifControlCode("X1234567D")).toBe(true);
+    expect(isValidCifControlCode("X12345674")).toBe(true);
+  });
+
+  it("NORM-1: characters are read after toUpperCase(), as in v1", () => {
+    // "ﬃ" upper-cases to "FFI": the control is then the final I, which is
+    // the letter of 3838940 (R3838940I is valid).
+    expect(isValidCifControlCode("C3838940ﬃ")).toBe(true);
+    expect(isValidCifControlCode("P3838940ﬃ")).toBe(true);
+    // "ß" upper-cases to "SS" and moves every position by one.
+    expect(isValidCifControlCode("ß1234567D")).toBe(false);
+  });
+});
