@@ -11,6 +11,7 @@ files:
   - "bench/**"
   - "*.md"
   - "llms.txt"
+  - "llms-full.txt"
   - "docs/**"
   - "*.json"
   - "*.yaml"

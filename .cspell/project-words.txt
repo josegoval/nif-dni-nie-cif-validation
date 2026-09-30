@@ -180,6 +180,9 @@ euskara
 galego
 valencià
 
+# Heading anchors of SPEC.md, repeated in llms-full.txt
+getniftype
+
 # English words missing from the dictionaries
 alikes
 dotless
@@ -190,10 +193,12 @@ uncited
 # Tools, packages and accounts
 arethetypeswrong
 attw
+buymeacoffee
 commitlint
 darwin
 deno
 esbuild
+hookform
 josegoval
 jsvat
 kreyo
