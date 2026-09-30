@@ -59,7 +59,8 @@
     "spec:check": "node scripts/check-spec-rules.mjs",
     "bench": "pnpm build && node bench/run.mjs",
     "format": "biome check --write .",
-    "size": "pnpm build && size-limit"
+    "size": "pnpm build && size-limit",
+    "check:es": "pnpm build && es-check es2016 \"dist/cjs/*.cjs\" --checkFeatures && es-check es2016 \"dist/esm/*.mjs\" --module --checkFeatures"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

@@ -80,6 +80,10 @@ jobs:
       # .size-limit.json (a boolean validator must not pull in the messages).
       - name: Bundle size budgets (size-limit)
         run: pnpm size
+      # Fails if dist/ has syntax or built-ins newer than ES2016, so the
+      # package runs in browsers without transpiling.
+      - name: Check the ES target (es-check)
+        run: pnpm check:es
       # `prepack` builds dist/. Pack into a separate folder so script output
       # (e.g. Husky's "skip install" notice) can't corrupt the filename.
       - name: Pack
