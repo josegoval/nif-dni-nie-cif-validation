@@ -50,6 +50,7 @@
     "@types/node": "^22.20.4",
     "@vitest/coverage-v8": "^5.0.2",
     "cspell": "^10.3.4",
+    "fast-check": "^4.10.2",
     "husky": "^9.1.7",
     "nif-v1": "npm:nif-dni-nie-cif-validation@1.0.11",
     "semantic-release": "^25.0.9",
