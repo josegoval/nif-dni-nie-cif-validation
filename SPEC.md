@@ -96,7 +96,7 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 | ID | Rule | Tier | Source |
 |---|---|---|---|
 | <a id="norm-1"></a>NORM-1 | The canonical form is upper case. Accepting lower-case input is convention | T1 (canonical) / T4 (accepting) | RD 1065/2007 art. 19.1 |
-| <a id="norm-2"></a>NORM-2 | Spaces and dots are ignored | T2-ish | VIES help: "Spaces and dots between blocks of digits should be ignored" |
+| <a id="norm-2"></a>NORM-2 | Spaces and dots are ignored | T2 (EU Commission VIES page, not a Spanish source) | VIES help: "Spaces and dots between blocks of digits should be ignored" |
 | <a id="norm-3"></a>NORM-3 | Hyphens and slashes are ignored | T4 | — |
 | <a id="norm-4"></a>NORM-4 | A DNI entered with fewer than 8 digits is left-padded with zeros to its canonical form | T2 (canonical) / T4 (padding input) | AEAT Sede: "los primeros pueden ser ceros" |
 
