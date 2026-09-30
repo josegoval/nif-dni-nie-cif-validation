@@ -1,3 +1,12 @@
+## [1.0.12](https://github.com/josegoval/nif-dni-nie-cif-validation/compare/v1.0.11...v1.0.12) (2026-09-30)
+
+
+### Performance Improvements
+
+* pick the NIF format from the first character ([afd5db9](https://github.com/josegoval/nif-dni-nie-cif-validation/commit/afd5db9fe477a7c40570a097ce9bac27ab7cf28a)), closes [#47](https://github.com/josegoval/nif-dni-nie-cif-validation/issues/47)
+* validate DNI, K/L/M and NIE in one pass without allocations ([035bd17](https://github.com/josegoval/nif-dni-nie-cif-validation/commit/035bd177e566447b6a024e7d91a34091ace21403)), closes [#47](https://github.com/josegoval/nif-dni-nie-cif-validation/issues/47)
+* validate legal entity NIFs (CIF) in one pass without allocations ([c2156f4](https://github.com/josegoval/nif-dni-nie-cif-validation/commit/c2156f404e0b053735f37db1d3e9b454bdeef186)), closes [#38](https://github.com/josegoval/nif-dni-nie-cif-validation/issues/38) [#47](https://github.com/josegoval/nif-dni-nie-cif-validation/issues/47) [#51](https://github.com/josegoval/nif-dni-nie-cif-validation/issues/51)
+
 ## [1.0.11](https://github.com/josegoval/nif-dni-nie-cif-validation/compare/v1.0.10...v1.0.11) (2026-09-30)
 
 
