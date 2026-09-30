@@ -29,13 +29,13 @@ const testCases = [
   { text: "U07984792", expect: true },
   { text: "V23932064", expect: true },
   { text: "W7759996G", expect: true },
-  // does not alloes old cases
+  // does not allow old cases
   // { text: "K3841569T", expect: true },
   // { text: "L2841589T", expect: true },
   // { text: "M5275115T", expect: true },
 ];
 
-describe("legal enitity nif validation", () => {
+describe("legal entity nif validation", () => {
   testCases.forEach((testCase) => {
     it(`test case ${testCase.text}`, () =>
       expect(isValidLegalEntityNif(testCase.text)).toBe(testCase.expect));
