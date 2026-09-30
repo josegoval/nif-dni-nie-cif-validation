@@ -1,6 +1,6 @@
 # v2 API design
 
-Status: proposed for 2.0.0, to be approved in PR review (#56).
+Status: accepted for 2.0.0 (#56); the v2 pull requests are pending the maintainer's review.
 
 This document describes the public API of `nif-dni-nie-cif-validation` 2.0.0 and the reasons behind each decision. Every behaviour follows [SPEC.md](../SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](../MIGRATION.md) lists what changes for v1 users.
 

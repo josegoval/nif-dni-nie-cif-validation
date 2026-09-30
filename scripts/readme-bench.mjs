@@ -191,7 +191,9 @@ const TEXT = {
     throughputTitle: "#### Throughput",
     throughputIntro: (r) =>
       `Millions of validations per second (**M ops/s, higher is faster**): the median of ${r.config.rounds} rounds, each library with its default options, on valid and invalid documents in canonical form (${r.inputSets.DNI.count} DNI, ${r.inputSets.NIE.count} NIE, ${r.inputSets.CIF.count} CIF). *unsupported*: the library has no validator for that type. Absolute numbers depend on the machine; the ratios are what carries over.`,
-    speedup: (parts) => `Against v1.0.11, this build is ${parts} as fast.`,
+    times: (value) => `${value}×`,
+    speedup: (parts, version) =>
+      `Against v${version}, this build is ${parts} as fast.`,
     and: "and",
     faster: (list) => `Faster than this build on a set: ${list}.`,
     noneFaster: "No other library was faster on any of these sets.",
@@ -234,9 +236,10 @@ const TEXT = {
       `Medido con \`pnpm bench:competitors\` en un ${r.machine.cpu} (${r.machine.cores} núcleos, ${r.machine.memoryGiB} GiB, ${r.machine.os}, ${r.machine.arch}), con Node.js ${r.node}, el ${r.generatedAt.slice(0, 10)}, en el commit ${commit}. Todos los números de esta sección salen de [\`bench/results/latest.json\`](bench/results/latest.json) y los escribe \`pnpm readme:bench\`. Cómo se miden y sus limitaciones: [bench/README.md](bench/README.md) (en inglés). Resultados completos: [bench/results/latest.md](bench/results/latest.md).`,
     throughputTitle: "#### Velocidad",
     throughputIntro: (r) =>
-      `Millones de validaciones por segundo (**M ops/s, más es más rápido**): la mediana de ${r.config.rounds} rondas, cada biblioteca con sus opciones por defecto, con documentos válidos y no válidos en forma canónica (${r.inputSets.DNI.count} DNI, ${r.inputSets.NIE.count} NIE, ${r.inputSets.CIF.count} CIF). *no admitido*: la biblioteca no valida ese tipo. Los números absolutos dependen de la máquina; lo que se mantiene son las proporciones.`,
-    speedup: (parts) =>
-      `Frente a la v1.0.11, esta versión es ${parts} más rápida.`,
+      `Millones de validaciones por segundo (**M ops/s: cuanto mayor sea el valor, mayor será la velocidad**): la mediana de ${r.config.rounds} rondas, cada biblioteca con sus opciones por defecto, con documentos válidos y no válidos en forma canónica (${r.inputSets.DNI.count} DNI, ${r.inputSets.NIE.count} NIE, ${r.inputSets.CIF.count} CIF). *no admitido*: la biblioteca no valida ese tipo. Los números absolutos dependen de la máquina; lo que se mantiene son las proporciones.`,
+    times: (value) => `${value} veces`,
+    speedup: (parts, version) =>
+      `Esta versión alcanza ${parts} la velocidad de la v${version}.`,
     and: "y",
     faster: (list) =>
       `Más rápidas que esta versión en algún conjunto: ${list}.`,
@@ -244,13 +247,13 @@ const TEXT = {
       "Ninguna otra biblioteca fue más rápida en ninguno de estos conjuntos.",
     sizeTitle: "#### Tamaño",
     sizeIntro:
-      "Minificado y comprimido con gzip (**min+gzip, menos es más pequeño**): un validador de cada tipo, empaquetado con esbuild como hace `pnpm size`, y la biblioteca completa.",
+      "Minificado y comprimido con gzip (**min+gzip: cuanto menor sea el valor, menor será el tamaño**): un validador de cada tipo, empaquetado con esbuild como hace `pnpm size`, y la biblioteca completa.",
     sizeHeader: ["DNI", "NIE", "CIF", "Cualquier tipo", "Biblioteca completa"],
     smaller: (list) =>
       `Más pequeñas que esta versión para un validador de cualquier tipo: ${list}.`,
     noneSmaller:
       "Ninguna otra biblioteca es más pequeña para un validador de cualquier tipo.",
-    alternative: (label, size) => `También medido, ${label}: ${size}.`,
+    alternative: (label, size) => `También se ha medido ${label}: ${size}.`,
     sizeWhy:
       "Algunas de las bibliotecas más pequeñas validan menos tipos. Este paquete dedica bytes a normalizar la entrada (NORM-1 a NORM-4), a los tipos de control de CIF-3 y a los NIF K/L/M. Las bibliotecas publicadas solo como CommonJS no admiten *tree-shaking*, así que una función cuesta la biblioteca entera. Las bibliotecas de muchos países o de propósito general (stdnum, validator.js) son más grandes por diseño.",
     accuracyTitle: "#### Coincidencia con SPEC.md",
@@ -269,7 +272,7 @@ const TEXT = {
       "Esquemas",
       "Módulos",
       "Tamaño, cualquier tipo (min+gzip)",
-      "Última versión",
+      "Fecha de la última versión",
     ],
     badgeAlt: (bytes) => `isValidNif: ${bytes} min+gzip`,
     anchor: "#rendimiento",
@@ -301,7 +304,7 @@ function decimal(value, places, lang) {
 }
 
 const millions = (ops, lang) => decimal(ops / 1e6, 2, lang);
-const ratio = (value, lang) => `${decimal(value, 1, lang)}×`;
+const ratio = (value, lang) => TEXT[lang].times(decimal(value, 1, lang));
 /** "82.9%" in English, "82,9 %" in Spanish (RAE: a space before the sign). */
 const percent = (value, lang) => {
   if (value === null) return "—";
@@ -374,7 +377,7 @@ function benchSection(report, lang) {
       (set) =>
         `${ratio(report.throughput[set][previous.id].subjectSpeedup, lang)} (${set})`
     );
-    out.push(t.speedup(list(parts, lang)));
+    out.push(t.speedup(list(parts, lang), previous.version));
   }
   const faster = report.contenders.flatMap((c) =>
     SETS.filter((set) => {

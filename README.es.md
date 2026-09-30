@@ -8,7 +8,7 @@
 
 <p align="center"><a href="README.md">English</a> · <strong>Español</strong></p>
 
-`nif-dni-nie-cif-validation` comprueba identificadores fiscales españoles (NIF, DNI, NIF K/L/M, NIE y CIF) con las reglas oficiales, y te dice por qué un número no es válido. Cada regla que aplica tiene su fuente, la ley (BOE) o la Agencia Tributaria (AEAT), en [SPEC.md](SPEC.md).
+`nif-dni-nie-cif-validation` comprueba identificadores fiscales españoles (NIF, DNI, NIF K/L/M, NIE y CIF) con las reglas oficiales, y te dice por qué un número no es válido. Cada regla que aplica tiene una fuente documentada en [SPEC.md](SPEC.md): legislación, documentación oficial, una nota técnica de la AEAT o una convención identificada como tal.
 
 [![npm version](https://img.shields.io/npm/v/nif-dni-nie-cif-validation)](https://www.npmjs.com/package/nif-dni-nie-cif-validation)
 [![npm downloads](https://img.shields.io/npm/dm/nif-dni-nie-cif-validation)](https://www.npmjs.com/package/nif-dni-nie-cif-validation)
@@ -50,7 +50,7 @@ import { isValidNif, validate } from "nif-dni-nie-cif-validation";
 import { es } from "nif-dni-nie-cif-validation/locales/es";
 
 isValidNif("12345678Z");      // true
-isValidNif(" 12.345.678-z "); // true: se limpian espacios, puntos, guiones y minúsculas
+isValidNif(" 12.345.678-z "); // true: se eliminan espacios, puntos y guiones, y se convierten las minúsculas en mayúsculas
 isValidNif("B12345675");      // false: el dígito de control no es correcto
 validate("12345678A", { locale: es }).error?.message; // "El carácter de control no es correcto: para este DNI debería ser «Z»."
 ```
@@ -92,7 +92,7 @@ validate("12345678A", { locale: es }).error?.message; // "El carácter de contro
 | Validar un campo de formulario con Zod | `zNif`, `zDni`, `zNie`, `zCif`, `zSpanishVat` | `nif-dni-nie-cif-validation/zod` |
 | … con Valibot | `vNif`, `vDni`, `vNie`, `vCif`, `vSpanishVat` | `nif-dni-nie-cif-validation/valibot` |
 | … con Yup | `yNif`, `yDni`, `yNie`, `yCif`, `ySpanishVat` | `nif-dni-nie-cif-validation/yup` |
-| Seguir usando las expresiones regulares y las tablas de letras de la v1 | `DNI_REGEX`, `NIE_REGEX`, `LEGAL_ENTITY_NIF_REGEX` (alias `CIF_REGEX`), `DNI_CONTROL_LETTERS`, `LEGAL_ENTITY_CONTROL_LETTERS` (alias `CIF_CONTROL_LETTERS`). Solo comprueban el formato: mejor usa las funciones de arriba | `nif-dni-nie-cif-validation` |
+| Seguir usando las expresiones regulares y las tablas de letras de la v1 | `DNI_REGEX`, `NIE_REGEX`, `LEGAL_ENTITY_NIF_REGEX` (alias `CIF_REGEX`), `DNI_CONTROL_LETTERS`, `LEGAL_ENTITY_CONTROL_LETTERS` (alias `CIF_CONTROL_LETTERS`). Las expresiones regulares solo comprueban el formato, y las tablas contienen las letras de control: mejor usa las funciones de arriba | `nif-dni-nie-cif-validation` |
 | Cambiar la letra de un NIE por su dígito (v1) | `replaceNieLetter(value)`: obsoleta, lanza una excepción con una entrada incorrecta | `nif-dni-nie-cif-validation` |
 
 ## Características
@@ -102,8 +102,8 @@ validate("12345678A", { locale: es }).error?.message; // "El carácter de contro
 - **Pequeña.** Un validador booleano añade menos de 1 kB minificado y comprimido con gzip, y `validate()` con sus mensajes en inglés, menos de 3 kB. La integración continua (CI) hace cumplir esos límites (`pnpm size`); el tamaño de cada función está en [Rendimiento](#rendimiento).
 - **Tipada.** Escrita en TypeScript, con declaraciones para `import` y para `require`, y con los tipos exportados (`ValidationResult`, `NifType`, `NifErrorCode`…).
 - **Módulos ES y CommonJS**, con *tree-shaking*, compilada a ES2016: Node.js 20 o posterior y cualquier navegador actual.
-- **Nunca lanza excepciones con lo que escribe el usuario.** Los validadores aceptan `unknown`: `null`, números y objetos dan `false` (o `NOT_A_STRING` en `validate()`). Solo lanzan la obsoleta `replaceNieLetter` y los generadores, que lanzan un `RangeError` con opciones imposibles de cumplir, porque son errores de programación.
-- **Normalización.** `" 12.345.678-z "`, `"x-0123456-7l"` y `"1234567L"` son válidos; `normalize()` da la forma que hay que guardar. `{ normalize: false }` la desactiva.
+- **Nunca lanza excepciones con lo que escribe el usuario.** Los validadores aceptan `unknown`: `null`, números y objetos dan `false` (o `NOT_A_STRING` en `validate()`). Solo `replaceNieLetter`, que está obsoleta, lanza excepciones con entradas incorrectas; los generadores lanzan un `RangeError` si las opciones son imposibles de cumplir, porque son errores de programación.
+- **Normalización.** `" 12.345.678-z "`, `"x-0123456-7l"` y `"1234567L"` son válidos; `normalize()` da la forma que hay que guardar. `{ normalize: false }` desactiva la eliminación de separadores y el relleno con ceros; las minúsculas y la forma antigua del NIE se siguen aceptando.
 - **Mensajes de error en 5 idiomas**: inglés (incluido), español, catalán (también para valenciano), euskera y gallego. Cada idioma se importa por separado, así que tu bundle solo lleva los que usas.
 - **Generadores de datos de prueba** (`/generate`): números válidos con los caracteres de control de la propia biblioteca, iguales en cualquier plataforma para una misma semilla, y valores no válidos para cada código de error.
 - **Adaptadores de esquemas** para Zod 4, Valibot 1 y Yup 1: devuelven el valor normalizado y dan el mensaje traducido, el código de error y la regla de SPEC.
@@ -114,7 +114,7 @@ Todo lo que se exporta tiene JSDoc, así que tu editor muestra su documentación
 
 ### `validate()`: el resultado detallado
 
-Sin `locale`, los mensajes y las descripciones salen en inglés:
+Sin `locale`, los mensajes y las descripciones se devuelven en inglés. Para obtenerlos en español, pasa `{ locale: es }`:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";
@@ -133,7 +133,7 @@ validate("12345678A", { locale: es });
 | Campo | Valor |
 | --- | --- |
 | `valid` | `true` o `false`, con las opciones indicadas |
-| `type` | `"DNI"`, `"NIE"`, `"CIF"`, `"NIF_KLM"`, o `null` si el formato no se reconoce. Se rellena aunque el carácter de control esté mal, para que puedas decir «la letra de este DNI debería ser Z» |
+| `type` | `"DNI"`, `"NIE"`, `"CIF"`, `"NIF_KLM"` o `null` si el formato no se reconoce. Se rellena aunque el carácter de control esté mal, para que puedas decir «la letra de este DNI debería ser Z» |
 | `normalized` | La forma canónica que hay que guardar (en mayúsculas, sin separadores, con el NIE antiguo abreviado y el DNI corto completado con ceros), o `null` |
 | `error` | Solo si no es válido: `code`, `message` (en el idioma elegido), `rule` (el identificador de la regla en SPEC.md) y, si el carácter de control está mal, `expected` |
 | `meta` | Solo para un CIF: `orgKey` y `orgDescription` (el tipo de organización, en el idioma elegido) |
@@ -143,7 +143,7 @@ Códigos de error y reglas que los producen:
 | `error.code` | Cuándo | `error.rule` |
 | --- | --- | --- |
 | `NOT_A_STRING` | El valor no es una cadena | `INPUT-1` |
-| `EMPTY` | Vacío, o solo espacios y separadores | `INPUT-2` |
+| `EMPTY` | Vacío o compuesto solo por espacios y separadores | `INPUT-2` |
 | `INVALID_LENGTH` | No tiene 9 caracteres (10 en un NIE antiguo) | `DNI-1`, `KLM-1`, `NIE-1`, `NIE-3`, `CIF-1`, `VAT-1` |
 | `INVALID_FORMAT` | Primer carácter incorrecto, letras donde van dígitos o un prefijo `ES` sin `allowVatPrefix` | `NIF-1`, `DNI-1`, `KLM-1`, `KLM-3`, `NIE-1`, `CIF-1`, `VAT-1` |
 | `INVALID_CONTROL_CHARACTER` | Letra o dígito de control incorrecto; `expected` trae el correcto | `DNI-2`, `DNI-3`, `KLM-2`, `NIE-2`, `CIF-3`, `CIF-4` |
@@ -252,7 +252,7 @@ const gen = createGenerator(2024); // una secuencia: valores distintos, los mism
 gen.dni() === gen.dni();           // false
 ```
 
-Todos los generadores aceptan `format: true` para la forma de presentación. Los números siguen SPEC.md y nunca son un número de ejemplo, pero son inventados: alguno puede coincidir por azar con el de una persona o empresa real, así que úsalos solo en tests. El punto de entrada principal nunca importa este módulo.
+Todos los generadores aceptan `format: true` para la forma de presentación. Los números válidos generados siguen SPEC.md y no figuran en la lista de valores de ejemplo de POLICY-1, pero son inventados: alguno puede coincidir por azar con el de una persona o empresa real, así que úsalos solo en tests. El punto de entrada principal nunca importa este módulo.
 
 ### Adaptadores de esquemas: Zod, Valibot, Yup
 
@@ -355,7 +355,7 @@ export function requireNif(
 
 ### Generar datos de prueba
 
-Ni NIF de personas reales en tus fixtures ni código propio para calcular la letra:
+Genera NIF para tus fixtures sin copiar datos de personas reales ni escribir código propio para calcular la letra:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";
@@ -392,7 +392,7 @@ validate("B12345674", { locale }).meta?.orgDescription; // "Societat de responsa
 
 - **NIF** (número de identificación fiscal) es el identificador fiscal de toda persona o entidad en España (RD 1065/2007). Todo lo que valida este paquete es un NIF.
 - **DNI**: para los ciudadanos españoles, el NIF es el número del DNI: 8 dígitos y una letra de control, `12345678Z` ([DNI-1, DNI-2](SPEC.md#dni-1)).
-- **NIE**: para los extranjeros, `X`, `Y` o `Z`, 7 dígitos y una letra de control, `X1234567L`. La forma antigua de 10 caracteres, `X0` y 7 dígitos, sigue siendo válida ([NIE-1 a NIE-3](SPEC.md#nie-1)).
+- **NIE**: para los extranjeros, `X`, `Y` o `Z`, 7 dígitos y una letra de control, `X1234567L`. La forma antigua de 10 caracteres, `X0` seguido de 7 dígitos y una letra de control (`X01234567L`), sigue siendo válida ([NIE-1 a NIE-3](SPEC.md#nie-1)).
 - **NIF K/L/M**: personas sin DNI ni NIE. K: españoles menores de 14 años residentes en España; L: españoles residentes en el extranjero; M: extranjeros sin NIE. Son personas físicas, no empresas ([KLM-1 a KLM-3](SPEC.md#klm-1)).
 - **CIF**: hasta 2008, el nombre del NIF de las personas jurídicas y entidades; hoy oficialmente es el «NIF de persona jurídica o entidad». Una clave de organización, 7 dígitos y un carácter de control, `B12345674` ([CIF-1 a CIF-5](SPEC.md#cif-1)). El paquete mantiene el nombre `CIF` (`isValidCif`, `type: "CIF"`) porque es lo que la gente busca.
 - **NIF-IVA**: `ES` seguido de un NIF (`ES12345678Z`, [VAT-1](SPEC.md#vat-1)). Que el formato sea válido no significa que el número esté dado de alta en VIES.
@@ -408,7 +408,7 @@ No todas las reglas que circulan por internet tienen una fuente oficial. [SPEC.m
 | T3: semioficial | La nota técnica interna de la AEAT | Qué claves de CIF llevan un dígito y cuáles una letra (CIF-3) |
 | T4: convención | Práctica del sector, sin texto oficial | Aceptar minúsculas y separadores; el cálculo del control del CIF (CIF-4) |
 
-Por defecto, solo T1 a T3 deciden qué es válido. Las convenciones T4 solo se aplican a la limpieza de la entrada (que nunca convierte en válido un documento que no lo es), con una excepción documentada: ningún texto oficial publica el cálculo del control del CIF, así que se usa el algoritmo universal, comprobado con NIF reales de organismos públicos ([CIF-4](SPEC.md#cif-4)). Todo lo demás es opcional: `cifControl: "lenient"` (el control del CIF con letra o dígito de la v1), `rejectPlaceholders`, `types` y `allowVatPrefix`. `normalize: false` desactiva la limpieza. Las reglas que circulan sin fuente, como los códigos de provincia en un CIF o el prefijo `T`, figuran en SPEC.md como no implementadas.
+Por defecto, solo T1 a T3 deciden qué es válido. Las convenciones T4 solo se aplican a la limpieza de la entrada (que nunca convierte en válido un documento que no lo es), con una excepción documentada: ningún texto oficial publica el cálculo del control del CIF, así que se usa el algoritmo universal, comprobado con NIF reales de organismos públicos ([CIF-4](SPEC.md#cif-4)). Todo lo demás es opcional: `cifControl: "lenient"` (el control del CIF con letra o dígito de la v1), `rejectPlaceholders`, `types` y `allowVatPrefix`. `normalize: false` desactiva la eliminación de separadores y el relleno con ceros (las minúsculas y la forma antigua del NIE se siguen aceptando). Las reglas que circulan sin fuente, como los códigos de provincia en un CIF o el prefijo `T`, figuran en SPEC.md como no implementadas.
 
 ## Rendimiento
 
@@ -417,7 +417,7 @@ Medido con `pnpm bench:competitors` en un Apple M1 (8 núcleos, 16 GiB, darwin 2
 
 #### Velocidad
 
-Millones de validaciones por segundo (**M ops/s, más es más rápido**): la mediana de 3 rondas, cada biblioteca con sus opciones por defecto, con documentos válidos y no válidos en forma canónica (225 DNI, 150 NIE, 270 CIF). *no admitido*: la biblioteca no valida ese tipo. Los números absolutos dependen de la máquina; lo que se mantiene son las proporciones.
+Millones de validaciones por segundo (**M ops/s: cuanto mayor sea el valor, mayor será la velocidad**): la mediana de 3 rondas, cada biblioteca con sus opciones por defecto, con documentos válidos y no válidos en forma canónica (225 DNI, 150 NIE, 270 CIF). *no admitido*: la biblioteca no valida ese tipo. Los números absolutos dependen de la máquina; lo que se mantiene son las proporciones.
 
 | Biblioteca | DNI | NIE | CIF |
 | --- | ---: | ---: | ---: |
@@ -433,12 +433,12 @@ Millones de validaciones por segundo (**M ops/s, más es más rápido**): la med
 | [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 2,77 | 2,55 | 2,35 |
 | [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 2,71 | 2,15 | 2,77 |
 
-Frente a la v1.0.11, esta versión es 6,8× (DNI), 9,2× (NIE) y 7,0× (CIF) más rápida.
+Esta versión alcanza 6,8 veces (DNI), 9,2 veces (NIE) y 7,0 veces (CIF) la velocidad de la v1.0.11.
 Ninguna otra biblioteca fue más rápida en ninguno de estos conjuntos.
 
 #### Tamaño
 
-Minificado y comprimido con gzip (**min+gzip, menos es más pequeño**): un validador de cada tipo, empaquetado con esbuild como hace `pnpm size`, y la biblioteca completa.
+Minificado y comprimido con gzip (**min+gzip: cuanto menor sea el valor, menor será el tamaño**): un validador de cada tipo, empaquetado con esbuild como hace `pnpm size`, y la biblioteca completa.
 
 | Biblioteca | DNI | NIE | CIF | Cualquier tipo | Biblioteca completa |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -454,7 +454,7 @@ Minificado y comprimido con gzip (**min+gzip, menos es más pequeño**): un vali
 | [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 533 B | 533 B | 533 B | 533 B | 746 B |
 | [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 1186 B | 1186 B | 1186 B | 1186 B | 5266 B |
 
-Más pequeñas que esta versión para un validador de cualquier tipo: [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 (583 B), [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 (882 B), [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 (456 B) y [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 (533 B). Algunas de las bibliotecas más pequeñas validan menos tipos. Este paquete dedica bytes a normalizar la entrada (NORM-1 a NORM-4), a los tipos de control de CIF-3 y a los NIF K/L/M. Las bibliotecas publicadas solo como CommonJS no admiten *tree-shaking*, así que una función cuesta la biblioteca entera. Las bibliotecas de muchos países o de propósito general (stdnum, validator.js) son más grandes por diseño. También medido, [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6, con una importación directa de su módulo del NIF español (no documentada): 2468 B.
+Más pequeñas que esta versión para un validador de cualquier tipo: [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 (583 B), [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 (882 B), [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 (456 B) y [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 (533 B). Algunas de las bibliotecas más pequeñas validan menos tipos. Este paquete dedica bytes a normalizar la entrada (NORM-1 a NORM-4), a los tipos de control de CIF-3 y a los NIF K/L/M. Las bibliotecas publicadas solo como CommonJS no admiten *tree-shaking*, así que una función cuesta la biblioteca entera. Las bibliotecas de muchos países o de propósito general (stdnum, validator.js) son más grandes por diseño. También se ha medido [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6, con una importación directa de su módulo del NIF español (no documentada): 2468 B.
 
 #### Coincidencia con SPEC.md
 
@@ -480,7 +480,7 @@ El porcentaje de los 117 casos de `test/fixtures` (opciones por defecto) que cad
 <!-- compare:start -->
 Revisado el 2026-10-01, a partir del README, el package.json y la página de npm de cada biblioteca, y del benchmark de arriba (las versiones y los tamaños salen de latest.json).
 
-| Biblioteca | Tipos | K/L/M | Normaliza la entrada | Objeto de resultado | Mensajes traducidos | Generadores de datos de prueba | Esquemas | Módulos | Tamaño, cualquier tipo (min+gzip) | Última versión |
+| Biblioteca | Tipos | K/L/M | Normaliza la entrada | Objeto de resultado | Mensajes traducidos | Generadores de datos de prueba | Esquemas | Módulos | Tamaño, cualquier tipo (min+gzip) | Fecha de la última versión |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **nif-dni-nie-cif-validation** (esta versión) | DNI, NIE, CIF, K/L/M | sí | sí | sí: código, regla de SPEC, mensaje | EN, ES, CA, EU, GL | sí | Zod, Valibot, Yup | ESM + CJS | 929 B | esta versión |
 | [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | DNI, NIE, CIF | no | parcial | no (solo el tipo) | no | no | no | ESM + CJS | 583 B | 2026-06-12 |
