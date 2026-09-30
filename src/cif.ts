@@ -183,13 +183,13 @@ function hasLooseControlCode(value: string): boolean {
  *
  * @WARNING It does not check the `LEGAL_ENTITY_NIF_REGEX`.
  *
- * Never throws, whatever the length of the string. Typed `string`, but any
- * other value (e.g. `null`) returns `false`.
+ * Never throws, whatever the length of the string. Any value that is not a
+ * string (e.g. `null`) returns `false`.
  * @param legalEntityNif The value to check.
  * @returns true for a valid control code and false otherwise.
  */
 export function isValidLegalEntityNifControlCode(
-  legalEntityNif: string
+  legalEntityNif: unknown
 ): boolean {
   if (typeof legalEntityNif !== "string") return false;
   // NORM-1: v1 upper-cased the whole string first. For ASCII that only
@@ -206,11 +206,11 @@ export function isValidLegalEntityNifControlCode(
  *
  * It does not include old K, L and M formats.
  *
- * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param legalEntityNif The value to check.
  * @returns true for valid input and false for invalid input.
  */
-export function isValidLegalEntityNif(legalEntityNif: string): boolean {
+export function isValidLegalEntityNif(legalEntityNif: unknown): boolean {
   // CIF-1: 9 characters.
   if (
     typeof legalEntityNif !== "string" ||

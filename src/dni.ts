@@ -82,11 +82,11 @@ export function isValidNineCharDni(dni: string, first: number): boolean {
  *
  * It does include checks for DNI K, L and M.
  *
- * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param dni The value to check.
  * @returns true for valid input and false for invalid input.
  */
-export function isValidDni(dni: string): boolean {
+export function isValidDni(dni: unknown): boolean {
   if (typeof dni !== "string" || dni.length !== DNI_LENGTH) return false;
   return isValidNineCharDni(dni, dni.charCodeAt(0));
 }
@@ -123,11 +123,11 @@ function parseDigitsAsDouble(value: string): number {
  * It does include checks for DNI K, L and M.
  * @WARNING It does not check the `DNI_REGEX`.
  *
- * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param dni The value to check.
  * @returns true for valid input and false for invalid input.
  */
-export function isValidDniLetter(dni: string): boolean {
+export function isValidDniLetter(dni: unknown): boolean {
   if (typeof dni !== "string") return false;
   // v1 behaviour, kept exactly: take every ASCII digit anywhere in the
   // string as one number (KLM-2: a K/L/M prefix counts as nothing) and

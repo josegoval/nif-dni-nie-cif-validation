@@ -24,11 +24,11 @@ const OLD_NIE_LENGTH = 10;
 /**
  * Checks if the given naturalPersonNif is either a valid DNI (including DNI K, L and M) or a valid NIE.
  *
- * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param naturalPersonNif The value to check.
  * @returns true for valid input and false for invalid input.
  */
-export function isValidNaturalPersonNif(naturalPersonNif: string): boolean {
+export function isValidNaturalPersonNif(naturalPersonNif: unknown): boolean {
   if (typeof naturalPersonNif !== "string") return false;
   const length = naturalPersonNif.length;
   if (length === NIF_LENGTH) {
@@ -47,11 +47,11 @@ export function isValidNaturalPersonNif(naturalPersonNif: string): boolean {
  * Checks if the given nif (legal entity NIF or natural person NIF
  * (DNI, DNI K, DNI L, DNI M, or NIE)) is valid.
  *
- * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param nif The value to check.
  * @returns true for valid input and false for invalid input.
  */
-export function isValidNif(nif: string): boolean {
+export function isValidNif(nif: unknown): boolean {
   if (typeof nif !== "string") return false;
   const length = nif.length;
   if (length === NIF_LENGTH) {

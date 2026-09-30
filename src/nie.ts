@@ -97,11 +97,11 @@ export function replaceNieLetter(nie: string): string {
  * validated as its canonical form `XnnnnnnnL` (for example `X01234567L`
  * validates as `X1234567L`).
  *
- * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param nie The value to check.
  * @returns true for valid input and false for invalid input.
  */
-export function isValidNie(nie: string): boolean {
+export function isValidNie(nie: unknown): boolean {
   if (typeof nie !== "string") return false;
   const length = nie.length;
   // NIE-1 / NIE-2.
