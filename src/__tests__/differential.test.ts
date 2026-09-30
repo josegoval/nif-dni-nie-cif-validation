@@ -2,14 +2,20 @@ import * as v1 from "nif-v1";
 import { describe, expect, it } from "vitest";
 import * as current from "..";
 
-// Differential test (#47): the current code must behave exactly like the
-// published v1.0.11 (installed as the `nif-v1` dev alias) for every export
-// and every input. Any difference is a bug in the refactor, even if the new
-// result looks "more correct": behaviour changes belong in their own PR.
+// Differential test (#47): with the v1-compatible options, the current code
+// must behave exactly like the published v1.0.11 (installed as the `nif-v1`
+// dev alias) for every v1 export and every input. Any difference there is a
+// bug, even if the new result looks "more correct".
+//
+// With the v2 defaults, every difference from v1.0.11 must be one of the
+// documented breaking changes (MIGRATION.md); the last test checks that.
 
 type Exports = Record<string, unknown>;
 const currentExports = current as unknown as Exports;
 const v1Exports = v1 as unknown as Exports;
+
+/** The options that restore v1 behaviour (MIGRATION.md). */
+const V1_COMPATIBLE = { cifControl: "lenient" } as const;
 
 // Small seeded PRNG (mulberry32) so a failure can be reproduced.
 function createRandom(seed: number): () => number {
@@ -271,12 +277,44 @@ const functionNames = exportNames.filter(
   (name) => typeof v1Exports[name] === "function"
 );
 
+type Validator = (value: unknown, opts?: object) => boolean;
+
+/**
+ * Why a boolean gives a different result with the v2 defaults than v1.0.11
+ * did, or `null` if the difference is not a documented breaking change.
+ */
+function explainDifference(
+  ours: Validator,
+  value: unknown,
+  v1Result: boolean
+): string | null {
+  // CIF-3 (#38): C D F G J U V need a digit control by default; v1 also
+  // accepted the letter, which `cifControl: "lenient"` restores.
+  if (v1Result && ours(value, { cifControl: "lenient" })) return "CIF-3";
+  return null;
+}
+
+/** The breaking changes each boolean is expected to show on the inputs. */
+const EXPECTED_DIFFERENCES: Record<string, string[]> = {
+  isValidNif: ["CIF-3"],
+  isValidNaturalPersonNif: [],
+  isValidDni: [],
+  isValidDniLetter: [],
+  isValidNie: [],
+  isValidLegalEntityNif: ["CIF-3"],
+  isValidCif: ["CIF-3"],
+  isValidLegalEntityNifControlCode: ["CIF-3"],
+  isValidCifControlCode: ["CIF-3"],
+};
+
 describe(`differential test against v1.0.11 (${inputs.length} inputs)`, () => {
   it("compares at least 200,000 inputs", () =>
     expect(inputs.length).toBeGreaterThanOrEqual(200_000));
 
-  it("exports exactly the same names", () =>
-    expect(Object.keys(currentExports).sort()).toEqual(exportNames));
+  it("keeps every v1 export name", () =>
+    expect(Object.keys(currentExports)).toEqual(
+      expect.arrayContaining(exportNames)
+    ));
 
   it.each(exportNames)("%s has the same type and shape", (name) => {
     const ours = currentExports[name];
@@ -287,6 +325,7 @@ describe(`differential test against v1.0.11 (${inputs.length} inputs)`, () => {
       expect((ours as RegExp).source).toBe(theirs.source);
       expect((ours as RegExp).flags).toBe(theirs.flags);
     } else if (typeof theirs === "function") {
+      // The options argument has a default value, so `length` stays 1.
       expect((ours as () => unknown).length).toBe(theirs.length);
     } else {
       expect(ours).toEqual(theirs);
@@ -305,9 +344,13 @@ describe(`differential test against v1.0.11 (${inputs.length} inputs)`, () => {
   });
 
   it.each(functionNames)(
-    "%s returns (or throws) exactly the same",
+    "%s with the v1-compatible options returns (or throws) exactly the same",
     (name) => {
-      const ours = currentExports[name] as (value: unknown) => unknown;
+      const fn = currentExports[name] as (
+        value: unknown,
+        opts: object
+      ) => unknown;
+      const ours = (value: unknown) => fn(value, V1_COMPATIBLE);
       const theirs = v1Exports[name] as (value: unknown) => unknown;
       const mismatches: string[] = [];
       for (const value of inputs) {
@@ -326,6 +369,27 @@ describe(`differential test against v1.0.11 (${inputs.length} inputs)`, () => {
           );
       }
       expect(mismatches).toEqual([]);
+    },
+    60_000
+  );
+
+  it.each(Object.keys(EXPECTED_DIFFERENCES))(
+    "%s with the v2 defaults differs from v1 only by documented breaking changes",
+    (name) => {
+      const ours = currentExports[name] as Validator;
+      const theirs = v1Exports[name] as (value: unknown) => boolean;
+      const reasons = new Set<string>();
+      const unexplained: string[] = [];
+      for (const value of inputs) {
+        const v1Result = theirs(value);
+        if (ours(value) === v1Result) continue;
+        const reason = explainDifference(ours, value, v1Result);
+        if (reason !== null) reasons.add(reason);
+        else if (unexplained.length < 20)
+          unexplained.push(`${name}(${show(value)}): v1 ${v1Result}`);
+      }
+      expect(unexplained).toEqual([]);
+      expect([...reasons].sort()).toEqual(EXPECTED_DIFFERENCES[name]);
     },
     60_000
   );

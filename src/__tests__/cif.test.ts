@@ -66,9 +66,11 @@ describe("CIF-3: N takes a letter control (#38)", () => {
   it("CIF-3: isValidCifControlCode rejects a digit control for N", () =>
     expect(isValidCifControlCode("N18478586")).toBe(false));
 
-  // v1 keeps the lenient behaviour for C D F G J U V; v2 makes them digit-only.
-  it("CIF-3: G1234567D keeps its v1 behaviour (lenient until v2)", () =>
-    expect(isValidCif("G1234567D")).toBe(true));
+  it("CIF-3: G requires a digit control, so G1234567D is invalid (#38)", () =>
+    expect(isValidCif("G1234567D")).toBe(false));
+
+  it("CIF-3: G1234567D is valid with cifControl: 'lenient' (#38)", () =>
+    expect(isValidCif("G1234567D", { cifControl: "lenient" })).toBe(true));
 });
 
 describe("NORM-1: CIF validation is case-insensitive (#33)", () => {
@@ -106,28 +108,61 @@ describe("NORM-1: CIF validation is case-insensitive (#33)", () => {
 });
 
 // isValidCifControlCode does not check the format (see its @WARNING). These
-// pin its v1 behaviour, which the rewrite keeps exactly.
-describe("CIF-4: isValidCifControlCode keeps its v1 behaviour", () => {
+// pin its v1 behaviour, which the v1-compatible options keep exactly.
+const V1 = { cifControl: "lenient" } as const;
+
+describe("CIF-4: isValidCifControlCode keeps its v1 behaviour with the v1-compatible options", () => {
   it("CIF-4: white space in a digit position counts as 0, as `+' '` did", () => {
-    expect(isValidCifControlCode("A 7727886")).toBe(true);
-    expect(isValidCifControlCode("A0000000 ")).toBe(true);
+    expect(isValidCifControlCode("A 7727886", V1)).toBe(true);
+    expect(isValidCifControlCode("A0000000 ", V1)).toBe(true);
   });
 
   it("CIF-1: a missing digit makes the control invalid", () =>
-    expect(isValidCifControlCode("A123456")).toBe(false));
+    expect(isValidCifControlCode("A123456", V1)).toBe(false));
 
   it("CIF-3: a first character that is not a key takes a letter or a digit", () => {
     // P1234567D is valid, so the control of 1234567 is 4 (D).
-    expect(isValidCifControlCode("X1234567D")).toBe(true);
-    expect(isValidCifControlCode("X12345674")).toBe(true);
+    expect(isValidCifControlCode("X1234567D", V1)).toBe(true);
+    expect(isValidCifControlCode("X12345674", V1)).toBe(true);
+  });
+
+  it("CIF-3: by default, a first character that is not a key has no valid control", () => {
+    expect(isValidCifControlCode("X1234567D")).toBe(false);
+    expect(isValidCifControlCode("X12345674")).toBe(false);
   });
 
   it("NORM-1: characters are read after toUpperCase(), as in v1", () => {
     // "ﬃ" upper-cases to "FFI": the control is then the final I, which is
     // the letter of 3838940 (R3838940I is valid).
-    expect(isValidCifControlCode("C3838940ﬃ")).toBe(true);
-    expect(isValidCifControlCode("P3838940ﬃ")).toBe(true);
+    expect(isValidCifControlCode("C3838940ﬃ", V1)).toBe(true);
+    expect(isValidCifControlCode("P3838940ﬃ", V1)).toBe(true);
     // "ß" upper-cases to "SS" and moves every position by one.
-    expect(isValidCifControlCode("ß1234567D")).toBe(false);
+    expect(isValidCifControlCode("ß1234567D", V1)).toBe(false);
+    // By default C takes a digit (CIF-3), so the letter I is rejected.
+    expect(isValidCifControlCode("C3838940ﬃ")).toBe(false);
+    expect(isValidCifControlCode("P3838940ﬃ")).toBe(true);
   });
+});
+
+// CIF-3 (#38): the control type of all 17 organisation keys, with a digit
+// and with a letter control, in both modes. The control of 1234567 is 4 (D).
+describe("CIF-3: control type of every organisation key, official and lenient", () => {
+  const DIGIT_KEYS = "ABCDEFGHJUV";
+  const LENIENT_KEYS = "CDFGJUV";
+  for (const key of "ABCDEFGHJNPQRSUVW") {
+    const digitKey = DIGIT_KEYS.includes(key);
+    const lenientKey = LENIENT_KEYS.includes(key);
+    it(`CIF-3: ${key}1234567 with a digit (4) and a letter (D) control`, () => {
+      expect(isValidCif(`${key}12345674`)).toBe(digitKey);
+      expect(isValidCif(`${key}1234567D`)).toBe(!digitKey);
+      expect(isValidCif(`${key}12345674`, { cifControl: "lenient" })).toBe(
+        digitKey
+      );
+      expect(isValidCif(`${key}1234567D`, { cifControl: "lenient" })).toBe(
+        !digitKey || lenientKey
+      );
+      expect(isValidCifControlCode(`${key}12345674`)).toBe(digitKey);
+      expect(isValidCifControlCode(`${key}1234567D`)).toBe(!digitKey);
+    });
+  }
 });

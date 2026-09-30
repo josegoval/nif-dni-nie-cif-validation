@@ -116,7 +116,7 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 
 - From v2, organisation keys C, D, F, G, J, U and V require a **digit** control, as CIF-3 states. This is a breaking change.
 - An opt-in option `cifControl: "lenient"` keeps the legacy behaviour (either a letter or a digit) for these keys, for old data.
-- Until v2, v1.x keeps accepting either a letter or a digit for C, D, F, G, J, U and V, so existing users are not broken. The v1 code marks this with a TODO that references CIF-3.
+- v1.x kept accepting either a letter or a digit for C, D, F, G, J, U and V, so existing users were not broken. 2.0.0 implements the decision: `cifControl` defaults to `"official"`, and `{ cifControl: "lenient" }` restores the v1 behaviour (see MIGRATION.md).
 - The keys A, B, E and H (digit) and N, P, Q, R, S and W (letter) already follow CIF-3 in v1.
 
 ## Known conflicts between sources

@@ -13,14 +13,16 @@
  * - CIF-4 (convention, no official text): add the digits in even positions
  *   (2, 4, 6); double each digit in odd positions (1, 3, 5, 7) and add the
  *   digits of the result; control = (10 - total mod 10) mod 10.
- * - CIF-3 (AEAT D.I.T. 2008): the key decides the type. A B E H take the
- *   digit; N P Q R S W take the letter `JABCDEFGHI`[control]. C D F G J U V
- *   take the digit too, but v1 still accepts either (TODO(v2, #38)).
+ * - CIF-3 (AEAT D.I.T. 2008): the key decides the type. A B C D E F G H J
+ *   U V take the digit; N P Q R S W take the letter `JABCDEFGHI`[control].
+ *   The opt-in `cifControl: "lenient"` lets C D F G J U V take either, as
+ *   v1 did (legacy data, no official basis; #38).
  * - NORM-1: lower-case ASCII letters are accepted too (convention).
  *
  * Rule IDs refer to SPEC.md.
  */
-import { toUpperAsciiLetter } from "./shared";
+import { isLenientCif, NO_OPTIONS, toUpperAsciiLetter } from "./shared";
+import type { IsValidOptions } from "./types";
 
 /** CIF-3: the control letter for control digit `n` is the one at index `n`. */
 export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
@@ -37,22 +39,22 @@ const CIF_LENGTH = 9;
 // CIF-3 (AEAT D.I.T. 2008): the control type depends only on the
 // organisation key. There is no "number starts with 00" rule.
 export const NOT_A_KEY = 0;
-/** A B E H: digit control. */
-const DIGIT_CONTROL = 1;
-/** N P Q R S W: letter control. */
-const LETTER_CONTROL = 2;
+/** A B E H: digit control, in both modes. */
+export const DIGIT_CONTROL = 1;
+/** N P Q R S W: letter control, in both modes. */
+export const LETTER_CONTROL = 2;
 /**
- * C D F G J U V: v1 still accepts either a letter or a digit.
- * TODO(v2, #38): C D F G J U V are digit-only per CIF-3
+ * C D F G J U V: digit control (CIF-3), or either a letter or a digit with
+ * `cifControl: "lenient"`.
  */
-const EITHER_CONTROL = 3;
+export const LENIENT_KEY_CONTROL = 3;
 
 /** Control type of each organisation key (CIF-2), by UTF-16 code, both cases. */
 const KEY_KINDS = new Uint8Array(128);
 for (const [keys, kind] of [
   ["ABEH", DIGIT_CONTROL],
   ["NPQRSW", LETTER_CONTROL],
-  ["CDFGJUV", EITHER_CONTROL],
+  ["CDFGJUV", LENIENT_KEY_CONTROL],
 ] as const) {
   for (const key of keys) {
     KEY_KINDS[key.charCodeAt(0)] = kind;
@@ -72,10 +74,34 @@ export function cifKeyKind(code: number): number {
 const DOUBLED_DIGIT_SUM = [0, 2, 4, 6, 8, 1, 3, 5, 7, 9];
 
 /**
+ * CIF-4: the control value (0-9) of the 7 digits of `nif` at indexes 1 to 7,
+ * or -1 if one of them is not an ASCII digit (CIF-1). Internal helper.
+ */
+export function cifControlValue(nif: string): number {
+  let sum = 0;
+  for (let i = 1; i < 8; i++) {
+    const digit = nif.charCodeAt(i) - 48;
+    // CIF-1: 7 ASCII digits.
+    if (digit >>> 0 > 9) return -1;
+    // CIF-4: the digits in odd positions of the number (1, 3, 5, 7, which
+    // are also the odd string indexes) are doubled and the digits of the
+    // result added; the digits in even positions (2, 4, 6) are added as is.
+    sum += i & 1 ? (DOUBLED_DIGIT_SUM[digit] as number) : digit;
+  }
+  // CIF-4: control = (10 - sum mod 10) mod 10.
+  return (10 - (sum % 10)) % 10;
+}
+
+/**
  * CIF-3: does the control character with UTF-16 code `code` match the
  * computed `control` (0-9) for this key kind?
  */
-function matchesControl(kind: number, code: number, control: number): boolean {
+function matchesControl(
+  kind: number,
+  code: number,
+  control: number,
+  opts: IsValidOptions | null
+): boolean {
   // CIF-3: N P Q R S W take the letter JABCDEFGHI[control] (NORM-1: either
   // case).
   if (kind === LETTER_CONTROL)
@@ -83,11 +109,12 @@ function matchesControl(kind: number, code: number, control: number): boolean {
       toUpperAsciiLetter(code) ===
       LEGAL_ENTITY_CONTROL_LETTERS.charCodeAt(control)
     );
-  // CIF-3: A B E H take the digit. So do C D F G J U V...
+  // CIF-3: A B C D E F G H J U V take the digit.
   if (code - 48 === control) return true;
-  // ...which v1 also lets take the letter. TODO(v2, #38): digit-only.
+  // cifControl: "lenient" (#38): C D F G J U V may take the letter too.
   return (
-    kind === EITHER_CONTROL &&
+    kind === LENIENT_KEY_CONTROL &&
+    isLenientCif(opts) &&
     toUpperAsciiLetter(code) ===
       LEGAL_ENTITY_CONTROL_LETTERS.charCodeAt(control)
   );
@@ -101,20 +128,11 @@ function matchesControl(kind: number, code: number, control: number): boolean {
  */
 export function hasValidCifDigitsAndControl(
   nif: string,
-  kind: number
+  kind: number,
+  opts: IsValidOptions | null
 ): boolean {
-  let sum = 0;
-  for (let i = 1; i < 8; i++) {
-    const digit = nif.charCodeAt(i) - 48;
-    // CIF-1: 7 ASCII digits.
-    if (digit >>> 0 > 9) return false;
-    // CIF-4: the digits in odd positions of the number (1, 3, 5, 7, which
-    // are also the odd string indexes) are doubled and the digits of the
-    // result added; the digits in even positions (2, 4, 6) are added as is.
-    sum += i & 1 ? (DOUBLED_DIGIT_SUM[digit] as number) : digit;
-  }
-  // CIF-4: control = (10 - sum mod 10) mod 10.
-  return matchesControl(kind, nif.charCodeAt(8), (10 - (sum % 10)) % 10);
+  const control = cifControlValue(nif);
+  return control >= 0 && matchesControl(kind, nif.charCodeAt(8), control, opts);
 }
 
 /**
@@ -150,7 +168,10 @@ function isAscii(value: string): boolean {
  * v1's control code check, which reads the characters of `value` wherever
  * they are and whatever they are. `value` is ASCII or already upper case.
  */
-function hasLooseControlCode(value: string): boolean {
+function hasLooseControlCode(
+  value: string,
+  opts: IsValidOptions | null
+): boolean {
   const last = value.length - 1;
   // v1 read the 7 digits from `value.slice(1, -1)`. A missing or non-numeric
   // one made the sum NaN, and no control matches NaN.
@@ -158,7 +179,7 @@ function hasLooseControlCode(value: string): boolean {
   for (let i = 1; i < 8; i++) {
     const digit = i < last ? looseDigitValue(value.charCodeAt(i)) : -1;
     if (digit < 0) return false;
-    // CIF-4, as in hasValidCifDigitsAndControl.
+    // CIF-4, as in cifControlValue.
     sum += i & 1 ? (DOUBLED_DIGIT_SUM[digit] as number) : digit;
   }
   const control = (10 - (sum % 10)) % 10;
@@ -168,10 +189,14 @@ function hasLooseControlCode(value: string): boolean {
   // CIF-3: letter control.
   if (kind === LETTER_CONTROL) return toUpperAsciiLetter(code) === letter;
   const controlDigit = looseDigitValue(code);
-  // CIF-3: digit control.
-  if (kind === DIGIT_CONTROL) return controlDigit === control;
-  // Any other first character, a key or not: v1 took a letter or a digit.
-  // TODO(v2, #38): C D F G J U V are digit-only per CIF-3
+  // CIF-3: digit control. In "official" mode C D F G J U V too.
+  const lenient = isLenientCif(opts);
+  if (kind === DIGIT_CONTROL || (kind === LENIENT_KEY_CONTROL && !lenient))
+    return controlDigit === control;
+  // CIF-3: without an organisation key there is no official control type.
+  if (!lenient) return false;
+  // cifControl: "lenient" (#38): C D F G J U V, and, as in v1, any first
+  // character that is not a key, take a letter or a digit.
   return controlDigit < 0
     ? toUpperAsciiLetter(code) === letter
     : controlDigit === control;
@@ -183,13 +208,22 @@ function hasLooseControlCode(value: string): boolean {
  *
  * @WARNING It does not check the `LEGAL_ENTITY_NIF_REGEX`.
  *
+ * With the default `cifControl: "official"`, the organisation key decides
+ * whether the control is a digit or a letter (CIF-3), and a first character
+ * that is not an organisation key gives `false`. `cifControl: "lenient"`
+ * keeps the v1 behaviour: C D F G J U V, and any first character that is
+ * not a key, accept either.
+ *
  * Never throws, whatever the length of the string. Any value that is not a
  * string (e.g. `null`) returns `false`.
  * @param legalEntityNif The value to check.
+ * @param opts `cifControl` (default `"official"`).
  * @returns true for a valid control code and false otherwise.
+ * @see SPEC.md#cif-3
  */
 export function isValidLegalEntityNifControlCode(
-  legalEntityNif: unknown
+  legalEntityNif: unknown,
+  opts: IsValidOptions = NO_OPTIONS
 ): boolean {
   if (typeof legalEntityNif !== "string") return false;
   // NORM-1: v1 upper-cased the whole string first. For ASCII that only
@@ -197,7 +231,8 @@ export function isValidLegalEntityNifControlCode(
   // characters can change length ("ß" -> "SS", "ﬃ" -> "FFI") and move the
   // positions, so only then is the upper-cased copy built.
   return hasLooseControlCode(
-    isAscii(legalEntityNif) ? legalEntityNif : legalEntityNif.toUpperCase()
+    isAscii(legalEntityNif) ? legalEntityNif : legalEntityNif.toUpperCase(),
+    opts
   );
 }
 
@@ -206,11 +241,20 @@ export function isValidLegalEntityNifControlCode(
  *
  * It does not include old K, L and M formats.
  *
+ * The control character follows CIF-3 by default: a digit for A B C D E F G
+ * H J U V and a letter for N P Q R S W. Pass `{ cifControl: "lenient" }` to
+ * also accept a letter for C D F G J U V, as v1 did.
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param legalEntityNif The value to check.
+ * @param opts `cifControl` (default `"official"`).
  * @returns true for valid input and false for invalid input.
+ * @see SPEC.md#cif-3
  */
-export function isValidLegalEntityNif(legalEntityNif: unknown): boolean {
+export function isValidLegalEntityNif(
+  legalEntityNif: unknown,
+  opts: IsValidOptions = NO_OPTIONS
+): boolean {
   // CIF-1: 9 characters.
   if (
     typeof legalEntityNif !== "string" ||
@@ -220,6 +264,7 @@ export function isValidLegalEntityNif(legalEntityNif: unknown): boolean {
   // CIF-2: a valid organisation key (NORM-1: either case).
   const kind = cifKeyKind(legalEntityNif.charCodeAt(0));
   return (
-    kind !== NOT_A_KEY && hasValidCifDigitsAndControl(legalEntityNif, kind)
+    kind !== NOT_A_KEY &&
+    hasValidCifDigitsAndControl(legalEntityNif, kind, opts)
   );
 }

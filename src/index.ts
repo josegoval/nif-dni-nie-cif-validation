@@ -28,4 +28,4 @@ export {
   LEGAL_ENTITY_NIF_REGEX,
   LEGAL_ENTITY_NIF_REGEX as CIF_REGEX,
 } from "./cif";
-export type { NifType } from "./types";
+export type { CifControlMode, IsValidOptions, NifType } from "./types";

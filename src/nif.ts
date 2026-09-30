@@ -15,6 +15,8 @@
 import { cifKeyKind, hasValidCifDigitsAndControl, NOT_A_KEY } from "./cif";
 import { isValidNineCharDni } from "./dni";
 import { isValidNineCharNie, isValidOldNie } from "./nie";
+import { NO_OPTIONS } from "./shared";
+import type { IsValidOptions } from "./types";
 
 /** DNI, K/L/M, NIE and CIF all have 9 characters. */
 const NIF_LENGTH = 9;
@@ -47,11 +49,20 @@ export function isValidNaturalPersonNif(naturalPersonNif: unknown): boolean {
  * Checks if the given nif (legal entity NIF or natural person NIF
  * (DNI, DNI K, DNI L, DNI M, or NIE)) is valid.
  *
+ * A legal entity NIF (CIF) follows CIF-3 by default. Pass
+ * `{ cifControl: "lenient" }` to also accept a letter control for
+ * C D F G J U V, as v1 did.
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param nif The value to check.
+ * @param opts `cifControl` (default `"official"`).
  * @returns true for valid input and false for invalid input.
+ * @see SPEC.md#cif-3
  */
-export function isValidNif(nif: unknown): boolean {
+export function isValidNif(
+  nif: unknown,
+  opts: IsValidOptions = NO_OPTIONS
+): boolean {
   if (typeof nif !== "string") return false;
   const length = nif.length;
   if (length === NIF_LENGTH) {
@@ -60,7 +71,7 @@ export function isValidNif(nif: unknown): boolean {
     // prefixes (digits, K L M, X Y Z), so the first character picks one
     // format and only that one is checked.
     const kind = cifKeyKind(first);
-    if (kind !== NOT_A_KEY) return hasValidCifDigitsAndControl(nif, kind);
+    if (kind !== NOT_A_KEY) return hasValidCifDigitsAndControl(nif, kind, opts);
     return isValidNineCharDni(nif, first) || isValidNineCharNie(nif, first);
   }
   // NIE-3: old 10-character NIE.

@@ -16,3 +16,29 @@
  * reports it.
  */
 export type NifType = "DNI" | "NIE" | "CIF" | "NIF_KLM";
+
+/**
+ * Which control characters a legal entity NIF (CIF) may have (CIF-3):
+ *
+ * - `"official"` (the default): what the AEAT D.I.T. note says. A digit for
+ *   A B C D E F G H J U V, a letter for N P Q R S W.
+ * - `"lenient"`: C D F G J U V accept a letter or a digit, as v1 did. For
+ *   legacy data only: it has no official basis (SPEC.md, "Explicitly NOT
+ *   implemented"). The other keys are unchanged.
+ *
+ * @see SPEC.md#cif-3
+ */
+export type CifControlMode = "official" | "lenient";
+
+/**
+ * Options of the boolean validators (`isValidNif` and the others). Every
+ * option is optional and defaults to the official behaviour.
+ */
+export interface IsValidOptions {
+  /**
+   * Control characters accepted for a legal entity NIF (CIF). Default
+   * `"official"`. See {@link CifControlMode}.
+   * @see SPEC.md#cif-3
+   */
+  cifControl?: CifControlMode;
+}
