@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NIF / DNI / NIE / CIF Validator & Generator</title>
+    <link rel="stylesheet" href="./style.css" />
+    <meta name="description" content="Fastest and most accurate Spanish ID validator and generator for NIF, DNI, NIE, and CIF." />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>Spanish ID Validator</h1>
+        <p class="subtitle">Live in-browser validator & generator for NIF, DNI, NIE, and CIF</p>
+      </header>
+
+      <section class="hero-stats">
+        <div class="stat-card">
+          <h2>⚡ Blazing Fast</h2>
+          <p class="speed-value"><span id="speed-val">--</span> M ops/s</p>
+          <p class="speed-subtitle">(higher is faster)</p>
+          <a href="/benchmarks" class="bench-link">View full benchmarks</a>
+        </div>
+      </section>
+
+      <section class="interactive-tool">
+        <div class="tabs">
+          <button class="tab active" data-tab="validate">Validator</button>
+          <button class="tab" data-tab="generate">Generator</button>
+        </div>
+
+        <!-- VALIDATOR -->
+        <div id="validate-pane" class="pane active">
+          <label for="id-input">Enter ID Number (DNI, NIE, CIF)</label>
+          <input type="text" id="id-input" placeholder="e.g. 12345678Z" autocomplete="off" />
+          <div id="validation-result" class="result neutral">Awaiting input...</div>
+        </div>
+
+        <!-- GENERATOR -->
+        <div id="generate-pane" class="pane" style="display: none;">
+          <label for="id-type">Select Type to Generate</label>
+          <select id="id-type">
+            <option value="DNI">DNI (Natural Person)</option>
+            <option value="NIE">NIE (Foreigner)</option>
+            <option value="CIF">CIF (Legal Entity)</option>
+          </select>
+          <button id="generate-btn">Generate Valid ID</button>
+          <div id="generation-result" class="result neutral">Click generate...</div>
+        </div>
+      </section>
+
+      <footer>
+        <p>Built with ❤️ by the open source community.</p>
+        <a href="https://github.com/josegoval/nif-dni-nie-cif-validation">GitHub Repository</a>
+      </footer>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
