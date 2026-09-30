@@ -40,7 +40,6 @@
     "@semantic-release/git": "^11.0.1",
     "@types/jest": "^27.0.3",
     "babel-jest": "^27.4.5",
-    "codecov": "^3.8.3",
     "husky": "^9.1.7",
     "jest": "^27.4.5",
     "semantic-release": "^25.0.9",
