@@ -1,0 +1,51 @@
+[
+  {
+    "name": "import { isValidNif }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidNif }",
+    "gzip": true,
+    "limit": "1400 B"
+  },
+  {
+    "name": "import { isValidDni }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidDni }",
+    "gzip": true,
+    "limit": "1080 B"
+  },
+  {
+    "name": "import { isValidNie }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidNie }",
+    "gzip": true,
+    "limit": "1040 B"
+  },
+  {
+    "name": "import { isValidCif }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidCif }",
+    "gzip": true,
+    "limit": "1070 B"
+  },
+  {
+    "name": "import { isValidSpanishVat }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidSpanishVat }",
+    "gzip": true,
+    "limit": "1600 B"
+  },
+  {
+    "name": "import { validate } (with the messages)",
+    "path": "dist/esm/index.mjs",
+    "import": "{ validate }",
+    "gzip": true,
+    "limit": "3600 B"
+  },
+  {
+    "name": "import * (the whole ES module build)",
+    "path": "dist/esm/index.mjs",
+    "import": "*",
+    "gzip": true,
+    "limit": "5500 B"
+  }
+]

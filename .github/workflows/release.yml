@@ -76,6 +76,10 @@ jobs:
           name: coverage-report
           path: coverage/html/
           retention-days: 14
+      # Builds dist/ and fails if a bundle is over its budget in
+      # .size-limit.json (a boolean validator must not pull in the messages).
+      - name: Bundle size budgets (size-limit)
+        run: pnpm size
       # `prepack` builds dist/. Pack into a separate folder so script output
       # (e.g. Husky's "skip install" notice) can't corrupt the filename.
       - name: Pack

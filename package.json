@@ -58,7 +58,8 @@
     "spell": "cspell --no-progress",
     "spec:check": "node scripts/check-spec-rules.mjs",
     "bench": "pnpm build && node bench/run.mjs",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
+    "size": "pnpm build && size-limit"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
