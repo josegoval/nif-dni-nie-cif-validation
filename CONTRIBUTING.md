@@ -21,6 +21,7 @@ pnpm bench                       # builds, then benchmarks against v1.0.11
 pnpm bench:competitors           # builds, then benchmarks against other libraries (bench/README.md)
 pnpm readme:bench                # writes the generated parts of README.md and README.es.md from bench/results/latest.json
 pnpm docs:llms                   # writes llms-full.txt from README.md, docs/api-design.md, MIGRATION.md and SPEC.md
+pnpm docs:jsdoc                  # builds, then checks the JSDoc of every export (see JSDoc)
 node scripts/check-tree-shaking.mjs <tarball>   # bundles the packed tarball, see Build and package layout
 node scripts/check-adapters.mjs <tarball>       # runs the /zod, /valibot and /yup adapters from import and require
 ```
@@ -55,7 +56,7 @@ src/
 test/fixtures/  SPEC test values as JSON, run by src/__tests__/fixtures.test.ts
 test/smoke/     smoke tests of the packed tarball, CommonJS and ES module (plain Node, see Pull requests)
 bench/          benchmarks: against v1.0.11 and another build, and against other libraries (see Performance)
-scripts/        build script, CI helpers: coverage summary, SPEC rule check, tree-shaking check, README and llms-full.txt generators
+scripts/        build script, CI helpers: coverage summary, SPEC rule and JSDoc checks, tree-shaking check, README and llms-full.txt generators
 .size-limit.json  bundle size budgets (see Build and package layout)
 ```
 
@@ -117,6 +118,21 @@ The booleans stay this small because they never reach `normalize()` or `validate
 
 Every validation branch in `src/` cites the rule it implements in a comment (`// CIF-3`), and every rule has a test whose name starts with its ID (`it("CIF-3: ...")`, or a case table with `rule: "CIF-3"`). `pnpm spec:check` (`scripts/check-spec-rules.mjs`, also run in CI) fails if an ID in `src/` or in a test is not defined in SPEC.md, or if a SPEC rule has no test. JSON fixtures under `test/` count as tests. Rules that can't have a test yet would be listed, with a reason, in `NOT_TESTED_YET` inside the script; it is empty since v2.
 
+### JSDoc
+
+What an IDE or an AI agent reads is `dist/*.d.mts`, so the JSDoc of every public export is part of the API. `pnpm docs:jsdoc` (`scripts/check-jsdoc.mjs`, run in the `Check` job) reads the declarations of every entry point in `package.json`'s `exports`, from both the ES module and the CommonJS types, and fails when an export lacks:
+
+- a **summary**: one sentence that says what the function accepts ("a DNI, a K/L/M NIF or a NIE");
+- **`@since`**: `1.0.0` for what v1.0.0 exported (the list is in the script), `2.0.0` for the rest;
+- for a **function**: a `@param` with a description for every parameter, a `@returns` that says when it returns what, **two `@example` blocks** (a valid value, and an invalid or edge case; lower case or formatted input where it applies) and a `@see` that links the SPEC.md rule (`@see SPEC.md#cif-3`: the script checks that the anchor exists);
+- a **reason and the replacement** after `@deprecated`, when it has one.
+
+Constants and types need a summary and `@since`; give them examples too when they do something (`DNI_REGEX.test(...)`).
+
+**An alias is a declaration of its own.** `export { isValidLegalEntityNif as isValidCif }` would show the docs of the other name on hover, so the script fails on a re-export under another name. `src/cif.ts` declares `export const isValidCif: typeof isValidLegalEntityNif = isValidLegalEntityNif;` with its own full JSDoc instead. It is the same function (`isValidCif === isValidLegalEntityNif`), so the behaviour and the bundle size don't change.
+
+**Every `@example` runs.** `src/__tests__/jsdoc-examples.test.ts` extracts the `@example` blocks from `src/`, runs each one against `src/` and type-checks it, with the same runner as the README samples (`src/__tests__/snippets.ts`): a top-level statement followed by a `// value` comment must evaluate to that value, and `// throws RangeError` asserts the class of the error. Every example must assert at least one value. It may use the names that the package exports without importing them; it imports the locales (`import { es } from "nif-dni-nie-cif-validation/locales/es"`) and other libraries (`import { z } from "zod"`) itself. There is no skip list: an example that can't run is a wrong example.
+
 ### Tests
 
 - `fixtures.test.ts` runs every entry of `test/fixtures/*.json` (`{ input, expected, type, rule, note }`) against `validate()` and the booleans, with the options of its file. Add SPEC test values there.
@@ -125,6 +141,7 @@ Every validation branch in `src/` cites the rule it implements in a comment (`//
 - `properties.test.ts` (fast-check, seeded): nothing throws, generated documents validate, `computeControlCharacter` completes them, single-character substitutions (documented exceptions in SPEC.md), `normalize` is idempotent, and the booleans always agree with `validate()`.
 - `stdnum.test.ts` compares `validate()` with stdnum on about 50,000 inputs; every difference must be in its allow-list and in SPEC.md, "Differences from other libraries".
 - Every error's `rule` must be defined in SPEC.md (tested).
+- `jsdoc-examples.test.ts` runs every `@example` of the JSDoc in `src/` (see JSDoc). `scripts/check-jsdoc.test.mjs` tests the script that checks the JSDoc.
 - `readme-examples.test.ts` runs every ```` ```ts ````, ```` ```tsx ```` and ```` ```js ```` block of README.md, README.es.md and llms.txt against `src/`, and type-checks the TypeScript ones with tsc. A top-level statement followed by a comment that starts with a value (`isValidNif("12345678Z"); // true`, or an object over several `//` lines) must evaluate to that value; prose comments are not checked. A block that can't run here (it needs a library that is not a dev dependency) gets `<!-- readme-test: skip (reason) -->` on the line before it and an entry in `SKIP_ALLOWED`. The test also checks that both READMEs have the same blocks, that they name every export of every entry point, and that llms.txt stays under about 2,000 tokens.
 
 ### Behaviour guarantee: the differential test
@@ -211,7 +228,7 @@ Keep commits atomic: one logical change per commit, with a message that explains
 ## Pull requests
 
 - Open PRs against `master`. The **CI** workflow (`.github/workflows/release.yml`) must pass before merging:
-  - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, spell check (`pnpm spell`), SPEC rule ID check (`pnpm spec:check`), the README sections generated from the benchmark (`pnpm readme:bench --check`) and `llms-full.txt` (`pnpm docs:llms --check`), type check, tests with 100% coverage enforced (including the differential test against v1.0.11), coverage summary and report, the size budgets (`pnpm size`), the ES2016 syntax check (`pnpm check:es`), then packs the tarball, checks that it tree-shakes (`scripts/check-tree-shaking.mjs`), checks it with `publint --strict` and `@arethetypeswrong/cli` (green in every resolution mode) and uploads it as the `package-tarball` artifact.
+  - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, spell check (`pnpm spell`), SPEC rule ID check (`pnpm spec:check`), the README sections generated from the benchmark (`pnpm readme:bench --check`) and `llms-full.txt` (`pnpm docs:llms --check`), type check, tests with 100% coverage enforced (including the differential test against v1.0.11), coverage summary and report, the size budgets (`pnpm size`), the JSDoc of every export (`node scripts/check-jsdoc.mjs`), the ES2016 syntax check (`pnpm check:es`), then packs the tarball, checks that it tree-shakes (`scripts/check-tree-shaking.mjs`), checks it with `publint --strict` and `@arethetypeswrong/cli` (green in every resolution mode) and uploads it as the `package-tarball` artifact.
   - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke tests in `test/smoke/` with Node's built-in test runner: `smoke.test.cjs` loads the package with `require()` and `smoke.test.mjs` with `import`. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` copies of both files from there.
   - `PR title`: checks that the pull request title is a valid Conventional Commit (see `.github/workflows/pr-title.yml`).
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.

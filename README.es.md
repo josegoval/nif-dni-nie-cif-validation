@@ -110,7 +110,7 @@ validate("12345678A", { locale: es }).error?.message; // "El carácter de contro
 
 ## Resumen de la API
 
-Todo lo que se exporta tiene JSDoc, así que tu editor muestra su documentación. El diseño y sus motivos están en [docs/api-design.md](docs/api-design.md) (en inglés); los cambios respecto a la v1, en [MIGRATION.md](MIGRATION.md).
+Todo lo que se exporta tiene JSDoc, así que tu editor muestra su documentación: un resumen y, en las funciones, qué significa cada parámetro y el valor devuelto, dos ejemplos que ejecutan los tests y un enlace a la regla de SPEC. La CI lo comprueba. El diseño y sus motivos están en [docs/api-design.md](docs/api-design.md) (en inglés); los cambios respecto a la v1, en [MIGRATION.md](MIGRATION.md).
 
 ### `validate()`: el resultado detallado
 

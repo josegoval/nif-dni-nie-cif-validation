@@ -109,7 +109,7 @@ validate("12345678A").error?.message; // 'The control character is not correct: 
 
 ## API overview
 
-Every export has JSDoc, so your editor shows its documentation. The design and the reasons behind it are in [docs/api-design.md](docs/api-design.md); the changes from v1 in [MIGRATION.md](MIGRATION.md).
+Every export has JSDoc, so your editor shows its documentation: a summary and, for functions, what each parameter and the return value mean, two examples that the tests run, and a link to the SPEC rule. CI checks it. The design and the reasons behind it are in [docs/api-design.md](docs/api-design.md); the changes from v1 in [MIGRATION.md](MIGRATION.md).
 
 ### `validate()`: the detailed result
 
