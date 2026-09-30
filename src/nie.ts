@@ -17,7 +17,9 @@
  * Rule IDs refer to SPEC.md.
  */
 import { hasDniDigitsAndLetter } from "./dni";
-import { toUpperAsciiLetter } from "./shared";
+import { normalizedForRetry } from "./normalize";
+import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
+import type { IsValidOptions } from "./types";
 
 /**
  * Pattern of a NIE. It does not check the control letter.
@@ -73,8 +75,9 @@ export function isValidOldNie(nie: string): boolean {
  * case-insensitively; the rest of the string is returned unchanged.
  *
  * Unlike the `isValid*` functions, this function throws.
- * @deprecated Kept for v1 compatibility. It will be removed or made
- * non-throwing in v2. Use `isValidNie` to validate a NIE.
+ * @deprecated Kept unchanged for v1 compatibility, and it still throws in v2.
+ * It may be removed in a future major version. Use `isValidNie` to validate
+ * a NIE, or `normalize` to get its canonical form.
  * @throws {Error} `Invalid NIE letter` if the first character is not X, Y
  * or Z (including the empty string).
  * @throws {TypeError} If `nie` is not a string (for example `null`,
@@ -97,12 +100,28 @@ export function replaceNieLetter(nie: string): string {
  * validated as its canonical form `XnnnnnnnL` (for example `X01234567L`
  * validates as `X1234567L`).
  *
+ * The input is normalized first (NORM-1 to NORM-3), so `"x-1234567-l"` is
+ * valid. Pass `{ normalize: false }` for v1's strict parsing.
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param nie The value to check.
+ * @param opts `normalize` (default `true`).
  * @returns true for valid input and false for invalid input.
+ * @see SPEC.md#nie-3
  */
-export function isValidNie(nie: unknown): boolean {
+export function isValidNie(
+  nie: unknown,
+  opts: IsValidOptions = NO_OPTIONS
+): boolean {
   if (typeof nie !== "string") return false;
+  if (checkNie(nie)) return true;
+  // NORM-2..3: only when the raw check failed and cleanup could help.
+  const normalized = normalizedForRetry(nie, opts);
+  return normalized !== null && checkNie(normalized);
+}
+
+/** NIE, on the raw string. */
+function checkNie(nie: string): boolean {
   const length = nie.length;
   // NIE-1 / NIE-2.
   if (length === NIE_LENGTH) return isValidNineCharNie(nie, nie.charCodeAt(0));

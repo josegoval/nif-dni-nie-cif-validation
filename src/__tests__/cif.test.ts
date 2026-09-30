@@ -109,7 +109,7 @@ describe("NORM-1: CIF validation is case-insensitive (#33)", () => {
 
 // isValidCifControlCode does not check the format (see its @WARNING). These
 // pin its v1 behaviour, which the v1-compatible options keep exactly.
-const V1 = { cifControl: "lenient" } as const;
+const V1 = { normalize: false, cifControl: "lenient" } as const;
 
 describe("CIF-4: isValidCifControlCode keeps its v1 behaviour with the v1-compatible options", () => {
   it("CIF-4: white space in a digit position counts as 0, as `+' '` did", () => {

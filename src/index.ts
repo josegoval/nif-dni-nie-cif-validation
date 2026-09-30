@@ -9,6 +9,7 @@
  * - dni.ts: DNI and K/L/M NIF.
  * - nie.ts: NIE.
  * - cif.ts: legal entity NIF (formerly CIF).
+ * - normalize.ts: input cleanup (NORM-1 to NORM-4, NIE-3).
  */
 export { isValidNif, isValidNaturalPersonNif } from "./nif";
 export {
@@ -28,4 +29,5 @@ export {
   LEGAL_ENTITY_NIF_REGEX,
   LEGAL_ENTITY_NIF_REGEX as CIF_REGEX,
 } from "./cif";
+export { normalize } from "./normalize";
 export type { CifControlMode, IsValidOptions, NifType } from "./types";

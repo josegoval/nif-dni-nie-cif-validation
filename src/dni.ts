@@ -18,7 +18,9 @@
  *
  * Rule IDs refer to SPEC.md.
  */
-import { toUpperAsciiLetter } from "./shared";
+import { normalize, normalizedForRetry } from "./normalize";
+import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
+import type { IsValidOptions } from "./types";
 
 /** DNI-2: the check letter of `number` is the one at index `number mod 23`. */
 export const DNI_CONTROL_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
@@ -82,13 +84,30 @@ export function isValidNineCharDni(dni: string, first: number): boolean {
  *
  * It does include checks for DNI K, L and M.
  *
+ * The input is normalized first (NORM-1 to NORM-4), so `"1234567-l"` is
+ * valid (as `01234567L`). Pass `{ normalize: false }` for v1's strict
+ * parsing.
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param dni The value to check.
+ * @param opts `normalize` (default `true`).
  * @returns true for valid input and false for invalid input.
+ * @see SPEC.md#norm-4
  */
-export function isValidDni(dni: unknown): boolean {
-  if (typeof dni !== "string" || dni.length !== DNI_LENGTH) return false;
-  return isValidNineCharDni(dni, dni.charCodeAt(0));
+export function isValidDni(
+  dni: unknown,
+  opts: IsValidOptions = NO_OPTIONS
+): boolean {
+  if (typeof dni !== "string") return false;
+  if (dni.length === DNI_LENGTH && isValidNineCharDni(dni, dni.charCodeAt(0)))
+    return true;
+  // NORM-2..4: only when the raw check failed and cleanup could help.
+  const normalized = normalizedForRetry(dni, opts);
+  return (
+    normalized !== null &&
+    normalized.length === DNI_LENGTH &&
+    isValidNineCharDni(normalized, normalized.charCodeAt(0))
+  );
 }
 
 /**
@@ -123,12 +142,21 @@ function parseDigitsAsDouble(value: string): number {
  * It does include checks for DNI K, L and M.
  * @WARNING It does not check the `DNI_REGEX`.
  *
+ * The input is normalized first (NORM-1 to NORM-4); pass
+ * `{ normalize: false }` to read it as v1 did.
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
- * @param dni The value to check.
+ * @param value The value to check.
+ * @param opts `normalize` (default `true`).
  * @returns true for valid input and false for invalid input.
  */
-export function isValidDniLetter(dni: unknown): boolean {
-  if (typeof dni !== "string") return false;
+export function isValidDniLetter(
+  value: unknown,
+  opts: IsValidOptions = NO_OPTIONS
+): boolean {
+  if (typeof value !== "string") return false;
+  // NORM-1..4. `normalize` returns the input itself when nothing changes.
+  const dni = opts?.normalize === false ? value : normalize(value);
   // v1 behaviour, kept exactly: take every ASCII digit anywhere in the
   // string as one number (KLM-2: a K/L/M prefix counts as nothing) and
   // compare DNI-2's letter with the last character, upper-cased (NORM-1).

@@ -36,6 +36,17 @@ export type CifControlMode = "official" | "lenient";
  */
 export interface IsValidOptions {
   /**
+   * Normalize the input before validating it (default `true`): remove white
+   * space and dots (NORM-2), hyphens and slashes (NORM-3), left-pad a DNI
+   * with fewer than 8 digits (NORM-4). See `normalize()`.
+   *
+   * `false` turns NORM-2 to NORM-4 off, for v1's strict parsing. Lower case
+   * (NORM-1) and the old 10-character NIE form (NIE-3) are accepted either
+   * way, as in v1.
+   * @see SPEC.md#norm-2
+   */
+  normalize?: boolean;
+  /**
    * Control characters accepted for a legal entity NIF (CIF). Default
    * `"official"`. See {@link CifControlMode}.
    * @see SPEC.md#cif-3

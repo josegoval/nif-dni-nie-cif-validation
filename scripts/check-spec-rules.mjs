@@ -22,14 +22,11 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
 // Rules that no test references yet, on purpose. Keep this list short and
-// explain every entry. The next PR (#56, the validate() API with input
-// normalization and VAT numbers) removes VAT-1 and NORM-2..4.
+// explain every entry. VAT-1 goes with the VAT support of the validate()
+// API (#56).
 const NOT_TESTED_YET = new Map([
   ["CIF-5", "nothing to implement: province codes are not validated"],
   ["VAT-1", "ES + NIF VAT numbers are not supported yet (#56)"],
-  ["NORM-2", "spaces and dots are not ignored yet (#56)"],
-  ["NORM-3", "hyphens and slashes are not ignored yet (#56)"],
-  ["NORM-4", "short DNIs are not left-padded yet (#56)"],
 ]);
 
 const SOURCE_EXTENSIONS = /\.(?:ts|mts|cts|js|mjs|cjs)$/;

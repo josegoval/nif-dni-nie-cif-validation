@@ -9,7 +9,7 @@ Every boolean validator takes an options object as its second argument. These op
 ```ts
 import { isValidNif } from "nif-dni-nie-cif-validation";
 
-const V1_COMPATIBLE = { cifControl: "lenient" } as const;
+const V1_COMPATIBLE = { normalize: false, cifControl: "lenient" } as const;
 
 isValidNif(value, V1_COMPATIBLE);
 ```
@@ -38,3 +38,52 @@ isValidCif("G1234567D", { cifControl: "lenient" }); // true, as in v1
 `isValidCifControlCode` doesn't check the format, so v1 also accepted a letter or a digit when the first character was not an organisation key at all (`"X1234567D"`). In v2 such a value has no official control type and returns `false`; `cifControl: "lenient"` keeps the v1 result.
 
 **Restore v1:** `{ cifControl: "lenient" }`. Only C D F G J U V are affected: A B E H always need a digit and N P Q R S W a letter, in both modes, as in v1.
+
+### 2. The input is normalized by default
+
+The boolean validators now clean the input before checking it, as [SPEC.md NORM-2 to NORM-4](SPEC.md#input-cleanup-never-changes-validity-only-parsing) describe:
+
+- white space (spaces, tabs, no-break spaces, line breaks…) and dots are removed anywhere, which also trims (NORM-2);
+- hyphens and slashes are removed (NORM-3);
+- a DNI with fewer than 8 digits is left-padded with zeros (NORM-4): `1234567L` is checked as `01234567L`.
+
+Cleanup never makes an invalid document valid: it accepts more ways of writing a valid one. So `true` results don't change; some `false` results become `true`.
+
+```ts
+// v1
+isValidNif(" 12.345.678-Z "); // false
+isValidDni("1234567L");       // false
+isValidCif("B-1234567-4");    // false
+
+// v2
+isValidNif(" 12.345.678-Z "); // true
+isValidDni("1234567L");       // true
+isValidCif("B-1234567-4");    // true
+isValidNif(" 12.345.678-Z ", { normalize: false }); // false, as in v1
+```
+
+Lower case and the old 10-character NIE form (`X01234567L`) were already accepted in v1 and still are, with or without `normalize`.
+
+`isValidDniLetter` and `isValidCifControlCode` don't check the format, and v1 read some separators in odd ways: for example `isValidCifControlCode("A 7727886")` was `true` because a space in a digit position counted as `0`. With normalization, white space is removed instead, so such values can change in either direction.
+
+If you store the value, store the canonical form: `normalize(value)` (new in v2) returns it, for example `"12345678Z"` for `" 12.345.678-z "`.
+
+**Restore v1:** `{ normalize: false }`.
+
+### 3. TypeScript: the validators have a second parameter
+
+Every boolean validator now takes `(value: unknown, opts?: IsValidOptions)`. The first parameter was `string` and is now `unknown`, which accepts more and breaks no call. The new second parameter means TypeScript no longer accepts a validator passed straight to an array method, because the array index is not an options object:
+
+```ts
+// v1: compiles
+ids.filter(isValidNif);
+
+// v2: TypeScript error ("number" is not assignable to "IsValidOptions")
+ids.filter(isValidNif);
+// v2: write the callback, and pass options if you need them
+ids.filter((id) => isValidNif(id));
+```
+
+At runtime nothing changes: a number (or `null`) as options is ignored, so plain JavaScript code keeps working.
+
+**Restore v1:** not needed at runtime; in TypeScript, wrap the call as above.

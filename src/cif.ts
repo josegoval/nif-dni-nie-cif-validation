@@ -21,6 +21,7 @@
  *
  * Rule IDs refer to SPEC.md.
  */
+import { normalize, normalizedForRetry } from "./normalize";
 import { isLenientCif, NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -214,18 +215,25 @@ function hasLooseControlCode(
  * keeps the v1 behaviour: C D F G J U V, and any first character that is
  * not a key, accept either.
  *
+ * The input is normalized first (NORM-1 to NORM-3); pass
+ * `{ normalize: false }` to read it as v1 did (where, for example, a space
+ * in a digit position counted as 0).
+ *
  * Never throws, whatever the length of the string. Any value that is not a
  * string (e.g. `null`) returns `false`.
- * @param legalEntityNif The value to check.
- * @param opts `cifControl` (default `"official"`).
+ * @param value The value to check.
+ * @param opts `normalize` (default `true`), `cifControl` (default
+ * `"official"`).
  * @returns true for a valid control code and false otherwise.
  * @see SPEC.md#cif-3
  */
 export function isValidLegalEntityNifControlCode(
-  legalEntityNif: unknown,
+  value: unknown,
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
-  if (typeof legalEntityNif !== "string") return false;
+  if (typeof value !== "string") return false;
+  // NORM-1..4. `normalize` returns the input itself when nothing changes.
+  const legalEntityNif = opts?.normalize === false ? value : normalize(value);
   // NORM-1: v1 upper-cased the whole string first. For ASCII that only
   // changes a-z, which the checks fold one character at a time. Other
   // characters can change length ("ß" -> "SS", "ﬃ" -> "FFI") and move the
@@ -245,26 +253,33 @@ export function isValidLegalEntityNifControlCode(
  * H J U V and a letter for N P Q R S W. Pass `{ cifControl: "lenient" }` to
  * also accept a letter for C D F G J U V, as v1 did.
  *
+ * The input is normalized first (NORM-1 to NORM-3), so `" b-1234567-4 "`
+ * is valid. Pass `{ normalize: false }` for v1's strict parsing.
+ *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
  * @param legalEntityNif The value to check.
- * @param opts `cifControl` (default `"official"`).
+ * @param opts `normalize` (default `true`), `cifControl` (default
+ * `"official"`).
  * @returns true for valid input and false for invalid input.
  * @see SPEC.md#cif-3
+ * @see SPEC.md#norm-2
  */
 export function isValidLegalEntityNif(
   legalEntityNif: unknown,
   opts: IsValidOptions = NO_OPTIONS
 ): boolean {
+  if (typeof legalEntityNif !== "string") return false;
+  if (checkCif(legalEntityNif, opts)) return true;
+  // NORM-2..3: only when the raw check failed and cleanup could help.
+  const normalized = normalizedForRetry(legalEntityNif, opts);
+  return normalized !== null && checkCif(normalized, opts);
+}
+
+/** Legal entity NIF, on the raw string. */
+function checkCif(value: string, opts: IsValidOptions | null): boolean {
   // CIF-1: 9 characters.
-  if (
-    typeof legalEntityNif !== "string" ||
-    legalEntityNif.length !== CIF_LENGTH
-  )
-    return false;
+  if (value.length !== CIF_LENGTH) return false;
   // CIF-2: a valid organisation key (NORM-1: either case).
-  const kind = cifKeyKind(legalEntityNif.charCodeAt(0));
-  return (
-    kind !== NOT_A_KEY &&
-    hasValidCifDigitsAndControl(legalEntityNif, kind, opts)
-  );
+  const kind = cifKeyKind(value.charCodeAt(0));
+  return kind !== NOT_A_KEY && hasValidCifDigitsAndControl(value, kind, opts);
 }

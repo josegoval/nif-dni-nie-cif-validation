@@ -15,7 +15,7 @@ const currentExports = current as unknown as Exports;
 const v1Exports = v1 as unknown as Exports;
 
 /** The options that restore v1 behaviour (MIGRATION.md). */
-const V1_COMPATIBLE = { cifControl: "lenient" } as const;
+const V1_COMPATIBLE = { normalize: false, cifControl: "lenient" } as const;
 
 // Small seeded PRNG (mulberry32) so a failure can be reproduced.
 function createRandom(seed: number): () => number {
@@ -289,22 +289,44 @@ function explainDifference(
   v1Result: boolean
 ): string | null {
   // CIF-3 (#38): C D F G J U V need a digit control by default; v1 also
-  // accepted the letter, which `cifControl: "lenient"` restores.
+  // accepted the letter, which `cifControl: "lenient"` restores. Stricter
+  // only: v1 said true.
   if (v1Result && ours(value, { cifControl: "lenient" })) return "CIF-3";
+  // NORM-2..4: cleanup (separators, padding) accepts more, never less: v1
+  // said false, and the value is only valid after normalization.
+  if (!v1Result && !ours(value, { normalize: false })) return "NORM-2..4";
+  // The control-only helpers read v1's white space as a 0 in a digit
+  // position ("A 7727886"); normalization removes it instead.
+  if (v1Result && ours(value, { normalize: false }))
+    return "NORM-2 (white space removed, not read as 0)";
+  // Both at once, for the control-only helpers: a value that v1 read with a
+  // non-key first character (lenient) and white space or an old NIE form.
+  if (v1Result && ours(value, { normalize: false, cifControl: "lenient" }))
+    return "CIF-3 + NORM-2..4";
   return null;
 }
 
 /** The breaking changes each boolean is expected to show on the inputs. */
 const EXPECTED_DIFFERENCES: Record<string, string[]> = {
-  isValidNif: ["CIF-3"],
-  isValidNaturalPersonNif: [],
-  isValidDni: [],
-  isValidDniLetter: [],
-  isValidNie: [],
-  isValidLegalEntityNif: ["CIF-3"],
-  isValidCif: ["CIF-3"],
-  isValidLegalEntityNifControlCode: ["CIF-3"],
-  isValidCifControlCode: ["CIF-3"],
+  isValidNif: ["CIF-3", "NORM-2..4"],
+  isValidNaturalPersonNif: ["NORM-2..4"],
+  isValidDni: ["NORM-2..4"],
+  isValidDniLetter: ["NORM-2..4"],
+  isValidNie: ["NORM-2..4"],
+  isValidLegalEntityNif: ["CIF-3", "NORM-2..4"],
+  isValidCif: ["CIF-3", "NORM-2..4"],
+  isValidLegalEntityNifControlCode: [
+    "CIF-3",
+    "CIF-3 + NORM-2..4",
+    "NORM-2 (white space removed, not read as 0)",
+    "NORM-2..4",
+  ],
+  isValidCifControlCode: [
+    "CIF-3",
+    "CIF-3 + NORM-2..4",
+    "NORM-2 (white space removed, not read as 0)",
+    "NORM-2..4",
+  ],
 };
 
 describe(`differential test against v1.0.11 (${inputs.length} inputs)`, () => {
