@@ -10,6 +10,7 @@ files:
   - "test/**"
   - "bench/**"
   - "*.md"
+  - "llms.txt"
   - "docs/**"
   - "*.json"
   - "*.yaml"
