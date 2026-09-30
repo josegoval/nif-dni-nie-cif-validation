@@ -109,7 +109,7 @@ validate("12345678A").error?.message; // 'The control character is not correct: 
 
 ## API overview
 
-Every function has JSDoc with examples, so your editor shows it. The design and the reasons behind it are in [docs/api-design.md](docs/api-design.md); the changes from v1 in [MIGRATION.md](MIGRATION.md).
+Every export has JSDoc, so your editor shows its documentation. The design and the reasons behind it are in [docs/api-design.md](docs/api-design.md); the changes from v1 in [MIGRATION.md](MIGRATION.md).
 
 ### `validate()`: the detailed result
 
@@ -489,7 +489,7 @@ Checked on 2026-10-01, from each library's README, its package.json and npm page
 | [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | EU VAT numbers (ES + NIF) | yes | yes | yes: validity and country | no | no | no | ESM + CJS | 1,186 B | 2024-12-12, deprecated |
 <!-- compare:end -->
 
-If you validate identifiers from many countries, [stdnum](https://www.npmjs.com/package/stdnum) is a good choice: it covers about 90 countries with one API, including every Spanish type. This package does only Spain, and goes deeper there: rule-by-rule sources, the reason for each error, localized messages, normalization, generators and schemas. Where the libraries disagree with SPEC.md, the benchmark lists each case and whether SPEC.md documents it as a deliberate decision ([bench/results/latest.md](bench/results/latest.md)).
+If you validate identifiers from many countries, [stdnum](https://www.npmjs.com/package/stdnum) is a good choice: it covers about 90 countries with one API, including every Spanish type. This package does only Spain, and goes deeper there: rule-by-rule sources, the reason for each error, localized messages, normalization, generators and schemas. Where the libraries disagree with SPEC.md, the benchmark counts the disagreements of each library, shows representative ones, and says which follow from a decision that SPEC.md documents ([bench/results/latest.md](bench/results/latest.md)).
 
 ## Using this package with AI coding agents
 

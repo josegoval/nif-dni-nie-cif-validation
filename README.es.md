@@ -110,7 +110,7 @@ validate("12345678A", { locale: es }).error?.message; // "El carácter de contro
 
 ## Resumen de la API
 
-Todas las funciones tienen JSDoc con ejemplos, así que tu editor los muestra. El diseño y sus motivos están en [docs/api-design.md](docs/api-design.md) (en inglés); los cambios respecto a la v1, en [MIGRATION.md](MIGRATION.md).
+Todo lo que se exporta tiene JSDoc, así que tu editor muestra su documentación. El diseño y sus motivos están en [docs/api-design.md](docs/api-design.md) (en inglés); los cambios respecto a la v1, en [MIGRATION.md](MIGRATION.md).
 
 ### `validate()`: el resultado detallado
 
@@ -494,7 +494,7 @@ Revisado el 2026-10-01, a partir del README, el package.json y la página de npm
 | [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | NIF-IVA de la UE (ES + NIF) | sí | sí | sí: validez y país | no | no | no | ESM + CJS | 1186 B | 2024-12-12, obsoleto |
 <!-- compare:end -->
 
-Si validas identificadores de muchos países, [stdnum](https://www.npmjs.com/package/stdnum) es una buena opción: cubre unos 90 países con una sola API, incluidos todos los tipos españoles. Este paquete se centra solo en España y llega más lejos: fuentes regla por regla, el motivo de cada error, mensajes traducidos, normalización, generadores y esquemas. Donde las bibliotecas no coinciden con SPEC.md, el benchmark enumera cada caso e indica si SPEC.md lo documenta como una decisión deliberada ([bench/results/latest.md](bench/results/latest.md), en inglés).
+Si validas identificadores de muchos países, [stdnum](https://www.npmjs.com/package/stdnum) es una buena opción: cubre unos 90 países con una sola API, incluidos todos los tipos españoles. Este paquete se centra solo en España y llega más lejos: fuentes regla por regla, el motivo de cada error, mensajes traducidos, normalización, generadores y esquemas. Donde las bibliotecas no coinciden con SPEC.md, el benchmark cuenta las discrepancias de cada biblioteca, muestra algunas representativas e indica cuáles se deben a una decisión que SPEC.md documenta ([bench/results/latest.md](bench/results/latest.md), en inglés).
 
 ## Uso con agentes de programación con IA
 
