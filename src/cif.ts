@@ -22,6 +22,7 @@
  * Rule IDs refer to SPEC.md.
  */
 import {
+  isFrom0x30To0x7F,
   isNineCharsFrom0x30,
   isWhiteSpace,
   normalize,
@@ -267,13 +268,22 @@ export function isValidLegalEntityNif(
 ): boolean {
   if (typeof legalEntityNif !== "string") return false;
   if (checkCif(legalEntityNif, opts)) return true;
-  // NORM-2 / NORM-3: the slow path. Removing separators only shortens a
-  // value, so a failed value of 9 characters or fewer stays invalid.
-  return (
-    legalEntityNif.length > CIF_LENGTH &&
-    opts?.normalize !== false &&
-    checkCif(removeSeparators(legalEntityNif), opts)
-  );
+  // Cleanup only shortens a value (NORM-4 pads DNIs only), so a failed
+  // value of 9 characters or fewer stays invalid.
+  return legalEntityNif.length > CIF_LENGTH && retryCif(legalEntityNif, opts);
+}
+
+/**
+ * NORM-2 / NORM-3: the slow path of isValidLegalEntityNif, in its own
+ * function so the fast path stays small.
+ */
+function retryCif(value: string, opts: IsValidOptions | null): boolean {
+  if (opts?.normalize === false) return false;
+  // A first character in 0x30-0x7F is no separator, so it stays first: if
+  // it isn't an organisation key, there's nothing to scan (CIF-2).
+  const first = value.charCodeAt(0);
+  if (isFrom0x30To0x7F(first) && cifKeyKind(first) === NOT_A_KEY) return false;
+  return checkCif(removeSeparators(value), opts);
 }
 
 /** Legal entity NIF, on the raw string. */

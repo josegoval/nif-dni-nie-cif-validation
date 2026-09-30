@@ -17,7 +17,7 @@
  * Rule IDs refer to SPEC.md.
  */
 import { hasDniDigitsAndLetter } from "./dni";
-import { removeSeparators } from "./normalize";
+import { isFrom0x30To0x7F, removeSeparators } from "./normalize";
 import { acceptsDocument, isPlaceholderDocument } from "./policy";
 import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
@@ -134,6 +134,10 @@ export function isValidNie(
  */
 function retryNie(value: string, opts: IsValidOptions | null): boolean {
   if (opts?.normalize === false) return false;
+  // A first character in 0x30-0x7F is no separator, so it stays first: if
+  // it isn't X, Y or Z, there's nothing to scan (NIE-1).
+  const first = value.charCodeAt(0);
+  if (isFrom0x30To0x7F(first) && niePrefixValue(first) >>> 0 >= 3) return false;
   const clean = removeSeparators(value);
   return checkNie(clean) && acceptsDocument(clean, opts);
 }
