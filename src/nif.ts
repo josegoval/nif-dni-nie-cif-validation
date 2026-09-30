@@ -81,7 +81,8 @@ function checkNif(value: string, opts: IsValidOptions | null): number {
 }
 
 /**
- * Checks if the given naturalPersonNif is either a valid DNI (including DNI K, L and M) or a valid NIE.
+ * Checks that a value is a valid NIF of a natural person: a DNI, a K/L/M NIF
+ * or a NIE.
  *
  * The input is normalized first (NORM-1 to NORM-4, NIE-3), so
  * `" 12.345.678-z "` is valid. Pass `{ normalize: false }` for v1's strict
@@ -90,11 +91,26 @@ function checkNif(value: string, opts: IsValidOptions | null): number {
  * `{ rejectPlaceholders: true }` rejects the placeholder numbers (POLICY-1).
  *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
- * @param naturalPersonNif The value to check.
+ * @param naturalPersonNif The value to check: a DNI (`12345678Z`), a K/L/M NIF
+ * (`K1234567L`) or a NIE (`X1234567L`), in either case, with or without
+ * separators.
  * @param opts `normalize` (default `true`), `rejectPlaceholders` (default
- * `false`).
- * @returns true for valid input and false for invalid input.
+ * `false`). See {@link IsValidOptions}.
+ * @returns `true` if the value is a valid DNI, K/L/M NIF or NIE, after
+ * normalizing it unless `normalize` is `false`. `false` for anything else: a
+ * NIF of a legal person or entity (CIF), a wrong control letter, and any value
+ * that is not a string.
+ * @example
+ * isValidNaturalPersonNif("12345678Z");   // true (DNI)
+ * isValidNaturalPersonNif("x-1234567-l"); // true (NIE, in lower case with hyphens)
+ * isValidNaturalPersonNif("K1234567L");   // true (K/L/M NIF)
+ * @example
+ * isValidNaturalPersonNif("B12345674"); // false: a NIF of a legal person is not a natural person's
+ * isValidNaturalPersonNif("12345678A"); // false: the letter should be Z (DNI-2)
+ * isValidNaturalPersonNif(null);        // false: not a string, and it never throws
+ * @see SPEC.md#nif-1
  * @see SPEC.md#norm-2
+ * @since 1.0.0
  */
 export function isValidNaturalPersonNif(
   naturalPersonNif: unknown,
@@ -129,8 +145,8 @@ function retryNaturalPersonNif(
 }
 
 /**
- * Checks if the given nif (NIF of a legal person or entity, or natural person NIF
- * (DNI, DNI K, DNI L, DNI M, or NIE)) is valid.
+ * Checks that a value is a valid NIF of any kind: a DNI, a K/L/M NIF, a NIE or
+ * the NIF of a legal person or entity (CIF).
  *
  * The input is normalized first (NORM-1 to NORM-4, NIE-3), so
  * `" b-1234567-4 "` is valid. Pass `{ normalize: false }` for v1's strict
@@ -143,12 +159,26 @@ function retryNaturalPersonNif(
  * `{ rejectPlaceholders: true }` rejects the placeholder numbers (POLICY-1).
  *
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
- * @param nif The value to check.
+ * @param nif The value to check: a DNI, K/L/M NIF, NIE or CIF, in either case,
+ * with or without separators.
  * @param opts `normalize` (default `true`), `cifControl` (default
- * `"official"`), `rejectPlaceholders` (default `false`).
- * @returns true for valid input and false for invalid input.
+ * `"official"`), `rejectPlaceholders` (default `false`). See
+ * {@link IsValidOptions}.
+ * @returns `true` if the value is a valid DNI, K/L/M NIF, NIE or CIF, after
+ * normalizing it unless `normalize` is `false`. `false` for anything else: the
+ * wrong length, format or control character, and any value that is not a
+ * string.
+ * @example
+ * isValidNif("12345678Z");      // true (DNI)
+ * isValidNif(" b-1234567-4 ");  // true (CIF, cleaned up by normalizing)
+ * isValidNif("G1234567D", { cifControl: "lenient" }); // true, as in v1
+ * @example
+ * isValidNif("12345678A"); // false: the letter should be Z (DNI-2)
+ * isValidNif("G1234567D"); // false: G takes a digit, not a letter (CIF-3)
+ * isValidNif(null);        // false: not a string, and it never throws
  * @see SPEC.md#cif-3
  * @see SPEC.md#norm-2
+ * @since 1.0.0
  */
 export function isValidNif(
   nif: unknown,

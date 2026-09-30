@@ -31,13 +31,39 @@ import {
 import { isLenientCif, NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
 
-/** CIF-3: the control letter for control digit `n` is the one at index `n`. */
+/**
+ * The control letters of a NIF of a legal person or entity (CIF): the control
+ * digit 0 is `J`, 1 is `A`, 2 is `B`, and so on up to 9, which is `I`
+ * (CIF-3). Only the keys N P Q R S W take the letter; the others take the
+ * digit.
+ * @example
+ * LEGAL_ENTITY_CONTROL_LETTERS[4];       // "D" (the letter that stands for the control digit 4)
+ * LEGAL_ENTITY_CONTROL_LETTERS.length;   // 10
+ * @example
+ * LEGAL_ENTITY_CONTROL_LETTERS.indexOf("B"); // 2: a control letter B stands for the digit 2
+ * LEGAL_ENTITY_CONTROL_LETTERS.includes("Z"); // false: Z is never a control letter
+ * @see SPEC.md#cif-3
+ * @since 1.0.0
+ */
 export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
 
 /**
- * Pattern of the NIF of a legal person or entity (CIF). It does not check the control code.
+ * Pattern of the NIF of a legal person or entity (CIF): an organisation key, 7
+ * digits and a digit or a letter from A to J. It does not check the control
+ * code.
+ *
  * Kept as a public constant for v1 compatibility; the validators below don't
- * use it.
+ * use it. Use `isValidLegalEntityNif` to validate a NIF: it also checks the
+ * control character, and CIF-3 says which keys take a letter.
+ * @example
+ * LEGAL_ENTITY_NIF_REGEX.test("B12345674"); // true
+ * LEGAL_ENTITY_NIF_REGEX.test("b1234567d"); // true: the pattern takes a letter for any key
+ * @example
+ * LEGAL_ENTITY_NIF_REGEX.test("K12345674"); // false: K is not an organisation key (CIF-2)
+ * LEGAL_ENTITY_NIF_REGEX.test("B1234567");  // false: the control character is missing (CIF-1)
+ * @see SPEC.md#cif-1
+ * @see SPEC.md#cif-2
+ * @since 1.0.0
  */
 export const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJNPQRSUVW][\d]{7}[\dA-J]$/i;
 
@@ -198,10 +224,11 @@ function hasLooseControlCode(
 }
 
 /**
- * Checks if the control code (letter or number) of the given NIF of a legal person or entity
- * (formerly CIF) is valid.
+ * Checks the control character (letter or digit) of a NIF of a legal person
+ * or entity, formerly CIF, without checking its format.
  *
- * @WARNING It does not check the `LEGAL_ENTITY_NIF_REGEX`.
+ * **It does not check the format** (`LEGAL_ENTITY_NIF_REGEX`): it only reads
+ * the organisation key, the 7 digits and the last character.
  *
  * With the default `cifControl: "official"`, the organisation key decides
  * whether the control is a digit or a letter (CIF-3), and a first character
@@ -215,11 +242,25 @@ function hasLooseControlCode(
  *
  * Never throws, whatever the length of the string. Any value that is not a
  * string (e.g. `null`) returns `false`.
- * @param value The value to check.
+ * @param value The value to check: an organisation key, 7 digits and a
+ * control character, for example `B12345674`.
  * @param opts `normalize` (default `true`), `cifControl` (default
- * `"official"`).
- * @returns true for a valid control code and false otherwise.
+ * `"official"`). See {@link IsValidOptions}.
+ * @returns `true` if the last character is the control character (CIF-4) of
+ * the right class for the organisation key (CIF-3), or a letter or a digit
+ * for C D F G J U V with `cifControl: "lenient"`. `false` otherwise, and for
+ * any value that is not a string.
+ * @example
+ * isValidLegalEntityNifControlCode("B12345674"); // true (B takes the digit 4)
+ * isValidLegalEntityNifControlCode("P2807900B"); // true (P takes the letter B)
+ * isValidLegalEntityNifControlCode("G1234567D", { cifControl: "lenient" }); // true, as in v1
+ * @example
+ * isValidLegalEntityNifControlCode("B12345670"); // false: the control digit should be 4 (CIF-4)
+ * isValidLegalEntityNifControlCode("P28079004"); // false: P takes a letter (CIF-3)
+ * isValidLegalEntityNifControlCode("G1234567D"); // false: G takes a digit (CIF-3), unless lenient
  * @see SPEC.md#cif-3
+ * @see SPEC.md#cif-4
+ * @since 1.0.0
  */
 export function isValidLegalEntityNifControlCode(
   value: unknown,
@@ -243,9 +284,8 @@ export function isValidLegalEntityNifControlCode(
 }
 
 /**
- * Checks if the legalEntityNif provided is valid.
- *
- * It does not include old K, L and M formats.
+ * Checks that a value is a valid NIF of a legal person or entity, formerly
+ * CIF: an organisation key, 7 digits and a control character.
  *
  * The control character follows CIF-3 by default: a digit for A B C D E F G
  * H J U V and a letter for N P Q R S W. Pass `{ cifControl: "lenient" }` to
@@ -254,13 +294,29 @@ export function isValidLegalEntityNifControlCode(
  * The input is normalized first (NORM-1 to NORM-3), so `" b-1234567-4 "`
  * is valid. Pass `{ normalize: false }` for v1's strict parsing.
  *
+ * It does not include the old K, L and M formats: those are natural persons.
  * Never throws: any value that is not a string (e.g. `null`) returns `false`.
- * @param legalEntityNif The value to check.
+ * @param legalEntityNif The value to check: an organisation key (A B C D E F G
+ * H J N P Q R S U V W), 7 digits and a control character, in either case, with
+ * or without separators.
  * @param opts `normalize` (default `true`), `cifControl` (default
- * `"official"`).
- * @returns true for valid input and false for invalid input.
+ * `"official"`). See {@link IsValidOptions}.
+ * @returns `true` if the value is a NIF of a legal person or entity with a
+ * valid organisation key and the right control character, after normalizing
+ * it unless `normalize` is `false`. `false` for anything else: a DNI or a
+ * NIE, the wrong control character or class, and any value that is not a
+ * string.
+ * @example
+ * isValidLegalEntityNif("B12345674");     // true
+ * isValidLegalEntityNif(" b-1234567-4 "); // true (lower case with separators)
+ * isValidLegalEntityNif("G1234567D", { cifControl: "lenient" }); // true, as in v1
+ * @example
+ * isValidLegalEntityNif("B12345670"); // false: the control digit should be 4 (CIF-4)
+ * isValidLegalEntityNif("G1234567D"); // false: G takes a digit, not a letter (CIF-3)
+ * isValidLegalEntityNif("12345678Z"); // false: a DNI is not a NIF of a legal person
  * @see SPEC.md#cif-3
  * @see SPEC.md#norm-2
+ * @since 1.0.0
  */
 export function isValidLegalEntityNif(
   legalEntityNif: unknown,
