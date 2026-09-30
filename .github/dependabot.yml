@@ -5,6 +5,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Match `minimumReleaseAge` in pnpm-workspace.yaml (3 days): pnpm refuses
+    # to install anything newer, so a PR for it would fail. Security updates
+    # are not delayed by the cooldown.
+    cooldown:
+      default-days: 3
     commit-message:
       prefix: build
       include: scope
@@ -17,6 +22,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     commit-message:
       prefix: ci
       include: scope

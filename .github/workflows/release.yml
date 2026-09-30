@@ -30,23 +30,26 @@ jobs:
           # Full history so commitlint can walk the PR's commits. (Don't use
           # `cond && 0 || 1`: expressions treat 0 as false.)
           fetch-depth: 0
+      - name: Setup pnpm
+        # Version comes from `packageManager` in package.json.
+        uses: pnpm/action-setup@v6
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: "24"
-          cache: yarn
+          cache: pnpm
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Lint commit messages
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: yarn --silent commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
       - name: Typecheck
-        run: yarn typecheck
+        run: pnpm typecheck
       - name: Test with coverage (100% enforced)
-        run: yarn test
+        run: pnpm test
       # Coverage stays inside GitHub: a table in the job summary and the
       # HTML report as a downloadable artifact. No third-party service.
       # Also runs when the coverage threshold fails, but only if tests ran.
@@ -66,14 +69,14 @@ jobs:
         id: pack
         run: |
           mkdir -p "$RUNNER_TEMP/pack"
-          npm pack --pack-destination "$RUNNER_TEMP/pack" > /dev/null
+          pnpm pack --pack-destination "$RUNNER_TEMP/pack" > /dev/null
           echo "tarball=$(ls "$RUNNER_TEMP"/pack/*.tgz)" >> "$GITHUB_OUTPUT"
       - name: Lint package with publint
-        run: npx --yes publint run "${{ steps.pack.outputs.tarball }}" --strict
+        run: pnpm dlx publint run "${{ steps.pack.outputs.tarball }}" --strict
       # The package is CJS-only until the dual ESM/CJS build lands (#48).
       # If attw flags a rule only #48 can fix, add `--ignore-rules <rule>`.
       - name: Check types with attw
-        run: npx --yes @arethetypeswrong/cli "${{ steps.pack.outputs.tarball }}"
+        run: pnpm dlx @arethetypeswrong/cli "${{ steps.pack.outputs.tarball }}"
 
   compat:
     name: Compat (Node ${{ matrix.node-version }})
@@ -86,17 +89,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+      - name: Setup pnpm
+        # Version comes from `packageManager` in package.json.
+        uses: pnpm/action-setup@v6
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
-      # --ignore-engines: the release tooling needs Node >= 22.22, but the
-      # package itself must keep working on older Node versions.
+          cache: pnpm
+      # The release tooling needs Node >= 22.22, but the package itself must
+      # keep working on older Node versions. pnpm only warns about engines
+      # (unless `engine-strict` is set), so the install still succeeds.
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-engines
+        run: pnpm install --frozen-lockfile
       - name: Test
-        run: yarn test --coverage=false
+        run: pnpm test --coverage=false
 
   release:
     name: Release
@@ -114,26 +121,29 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - name: Setup pnpm
+        # Version comes from `packageManager` in package.json.
+        uses: pnpm/action-setup@v6
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           # semantic-release 25 needs Node ^22.22.2 || >=24.15; Node 24 also
           # bundles an npm new enough for Trusted Publishing.
           node-version: "24"
-          cache: yarn
+          cache: pnpm
       - name: Check npm supports Trusted Publishing (>= 11.5.1)
         run: |
           npm --version
           node -e "const [a,b,c]=process.argv[1].split('.').map(Number);process.exit(a>11||(a===11&&(b>5||(b===5&&c>=1)))?0:1)" "$(npm --version)" \
             || { echo "::error::npm >= 11.5.1 is required for npm Trusted Publishing"; exit 1; }
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       # Tests already passed in `check` and `compat` for this commit.
       - name: Build package
-        run: yarn build
+        run: pnpm build
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # No NPM_TOKEN: @semantic-release/npm authenticates through OIDC.
           NPM_CONFIG_PROVENANCE: "true"
-        run: npx semantic-release
+        run: pnpm exec semantic-release

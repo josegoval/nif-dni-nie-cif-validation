@@ -4,16 +4,23 @@ Thanks for helping improve `nif-dni-nie-cif-validation`.
 
 ## Development setup
 
-The package manager is Yarn classic (v1) and the release pipeline needs Node 24 (any Node 20, 22 or 24 works for development).
+The package manager is [pnpm](https://pnpm.io/). The exact version is pinned in `packageManager` in `package.json`; with [Corepack](https://nodejs.org/api/corepack.html) enabled (`corepack enable`) or a recent pnpm, the right version is used automatically. The release pipeline needs Node 24 (any Node 20, 22 or 24 works for development).
 
 ```sh
-yarn install --frozen-lockfile   # also installs the Husky commit-msg hook
-yarn typecheck                   # tsc --noEmit
-yarn test                        # Jest, with coverage
-yarn build                       # compiles to dist/
+pnpm install --frozen-lockfile   # also installs the Husky commit-msg hook
+pnpm typecheck                   # tsc --noEmit
+pnpm test                        # Jest, with coverage
+pnpm build                       # compiles to dist/
 ```
 
-`yarn install` runs `husky` through the `prepare` script, which installs the git hooks. If you installed with `HUSKY=0` or cloned without running install, run `yarn prepare` once.
+`pnpm install` runs `husky` through the `prepare` script, which installs the git hooks. If you installed with `HUSKY=0` or cloned without running install, run `pnpm prepare` once.
+
+### Supply-chain settings
+
+`pnpm-workspace.yaml` holds the pnpm settings:
+
+- `minimumReleaseAge: 4320` only installs versions that are at least 3 days old, so a compromised release is usually pulled before we can install it. Dependabot has a matching 3-day `cooldown`.
+- `allowBuilds` is an allow-list of dependencies that may run install scripts. Everything else is blocked, and the install fails if a new dependency ships an unreviewed script. Add a package there only after reviewing its script.
 
 ## Commit convention
 
@@ -83,4 +90,4 @@ Do not run `npm publish` by hand. The `prepack` script builds `dist/` so a tarba
 Coverage never leaves GitHub; there is no third-party service:
 
 - Every CI run on Node 24 writes a coverage table to the run's **job summary** (`scripts/coverage-summary.mjs`) and uploads the HTML report as the `coverage-report` artifact.
-- Run `yarn test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/lcov-report/index.html`.
+- Run `pnpm test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/lcov-report/index.html`.

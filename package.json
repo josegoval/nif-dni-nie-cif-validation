@@ -25,10 +25,11 @@
   },
   "author": "josegoval <josegovalmusic@gmail.com>",
   "license": "MIT",
+  "packageManager": "pnpm@12.8.1",
   "scripts": {
     "build": "tsc",
     "prepare": "husky",
-    "prepack": "yarn build",
+    "prepack": "pnpm build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "jest --config jest.config.json"
   },

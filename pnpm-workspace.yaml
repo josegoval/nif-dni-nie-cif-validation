@@ -1,0 +1,11 @@
+# pnpm settings. Since pnpm 11 they live here, not in package.json or .npmrc.
+
+# Supply chain: only install versions that have been on the registry for at
+# least 3 days (in minutes), so a compromised release is caught and pulled
+# before we can install it. Applies to transitive dependencies too.
+minimumReleaseAge: 4320
+
+# Supply chain: dependency install scripts are blocked unless listed here.
+# `strictDepBuilds` (default) fails the install if a new dependency ships an
+# unreviewed install script. Only list packages that really need to build.
+allowBuilds: {}
