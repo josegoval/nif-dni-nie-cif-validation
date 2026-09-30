@@ -55,18 +55,38 @@ export type {
  * The schemas of this entry point: a string, transformed to its normalized
  * form. Its input and its output are `string`.
  * @example
- * type Input = z.input<NifSchema>;  // string
- * type Output = z.output<NifSchema>; // string
+ * import { z } from "zod";
+ *
+ * const schema: NifSchema = zNif();
+ * const output: z.output<NifSchema> = schema.parse(" 12.345.678-z ");
+ * output; // "12345678Z"
+ * @example
+ * import { z } from "zod";
+ *
+ * const input: z.input<NifSchema> = "b-1234567-4";
+ * zCif().parse(input); // "B12345674"
+ * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export type NifSchema = ZodPipe<ZodString, ZodTransform<string, string>>;
 
 /**
  * The `params` of the issue of a refused value: what `validate()` says.
  * @example
+ * import { z } from "zod";
+ *
  * const result = zDni().safeParse("12345678A");
- * const params = result.error?.issues[0]?.params as NifIssueParams;
+ * const issue = result.error?.issues[0] as z.core.$ZodIssueCustom;
+ * const params = issue.params as NifIssueParams;
  * params.code; // "INVALID_CONTROL_CHARACTER"
  * params.rule; // "DNI-2"
+ * @example
+ * import { z } from "zod";
+ *
+ * const issue = zDni().safeParse("12345678A").error?.issues[0] as z.core.$ZodIssueCustom;
+ * (issue.params as NifIssueParams).expected; // "Z": the right control character
+ * @see SPEC.md#dni-2
+ * @since 2.0.0
  */
 export interface NifIssueParams {
   /** The error code of `validate()`. */
@@ -104,15 +124,21 @@ function schema(kind: NifSchemaKind, opts?: NifSchemaOptions): NifSchema {
  * @returns A schema from `string` to the normalized `string`.
  * @example
  * import { z } from "zod";
+ * import { zNif } from "nif-dni-nie-cif-validation/zod";
  * import { es } from "nif-dni-nie-cif-validation/locales/es";
  *
  * const form = z.object({ nif: zNif({ types: ["DNI", "NIE"], locale: es }) });
  * form.parse({ nif: " 12.345.678-z " }); // { nif: "12345678Z" }
  * @example
+ * import { z } from "zod";
+ *
  * const result = zNif().safeParse("12345678A");
- * result.error?.issues[0]?.message; // 'The control character is not correct: ...'
- * result.error?.issues[0]?.params;  // { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z" }
+ * const issue = result.error?.issues[0] as z.core.$ZodIssueCustom;
+ * issue.message;
+ * // 'The control character is not correct: for this DNI it should be "Z".'
+ * issue.params; // { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z" }
  * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export function zNif(opts?: NifSchemaOptions): NifSchema {
   return schema("nif", opts);
@@ -129,9 +155,11 @@ export function zNif(opts?: NifSchemaOptions): NifSchema {
  * @example
  * zDni().parse("1234567-l"); // "01234567L"
  * @example
- * zDni().safeParse("X1234567L").error?.issues[0]?.params?.code; // "UNSUPPORTED_TYPE"
+ * zDni().safeParse("X1234567L").success; // false: UNSUPPORTED_TYPE, a NIE is not a DNI
+ * zDni().safeParse("12345678A").success; // false: the letter should be Z (DNI-2)
  * @see SPEC.md#dni-1
  * @see SPEC.md#klm-1
+ * @since 2.0.0
  */
 export function zDni(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("dni", opts);
@@ -149,6 +177,7 @@ export function zDni(opts?: TypedNifSchemaOptions): NifSchema {
  * zNie().safeParse("12345678Z").success; // false: a DNI is not an NIE
  * @see SPEC.md#nie-1
  * @see SPEC.md#nie-3
+ * @since 2.0.0
  */
 export function zNie(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("nie", opts);
@@ -166,6 +195,7 @@ export function zNie(opts?: TypedNifSchemaOptions): NifSchema {
  * zCif().safeParse("G1234567D").success;                         // false (CIF-3)
  * zCif({ cifControl: "lenient" }).safeParse("G1234567D").success; // true
  * @see SPEC.md#cif-3
+ * @since 2.0.0
  */
 export function zCif(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("cif", opts);
@@ -184,6 +214,7 @@ export function zCif(opts?: TypedNifSchemaOptions): NifSchema {
  * @example
  * zSpanishVat().safeParse("B12345674").success; // false: no ES prefix
  * @see SPEC.md#vat-1
+ * @since 2.0.0
  */
 export function zSpanishVat(opts?: SpanishVatSchemaOptions): NifSchema {
   return schema("vat", opts);

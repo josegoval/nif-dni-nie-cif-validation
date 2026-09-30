@@ -52,12 +52,21 @@ export type {
 /**
  * The issue of a refused value: a Valibot issue with what `validate()` says.
  * @example
+ * import { safeParse } from "valibot";
+ *
  * const result = safeParse(vDni(), "12345678A");
  * const issue = result.issues?.[0] as NifIssue;
  * issue.code;     // "INVALID_CONTROL_CHARACTER"
  * issue.rule;     // "DNI-2"
- * issue.expected; // "Z", the right control character
- * issue.message;  // 'The control character is not correct: ...'
+ * issue.expected; // "Z"
+ * @example
+ * import { safeParse } from "valibot";
+ *
+ * const issue = safeParse(vNif(), "").issues?.[0] as NifIssue;
+ * issue.code;     // "EMPTY"
+ * issue.expected; // null: only a wrong control character has an expected value
+ * @see SPEC.md#dni-2
+ * @since 2.0.0
  */
 export interface NifIssue extends BaseIssue<string> {
   readonly kind: "transformation";
@@ -73,7 +82,10 @@ export interface NifIssue extends BaseIssue<string> {
   readonly expected: string | null;
 }
 
-/** The transformation of the schemas: a string to its normalized form. */
+/**
+ * The transformation of the schemas: a string to its normalized form.
+ * @since 2.0.0
+ */
 export interface NifAction
   extends BaseTransformation<string, string, NifIssue> {
   readonly type: "nif";
@@ -84,8 +96,20 @@ export interface NifAction
  * The schemas of this entry point: a string, transformed to its normalized
  * form. Its input and its output are `string`.
  * @example
- * type Input = InferInput<NifSchema>;  // string
- * type Output = InferOutput<NifSchema>; // string
+ * import { type InferOutput, parse } from "valibot";
+ * import { type NifSchema, vNif } from "nif-dni-nie-cif-validation/valibot";
+ *
+ * const schema: NifSchema = vNif();
+ * const output: InferOutput<NifSchema> = parse(schema, " 12.345.678-z ");
+ * output; // "12345678Z"
+ * @example
+ * import { type InferInput, parse } from "valibot";
+ * import { type NifSchema, vCif } from "nif-dni-nie-cif-validation/valibot";
+ *
+ * const input: InferInput<NifSchema> = "b-1234567-4";
+ * parse(vCif(), input); // "B12345674"
+ * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export type NifSchema = SchemaWithPipe<
   readonly [StringSchema<string>, NifAction]
@@ -145,15 +169,20 @@ function schema(kind: NifSchemaKind, opts?: NifSchemaOptions): NifSchema {
  * @returns A schema from `string` to the normalized `string`.
  * @example
  * import { object, parse } from "valibot";
+ * import { vNif } from "nif-dni-nie-cif-validation/valibot";
  * import { es } from "nif-dni-nie-cif-validation/locales/es";
  *
  * const form = object({ nif: vNif({ types: ["DNI", "NIE"], locale: es }) });
  * parse(form, { nif: " 12.345.678-z " }); // { nif: "12345678Z" }
  * @example
+ * import { safeParse } from "valibot";
+ *
  * const result = safeParse(vNif(), "12345678A");
- * result.issues?.[0]?.message; // 'The control character is not correct: ...'
+ * result.issues?.[0]?.message;
+ * // 'The control character is not correct: for this DNI it should be "Z".'
  * (result.issues?.[0] as NifIssue).rule; // "DNI-2"
  * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export function vNif(opts?: NifSchemaOptions): NifSchema {
   return schema("nif", opts);
@@ -168,11 +197,16 @@ export function vNif(opts?: NifSchemaOptions): NifSchema {
  * @param opts The options of `validate()` except `types`.
  * @returns A schema from `string` to the normalized `string`.
  * @example
+ * import { parse } from "valibot";
+ *
  * parse(vDni(), "1234567-l"); // "01234567L"
  * @example
+ * import { safeParse } from "valibot";
+ *
  * safeParse(vDni(), "X1234567L").success; // false: UNSUPPORTED_TYPE
  * @see SPEC.md#dni-1
  * @see SPEC.md#klm-1
+ * @since 2.0.0
  */
 export function vDni(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("dni", opts);
@@ -185,11 +219,16 @@ export function vDni(opts?: TypedNifSchemaOptions): NifSchema {
  * @param opts The options of `validate()` except `types`.
  * @returns A schema from `string` to the normalized `string`.
  * @example
+ * import { parse } from "valibot";
+ *
  * parse(vNie(), "x-01234567-l"); // "X1234567L"
  * @example
+ * import { safeParse } from "valibot";
+ *
  * safeParse(vNie(), "12345678Z").success; // false: a DNI is not an NIE
  * @see SPEC.md#nie-1
  * @see SPEC.md#nie-3
+ * @since 2.0.0
  */
 export function vNie(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("nie", opts);
@@ -202,11 +241,16 @@ export function vNie(opts?: TypedNifSchemaOptions): NifSchema {
  * @param opts The options of `validate()` except `types`.
  * @returns A schema from `string` to the normalized `string`.
  * @example
+ * import { parse } from "valibot";
+ *
  * parse(vCif(), " b-1234567-4 "); // "B12345674"
  * @example
+ * import { safeParse } from "valibot";
+ *
  * safeParse(vCif(), "G1234567D").success;                         // false (CIF-3)
  * safeParse(vCif({ cifControl: "lenient" }), "G1234567D").success; // true
  * @see SPEC.md#cif-3
+ * @since 2.0.0
  */
 export function vCif(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("cif", opts);
@@ -221,10 +265,15 @@ export function vCif(opts?: TypedNifSchemaOptions): NifSchema {
  * @param opts The options of `validate()` except `allowVatPrefix`.
  * @returns A schema from `string` to the normalized `string`.
  * @example
+ * import { parse } from "valibot";
+ *
  * parse(vSpanishVat(), "es b-1234567-4"); // "ESB12345674"
  * @example
+ * import { safeParse } from "valibot";
+ *
  * safeParse(vSpanishVat(), "B12345674").success; // false: no ES prefix
  * @see SPEC.md#vat-1
+ * @since 2.0.0
  */
 export function vSpanishVat(opts?: SpanishVatSchemaOptions): NifSchema {
   return schema("vat", opts);

@@ -30,10 +30,15 @@ import { validate } from "./validate";
  * Options of the generic schema (`zNif`, `vNif`, `yNif`): the options of
  * `validate()`.
  * @example
- * zNif({ types: ["DNI", "NIE"], locale: es });
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * const options: NifSchemaOptions = { types: ["DNI", "NIE"], locale: es };
+ * zNif(options).safeParse("B12345674").success; // false: a CIF is not accepted
  * @example
- * zNif({ rejectPlaceholders: true, cifControl: "lenient" });
+ * const options: NifSchemaOptions = { rejectPlaceholders: true, cifControl: "lenient" };
+ * zNif(options).safeParse("00000000T").success; // false: a placeholder (POLICY-1)
  * @see SPEC.md#policy-2
+ * @since 2.0.0
  */
 export type NifSchemaOptions = ValidateOptions;
 
@@ -41,9 +46,16 @@ export type NifSchemaOptions = ValidateOptions;
  * Options of the schemas for one type (DNI, NIE, CIF): the options of
  * `validate()` except `types`, which the schema fixes.
  * @example
- * zNie({ locale: es });
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * const options: TypedNifSchemaOptions = { locale: es };
+ * zNie(options).safeParse("12345678Z").error?.issues[0]?.message;
+ * // "Aquí no se admite un DNI."
  * @example
- * zCif({ cifControl: "lenient" });
+ * const options: TypedNifSchemaOptions = { cifControl: "lenient" };
+ * zCif(options).safeParse("G1234567D").success; // true
+ * @see SPEC.md#policy-2
+ * @since 2.0.0
  */
 export type TypedNifSchemaOptions = Omit<ValidateOptions, "types">;
 
@@ -52,8 +64,15 @@ export type TypedNifSchemaOptions = Omit<ValidateOptions, "types">;
  * `allowVatPrefix`, which the schema always sets (the `ES` prefix is
  * required).
  * @example
- * zSpanishVat({ locale: es });
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * const options: SpanishVatSchemaOptions = { locale: es };
+ * zSpanishVat(options).parse("ES 12345678-z"); // "ES12345678Z"
+ * @example
+ * const options: SpanishVatSchemaOptions = { rejectPlaceholders: true };
+ * zSpanishVat(options).safeParse("ES00000000T").success; // false: a placeholder
  * @see SPEC.md#vat-1
+ * @since 2.0.0
  */
 export type SpanishVatSchemaOptions = Omit<ValidateOptions, "allowVatPrefix">;
 

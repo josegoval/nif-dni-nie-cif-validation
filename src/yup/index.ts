@@ -49,20 +49,37 @@ export type {
  * The schemas of this entry point: a required string, transformed to its
  * normalized form. Its input and its output are `string`.
  * @example
- * type Output = InferType<NifSchema>; // string
+ * import { type InferType } from "yup";
+ * import { type NifSchema, yNif } from "nif-dni-nie-cif-validation/yup";
+ *
+ * const schema: NifSchema = yNif();
+ * const output: InferType<NifSchema> = schema.validateSync(" 12.345.678-z ");
+ * output; // "12345678Z"
+ * @example
+ * import { object } from "yup";
+ * import { yDni } from "nif-dni-nie-cif-validation/yup";
+ *
+ * object({ nif: yDni() }).isValidSync({ nif: "12345678A" }); // false
+ * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export type NifSchema = StringSchema<string, AnyObject, undefined, "">;
 
 /**
  * The `params` of the error of a refused value: what `validate()` says.
  * @example
+ * import { ValidationError } from "yup";
+ *
+ * let params: NifErrorParams | undefined;
  * try {
  *   yDni().validateSync("12345678A");
  * } catch (error) {
- *   const params = (error as ValidationError).params as NifErrorParams;
- *   params.code; // "INVALID_CONTROL_CHARACTER"
- *   params.rule; // "DNI-2"
+ *   params = (error as ValidationError).params as NifErrorParams | undefined;
  * }
+ * params?.code; // "INVALID_CONTROL_CHARACTER"
+ * params?.rule; // "DNI-2"
+ * @see SPEC.md#dni-2
+ * @since 2.0.0
  */
 export interface NifErrorParams {
   /** The error code of `validate()`. */
@@ -124,18 +141,26 @@ function schema(kind: NifSchemaKind, opts?: NifSchemaOptions): NifSchema {
  * @returns A schema from `string` to the normalized `string`.
  * @example
  * import { object } from "yup";
+ * import { yNif } from "nif-dni-nie-cif-validation/yup";
  * import { es } from "nif-dni-nie-cif-validation/locales/es";
  *
  * const form = object({ nif: yNif({ types: ["DNI", "NIE"], locale: es }) });
  * form.validateSync({ nif: " 12.345.678-z " }); // { nif: "12345678Z" }
  * @example
+ * import { ValidationError } from "yup";
+ *
+ * let error: ValidationError | undefined;
  * try {
  *   yNif().validateSync("12345678A");
- * } catch (error) {
- *   (error as ValidationError).message; // 'The control character is not correct: ...'
- *   (error as ValidationError).params;  // { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z", ... }
+ * } catch (caught) {
+ *   error = caught as ValidationError;
  * }
+ * error?.message;
+ * // 'The control character is not correct: for this DNI it should be "Z".'
+ * error?.params?.rule;     // "DNI-2"
+ * error?.params?.expected; // "Z"
  * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export function yNif(opts?: NifSchemaOptions): NifSchema {
   return schema("nif", opts);
@@ -155,6 +180,7 @@ export function yNif(opts?: NifSchemaOptions): NifSchema {
  * yDni().isValidSync("X1234567L"); // false: UNSUPPORTED_TYPE
  * @see SPEC.md#dni-1
  * @see SPEC.md#klm-1
+ * @since 2.0.0
  */
 export function yDni(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("dni", opts);
@@ -172,6 +198,7 @@ export function yDni(opts?: TypedNifSchemaOptions): NifSchema {
  * yNie().isValidSync("12345678Z"); // false: a DNI is not an NIE
  * @see SPEC.md#nie-1
  * @see SPEC.md#nie-3
+ * @since 2.0.0
  */
 export function yNie(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("nie", opts);
@@ -189,6 +216,7 @@ export function yNie(opts?: TypedNifSchemaOptions): NifSchema {
  * yCif().isValidSync("G1234567D");                         // false (CIF-3)
  * yCif({ cifControl: "lenient" }).isValidSync("G1234567D"); // true
  * @see SPEC.md#cif-3
+ * @since 2.0.0
  */
 export function yCif(opts?: TypedNifSchemaOptions): NifSchema {
   return schema("cif", opts);
@@ -207,6 +235,7 @@ export function yCif(opts?: TypedNifSchemaOptions): NifSchema {
  * @example
  * ySpanishVat().isValidSync("B12345674"); // false: no ES prefix
  * @see SPEC.md#vat-1
+ * @since 2.0.0
  */
 export function ySpanishVat(opts?: SpanishVatSchemaOptions): NifSchema {
   return schema("vat", opts);
