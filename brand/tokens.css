@@ -1,0 +1,62 @@
+/* Design tokens for nif-dni-nie-cif-validation. Source of truth: tokens.json */
+:root {
+  /* palette */
+  --ndnc-ink: #0f172a;
+  --ndnc-ink-800: #1e293b;
+  --ndnc-rojo: #c8102e;
+  --ndnc-rojo-400: #f2475e; /* red text on Ink only */
+  --ndnc-gualda: #ffc72c; /* accent on Ink only; never text on light */
+  --ndnc-paper: #fafaf7;
+  --ndnc-slate-600: #475569;
+  --ndnc-slate-400: #94a3b8;
+  --ndnc-slate-200: #e2e8f0;
+
+  /* semantic, light theme (default) */
+  --ndnc-bg: var(--ndnc-paper);
+  --ndnc-surface: #ffffff;
+  --ndnc-text: var(--ndnc-ink);
+  --ndnc-text-muted: var(--ndnc-slate-600);
+  --ndnc-accent: var(--ndnc-rojo);
+  --ndnc-border: var(--ndnc-slate-200);
+  --ndnc-tile: var(--ndnc-rojo);
+  --ndnc-on-tile: var(--ndnc-paper);
+  --ndnc-highlight: var(--ndnc-gualda);
+
+  /* type */
+  --ndnc-font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --ndnc-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --ndnc-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ndnc-weight-regular: 400;
+  --ndnc-weight-medium: 500;
+  --ndnc-weight-semibold: 600;
+  --ndnc-weight-bold: 700;
+
+  /* radii: tiles are always 25 % of their side */
+  --ndnc-radius-tile: 25%;
+  --ndnc-radius-sm: 4px;
+  --ndnc-radius-md: 6px;
+  --ndnc-radius-lg: 12px;
+  --ndnc-radius-pill: 9999px;
+
+  /* spacing: 4 px base, 24 px module */
+  --ndnc-space-1: 4px;
+  --ndnc-space-2: 8px;
+  --ndnc-space-3: 12px;
+  --ndnc-space-4: 16px;
+  --ndnc-space-6: 24px;
+  --ndnc-space-8: 32px;
+  --ndnc-space-12: 48px;
+  --ndnc-space-16: 64px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ndnc-bg: var(--ndnc-ink);
+    --ndnc-surface: var(--ndnc-ink-800);
+    --ndnc-text: var(--ndnc-paper);
+    --ndnc-text-muted: var(--ndnc-slate-400);
+    --ndnc-accent: var(--ndnc-rojo-400);
+    --ndnc-border: var(--ndnc-ink-800);
+    /* the tile keeps Rojo in both themes: it is a graphic (3.03:1 on Ink, WCAG 1.4.11) */
+  }
+}
