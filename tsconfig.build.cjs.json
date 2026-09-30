@@ -4,6 +4,10 @@
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "module": "commonjs",
+    // `verbatimModuleSyntax` (on in tsconfig.json) refuses ES module syntax
+    // when the output is CommonJS. It has done its job by then: the type
+    // check and the ESM build run with it.
+    "verbatimModuleSyntax": false,
     "outDir": "./dist/cjs"
   }
 }

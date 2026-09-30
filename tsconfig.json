@@ -21,8 +21,10 @@
     "exactOptionalPropertyTypes": true,
 
     // Vitest transpiles every file on its own.
-    "isolatedModules": true
-    // `verbatimModuleSyntax` is off for now, see #48.
+    "isolatedModules": true,
+    // `import type` for types, so the output keeps exactly the imports the
+    // sources write. The CommonJS build turns it off (tsconfig.build.cjs.json).
+    "verbatimModuleSyntax": true
   },
   "include": ["src/**/*", "vitest.config.mts"]
 }
