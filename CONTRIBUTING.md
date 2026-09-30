@@ -12,13 +12,16 @@ pnpm lint                        # Biome: lint rules, formatting and import orde
 pnpm format                      # Biome: fix what it can (formatting, import order, safe lint fixes)
 pnpm typecheck                   # tsc --noEmit
 pnpm test                        # Vitest, with coverage (100% enforced)
-pnpm build                       # compiles to dist/
+pnpm build                       # compiles to dist/esm (ES modules) and dist/cjs (CommonJS)
+pnpm size                        # builds, then checks the bundle size budgets (size-limit)
+pnpm check:es                    # builds, then checks that dist/ uses no syntax newer than ES2016
 pnpm spell                       # cspell: spelling of code, tests, docs and CI files
 pnpm spec:check                  # rule IDs in src/ and tests match SPEC.md
 pnpm bench                       # builds, then benchmarks against v1.0.11
+node scripts/check-tree-shaking.mjs <tarball>   # bundles the packed tarball, see Build and package layout
 ```
 
-`tsconfig.json` type-checks the library, the tests and the Vitest config without emitting anything. `tsconfig.build.json` extends it and emits the CommonJS build and type declarations of `src/` (without tests) into `dist/`. Both use `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
+`tsconfig.json` type-checks the library, the tests and the Vitest config without emitting anything. `tsconfig.build.json` extends it and emits the ES modules and type declarations of `src/` (without tests) into `dist/esm`; `tsconfig.build.cjs.json` extends that one and emits CommonJS into `dist/cjs`. All use `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `verbatimModuleSyntax` (the CommonJS build turns the last one off, because TypeScript refuses ES module syntax in CommonJS output with it; the type check and the ES module build have already enforced it).
 
 `pnpm install` runs `husky` through the `prepare` script, which installs the git hooks. If you installed with `HUSKY=0` or cloned without running install, run `pnpm prepare` once.
 
@@ -42,12 +45,37 @@ src/
   types.ts      public types
   __tests__/    Vitest tests, one file per module plus cross-cutting suites
 test/fixtures/  SPEC test values as JSON, run by src/__tests__/fixtures.test.ts
-test/smoke/     smoke test of the packed tarball (plain Node, see Pull requests)
+test/smoke/     smoke tests of the packed tarball, CommonJS and ES module (plain Node, see Pull requests)
 bench/          benchmark against v1.0.11 and another build (see Performance)
-scripts/        CI helpers: coverage summary, SPEC rule check
+scripts/        build script, CI helpers: coverage summary, SPEC rule check, tree-shaking check
+.size-limit.json  bundle size budgets (see Build and package layout)
 ```
 
 Each module starts with a header comment: what the document is, its format and its control algorithm, with the [SPEC.md](SPEC.md) rule IDs. The `isValid*` functions validate in a single pass with `charCodeAt`: no regex, no `split`/`replace`/template strings and no allocations on the hot path. With normalization on (the default), a value that fails the raw check is normalized and checked again only when normalizing could change the verdict (see `normalizedForRetry` in normalize.ts); keep that retry out of the hot function. `validate()` may allocate. The messages and organisation names live in their own modules, which the booleans must not import, so they stay out of bundles that only use the booleans. The exported regexes (`DNI_REGEX` and so on) are public constants kept for compatibility; the validators don't use them.
+
+### Build and package layout
+
+`pnpm build` runs `scripts/build.mjs`, which has no dependency besides TypeScript. It compiles twice and gives the output its final file names:
+
+```
+dist/esm/   index.mjs, nif.mjs, ...    ES modules, with index.d.mts, nif.d.mts, ...
+dist/cjs/   index.cjs, nif.cjs, ...    CommonJS, with index.d.cts, nif.d.cts, ...
+```
+
+The sources import each other without file extensions (`from "./nif"`) and the type check uses bundler module resolution. Node resolves ES module imports by exact file name, so after each compile the script renames `.js`/`.d.ts` to `.mjs`/`.d.mts` or `.cjs`/`.d.cts`, rewrites the relative imports to match and checks that each one points to a file that exists. Each `.d.mts` or `.d.cts` points to its own format, so TypeScript users get the right types with `import` and with `require`. The output is deliberately not one bundled file: modules stay separate so bundlers can drop what an application doesn't import.
+
+`package.json` is what makes this work, so change it with care:
+
+- `"type": "module"`: `.js` files in the repository are ES modules. The published files all have explicit `.mjs` or `.cjs` extensions.
+- `exports`: `"."` with an `import` and a `require` condition, each with its own `types`, plus `"./package.json"`. Nothing else is importable, so a file moved inside `dist/` is not a breaking change. `main`, `module` and `types` are fallbacks for tools that ignore `exports`.
+- `"sideEffects": false`: every module only declares things, so a bundler may drop a module whose exports are unused. Don't add top-level code that does work when the module loads, other than filling a table that the module's own functions use.
+- `files`: `dist` plus the standard files (README, LICENSE, CHANGELOG).
+
+The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it runs in every current browser without transpiling. ES2018 would emit the same code, because the sources use nothing that TypeScript rewrites between the two. `pnpm check:es` runs `es-check` on both builds: no syntax and no built-in newer than ES2016 (ES2016 is a real floor: `Array.prototype.includes` is in `policy.ts`). Raise the `target` and that check together, and never to something your browser support doesn't cover.
+
+**Size budgets.** `pnpm size` builds and runs [size-limit](https://github.com/ai/size-limit) with its esbuild plugin and `.size-limit.json`: it bundles `import { x } from "dist/esm/index.mjs"` for each entry, minifies, gzips and fails if the result is over the `limit`. The entries are the four boolean validators, `isValidSpanishVat`, `validate` (which includes the messages and organisation names) and the whole ES module build. The budgets sit a few percent above the measured sizes, so they catch a real regression (for example a boolean that starts importing `messages.ts`, about 2 kB) and not noise. When a change is meant to grow the library, say why in the PR and raise the limit in the same commit. For reference, v1.0.11 measures 1308 B with the same tool (all its functions, CommonJS). The sizes are measured with esbuild; other bundlers differ by a few percent.
+
+**Tree shaking check.** `node scripts/check-tree-shaking.mjs <tarball>` unpacks the tarball into a temporary project, bundles one import at a time with esbuild (resolving the package through its `exports`, as a consumer does), and fails if the bundle of any boolean validator, `normalize` or `format` contains a message or an organisation name, or the `messages` or `organisations` module. It also bundles `validate` and `describeCifOrganisation`, which must contain them, so the check can't pass by looking for strings it can't find. CI runs it on the tarball that `Check` packs.
 
 ### Rule IDs and SPEC.md
 
@@ -66,13 +94,13 @@ Every validation branch in `src/` cites the rule it implements in a comment (`//
 
 ### Performance
 
-`pnpm bench` builds `dist/` and runs `bench/run.mjs` with [tinybench](https://github.com/tinylibs/tinybench), on the fixed, seeded input sets in `bench/inputs.mjs`. It prints three tables and writes `bench/results/baseline.json` (with machine, Node and tinybench versions) and `bench/results/baseline.md`:
+`pnpm bench` builds `dist/` (the CommonJS build) and runs `bench/run.mjs` with [tinybench](https://github.com/tinylibs/tinybench), on the fixed, seeded input sets in `bench/inputs.mjs`. It prints three tables and writes `bench/results/baseline.json` (with machine, Node and tinybench versions) and `bench/results/baseline.md`:
 
 1. Every boolean validator on the mixed set: v1.0.11, the current build with the v1-compatible options (checked to give the v1.0.11 results first), and with the v2 defaults.
 2. Every boolean validator on canonical input (the fast path), each in its own child process, against another build given in `BENCH_BASE` (a `dist/` directory; name it with `BENCH_BASE_LABEL`). The budget: at most 10% slower than the base. On canonical input the booleans must not allocate.
 3. `validate()` on the mixed, canonical and typed (normalized) sets.
 
-To compare with another branch, build it into a temporary directory, for example `git archive <branch> src tsconfig.json tsconfig.build.json | tar -x -C /tmp/base && pnpm exec tsc -p /tmp/base/tsconfig.build.json`, then `BENCH_BASE=/tmp/base/dist BENCH_BASE_LABEL=<branch> pnpm bench`. Commit the new results when a change affects performance, and run it on an otherwise idle machine. `BENCH_TIME_MS` and `BENCH_WARMUP_MS` change the time per task (defaults: 2000 and 500).
+`BENCH_BASE` is a `dist/` directory with `cjs/index.cjs` (the layout of this repository) or `index.js` (branches from before the dual build). To compare with another branch, build it into a temporary directory, for example `git archive <branch> src tsconfig.json tsconfig.build.json | tar -x -C /tmp/base && pnpm exec tsc -p /tmp/base/tsconfig.build.json`, then `BENCH_BASE=/tmp/base/dist BENCH_BASE_LABEL=<branch> pnpm bench`. Commit the new results when a change affects performance, and run it on an otherwise idle machine. `BENCH_TIME_MS` and `BENCH_WARMUP_MS` change the time per task (defaults: 2000 and 500).
 
 ### Spelling
 
@@ -129,8 +157,8 @@ Keep commits atomic: one logical change per commit, with a message that explains
 ## Pull requests
 
 - Open PRs against `master`. The **CI** workflow (`.github/workflows/release.yml`) must pass before merging:
-  - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, spell check (`pnpm spell`), SPEC rule ID check (`pnpm spec:check`), type check, tests with 100% coverage enforced (including the differential test against v1.0.11), coverage summary and report, then packs the tarball, checks it with `publint` and `@arethetypeswrong/cli` and uploads it as the `package-tarball` artifact.
-  - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke test in `test/smoke/smoke.test.cjs` with Node's built-in test runner. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` a copy of the file from there.
+  - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, spell check (`pnpm spell`), SPEC rule ID check (`pnpm spec:check`), type check, tests with 100% coverage enforced (including the differential test against v1.0.11), coverage summary and report, the size budgets (`pnpm size`), the ES2016 syntax check (`pnpm check:es`), then packs the tarball, checks that it tree-shakes (`scripts/check-tree-shaking.mjs`), checks it with `publint --strict` and `@arethetypeswrong/cli` (green in every resolution mode) and uploads it as the `package-tarball` artifact.
+  - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke tests in `test/smoke/` with Node's built-in test runner: `smoke.test.cjs` loads the package with `require()` and `smoke.test.mjs` with `import`. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` copies of both files from there.
   - `PR title`: checks that the pull request title is a valid Conventional Commit (see `.github/workflows/pr-title.yml`).
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.
 

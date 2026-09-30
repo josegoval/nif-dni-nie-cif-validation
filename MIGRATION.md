@@ -23,8 +23,9 @@ Use it as a stopgap for stored data, then move to the defaults.
 | 1 | CIF keys C D F G J U V need a digit control (CIF-3) | CIFs such as `G1234567D` stop validating | `{ cifControl: "lenient" }` |
 | 2 | Input is normalized by default (NORM-2 to NORM-4) | Values with spaces, dots, hyphens or slashes, or a DNI without its leading zeros, start validating | `{ normalize: false }` |
 | 3 | TypeScript: validators have a second parameter | `ids.filter(isValidNif)` no longer compiles | Wrap the call: `ids.filter((id) => isValidNif(id))` |
+| 4 | Only the package entry points can be imported (`exports` map) | Code that imports files from `dist/`, such as `nif-dni-nie-cif-validation/dist/nif/nif` | Import from `nif-dni-nie-cif-validation` |
 
-Nothing else changes: every v1 export keeps its name, aliases (`isValidCif`, `isValidCifControlCode`, `CIF_REGEX`, `CIF_CONTROL_LETTERS`) and constants; `replaceNieLetter` is still deprecated and still throws exactly as in v1; the package is still CommonJS with type declarations.
+Nothing else changes: every v1 export keeps its name, aliases (`isValidCif`, `isValidCifControlCode`, `CIF_REGEX`, `CIF_CONTROL_LETTERS`) and constants; `replaceNieLetter` is still deprecated and still throws exactly as in v1. The package now also ships ES modules (see [4](#4-only-the-package-entry-points-can-be-imported-48)); `require()` keeps working.
 
 ## Breaking changes
 
@@ -98,6 +99,32 @@ At runtime nothing changes: a number (or `null`) as options is ignored, so plain
 
 **Restore v1:** not needed at runtime; in TypeScript, wrap the call as above.
 
+### 4. Only the package entry points can be imported (#48)
+
+v2 ships ES modules and CommonJS, each with its own type declarations, and declares them in an `exports` map. The map allows two entry points: the package itself (`nif-dni-nie-cif-validation`) and `nif-dni-nie-cif-validation/package.json`. Any other path is blocked, so code that reached into the v1 build output stops working:
+
+```ts
+// v1: worked, because the files of dist/ were importable
+const { isValidNif } = require("nif-dni-nie-cif-validation/dist/nif/nif");
+import { isValidNif } from "nif-dni-nie-cif-validation/dist/index";
+
+// v2: Node throws ERR_PACKAGE_PATH_NOT_EXPORTED, bundlers report the path as
+// not exported, and TypeScript (node16, nodenext and bundler resolution)
+// reports "Cannot find module"
+const { isValidNif } = require("nif-dni-nie-cif-validation");
+import { isValidNif } from "nif-dni-nie-cif-validation";
+```
+
+Everything the package exports is available from the package itself, so the fix is to import from there. The file layout of `dist/` is an implementation detail and changes between versions (v2 has `dist/esm/*.mjs` and `dist/cjs/*.cjs`).
+
+What else changes for consumers, none of it breaking:
+
+- `import` and `require()` both work on Node 20 and newer and in every bundler. TypeScript finds the right declarations for each (`.d.mts` for `import`, `.d.cts` for `require`). Old tools that ignore `exports` still resolve `main`, `module` and `types`.
+- The package declares `"sideEffects": false`, so bundlers drop what you don't import. `import { isValidDni }` adds about 1 kB minified and gzipped and does not bundle the error messages or the organisation names.
+- The emitted code is ES2016, as in v1, so it runs in every current browser without transpiling.
+
+**Restore v1:** not possible for deep imports; import from the package root.
+
 ## New in v2 (not breaking)
 
 All of these are additions; see the JSDoc of each function and [docs/api-design.md](docs/api-design.md).
@@ -126,3 +153,4 @@ All of these are additions; see the JSDoc of each function and [docs/api-design.
 2. If stored CIFs with a letter control for C D F G J U V must stay valid, pass `{ cifControl: "lenient" }` where you validate them, and plan to fix the data (the AEAT assigns a digit to those keys).
 3. If some code relied on `false` for values with separators (for example to force users to type the canonical form), pass `{ normalize: false }`, or better, store `normalize(value)`.
 4. In TypeScript, replace `array.filter(isValidX)` with an arrow function.
+5. If you import files from `nif-dni-nie-cif-validation/dist/...`, import from `nif-dni-nie-cif-validation` instead.

@@ -123,7 +123,7 @@ It returns the input string itself (no copy) when nothing changes. It never thro
 ### D5. Messages and organisation names
 
 - Messages exist for every error code in English (default) and Spanish, and include the expected character when there is one: `The control character is not correct: for this DNI it should be "Z".` / `El carácter de control no es correcto: para este DNI debería ser «Z».` `INVALID_LENGTH` and `INVALID_FORMAT` messages depend on the rule, so they describe the right document.
-- They live in `src/messages.ts` and the organisation names in `src/organisations.ts`, which only `validate()` and `describeCifOrganisation()` import. An app that only uses the booleans doesn't bundle them once the package ships ESM (#48).
+- They live in `src/messages.ts` and the organisation names in `src/organisations.ts`, which only `validate()` and `describeCifOrganisation()` import. An app that only uses the booleans doesn't bundle them: the package ships ES modules with `sideEffects: false`, and CI checks it (`pnpm size`, `scripts/check-tree-shaking.mjs`).
 - `describeCifOrganisation(key, locale)` takes one organisation key, in either case, and returns its description from Orden EHA/451/2008 arts. 3 to 5 (art. 3 as amended by Orden HAP/5/2016), in the singular: `"B"` → `"Sociedad de responsabilidad limitada"` / `"Limited liability company"`. Anything else returns `null`.
 - An unknown `locale` falls back to English.
 

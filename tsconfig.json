@@ -4,10 +4,11 @@
   // to build `dist/`.
   "compilerOptions": {
     "target": "es2016",
-    // The package has no "type" field, so Node treats .ts/.js files as
-    // CommonJS and `nodenext` emits CommonJS for them.
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    // The sources import each other without file extensions, which bundler
+    // resolution allows. scripts/build.mjs adds the extensions to the output
+    // (.mjs or .cjs). The CommonJS build overrides `module`.
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "rootDir": ".",
     "noEmit": true,
     "declaration": true,
@@ -20,10 +21,10 @@
     "exactOptionalPropertyTypes": true,
 
     // Vitest transpiles every file on its own.
-    "isolatedModules": true
-    // `verbatimModuleSyntax` is off for now: with it, ESM `import`/`export`
-    // syntax can't be emitted as CommonJS. Revisit it with the dual ESM/CJS
-    // build (#48).
+    "isolatedModules": true,
+    // `import type` for types, so the output keeps exactly the imports the
+    // sources write. The CommonJS build turns it off (tsconfig.build.cjs.json).
+    "verbatimModuleSyntax": true
   },
   "include": ["src/**/*", "vitest.config.mts"]
 }

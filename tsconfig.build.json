@@ -1,11 +1,13 @@
 {
-  // Builds the published package: library sources only, CommonJS plus
-  // declarations in `dist/`.
+  // Builds the ES module half of the package (`dist/esm`): library sources
+  // only, ES module syntax plus declarations. `scripts/build.mjs` runs this and
+  // `tsconfig.build.cjs.json`, then gives the output its `.mjs` and `.cjs`
+  // extensions.
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
     "rootDir": "./src",
-    "outDir": "./dist"
+    "outDir": "./dist/esm"
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/__tests__/**", "src/**/*.test.ts"]

@@ -2,10 +2,10 @@
  * User-facing error messages of `validate()`, in English and Spanish.
  *
  * Only `validate()` imports this module, so an application that only uses
- * the boolean validators doesn't bundle the messages (once the package ships
- * ESM, #48). Messages are keyed by error code and, for the length and
- * format errors, by the SPEC.md rule that failed, so they describe the
- * right document.
+ * the boolean validators doesn't bundle the messages (the package ships ES
+ * modules and CI checks it: scripts/check-tree-shaking.mjs). Messages are
+ * keyed by error code and, for the length and format errors, by the SPEC.md
+ * rule that failed, so they describe the right document.
  */
 import type { NifLocale, NifType } from "./types";
 

@@ -2,8 +2,24 @@
   "name": "nif-dni-nie-cif-validation",
   "version": "1.0.10",
   "description": "Validate NIF, DNI, NIE and CIF documents easily.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/cjs/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.mts",
+        "default": "./dist/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
   "readme": "README.md",
   "keywords": [
     "nif",
@@ -17,7 +33,10 @@
     "nif-dni-nie-cif-validation"
   ],
   "files": [
-    "/dist/**/*"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "repository": {
     "type": "git",
@@ -30,7 +49,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node scripts/build.mjs",
     "prepare": "husky",
     "prepack": "pnpm build",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -39,7 +58,9 @@
     "spell": "cspell --no-progress",
     "spec:check": "node scripts/check-spec-rules.mjs",
     "bench": "pnpm build && node bench/run.mjs",
-    "format": "biome check --write ."
+    "format": "biome check --write .",
+    "size": "pnpm build && size-limit",
+    "check:es": "pnpm build && es-check es2016 \"dist/cjs/*.cjs\" --checkFeatures && es-check es2016 \"dist/esm/*.mjs\" --module --checkFeatures"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
@@ -47,13 +68,18 @@
     "@commitlint/config-conventional": "^21.2.3",
     "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/git": "^11.0.1",
+    "@size-limit/esbuild": "^14.1.0",
+    "@size-limit/file": "^14.1.0",
     "@types/node": "^22.20.4",
     "@vitest/coverage-v8": "^5.0.2",
     "cspell": "^10.3.4",
+    "es-check": "^9.8.1",
+    "esbuild": "^0.28.2",
     "fast-check": "^4.10.2",
     "husky": "^9.1.7",
     "nif-v1": "npm:nif-dni-nie-cif-validation@1.0.11",
     "semantic-release": "^25.0.9",
+    "size-limit": "^14.1.0",
     "stdnum": "^1.12.6",
     "tinybench": "^6.2.0",
     "typescript": "^7.0.2",

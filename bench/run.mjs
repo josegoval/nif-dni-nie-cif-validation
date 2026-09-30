@@ -27,7 +27,7 @@
 //   type feedback polymorphic and would understate the fast path.
 
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import os from "node:os";
 import { resolve } from "node:path";
@@ -40,10 +40,18 @@ import {
 } from "./inputs.mjs";
 
 const require = createRequire(import.meta.url);
-const current = require("../dist/index.js");
+const current = require("../dist/cjs/index.cjs");
 const v1 = require("nif-v1");
 const baseDir = process.env.BENCH_BASE;
-const base = baseDir ? require(resolve(baseDir, "index.js")) : null;
+// A base built before the dual build has `index.js` in its dist/; since then
+// the CommonJS build is `cjs/index.cjs`.
+const base = baseDir
+  ? require(
+      ["cjs/index.cjs", "index.js"]
+        .map((file) => resolve(baseDir, file))
+        .find((file) => existsSync(file)) ?? resolve(baseDir, "cjs/index.cjs")
+    )
+  : null;
 /** How the report names the base, for example "refactor/v2-core (#76)". */
 const baseLabel = process.env.BENCH_BASE_LABEL ?? baseDir;
 // tinybench's `exports` don't include its package.json.

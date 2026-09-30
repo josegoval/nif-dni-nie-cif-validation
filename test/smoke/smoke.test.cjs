@@ -1,9 +1,10 @@
 "use strict";
-// Smoke test for the packed tarball, run on the oldest supported Node with the
-// built-in test runner. No dependencies on purpose: CI installs the tarball
-// into an empty folder and runs this file from there, so `require` below
-// resolves the package exactly as a consumer would. See the `compat` job in
-// .github/workflows/release.yml.
+// Smoke test for the packed tarball as CommonJS, run on the oldest supported
+// Node with the built-in test runner. No dependencies on purpose: CI installs
+// the tarball into an empty folder and runs this file from there, so `require`
+// below resolves the package exactly as a consumer would (through the
+// "require" condition of its `exports`). smoke.test.mjs does the same for ES
+// modules. See the `compat` job in .github/workflows/release.yml.
 const assert = require("node:assert/strict");
 const { describe, it } = require("node:test");
 
@@ -144,5 +145,32 @@ describe("v2 API", () => {
     assert.equal(lib.format("12345678z"), "12345678-Z");
     assert.equal(lib.computeControlCharacter("B1234567"), "4");
     assert.equal(lib.isValidSpanishVat("ES12345678Z"), true);
+  });
+});
+
+describe("package entry points", () => {
+  it("require() loads the CommonJS build", () => {
+    assert.match(
+      require.resolve("nif-dni-nie-cif-validation"),
+      /dist[\\/]cjs[\\/]index\.cjs$/
+    );
+  });
+  it("package.json can be required", () => {
+    const pkg = require("nif-dni-nie-cif-validation/package.json");
+    assert.equal(pkg.name, "nif-dni-nie-cif-validation");
+  });
+  it("only the documented entry points can be required", () => {
+    assert.throws(
+      () => require("nif-dni-nie-cif-validation/dist/cjs/index.cjs"),
+      { code: "ERR_PACKAGE_PATH_NOT_EXPORTED" }
+    );
+    assert.throws(() => require("nif-dni-nie-cif-validation/dist/index.js"), {
+      code: "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    });
+  });
+  it("import() from CommonJS loads the ES module build", async () => {
+    const esm = await import("nif-dni-nie-cif-validation");
+    assert.equal(typeof esm.validate, "function");
+    assert.equal(esm.validate("12345678Z").valid, true);
   });
 });
