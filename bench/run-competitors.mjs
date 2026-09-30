@@ -9,7 +9,8 @@
 //   node bench/run-competitors.mjs [--out <dir>]
 //
 // Environment: BENCH_TIME_MS (default 2000) and BENCH_WARMUP_MS (default 500)
-// set the time per task.
+// set the time per task, and BENCH_ROUNDS (default 3) how many times the
+// whole set of tasks runs.
 //
 // Throughput method:
 // - One task call validates a whole input set; the figure is validations per
@@ -18,17 +19,28 @@
 //   bench/competitors.mjs with `new Function`, so every call site is its own
 //   monomorphic site, the call is exactly the listed one, and no wrapper
 //   function sits between the loop and the library.
-// - Everything runs in this one process. Within a set the libraries run back
-//   to back, and the order is rotated from set to set, so no library always
-//   runs first or last.
-// - Before timing, every call runs once over its set, to check it doesn't
-//   throw; the number of inputs it accepts is recorded next to the timing.
+// - Each task runs in its own child process (this script with `--task`),
+//   like the canonical comparison of bench/run.mjs does. In a shared process
+//   what V8 learns from one task changes the next: in a trial, the same call
+//   of this package ran at 60 M ops/s in the first round and at 42 M ops/s in
+//   the next two, after other tasks had run, with nothing else changed. A
+//   fresh process gives every library the same, steady starting point, and
+//   what a program that uses one validator on one kind of input sees.
+// - All the tasks belong to one run of this script, on the same inputs. The
+//   whole run repeats in rounds, and the order of the libraries rotates from
+//   set to set and from round to round, so no library always runs first or
+//   last. A task is reported with the median of its rounds, and the range of
+//   the rounds says how steady it was.
+// - Before timing, this process runs every call once over its set, to check
+//   that it doesn't throw; the number of inputs it accepts is recorded next
+//   to the timing.
 
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import os from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Bench } from "tinybench";
 import { BUCKETS, bucketOf, evaluate, loadFixtures } from "./accuracy.mjs";
 import {
@@ -48,6 +60,7 @@ const require = createRequire(import.meta.url);
 
 const TIME_MS = Number(process.env.BENCH_TIME_MS ?? 2000);
 const WARMUP_MS = Number(process.env.BENCH_WARMUP_MS ?? 500);
+const ROUNDS = Number(process.env.BENCH_ROUNDS ?? 3);
 const outIndex = process.argv.indexOf("--out");
 const OUT_DIR =
   outIndex === -1 ? join(ROOT, "bench", "results") : process.argv[outIndex + 1];
@@ -96,6 +109,62 @@ function compileLoop(contender, call, inputs, body) {
   )(contender.load(), inputs, sink);
 }
 
+/**
+ * What a task runs: the call of the contender for the set, or null when it
+ * has none (unsupported), and the inputs it gets.
+ */
+function taskOf(set, contender) {
+  const call =
+    set === "mixed"
+      ? supportsMixed(contender)
+        ? contender.calls.any
+        : null
+      : callFor(contender, set);
+  if (call === null) return null;
+  // jsvat only: the prefix is added here, once, not in the timed loop.
+  const inputs = contender.transformInput
+    ? SETS[set].inputs.map(contender.transformInput)
+    : SETS[set].inputs;
+  return { call, inputs };
+}
+
+// Child process: times one task and prints the result as JSON.
+const taskFlag = process.argv.indexOf("--task");
+if (taskFlag !== -1) {
+  const [set, id] = process.argv.slice(taskFlag + 1);
+  const contender = CONTENDERS.find((c) => c.id === id);
+  const { call, inputs } = taskOf(set, contender);
+  const bench = new Bench({ time: TIME_MS, warmupTime: WARMUP_MS });
+  bench.add(
+    "task",
+    compileLoop(contender, call, inputs, "sink.count += valid;")
+  );
+  await bench.run();
+  const result = bench.getTask("task")?.result;
+  if (!result || !("throughput" in result)) {
+    throw new Error(`${set} ${id} did not complete`);
+  }
+  console.log(
+    JSON.stringify({
+      opsPerSecond: Math.round(result.throughput.mean * inputs.length),
+      rmePercent: Number(result.throughput.rme.toFixed(2)),
+      samples: result.throughput.samplesCount,
+    })
+  );
+  process.exit(0);
+}
+
+/** Runs one task in a child process. */
+function runChild(set, id) {
+  return JSON.parse(
+    execFileSync(
+      process.execPath,
+      [fileURLToPath(import.meta.url), "--task", set, id],
+      { encoding: "utf8" }
+    )
+  );
+}
+
 const rotate = (list, by) => [...list.slice(by), ...list.slice(0, by)];
 
 function git(...args) {
@@ -127,17 +196,13 @@ const tinybenchVersion = JSON.parse(
 ).version;
 
 // 1. Plan the tasks and check that every call runs.
-const plan = []; // { set, contender, call, inputs }
-const throughput = Object.fromEntries(Object.keys(SETS).map((s) => [s, {}]));
-for (const [setIndex, set] of Object.keys(SETS).entries()) {
-  for (const contender of rotate(CONTENDERS, setIndex % CONTENDERS.length)) {
-    const call =
-      set === "mixed"
-        ? supportsMixed(contender)
-          ? contender.calls.any
-          : null
-        : callFor(contender, set);
-    if (call === null) {
+const setNames = Object.keys(SETS);
+const plan = []; // { set, contender, accepted, inputs }
+const throughput = Object.fromEntries(setNames.map((s) => [s, {}]));
+for (const set of setNames) {
+  for (const contender of CONTENDERS) {
+    const task = taskOf(set, contender);
+    if (task === null) {
       throughput[set][contender.id] = {
         status: "unsupported",
         reason:
@@ -147,44 +212,56 @@ for (const [setIndex, set] of Object.keys(SETS).entries()) {
       };
       continue;
     }
-    const inputs = contender.transformInput
-      ? SETS[set].inputs.map(contender.transformInput)
-      : SETS[set].inputs;
-    const accepted = compileLoop(contender, call, inputs, "return valid;")();
-    plan.push({ set, contender, call, inputs, accepted });
+    const accepted = compileLoop(
+      contender,
+      task.call,
+      task.inputs,
+      "return valid;"
+    )();
+    plan.push({ set, contender, accepted, inputs: task.inputs.length });
   }
 }
 
-// 2. Time them.
-const bench = new Bench({ time: TIME_MS, warmupTime: WARMUP_MS });
-for (const item of plan) {
-  bench.add(
-    `${item.set} ${item.contender.id}`,
-    compileLoop(item.contender, item.call, item.inputs, "sink.count += valid;")
-  );
-}
+// 2. Time them, in rounds, each task in its own process. The order rotates
+// from set to set and from round to round.
+const key = (item) => `${item.set} ${item.contender.id}`;
+const rounds = new Map(plan.map((item) => [key(item), []]));
 console.log(
-  `Benchmarking ${plan.length} tasks (${WARMUP_MS} ms warmup and ${TIME_MS} ms each)...`
+  `Benchmarking ${plan.length} tasks in ${ROUNDS} rounds (${WARMUP_MS} ms warmup and ${TIME_MS} ms each, one process per task)...`
 );
-await bench.run();
+for (let round = 0; round < ROUNDS; round++) {
+  for (const [setIndex, set] of setNames.entries()) {
+    const items = plan.filter((item) => item.set === set);
+    for (const item of rotate(items, (setIndex + round) % items.length)) {
+      rounds.get(key(item)).push(runChild(set, item.contender.id));
+    }
+  }
+  console.log(`Round ${round + 1} of ${ROUNDS} done.`);
+}
 
 for (const item of plan) {
-  const result = bench.getTask(`${item.set} ${item.contender.id}`)?.result;
-  if (!result || !("throughput" in result)) {
-    throw new Error(`${item.set} ${item.contender.id} did not complete`);
-  }
+  const all = rounds.get(key(item));
+  const sorted = [...all].sort((a, b) => a.opsPerSecond - b.opsPerSecond);
+  // The median round (the lower one of the two in the middle when there is
+  // an even number of rounds), so its margin and samples go with it.
+  const median = sorted[Math.floor((sorted.length - 1) / 2)];
+  const spread =
+    (sorted[sorted.length - 1].opsPerSecond - sorted[0].opsPerSecond) /
+    median.opsPerSecond;
   throughput[item.set][item.contender.id] = {
     status: "ok",
-    opsPerSecond: Math.round(result.throughput.mean * item.inputs.length),
-    rmePercent: Number(result.throughput.rme.toFixed(2)),
-    samples: result.throughput.samplesCount,
+    opsPerSecond: median.opsPerSecond,
+    rmePercent: median.rmePercent,
+    samples: median.samples,
+    rounds: all.map((round) => round.opsPerSecond),
+    rangePercent: Number((spread * 100).toFixed(2)),
     accepted: item.accepted,
-    inputs: item.inputs.length,
+    inputs: item.inputs,
   };
 }
 // Relative speed: how many times as fast the subject is as each library,
 // from the same run.
-for (const set of Object.keys(SETS)) {
+for (const set of setNames) {
   const subject = throughput[set][SUBJECT_ID];
   for (const entry of Object.values(throughput[set])) {
     if (entry.status === "ok" && subject?.status === "ok") {
@@ -235,8 +312,9 @@ const report = {
   config: {
     timePerTaskMs: TIME_MS,
     warmupPerTaskMs: WARMUP_MS,
+    rounds: ROUNDS,
     order:
-      "one process; libraries run back to back within each input set; the order rotates from set to set",
+      "one run of the script, each task in its own process; the whole run repeats in rounds, and the order of the libraries rotates from set to set and from round to round; the figure is the median round",
   },
   subject: SUBJECT_ID,
   inputSets: Object.fromEntries(

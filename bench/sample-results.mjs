@@ -47,6 +47,7 @@ export function sampleResults() {
     config: {
       timePerTaskMs: 2000,
       warmupPerTaskMs: 500,
+      rounds: 3,
       order: "one process",
     },
     subject: "current",
@@ -92,6 +93,8 @@ export function sampleResults() {
         current: {
           status: "ok",
           opsPerSecond: 60_000_000,
+          rounds: [59_000_000, 60_000_000, 61_000_000],
+          rangePercent: 3.33,
           rmePercent: 0.1,
           samples: 100,
           accepted: 7,
@@ -101,6 +104,8 @@ export function sampleResults() {
         "lib-a": {
           status: "ok",
           opsPerSecond: 12_000_000,
+          rounds: [11_000_000, 12_000_000, 13_000_000],
+          rangePercent: 16.67,
           rmePercent: 0.2,
           samples: 100,
           accepted: 7,
@@ -112,6 +117,8 @@ export function sampleResults() {
         current: {
           status: "ok",
           opsPerSecond: 50_000_000,
+          rounds: [49_000_000, 50_000_000, 51_000_000],
+          rangePercent: 4.0,
           rmePercent: 0.1,
           samples: 100,
           accepted: 7,
@@ -121,6 +128,8 @@ export function sampleResults() {
         "lib-a": {
           status: "ok",
           opsPerSecond: 100_000_000,
+          rounds: [99_000_000, 100_000_000, 101_000_000],
+          rangePercent: 2.0,
           rmePercent: 0.3,
           samples: 100,
           accepted: 7,
@@ -132,6 +141,8 @@ export function sampleResults() {
         current: {
           status: "ok",
           opsPerSecond: 40_000_000,
+          rounds: [39_000_000, 40_000_000, 41_000_000],
+          rangePercent: 5.0,
           rmePercent: 0.1,
           samples: 100,
           accepted: 7,
@@ -144,6 +155,8 @@ export function sampleResults() {
         current: {
           status: "ok",
           opsPerSecond: 30_000_000,
+          rounds: [29_000_000, 30_000_000, 31_000_000],
+          rangePercent: 6.67,
           rmePercent: 0.1,
           samples: 100,
           accepted: 15,

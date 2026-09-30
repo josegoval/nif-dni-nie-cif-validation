@@ -15,12 +15,12 @@ If a competitor is faster or smaller at something, the results show it. Read the
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm bench:competitors              # builds dist/, runs everything (a few minutes), writes bench/results/latest.*
+pnpm bench:competitors              # builds dist/, runs everything (about 5 minutes), writes bench/results/latest.*
 pnpm bench:competitors --out /tmp/x # write somewhere else instead
 pnpm bench:report                   # render latest.md again from latest.json
 ```
 
-`BENCH_TIME_MS` (default 2000) and `BENCH_WARMUP_MS` (default 500) set the time of each task. Shorter times only widen the margin of error, which is useful for a quick check of a change to the benchmark itself (for example `BENCH_TIME_MS=50 BENCH_WARMUP_MS=10`). Close other programs first, and compare ratios, not absolute numbers: see [Noise](#noise-on-shared-machines).
+`BENCH_TIME_MS` (default 2000) and `BENCH_WARMUP_MS` (default 500) set the time of each task, and `BENCH_ROUNDS` (default 3) how many times the whole run repeats. Shorter times only widen the margins, which is useful for a quick check of a change to the benchmark itself (for example `BENCH_TIME_MS=50 BENCH_WARMUP_MS=10 BENCH_ROUNDS=1`). Close other programs first, and compare ratios, not absolute numbers: see [Noise](#noise-on-shared-machines).
 
 The libraries are dev dependencies with exact versions (`package.json`, `pnpm-lock.yaml`), so a run installs exactly what `latest.json` says. `latest.json` also records the commit it measured.
 
@@ -54,7 +54,7 @@ The versions of each run are in `latest.json` (`contenders[].version`) and `late
 
 ## Throughput
 
-Millions of validations per second (**M ops/s, higher is faster**), per document type and on a mixed set, on the same fixed inputs, in one process.
+Millions of validations per second (**M ops/s, higher is faster**), per document type and on a mixed set, on the same fixed inputs, in one run of the script.
 
 ### Inputs
 
@@ -73,8 +73,10 @@ The per-type sets are canonical (9 upper-case characters, no separators) on purp
 
 - One task call validates the whole set; the figure is validations per second (task calls per second times the number of inputs).
 - The loop of each task is compiled from the call text in `competitors.mjs` with `new Function`. Each call site is its own monomorphic site, the call is exactly the listed one, and no wrapper function sits between the loop and the library. Library calls that read a property (`dni.isDNI(x)`, `stdnum.ES.nif.validate(x).isValid`) read it on every call, as a program written from the documentation does.
-- [tinybench](https://github.com/tinylibs/tinybench) runs each task for `BENCH_WARMUP_MS` of warmup and then `BENCH_TIME_MS` (defaults: 500 ms and 2000 ms) in a single process. The libraries of a set run back to back, and **the order rotates from set to set**, so no library always runs first or last.
-- The margin is tinybench's relative margin of error (`rmePercent`, ± percent of ops/s) over the samples of the run.
+- [tinybench](https://github.com/tinylibs/tinybench) runs each task for `BENCH_WARMUP_MS` of warmup and then `BENCH_TIME_MS` (defaults: 500 ms and 2000 ms).
+- **Each task runs in its own child process** (`run-competitors.mjs --task <set> <library>`), started by the one run of the script, like the canonical comparison of `run.mjs` does. In a shared process, what V8 learns while running one task (the shapes of the strings a function saw, the optimizations it chose) changes the tasks that follow, and the change is not about the library. In a trial of this benchmark, in one process, the same call of this package ran at 60 M ops/s in the first round and at 42 M ops/s in the next two, with nothing else different. A fresh process gives every library the same, steady starting point, and is what a program sees that uses one validator on one kind of input. A program that feeds one validator every kind of string and lets V8 learn from all of them may see lower figures, for every library.
+- **The whole run repeats in rounds** (`BENCH_ROUNDS`, default 3) and **the order of the libraries rotates from set to set and from round to round**, so no library always runs first or last, and a slow moment of the machine is not always the same library's. The figure of a task (`opsPerSecond`) is its **median round**, and `rounds` has the ops/s of every round.
+- Two measures of noise are reported, and they say different things. `rmePercent` is tinybench's relative margin of error (± percent of ops/s) over the samples of the median round, that is, the noise *within* a round. `rangePercent` is the fastest round minus the slowest one, as a percent of the median: how steady the figure was *between* rounds, which is what a reader comparing two runs will see.
 - Before timing, every call runs once over its set. A call that throws fails the run. The number of inputs it accepts is recorded (`accepted`): on the DNI, NIE and CIF sets every library accepts exactly the valid documents; on the mixed set the libraries accept different numbers (some reject lower case, some reject K/L/M), which also changes the work they do, so read the mixed figures with that in mind.
 - **Relative speed-ups** (`subjectSpeedup`) are this build's ops/s divided by the library's, from the same run. Above 1 this build is faster; below 1 the library is faster, and the report lists those libraries per type. Ratios hold across machines better than absolute numbers.
 - **Unsupported types**: a library without a call for a type is marked *unsupported* in that type's set and gets no figure: it is neither fast nor slow there. The mixed set contains every type, so it is timed only for libraries that cover DNI, NIE and CIF.
@@ -108,10 +110,10 @@ The minified and gzipped size (**min+gzip, lower is smaller**) of the equivalent
 
 ## Noise on shared machines
 
-The margin in each figure is the sampling noise **within** a run. It says nothing about what else the machine was doing, which can shift all the figures of a run together, or some of them. On a shared machine (a GitHub runner, a laptop with other programs open, thermal throttling) absolute numbers vary between runs by more than the margin; the ratios between libraries of one run vary far less, because every library runs in the same minutes. So:
+The margin (`rmePercent`) in each figure is the sampling noise **within** a round. It says nothing about what else the machine was doing, which can shift all the figures of a run together, or some of them. On a shared machine (a GitHub runner, a laptop with other programs open, thermal throttling) absolute numbers vary between runs by more than the margin; the ratios between libraries of one run vary far less, because every library runs in the same minutes. So:
 
 - compare ratios (speed-ups) across machines and runs, not M ops/s;
-- run it more than once before drawing a conclusion from a small difference (below about 1.2x, treat the libraries as equal);
+- look at `rangePercent` (how much the rounds of a figure differ) and run it more than once before drawing a conclusion from a small difference (below about 1.2x, treat the libraries as equal);
 - a figure measured on a GitHub runner (`ubuntu-latest`, a shared virtual machine whose CPU model can change between runs) is reproducible in kind, not to the digit. `latest.json` records the machine, and on GitHub the runner image.
 
 ## The workflow
@@ -130,12 +132,12 @@ The margin in each figure is the sampling noise **within** a run. It says nothin
 | `machine.cpu`, `cores`, `memoryGiB`, `os`, `arch` | text, number, number, text, text | The machine |
 | `machine.runner` | text or `null` | The GitHub runner image when run on GitHub |
 | `node`, `tinybench` | text | Versions |
-| `config.timePerTaskMs`, `warmupPerTaskMs` | number | Time per task and warmup per task |
+| `config.timePerTaskMs`, `warmupPerTaskMs`, `rounds` | number | Time per task, warmup per task, and number of rounds |
 | `config.order` | text | How tasks are ordered |
 | `subject` | text | The `id` of the library that the speed-ups are for: `current` |
 | `inputSets.<set>` | object | For `DNI`, `NIE`, `CIF` and `mixed`: `count` (strings) and `description` |
 | `contenders[]` | objects | One per library: `id`, `label`, `kind` (`subject`, `previous` or `competitor`), `package` (npm name), `version`, `homepage`, `calls` (`DNI`, `NIE`, `CIF`, `any`: the call text or `null`), `supports` (`DNI`, `NIE`, `CIF`: booleans), `inputTransform` (text or `null`), `notes` (texts) |
-| `throughput.<set>.<id>` | object | `status` is `ok` or `unsupported`. `ok` has `opsPerSecond` (validations per second), `rmePercent` (± percent), `samples`, `inputs`, `accepted` and `subjectSpeedup` (subject ops/s over this library's, same run). `unsupported` has `reason` |
+| `throughput.<set>.<id>` | object | `status` is `ok` or `unsupported`. `ok` has `opsPerSecond` (validations per second of the median round), `rmePercent` (± percent, within that round), `samples` (of that round), `rounds` (the ops/s of every round), `rangePercent` (fastest minus slowest round, percent of the median), `inputs`, `accepted` and `subjectSpeedup` (subject ops/s over this library's, same run). `unsupported` has `reason` |
 | `accuracy.fixtures` | object | `files`, `total` and `byBucket` (`DNI`, `NIE`, `CIF`, `KLM`, `general`: fixture counts) |
 | `accuracy.results.<id>.all`, `.canonical` | objects | For `overall` and each bucket: `supported`, then (when `true`) `total`, `agree`, `falseAccepts`, `falseRejects`, `onDocumentedDecisions`, `threw` and `agreementPercent` (`null` with no fixtures). An unsupported bucket is only `{ "supported": false }` |
 | `accuracy.results.<id>.disagreements[]` | objects | `input`, `expected`, `got` (`valid` or `invalid`), `kind` (`falseAccept` or `falseReject`), `rule` (SPEC.md), `note`, `documentedDecision` (text or `null`); at most six |

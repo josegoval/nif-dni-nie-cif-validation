@@ -61,8 +61,10 @@ export function validateResults(report) {
   check(
     isPositive(report.config?.timePerTaskMs) &&
       isPositive(report.config?.warmupPerTaskMs) &&
+      Number.isInteger(report.config?.rounds) &&
+      report.config.rounds > 0 &&
       isText(report.config?.order),
-    "config needs timePerTaskMs, warmupPerTaskMs and order"
+    "config needs timePerTaskMs, warmupPerTaskMs, rounds and order"
   );
 
   // Input sets.
@@ -152,6 +154,27 @@ export function validateResults(report) {
         `${at}.rmePercent must be a number`
       );
       check(isPositive(entry.samples), `${at}.samples must be positive`);
+      const rounds = entry.rounds;
+      if (
+        check(
+          Array.isArray(rounds) &&
+            rounds.length === report.config?.rounds &&
+            rounds.every(isPositive),
+          `${at}.rounds must have the ops/s of each round`
+        )
+      ) {
+        const sorted = [...rounds].sort((a, b) => a - b);
+        const median = sorted[Math.floor((sorted.length - 1) / 2)];
+        check(
+          entry.opsPerSecond === median,
+          `${at}.opsPerSecond must be the median round`
+        );
+        check(
+          entry.rangePercent ===
+            round2(((sorted[sorted.length - 1] - sorted[0]) / median) * 100),
+          `${at}.rangePercent must be the range of the rounds over the median`
+        );
+      }
       check(
         entry.inputs === report.inputSets?.[set]?.count,
         `${at}.inputs must be the size of the set`

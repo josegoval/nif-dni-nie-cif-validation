@@ -22,7 +22,8 @@ describe("renderMarkdown", () => {
   });
 
   it("shows the throughput, with unsupported types marked", () => {
-    expect(markdown).toContain("60.00 ±0.1%");
+    expect(markdown).toContain("60.00 ±0.1% (range 3.33%)");
+    expect(markdown).toContain("3 rounds");
     expect(markdown).toContain("*unsupported*");
     expect(markdown).toContain("| lib-a 2.0.0 | 5.00× |");
   });

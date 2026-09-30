@@ -70,6 +70,25 @@ describe("validateResults", () => {
       "subjectSpeedup",
     ],
     [
+      "a number of rounds that is not the configured one",
+      ["throughput", "DNI", "current", "rounds"],
+      [60_000_000],
+      "rounds must have the ops/s of each round",
+    ],
+    [
+      "an ops/s that is not the median round",
+      ["throughput", "DNI", "current", "opsPerSecond"],
+      61_000_000,
+      "median round",
+    ],
+    [
+      "a range that is not the spread of the rounds",
+      ["throughput", "DNI", "current", "rangePercent"],
+      1,
+      "rangePercent",
+    ],
+    ["no rounds in the configuration", ["config", "rounds"], 0, "config"],
+    [
       "more accepted inputs than inputs",
       ["throughput", "DNI", "current", "accepted"],
       11,

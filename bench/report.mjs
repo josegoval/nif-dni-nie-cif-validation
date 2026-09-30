@@ -49,7 +49,7 @@ function throughputSection(report) {
   const out = [
     "## Throughput",
     "",
-    "Millions of validations per second (**M ops/s, higher is faster**), with the relative margin of error of the run. One operation validates one string. Libraries that do not support a type are marked *unsupported*, which is neither fast nor slow.",
+    'Millions of validations per second (**M ops/s, higher is faster**) of the median of the rounds. "±" is the relative margin of error within that round, and "range" is the difference between the fastest and the slowest round as a share of the median: how steady the figure was from one round to the next. One operation validates one string. Libraries that do not support a type are marked *unsupported*, which is neither fast nor slow.',
     "",
     ...sets.map(
       (set) => `- **${SET_LABEL[set]}**: ${report.inputSets[set].description}`
@@ -76,7 +76,7 @@ function throughputSection(report) {
         ...sets.map((set) => {
           const entry = entryOf(set, c.id);
           return entry.status === "ok"
-            ? `${millions(entry.opsPerSecond)} ±${entry.rmePercent}%`
+            ? `${millions(entry.opsPerSecond)} ±${entry.rmePercent}% (range ${entry.rangePercent}%)`
             : "*unsupported*";
         }),
       ])
@@ -299,7 +299,7 @@ export function renderMarkdown(report) {
     `- Date: ${report.generatedAt}`,
     `- Code: ${git.sha ?? "unknown"}${git.dirty ? " (with uncommitted changes)" : ""}`,
     `- Machine: ${machine.cpu}, ${machine.cores} cores, ${machine.memoryGiB} GiB, ${machine.os} (${machine.arch})${machine.runner ? `, runner image ${machine.runner}` : ""}`,
-    `- Node.js ${report.node}, tinybench ${report.tinybench}, ${report.config.timePerTaskMs} ms per task after ${report.config.warmupPerTaskMs} ms of warmup`,
+    `- Node.js ${report.node}, tinybench ${report.tinybench}, ${report.config.timePerTaskMs} ms per task after ${report.config.warmupPerTaskMs} ms of warmup, ${report.config.rounds} rounds`,
     '- Absolute numbers depend on the machine and on what else it is doing. **The ratios of one run are what carries over**; see "Noise" in the README.',
     "",
     ...throughputSection(report),
