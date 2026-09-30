@@ -55,25 +55,24 @@ export const LETTER_CONTROL = 2;
  */
 export const LENIENT_KEY_CONTROL = 3;
 
-/** Control type of each organisation key (CIF-2), by UTF-16 code, both cases. */
-const KEY_KINDS = new Uint8Array(128);
-for (const [keys, kind] of [
-  ["ABEH", DIGIT_CONTROL],
-  ["NPQRSW", LETTER_CONTROL],
-  ["CDFGJUV", LENIENT_KEY_CONTROL],
-] as const) {
-  for (const key of keys) {
-    KEY_KINDS[key.charCodeAt(0)] = kind;
-    KEY_KINDS[key.toLowerCase().charCodeAt(0)] = kind;
-  }
-}
+/**
+ * Control type of each letter from A to Z as a digit: `NOT_A_KEY` (0) for
+ * I K L M O T X Y Z, else DIGIT_CONTROL (1), LETTER_CONTROL (2) or
+ * LENIENT_KEY_CONTROL (3). A string, unlike a typed array, needs no code to
+ * fill it when the module loads.
+ */
+//                 ABCDEFGHIJKLMNOPQRSTUVWXYZ
+const KEY_KINDS = "11331331030002022220332000";
 
 /**
  * CIF-2: control type of the organisation key with this UTF-16 code, or
  * `NOT_A_KEY`. Internal helper.
  */
 export function cifKeyKind(code: number): number {
-  return code < 128 ? (KEY_KINDS[code] as number) : NOT_A_KEY;
+  // NORM-1: either case. `code | 32` maps A-Z to a-z, and only letters
+  // land in a-z.
+  const index = (code | 32) - 97;
+  return index >>> 0 < 26 ? KEY_KINDS.charCodeAt(index) - 48 : NOT_A_KEY;
 }
 
 /** CIF-4: sum of the digits of `2 * digit`, by digit. */
