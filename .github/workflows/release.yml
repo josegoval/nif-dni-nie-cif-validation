@@ -1,26 +1,112 @@
-name: Release
+# One pipeline for CI and releases. The filename must stay `release.yml`:
+# npm Trusted Publishing is bound to it on npmjs.com.
+name: CI
 
 on:
   push:
     branches: [master, next, next-major, beta, alpha]
-
-# Serialize releases so two pushes never publish concurrently.
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
+  pull_request:
 
 permissions:
-  contents: write # publish the GitHub release, push the release commit and tag
-  issues: write # comment on released issues
-  pull-requests: write # comment on released pull requests
-  id-token: write # npm Trusted Publishing (OIDC) and provenance
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # Never cancel a run on a release branch mid-publish; cancel stale PR runs.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  HUSKY: "0" # do not install git hooks in CI
 
 jobs:
+  check:
+    name: Check (Node 24)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # Pull requests need the history to lint every commit.
+          fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Lint commit messages
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: yarn --silent commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+      - name: Typecheck
+        run: yarn typecheck
+      - name: Test with coverage (100% enforced)
+        run: yarn test
+      # Coverage stays inside GitHub: a table in the job summary and the
+      # HTML report as a downloadable artifact. No third-party service.
+      - name: Coverage summary
+        if: ${{ !cancelled() }}
+        run: node scripts/coverage-summary.mjs
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: coverage/lcov-report/
+          retention-days: 14
+      # `prepack` builds dist/. Pack into a separate folder so script output
+      # (e.g. Husky's "skip install" notice) can't corrupt the filename.
+      - name: Pack
+        id: pack
+        run: |
+          mkdir -p "$RUNNER_TEMP/pack"
+          npm pack --pack-destination "$RUNNER_TEMP/pack" > /dev/null
+          echo "tarball=$(ls "$RUNNER_TEMP"/pack/*.tgz)" >> "$GITHUB_OUTPUT"
+      - name: Lint package with publint
+        run: npx --yes publint run "${{ steps.pack.outputs.tarball }}" --strict
+      # The package is CJS-only until the dual ESM/CJS build lands (#48).
+      # If attw flags a rule only #48 can fix, add `--ignore-rules <rule>`.
+      - name: Check types with attw
+        run: npx --yes @arethetypeswrong/cli "${{ steps.pack.outputs.tarball }}"
+
+  compat:
+    name: Compat (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      # --ignore-engines: the release tooling needs Node >= 22.22, but the
+      # package itself must keep working on older Node versions.
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-engines
+      - name: Test
+        run: yarn test --coverage=false
+
   release:
     name: Release
+    if: github.event_name == 'push'
+    needs: [check, compat]
     runs-on: ubuntu-latest
-    env:
-      HUSKY: "0"
+    timeout-minutes: 15
+    permissions:
+      contents: write # publish the GitHub release, push the release commit and tag
+      issues: write # comment on released issues
+      pull-requests: write # comment on released pull requests
+      id-token: write # npm Trusted Publishing (OIDC) and provenance
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -29,8 +115,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          # semantic-release 25 and its plugins require Node ^22.22.2 || >=24.15.
-          # Node 24 also bundles an npm new enough for Trusted Publishing.
+          # semantic-release 25 needs Node ^22.22.2 || >=24.15; Node 24 also
+          # bundles an npm new enough for Trusted Publishing.
           node-version: "24"
           cache: yarn
       - name: Check npm supports Trusted Publishing (>= 11.5.1)
@@ -40,16 +126,12 @@ jobs:
             || { echo "::error::npm >= 11.5.1 is required for npm Trusted Publishing"; exit 1; }
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Typecheck
-        run: yarn typecheck
-      - name: Run tests
-        run: yarn test
+      # Tests already passed in `check` and `compat` for this commit.
       - name: Build package
         run: yarn build
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # No NPM_TOKEN: @semantic-release/npm authenticates through OIDC
-          # (Trusted Publishing), which also attaches provenance automatically.
+          # No NPM_TOKEN: @semantic-release/npm authenticates through OIDC.
           NPM_CONFIG_PROVENANCE: "true"
         run: npx semantic-release

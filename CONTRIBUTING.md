@@ -48,13 +48,15 @@ BREAKING CHANGE: Node 16 is no longer supported.
 Enforcement:
 
 - Locally, a Husky `commit-msg` hook runs commitlint and rejects a message such as `bad message`.
-- On pull requests, the **Commitlint** workflow lints every commit and the PR title. Fix a failing commit with `git rebase -i` and a force-push, or reword the PR title in the GitHub UI.
+- On pull requests, the **CI** workflow lints every commit in the `Check` job, and the **PR title** workflow checks the title. Fix a failing commit with `git rebase -i` and a force-push, or reword the PR title in the GitHub UI.
 
 Keep commits atomic: one logical change per commit, with a message that explains why.
 
 ## Pull requests
 
-- Open PRs against `master`. The test workflow runs on Node 20, 22 and 24, runs the type check, tests with coverage and the build, and checks the packed tarball with `publint` and `@arethetypeswrong/cli`. It must pass before merging.
+- Open PRs against `master`. The **CI** workflow (`.github/workflows/release.yml`) must pass before merging:
+  - `Check (Node 24)`: commit lint, type check, tests with 100% coverage enforced, coverage summary and report, then packs the tarball and checks it with `publint` and `@arethetypeswrong/cli`.
+  - `Compat (Node 20)` and `Compat (Node 22)`: the tests on older Node versions.
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.
 
 ### How to merge
@@ -68,7 +70,7 @@ Use **squash merge only if the PR title is a valid Conventional Commit**, becaus
 Releases are fully automated with [semantic-release](https://semantic-release.gitbook.io/) and need no manual step or version bump.
 
 1. A PR is merged into `master`. Other release branches are `next`, `next-major`, `beta` (prerelease), `alpha` (prerelease) and maintenance branches such as `1.x`. See `.releaserc`.
-2. The **Release** workflow (`.github/workflows/release.yml`) installs, type checks, tests and builds, then runs `semantic-release`.
+2. The same **CI** workflow runs `Check` and `Compat` on the pushed commit. Only if both pass does its `Release` job build and run `semantic-release`, so tests run once per push.
 3. semantic-release reads the commits since the last tag and works out the next version. If no commit is releasable (`fix`, `feat` or breaking), nothing is published.
 4. When a release is due, it updates `CHANGELOG.md` and `package.json`, publishes to npm, creates the GitHub release and tag, and pushes a `chore(release): x.y.z [skip ci]` commit.
 
