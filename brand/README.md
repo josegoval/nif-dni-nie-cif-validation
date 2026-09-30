@@ -41,7 +41,7 @@ its side**.
 ### Wordmark
 
 The wordmark is the package name, styled: **`nif·dni·nie·cif`** in Space Grotesk Bold, with small ink tiles
-where the hyphens were. The **last separator is the red check tile**, followed by a smaller **"validation"** tag in
+where the hyphens were. The **last separator is the red check tile**, as tall as the capitals and sitting on the baseline so the check stays legible down to the minimum size, followed by a smaller **"validation"** tag in
 Space Grotesk Medium. It keeps the exact order of `nif-dni-nie-cif-validation`: every hyphen becomes a tile. All text
 is converted to outlines, so no fonts are needed to display it.
 
