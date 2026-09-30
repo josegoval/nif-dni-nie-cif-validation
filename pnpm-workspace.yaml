@@ -8,7 +8,13 @@ minimumReleaseAge: 4320
 # Supply chain: dependency install scripts are blocked unless listed here.
 # `strictDepBuilds` (default) fails the install if a new dependency ships an
 # unreviewed install script. Only list packages that really need to build.
-allowBuilds: {}
+#
+# esbuild (size-limit's bundler and the tree-shaking check) is reviewed and
+# denied: its postinstall only swaps the JS launcher for the native binary as a
+# start-up optimisation and checks the platform package. esbuild works without
+# it, from the platform package that pnpm installs as an optional dependency.
+allowBuilds:
+  esbuild: false
 
 # Exception to minimumReleaseAge for one exact version: v1.0.11 of this very
 # package, installed as the `nif-v1` dev alias. The differential test and the
