@@ -161,6 +161,11 @@ válida
 valores
 yacente
 
+# Spanish words of README.es.md missing from the Spanish dictionary
+minificado
+semioficial
+tipada
+
 # Catalan words of the README's example of the Catalan messages
 aquest
 caràcter
@@ -186,6 +191,7 @@ uncited
 arethetypeswrong
 attw
 commitlint
+deno
 esbuild
 josegoval
 jsvat
@@ -195,6 +201,7 @@ maistik
 npmjs
 publint
 releaserc
+spain
 stdnum
 valibot
 vitest
