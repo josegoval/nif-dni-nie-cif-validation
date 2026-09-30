@@ -2,8 +2,9 @@
   "name": "nif-dni-nie-cif-validation",
   "version": "1.0.10",
   "description": "Validate NIF, DNI, NIE and CIF documents easily.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/cjs/index.d.cts",
   "readme": "README.md",
   "keywords": [
     "nif",
@@ -17,7 +18,10 @@
     "nif-dni-nie-cif-validation"
   ],
   "files": [
-    "/dist/**/*"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "repository": {
     "type": "git",
@@ -30,7 +34,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node scripts/build.mjs",
     "prepare": "husky",
     "prepack": "pnpm build",
     "typecheck": "tsc --noEmit -p tsconfig.json",

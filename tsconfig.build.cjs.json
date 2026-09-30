@@ -1,0 +1,9 @@
+{
+  // Builds the CommonJS half of the package (`dist/cjs`): the same sources
+  // and settings as `tsconfig.build.json`, emitted as CommonJS.
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "./dist/cjs"
+  }
+}
