@@ -20,6 +20,7 @@
  * const accepted: NifType[] = ["DNI", "NIE"];
  * validate("B12345674", { types: accepted }).error?.code; // "UNSUPPORTED_TYPE"
  * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export type NifType = "DNI" | "NIE" | "CIF" | "NIF_KLM";
 
@@ -42,9 +43,11 @@ export type NifType = "DNI" | "NIE" | "CIF" | "NIF_KLM";
  * validate("").error?.code;          // "EMPTY"
  * validate("12345678A").error?.code; // "INVALID_CONTROL_CHARACTER"
  * @example
- * const code: NifErrorCode | undefined = validate(input).error?.code;
- * if (code === "INVALID_CONTROL_CHARACTER") suggestFix();
+ * const code: NifErrorCode | undefined = validate("12345678A").error?.code;
+ * const hint = code === "INVALID_CONTROL_CHARACTER" ? "check the letter" : "";
+ * hint; // "check the letter"
  * @see SPEC.md
+ * @since 2.0.0
  */
 export type NifErrorCode =
   | "NOT_A_STRING"
@@ -55,7 +58,10 @@ export type NifErrorCode =
   | "UNSUPPORTED_TYPE"
   | "PLACEHOLDER";
 
-/** SPEC.md rules that an `INVALID_LENGTH` error can cite. */
+/**
+ * SPEC.md rules that an `INVALID_LENGTH` error can cite.
+ * @since 2.0.0
+ */
 export type NifLengthRule =
   | "DNI-1"
   | "KLM-1"
@@ -64,7 +70,10 @@ export type NifLengthRule =
   | "CIF-1"
   | "VAT-1";
 
-/** SPEC.md rules that an `INVALID_FORMAT` error can cite. */
+/**
+ * SPEC.md rules that an `INVALID_FORMAT` error can cite.
+ * @since 2.0.0
+ */
 export type NifFormatRule =
   | "NIF-1"
   | "VAT-1"
@@ -78,6 +87,7 @@ export type NifFormatRule =
  * The organisation keys of the NIF of a legal person or entity (CIF): its first letter
  * (Orden EHA/451/2008 arts. 3 to 5, as amended by Orden HAP/5/2016).
  * @see SPEC.md#cif-2
+ * @since 2.0.0
  */
 export type CifOrganisationKey =
   | "A"
@@ -103,6 +113,7 @@ export type CifOrganisationKey =
  * and format errors, by the SPEC.md rule that failed, so they describe the
  * right document. Every message is a full sentence.
  * @see SPEC.md
+ * @since 2.0.0
  */
 export interface NifMessages {
   NOT_A_STRING: string;
@@ -138,6 +149,7 @@ export interface NifMessages {
  *
  * describeCifOrganisation("B", es); // "Sociedad de responsabilidad limitada"
  * @see SPEC.md#cif-2
+ * @since 2.0.0
  */
 export interface NifLocale {
   /** The BCP 47 language code, for example `"es"`. */
@@ -168,6 +180,7 @@ export interface NifLocale {
  * @example
  * isValidCif("B1234567D", { cifControl: "lenient" }); // false: B always takes a digit
  * @see SPEC.md#cif-3
+ * @since 2.0.0
  */
 export type CifControlMode = "official" | "lenient";
 
@@ -176,11 +189,16 @@ export type CifControlMode = "official" | "lenient";
  * official behaviour.
  * @example
  * import { es } from "nif-dni-nie-cif-validation/locales/es";
- * validate(value, { types: ["DNI", "NIE"], locale: es });
+ *
+ * validate("B12345674", { types: ["DNI", "NIE"], locale: es }).error?.message;
+ * // "Aquí no se admite un NIF de persona jurídica o entidad (CIF)."
  * @example
  * // v1-compatible parsing, and VAT numbers accepted:
- * validate(value, { normalize: false, cifControl: "lenient", allowVatPrefix: true });
+ * const v1 = { normalize: false, cifControl: "lenient", allowVatPrefix: true } as const;
+ * validate("ESG1234567D", v1).valid;  // true
+ * validate("ES G1234567D", v1).valid; // false: normalize: false keeps the space
  * @see SPEC.md
+ * @since 2.0.0
  */
 export interface ValidateOptions {
   /**
@@ -242,6 +260,7 @@ export interface ValidateOptions {
  * const v1Compatible: IsValidOptions = { normalize: false, cifControl: "lenient" };
  * isValidCif("G1234567D", v1Compatible); // true, as in v1
  * @see SPEC.md#norm-2
+ * @since 2.0.0
  */
 export type IsValidOptions = Pick<
   ValidateOptions,
@@ -256,6 +275,7 @@ export type IsValidOptions = Pick<
  * @example
  * getNifType(" 12345678Z", { normalize: false }); // null: the space is kept
  * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export type GetNifTypeOptions = Pick<
   ValidateOptions,
@@ -270,8 +290,10 @@ export type GetNifTypeOptions = Pick<
  * //   message: 'The control character is not correct: for this DNI it should be "Z".' }
  * @example
  * validate("T12345678").error;
- * // { code: "INVALID_FORMAT", rule: "NIF-1", message: "This is not a NIF, NIE or CIF: ..." }
+ * // { code: "INVALID_FORMAT", rule: "NIF-1",
+ * //   message: "This is not a NIF, NIE or CIF: it must start with a digit or a valid letter." }
  * @see SPEC.md
+ * @since 2.0.0
  */
 export interface NifValidationError {
   /** What went wrong. */
@@ -294,8 +316,11 @@ export interface NifValidationError {
  * validate("B12345674").meta;
  * // { orgKey: "B", orgDescription: "Limited liability company" }
  * @example
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
  * validate("P2807900B", { locale: es }).meta?.orgDescription; // "Corporación local"
  * @see SPEC.md#cif-2
+ * @since 2.0.0
  */
 export interface CifOrganisationMeta {
   /** The organisation key, for example `"B"`. */
@@ -314,10 +339,14 @@ export interface CifOrganisationMeta {
  * validate(" x-0123456-7l ");
  * // { valid: true, type: "NIE", normalized: "X1234567L" }
  * @example
- * const { valid, normalized, error } = validate(input, { locale: es });
- * if (valid) save(normalized);
- * else showError(error?.message);
+ * import { es } from "nif-dni-nie-cif-validation/locales/es";
+ *
+ * const { valid, normalized, error } = validate("12345678A", { locale: es });
+ * valid; // false
+ * normalized; // "12345678A"
+ * error?.code; // "INVALID_CONTROL_CHARACTER"
  * @see SPEC.md
+ * @since 2.0.0
  */
 export interface ValidationResult {
   /** Whether the value is a valid document (with the given options). */
