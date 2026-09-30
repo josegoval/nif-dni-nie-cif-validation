@@ -22,11 +22,10 @@
  * Rule IDs refer to SPEC.md.
  */
 import {
-  FIRST_KEY,
   isNineCharsFrom0x30,
   isWhiteSpace,
   normalize,
-  normalizedForRetry,
+  removeSeparators,
 } from "./normalize";
 import { isLenientCif, NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
@@ -269,18 +268,13 @@ export function isValidLegalEntityNif(
 ): boolean {
   if (typeof legalEntityNif !== "string") return false;
   if (checkCif(legalEntityNif, opts)) return true;
-  // Cleanup only shortens a value (NORM-4 pads DNIs only), so a failed
-  // value of 9 characters or fewer stays invalid.
-  return legalEntityNif.length > CIF_LENGTH && retryCif(legalEntityNif, opts);
-}
-
-/**
- * NORM-2..3: the slow path of isValidLegalEntityNif, in its own function so
- * the fast path stays small.
- */
-function retryCif(value: string, opts: IsValidOptions | null): boolean {
-  const normalized = normalizedForRetry(value, opts, FIRST_KEY);
-  return normalized !== null && checkCif(normalized, opts);
+  // NORM-2 / NORM-3: the slow path. Removing separators only shortens a
+  // value, so a failed value of 9 characters or fewer stays invalid.
+  return (
+    legalEntityNif.length > CIF_LENGTH &&
+    opts?.normalize !== false &&
+    checkCif(removeSeparators(legalEntityNif), opts)
+  );
 }
 
 /** Legal entity NIF, on the raw string. */

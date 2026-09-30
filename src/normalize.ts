@@ -14,7 +14,6 @@
  *
  * Rule IDs refer to SPEC.md.
  */
-import type { IsValidOptions } from "./types";
 
 /**
  * NORM-2: white space is exactly JavaScript's `\s` (WhiteSpace and
@@ -54,6 +53,23 @@ export function isSeparator(code: number): boolean {
   return (
     !isFrom0x30To0x7F(code) && ((code - 0x2d) >>> 0 < 3 || isWhiteSpace(code))
   );
+}
+
+/**
+ * NORM-2 / NORM-3 only: removes the separators and keeps the case. Returns
+ * `value` itself when it has none. The slow path of the boolean validators,
+ * whose checks fold case themselves. Internal helper.
+ */
+export function removeSeparators(value: string): string {
+  let clean = "";
+  // Where the characters after the last separator start.
+  let from = 0;
+  for (let i = 0; i < value.length; i++)
+    if (isSeparator(value.charCodeAt(i))) {
+      clean += value.slice(from, i);
+      from = i + 1;
+    }
+  return from === 0 ? value : clean + value.slice(from);
 }
 
 /** Ñ and ñ: a letter of the Spanish alphabet, never a check letter (DNI-3). */
@@ -201,66 +217,4 @@ export function isNineCharsFrom0x30(value: string): boolean {
   for (let i = 0; i < MIN_CLEAN_LENGTH; i++)
     if (!isFrom0x30To0x7F(value.charCodeAt(i))) return false;
   return true;
-}
-
-/** First characters a validator accepts, as bits (see normalizedForRetry). */
-export const FIRST_DIGIT = 1;
-export const FIRST_KLM = 2;
-export const FIRST_XYZ = 4;
-export const FIRST_KEY = 8;
-
-/** Class of each ASCII character from "0" (0x30) to 0x7F, both cases. */
-const FIRST_CLASS = new Uint8Array(0x50);
-for (const [chars, bit] of [
-  ["0123456789", FIRST_DIGIT],
-  ["KLMklm", FIRST_KLM],
-  ["XYZxyz", FIRST_XYZ],
-  ["ABCDEFGHJNPQRSUVWabcdefghjnpqrsuvw", FIRST_KEY],
-] as const)
-  for (const char of chars) FIRST_CLASS[char.charCodeAt(0) - 0x30] = bit;
-
-/**
- * The slow path of the boolean validators, after their raw check failed:
- * the normalized form of `value` to check again, or `null` when
- * normalizing can't change the verdict. `accepted` holds the first
- * characters the validator accepts (`FIRST_*` bits). Internal helper.
- *
- * The raw check already folds case (NORM-1) and reads the old NIE form
- * (NIE-3), so normalizing only helps with a separator (NORM-2, NORM-3) or
- * a short DNI (NORM-4). Cheap tests first, so most values are rejected
- * without being scanned or copied:
- *
- * - `normalize: false`: nothing to retry.
- * - (Cleanup never makes a value longer, except NORM-4 padding a DNI, so
- *   isValidNie and isValidCif reject a failed value of 9 characters or
- *   fewer themselves, before calling this.)
- * - Every separator is below "0" (0x30) or non-ASCII. A first character in
- *   0x30-0x7F is therefore not a separator: it stays first after cleanup,
- *   only upper-cased, so the validator must accept it.
- * - (9 characters with a separator clean to 8 or fewer, which only NORM-4
- *   can make valid, and only from a digit: the validators that accept a
- *   DNI reject a failed 9-character value starting with a letter
- *   themselves, before calling this.)
- * - A value without any character below "0" or above 0x7F has no
- *   separator.
- */
-export function normalizedForRetry(
-  value: string,
-  opts: IsValidOptions | null,
-  accepted: number
-): string | null {
-  if (opts?.normalize === false) return null;
-  const length = value.length;
-  if (length >= MIN_CLEAN_LENGTH) {
-    const first = value.charCodeAt(0) - 0x30;
-    if (first >>> 0 < 0x50) {
-      const kind = FIRST_CLASS[first] as number;
-      if ((kind & accepted) === 0) return null;
-      let i = 1;
-      while (i < length && (value.charCodeAt(i) - 0x30) >>> 0 < 0x50) i++;
-      if (i === length) return null;
-    }
-  }
-  const normalized = normalize(value);
-  return normalized === value ? null : normalized;
 }

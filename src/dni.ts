@@ -18,14 +18,8 @@
  *
  * Rule IDs refer to SPEC.md.
  */
-import {
-  FIRST_DIGIT,
-  FIRST_KLM,
-  isSeparator,
-  normalize,
-  normalizedForRetry,
-} from "./normalize";
-import { acceptsValid, isPlaceholder } from "./policy";
+import { isSeparator, normalize, removeSeparators } from "./normalize";
+import { acceptsDocument, acceptsValid, isPlaceholderDocument } from "./policy";
 import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -106,6 +100,18 @@ export function isValidNineCharDni(dni: string, first: number): boolean {
 }
 
 /**
+ * NORM-4: is `value`, without separators, 1 to 7 digits and their DNI-2
+ * letter? That is a DNI without its leading zeros, which don't change the
+ * number. Internal helper for the slow paths.
+ */
+export function isShortDni(value: string): boolean {
+  const length = value.length;
+  return (
+    length > 1 && length < DNI_LENGTH && hasDniDigitsAndLetter(value, 0, 0)
+  );
+}
+
+/**
  * Checks if the given dni is valid.
  *
  * It does include checks for DNI K, L and M.
@@ -144,7 +150,7 @@ export function isValidDni(
             ? 0
             : -1;
     if (verdict === 1)
-      return opts?.rejectPlaceholders !== true || !isPlaceholder(dni);
+      return opts?.rejectPlaceholders !== true || !isPlaceholderDocument(dni);
     if (verdict === 0) return false;
   }
   return retryDni(dni, opts);
@@ -155,15 +161,15 @@ export function isValidDni(
  * stays small.
  */
 function retryDni(value: string, opts: IsValidOptions | null): boolean {
-  const normalized = normalizedForRetry(value, opts, FIRST_DIGIT | FIRST_KLM);
+  if (opts?.normalize === false) return false;
+  const clean = removeSeparators(value);
   return (
-    normalized !== null &&
-    normalized.length === DNI_LENGTH &&
-    isValidNineCharDni(normalized, normalized.charCodeAt(0)) &&
-    acceptsValid(normalized, opts)
+    (isShortDni(clean) ||
+      (clean.length === DNI_LENGTH &&
+        isValidNineCharDni(clean, clean.charCodeAt(0)))) &&
+    acceptsDocument(clean, opts)
   );
 }
-
 /**
  * v1 semantics of the last character: the last UTF-16 code unit of
  * `value.toUpperCase()`, or -1 for the empty string.

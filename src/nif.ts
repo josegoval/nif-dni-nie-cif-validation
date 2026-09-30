@@ -13,16 +13,10 @@
  * Rule IDs refer to SPEC.md.
  */
 import { cifKeyKind, hasValidCifDigitsAndControl, NOT_A_KEY } from "./cif";
-import { dniVerdict, isValidNineCharDni } from "./dni";
+import { dniVerdict, isShortDni, isValidNineCharDni } from "./dni";
 import { isValidNineCharNie, isValidOldNie } from "./nie";
-import {
-  FIRST_DIGIT,
-  FIRST_KEY,
-  FIRST_KLM,
-  FIRST_XYZ,
-  normalizedForRetry,
-} from "./normalize";
-import { acceptsValid, isPlaceholder } from "./policy";
+import { removeSeparators } from "./normalize";
+import { acceptsDocument, isPlaceholderDocument } from "./policy";
 import { NO_OPTIONS } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -110,7 +104,8 @@ export function isValidNaturalPersonNif(
   const verdict = checkNaturalPersonNif(naturalPersonNif);
   if (verdict === 1)
     return (
-      opts?.rejectPlaceholders !== true || !isPlaceholder(naturalPersonNif)
+      opts?.rejectPlaceholders !== true ||
+      !isPlaceholderDocument(naturalPersonNif)
     );
   if (verdict === 0) return false;
   return retryNaturalPersonNif(naturalPersonNif, opts);
@@ -124,15 +119,11 @@ function retryNaturalPersonNif(
   value: string,
   opts: IsValidOptions | null
 ): boolean {
-  const normalized = normalizedForRetry(
-    value,
-    opts,
-    FIRST_DIGIT | FIRST_KLM | FIRST_XYZ
-  );
+  if (opts?.normalize === false) return false;
+  const clean = removeSeparators(value);
   return (
-    normalized !== null &&
-    checkNaturalPersonNif(normalized) === 1 &&
-    acceptsValid(normalized, opts)
+    (isShortDni(clean) || checkNaturalPersonNif(clean) === 1) &&
+    acceptsDocument(clean, opts)
   );
 }
 
@@ -166,7 +157,7 @@ export function isValidNif(
   // The fast path: a valid raw value, and placeholders only when asked.
   const verdict = checkNif(nif, opts);
   if (verdict === 1)
-    return opts?.rejectPlaceholders !== true || !isPlaceholder(nif);
+    return opts?.rejectPlaceholders !== true || !isPlaceholderDocument(nif);
   if (verdict === 0) return false;
   return retryNif(nif, opts);
 }
@@ -176,14 +167,10 @@ export function isValidNif(
  * stays small.
  */
 function retryNif(value: string, opts: IsValidOptions | null): boolean {
-  const normalized = normalizedForRetry(
-    value,
-    opts,
-    FIRST_DIGIT | FIRST_KLM | FIRST_XYZ | FIRST_KEY
-  );
+  if (opts?.normalize === false) return false;
+  const clean = removeSeparators(value);
   return (
-    normalized !== null &&
-    checkNif(normalized, opts) === 1 &&
-    acceptsValid(normalized, opts)
+    (isShortDni(clean) || checkNif(clean, opts) === 1) &&
+    acceptsDocument(clean, opts)
   );
 }

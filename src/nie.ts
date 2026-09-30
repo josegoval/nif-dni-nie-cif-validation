@@ -17,8 +17,8 @@
  * Rule IDs refer to SPEC.md.
  */
 import { hasDniDigitsAndLetter } from "./dni";
-import { FIRST_XYZ, normalizedForRetry } from "./normalize";
-import { acceptsValid, isPlaceholder } from "./policy";
+import { removeSeparators } from "./normalize";
+import { acceptsDocument, isPlaceholderDocument } from "./policy";
 import { NO_OPTIONS, toUpperAsciiLetter } from "./shared";
 import type { IsValidOptions } from "./types";
 
@@ -121,7 +121,7 @@ export function isValidNie(
   if (typeof nie !== "string") return false;
   // The fast path: a valid raw value, and placeholders only when asked.
   if (checkNie(nie))
-    return opts?.rejectPlaceholders !== true || !isPlaceholder(nie);
+    return opts?.rejectPlaceholders !== true || !isPlaceholderDocument(nie);
   // Cleanup only shortens a value (NORM-4 pads DNIs only), so a failed
   // value of 9 characters or fewer stays invalid.
   if (nie.length <= NIE_LENGTH) return false;
@@ -129,16 +129,13 @@ export function isValidNie(
 }
 
 /**
- * NORM-2..4: the slow path of isValidNie, in its own function so the fast path
- * stays small.
+ * NORM-2 / NORM-3: the slow path of isValidNie, in its own function so the
+ * fast path stays small.
  */
 function retryNie(value: string, opts: IsValidOptions | null): boolean {
-  const normalized = normalizedForRetry(value, opts, FIRST_XYZ);
-  return (
-    normalized !== null &&
-    checkNie(normalized) &&
-    acceptsValid(normalized, opts)
-  );
+  if (opts?.normalize === false) return false;
+  const clean = removeSeparators(value);
+  return checkNie(clean) && acceptsDocument(clean, opts);
 }
 
 /** NIE, on the raw string. */
