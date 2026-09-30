@@ -1,0 +1,22 @@
+{
+  "name": "nif-dni-nie-cif-validation",
+  "short_name": "nif-dni-nie-cif-validation",
+  "description": "Spanish NIF, DNI, NIE & CIF validation. Tiny. Typed. Correct.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#C8102E",
+  "background_color": "#FAFAF7",
+  "display": "standalone"
+}
