@@ -175,6 +175,12 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^21.2.3
         version: 21.2.3
+      '@kreyo/nif-validator':
+        specifier: 0.1.0
+        version: 0.1.0
+      '@maistik/validate-nif':
+        specifier: 2.0.1
+        version: 2.0.1
       '@semantic-release/changelog':
         specifier: ^7.0.0
         version: 7.0.0(semantic-release@25.0.9(supports-color@7.2.0)(typescript@7.0.2))
@@ -193,9 +199,15 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^5.0.2
         version: 5.0.2(vitest@5.0.2)
+      better-dni:
+        specifier: 4.4.2
+        version: 4.4.2
       cspell:
         specifier: ^10.3.4
         version: 10.3.4
+      dni-js:
+        specifier: 1.0.0
+        version: 1.0.0
       es-check:
         specifier: ^9.8.1
         version: 9.8.1
@@ -208,6 +220,9 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
+      jsvat:
+        specifier: 2.5.4
+        version: 2.5.4
       nif-v1:
         specifier: npm:nif-dni-nie-cif-validation@1.0.11
         version: nif-dni-nie-cif-validation@1.0.11
@@ -217,6 +232,9 @@ importers:
       size-limit:
         specifier: ^14.1.0
         version: 14.1.0
+      spain-id:
+        specifier: 1.1.14
+        version: 1.1.14
       stdnum:
         specifier: ^1.12.6
         version: 1.12.6
@@ -229,6 +247,9 @@ importers:
       valibot:
         specifier: ^1.5.0
         version: 1.5.0(typescript@7.0.2)
+      validator:
+        specifier: 13.15.35
+        version: 13.15.35
       vitest:
         specifier: ^5.0.2
         version: 5.0.2(@types/node@22.20.4)(@vitest/coverage-v8@5.0.2)(vite@8.3.1(@types/node@22.20.4)(esbuild@0.28.2)(jiti@2.6.1)(yaml@2.9.1))
@@ -824,6 +845,14 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
+  '@kreyo/nif-validator@0.1.0':
+    resolution: {integrity: sha512-kfFSwXjw7Z+793ISstuBJL7bxwyjaLG6V8ALiC6Vy214puM3mg8e3P5ZZ4ohLSct52bDqL3SrTHstxgy5I6Yig==}
+    engines: {node: '>=18'}
+
+  '@maistik/validate-nif@2.0.1':
+    resolution: {integrity: sha512-4GnXaOud5CSq6NYCwxvQ0kYe9BiuUj5YtSRLFtD7RJHa44MPALAPkVmCwFHliKA7alA0xyeHktwLxBBnMZCW9Q==}
+    engines: {node: '>=18.0.0'}
+
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -1319,6 +1348,10 @@ packages:
   before-after-hook@4.0.0:
     resolution: {integrity: sha512-q6tR3RPqIB1pMiTRMFcZwuG5T8vwp+vUvEG0vuI6B+Rikh5BfPp2fQ82c925FOs+b0lcFQ8CFrL+KbilfZFhOQ==}
 
+  better-dni@4.4.2:
+    resolution: {integrity: sha512-T8Tg0LxpcLOepm/zGvwpc5dj2jznRoZOaUQOueY8PS/S5iIJRy9RKo4nBGDoxLvbnYAZaLdQIFzvSAGV9BaVUg==}
+    engines: {node: '>=10'}
+
   bottleneck@2.19.5:
     resolution: {integrity: sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==}
 
@@ -1541,6 +1574,10 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
+
+  dni-js@1.0.0:
+    resolution: {integrity: sha512-blDu0ukTAh0FcgzEh5AX4Y2XeV0QJBaBryxlokb+LYMfo0ZOht8CN/ffh5UUFcfcYeSTPZUjdg2Iuvw0J/zVHQ==}
+    engines: {node: '>=20.19.0'}
 
   dot-prop@5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
@@ -1910,6 +1947,10 @@ packages:
 
   jsonfile@6.2.1:
     resolution: {integrity: sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q==}
+
+  jsvat@2.5.4:
+    resolution: {integrity: sha512-l5RHVBQpb738Bg/R4cEDHr4nXW/SDgVWckNjgay4S9xSRLuPjFanX9I4ZYjtb4G1PHusl70iWOqkRsn/fCYN5g==}
+    deprecated: Package is unmaintained. It may still work, but no updates or security fixes are planned.
 
   lightningcss-android-arm64@1.33.0:
     resolution: {integrity: sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==}
@@ -2448,6 +2489,9 @@ packages:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
 
+  spain-id@1.1.14:
+    resolution: {integrity: sha512-FWbARAjwamd8kjezUzEbFyBn83egap1xCW+w//jTWLRhP2y7mvwxFNBsswvDQIbybELuvBnhhsgTodEn9QmQ1g==}
+
   spawn-error-forwarder@1.0.0:
     resolution: {integrity: sha512-gRjMgK5uFjbCvdibeGJuy3I5OYz6VLoVdsOJdA6wV0WlfQVLFueoqMxwwYD9RODdgb6oUIvlRlsyFSiQkMKu0g==}
 
@@ -2677,6 +2721,10 @@ packages:
 
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
+
+  validator@13.15.35:
+    resolution: {integrity: sha512-TQ5pAGhd5whStmqWvYF4OjQROlmv9SMFVt37qoCBdqRffuuklWYQlCNnEs2ZaIBD1kZRNnikiZOS1eqgkar0iw==}
+    engines: {node: '>= 0.10'}
 
   vite@8.3.1:
     resolution: {integrity: sha512-/bvH9E9tmCXRGp2uXY3WbOldqpTwFkbha/8ANaEQ6VkxhH60KyqLwgZq6lG2y+4uT55x9+9eUHMpQ7uGnOCKjA==}
@@ -3345,6 +3393,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
+  '@kreyo/nif-validator@0.1.0': {}
+
+  '@maistik/validate-nif@2.0.1': {}
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -3763,6 +3815,8 @@ snapshots:
 
   before-after-hook@4.0.0: {}
 
+  better-dni@4.4.2: {}
+
   bottleneck@2.19.5: {}
 
   braces@3.0.3:
@@ -4030,6 +4084,8 @@ snapshots:
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
+
+  dni-js@1.0.0: {}
 
   dot-prop@5.3.0:
     dependencies:
@@ -4393,6 +4449,8 @@ snapshots:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  jsvat@2.5.4: {}
 
   lightningcss-android-arm64@1.33.0:
     optional: true
@@ -4838,6 +4896,8 @@ snapshots:
 
   source-map@0.6.1: {}
 
+  spain-id@1.1.14: {}
+
   spawn-error-forwarder@1.0.0: {}
 
   spdx-correct@3.2.0:
@@ -5050,6 +5110,8 @@ snapshots:
     dependencies:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
+
+  validator@13.15.35: {}
 
   vite@8.3.1(@types/node@22.20.4)(esbuild@0.28.2)(jiti@2.6.1)(yaml@2.9.1):
     dependencies:

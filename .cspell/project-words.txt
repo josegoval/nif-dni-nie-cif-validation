@@ -180,6 +180,9 @@ attw
 commitlint
 esbuild
 josegoval
+jsvat
+kreyo
+maistik
 npmjs
 publint
 releaserc
