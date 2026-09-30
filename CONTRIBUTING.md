@@ -35,7 +35,7 @@ src/
   types.ts      public types (NifType)
   __tests__/    Vitest tests, one file per module plus cross-cutting suites
 test/smoke/     smoke test of the packed tarball (plain Node, see Pull requests)
-bench/          benchmark against v1.0.11 (see Performance)
+bench/          benchmark against v1.0.11 and another build (see Performance)
 scripts/        CI helpers: coverage summary, SPEC rule check
 ```
 
@@ -51,7 +51,13 @@ Every validation branch in `src/` cites the rule it implements in a comment (`//
 
 ### Performance
 
-`pnpm bench` builds `dist/` and runs `bench/run.mjs` with [tinybench](https://github.com/tinylibs/tinybench): every validator of the current build against v1.0.11, on the fixed, seeded, mixed input set in `bench/inputs.mjs`. It prints a table and writes `bench/results/baseline.json` (with machine, Node and tinybench versions) and `bench/results/baseline.md`. Commit the new results when a change affects performance, and run it on an otherwise idle machine. `BENCH_TIME_MS` and `BENCH_WARMUP_MS` change the time per task (defaults: 2000 and 500).
+`pnpm bench` builds `dist/` and runs `bench/run.mjs` with [tinybench](https://github.com/tinylibs/tinybench), on the fixed, seeded input sets in `bench/inputs.mjs`. It prints three tables and writes `bench/results/baseline.json` (with machine, Node and tinybench versions) and `bench/results/baseline.md`:
+
+1. Every boolean validator on the mixed set: v1.0.11, the current build with the v1-compatible options (checked to give the v1.0.11 results first), and with the v2 defaults.
+2. Every boolean validator on canonical input (the fast path), each in its own child process, against another build given in `BENCH_BASE` (a `dist/` directory; name it with `BENCH_BASE_LABEL`). The budget: at most 10% slower than the base. On canonical input the booleans must not allocate.
+3. `validate()` on the mixed, canonical and typed (normalized) sets.
+
+To compare with another branch, build it into a temporary directory, for example `git archive <branch> src tsconfig.json tsconfig.build.json | tar -x -C /tmp/base && pnpm exec tsc -p /tmp/base/tsconfig.build.json`, then `BENCH_BASE=/tmp/base/dist BENCH_BASE_LABEL=<branch> pnpm bench`. Commit the new results when a change affects performance, and run it on an otherwise idle machine. `BENCH_TIME_MS` and `BENCH_WARMUP_MS` change the time per task (defaults: 2000 and 500).
 
 ### Spelling
 

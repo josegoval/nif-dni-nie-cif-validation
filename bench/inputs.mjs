@@ -5,6 +5,11 @@
 // old form) and legal entity NIFs (CIF) of every organisation key, their
 // lower-case forms, the same documents with a wrong control character, and
 // junk (wrong lengths, random characters, the empty string).
+//
+// Two more sets for the v2 API: CANONICAL_INPUTS (9-character upper-case
+// documents, the fast path) and TYPED_INPUTS (documents as a person types
+// them, so every one is normalized). They are generated after INPUTS, which
+// stays the same as before.
 
 const DNI_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
 const CIF_LETTERS = "JABCDEFGHI";
@@ -112,3 +117,35 @@ export const INPUT_MIX = {
   wrongControl: Math.ceil(valid.length / 2),
   junk: 151,
 };
+
+// v2 input sets (#56), generated after INPUTS so INPUTS stays the same.
+
+/**
+ * Canonical input: 9-character upper-case documents without separators,
+ * the fast path of the boolean validators. Valid ones and the same with a
+ * wrong control character.
+ */
+const canonical = valid.filter((value) => value.length === 9);
+export const CANONICAL_INPUTS = [
+  ...canonical,
+  ...canonical.filter((_, i) => i % 2 === 0).map(withWrongControl),
+];
+
+const SEPARATORS = [" ", " ", "-", ".", "/"];
+
+/** How a person types a document: lower case, separators, padding. */
+function typed(value) {
+  let out = random() < 0.5 ? value.toLowerCase() : value;
+  const count = 1 + randomInt(3);
+  for (let i = 0; i < count; i++) {
+    const at = randomInt(out.length + 1);
+    out = out.slice(0, at) + pick(SEPARATORS) + out.slice(at);
+  }
+  return random() < 0.3 ? ` ${out} ` : out;
+}
+
+/**
+ * Normalized-input case: the valid documents as typed by a person, so every
+ * one goes through normalization (NORM-1 to NORM-3).
+ */
+export const TYPED_INPUTS = valid.map(typed);
