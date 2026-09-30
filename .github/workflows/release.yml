@@ -100,10 +100,16 @@ jobs:
           path: ${{ steps.pack.outputs.tarball }}
           if-no-files-found: error
           retention-days: 7
-      # Bundles each boolean validator from the tarball with esbuild and fails
-      # if the bundle has the error messages or organisation names.
+      # Bundles each core import from the tarball with esbuild and fails if a
+      # boolean validator has the error messages or organisation names, or if
+      # any core import has the generators, an adapter or a schema library.
       - name: Check tree shaking
         run: node scripts/check-tree-shaking.mjs "${{ steps.pack.outputs.tarball }}"
+      # Runs the /zod, /valibot and /yup adapters of the tarball, from import
+      # and from require, against the schema libraries of the dev dependencies.
+      # (The smoke tests have no dependencies, so they can't cover this.)
+      - name: Check the schema adapters
+        run: node scripts/check-adapters.mjs "${{ steps.pack.outputs.tarball }}"
       - name: Lint package with publint
         run: pnpm dlx publint run "${{ steps.pack.outputs.tarball }}" --strict
       # Fails unless the types resolve in node10, node16 (CJS and ESM) and

@@ -182,3 +182,4 @@ npmjs
 publint
 releaserc
 stdnum
+valibot

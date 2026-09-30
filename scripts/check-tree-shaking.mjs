@@ -6,9 +6,12 @@
 //   other language;
 // - a language (`<package>/locales/<code>`) bundles only itself, and with
 //   `validate` only itself and English;
-// - the opt-in entry points (`<package>/generate`) are not part of the core:
-//   no core import bundles any of their modules or code, and each one bundles
-//   itself when it is imported.
+// - the opt-in entry points (`<package>/generate` and the schema adapters
+//   `<package>/zod`, `/valibot` and `/yup`) are not part of the core: no core
+//   import bundles any of their modules, their code or a schema library, and
+//   each one bundles itself when it is imported. An adapter imports its
+//   schema library (an optional peer dependency) and never contains a copy of
+//   it, and bundles English only, like `validate`.
 //
 // Usage: node scripts/check-tree-shaking.mjs <package tarball>
 //
@@ -46,18 +49,40 @@ const LOCALES = {
 const CODES = Object.keys(LOCALES);
 const localeModule = (code) => `locales/${code}.mjs`;
 
+/** The schema libraries: optional peer dependencies of the adapters. */
+const PEERS = ["zod", "valibot", "yup"];
+/** An import of the package `name`, as esbuild writes it once minified. */
+const importOf = (name) => new RegExp(`from\\s*["']${name}["']`);
+
 /**
- * The opt-in entry points: a snippet that imports something from each, and a
- * string only its code contains (an error message), for bundlers that inline
- * modules. Its modules live in the folder of the same name in `dist/esm`.
+ * The opt-in entry points: a snippet that imports something from each, and
+ * what only its bundle contains (an error message, or the import of its
+ * schema library), for bundlers that inline modules. Its modules live in the
+ * folder of the same name in `dist/esm`. An adapter names its `peer`.
  */
 const OPT_IN = {
   generate: {
     snippet: `import { generateDni } from "${PACKAGE}/generate"; console.log(generateDni());`,
-    marker: "seed must be an integer",
+    markers: ["seed must be an integer"],
+  },
+  zod: {
+    snippet: `import { zNif } from "${PACKAGE}/zod"; console.log(zNif());`,
+    markers: [importOf("zod")],
+    peer: "zod",
+  },
+  valibot: {
+    snippet: `import { vNif } from "${PACKAGE}/valibot"; console.log(vNif());`,
+    markers: [importOf("valibot")],
+    peer: "valibot",
+  },
+  yup: {
+    snippet: `import { yNif } from "${PACKAGE}/yup"; console.log(yNif());`,
+    markers: [importOf("yup")],
+    peer: "yup",
   },
 };
 const OPT_IN_NAMES = Object.keys(OPT_IN);
+const ADAPTERS = OPT_IN_NAMES.filter((name) => OPT_IN[name].peer);
 
 /** Modules that only validate() and describeCifOrganisation() need. */
 const TEXT_MODULES = ["localize.mjs", "organisations.mjs"];
@@ -104,6 +129,9 @@ try {
       minify: true,
       format: "esm",
       platform: "browser",
+      // The schema libraries are the application's own dependencies: the
+      // adapters import them, and the bundle must not contain them.
+      external: PEERS,
       // Keep non-ASCII characters as they are, so the strings can be found.
       charset: "utf8",
       write: false,
@@ -131,8 +159,9 @@ try {
   const optInIn = ({ text, inputs }) =>
     OPT_IN_NAMES.filter(
       (name) =>
-        text.includes(OPT_IN[name].marker) ||
-        inputs.some((file) => file.includes(`dist/esm/${name}/`))
+        OPT_IN[name].markers.some((marker) =>
+          typeof marker === "string" ? text.includes(marker) : marker.test(text)
+        ) || inputs.some((file) => file.includes(`dist/esm/${name}/`))
     );
 
   const problems = [];
@@ -197,6 +226,28 @@ try {
     );
   }
 
+  for (const name of ADAPTERS) {
+    // An adapter uses validate(): English is built in, and a language is the
+    // application's own import, as with validate().
+    const alone = localesIn(await bundle(OPT_IN[name].snippet));
+    check(
+      `${PACKAGE}/${name} bundles English only`,
+      same(alone, ["en"]),
+      `bundles [${alone.join(", ")}]`
+    );
+    const withEs = localesIn(
+      await bundle(
+        `${OPT_IN[name].snippet}\n` +
+          `import { es } from "${PACKAGE}/locales/es"; console.log(es);`
+      )
+    );
+    check(
+      `${PACKAGE}/${name} + locales/es bundles en and es only`,
+      same(withEs, ["en", "es"]),
+      `bundles [${withEs.join(", ")}]`
+    );
+  }
+
   for (const code of CODES) {
     const alone = localesIn(
       await bundle(
@@ -228,7 +279,7 @@ try {
     process.exit(1);
   }
   console.log(
-    `\nTree shaking OK: ${LEAN.length} lean imports, ${CODES.length} locales, ${OPT_IN_NAMES.length} opt-in entry points.`
+    `\nTree shaking OK: ${LEAN.length} lean imports, ${CODES.length} locales, ${OPT_IN_NAMES.length} opt-in entry points (${ADAPTERS.length} adapters).`
   );
 } finally {
   rmSync(project, { recursive: true, force: true });
