@@ -173,6 +173,41 @@ The input goes through NORM-1 to NORM-3 cleanup first. By construction, `partial
 
 No official basis, see SPEC.md "Explicitly NOT implemented": the `T` prefix (reported as NIF-1), the CIF "00 needs a letter" rule, and province codes (CIF-5; a test proves no province check happens).
 
+### D11. Test-data generators: `nif-dni-nie-cif-validation/generate` (#57)
+
+Valid fake numbers for tests, so that nobody hard-codes a real person's NIF or writes the algorithm again. It is an opt-in entry point with its own `exports` entry: the main entry point never imports it, so `import { isValidNif }` adds 0 bytes of generator code (`pnpm size`, and `scripts/check-tree-shaking.mjs` proves that no core import bundles any generator module or code).
+
+```ts
+generateDni(opts?: { seed?; kind?: "DNI" | "K" | "L" | "M"; format? }): string
+generateNie(opts?: { seed?; prefix?: "X" | "Y" | "Z"; format? }): string
+generateCif(opts?: { seed?; orgKey?: CifOrganisationKey; control?: "letter" | "digit"; format? }): string
+generateNif(opts?: { seed?; types?: NifType[]; format? }): string
+generateInvalid(type: NifType, opts?: { seed?; reason?: NifErrorCode }): string
+createGenerator(seed: number): { dni, nie, cif, nif, invalid }   // the same options, without `seed`
+// format?: boolean | { separator?: "-" | " " | "" }  (the options of format())
+```
+
+- **The values follow SPEC.md.** A DNI is 8 digits, zero-padded (DNI-1), so about one in ten starts with `0`; K, L and M NIFs have the letter of their 7 digits (KLM-2); an NIE is X, Y or Z and 7 digits, always the canonical 9-character form (NIE-1, NIE-2; never the old 10-character one, NIE-3); a CIF has one of the 17 keys (CIF-2) and 7 random digits, with no province code (CIF-5). No value is a placeholder (POLICY-1): the DNI number is drawn from 2 to 99999998, and an X NIE from 1. `generateDni` includes the K, L and M NIFs through `kind`, as `isValidDni` includes them. The key type is `CifOrganisationKey`, the name the package already exports.
+- **The control character is the library's own.** Every generator asks `computeControlCharacter` (DNI-2, KLM-2, NIE-2, CIF-3, CIF-4) for it and draws only the digits, so no algorithm is written twice and the generators can't drift from the validators. The tests still check the values with `validate()`, with stdnum and with a separate implementation of the published algorithms.
+- **`control` and CIF-3.** CIF-3 gives each organisation key exactly one control type: a letter for N P Q R S W, a digit for the other eleven. So `control` never changes what a key takes. Without `orgKey` it chooses among the keys that take that type; with an `orgKey` that takes the other type it is an impossible request and throws a `RangeError`. The legacy `cifControl: "lenient"` mode (a letter on C D F G J U V) has no official basis and is never generated.
+- **Programming errors throw.** An unknown `kind`, `prefix`, `orgKey`, `control`, `types` (or an empty one), `type` or `reason`, a `seed` that is not an integer, and `createGenerator` with no integer seed all throw a `RangeError`. Unlike the validators, whose input is data from users and never throws (#40), a generator's options are written by the developer, and a wrong one would otherwise give a value that silently isn't what they asked for.
+- **Seeded and reproducible.** With a `seed` the numbers come from mulberry32 (`src/generate/random.ts`): a 32-bit generator made only of integer operations, plus one division by a power of two, which JavaScript defines exactly, so the same seed gives the same values on every platform, engine and Node version. `Math.random` is never read when a seed is given (a test spies on it). The seed is an integer, reduced modulo 2^32. Without a seed the generators use `Math.random`, and the values differ at every call. A call with a seed always starts from that seed, so `generateDni({ seed: 1 })` returns the same DNI each time; `createGenerator(seed)` is the stream: each call takes the next values, so the DNIs differ and the whole stream is the same on every run. Golden values for several seeds are in the tests: changing them changes every user's fixtures, so do it on purpose.
+- **`generateInvalid(type, { reason })`** starts from a valid value of the type and breaks one thing, so it looks like what it stands for. The default reason is `INVALID_CONTROL_CHARACTER`, the most common negative case.
+
+  | `reason` | What the value is | Notes |
+  |---|---|---|
+  | `INVALID_CONTROL_CHARACTER` | only the control character changes | For a CIF it is wrong with `cifControl: "lenient"` too |
+  | `INVALID_LENGTH` | digits added after the first character, or removed | A DNI is only made longer: NORM-4 pads a short one. Never the old 10-character NIE (NIE-3), which is valid |
+  | `INVALID_FORMAT` | a letter instead of a digit, or a control of the wrong class | |
+  | `EMPTY` | an empty string, or only separators (INPUT-2) | The same for every type |
+  | `UNSUPPORTED_TYPE` | a valid value | Rejected only when `validate()`'s `types` leaves the type out (POLICY-2) |
+  | `PLACEHOLDER` | a placeholder number | Rejected only with `rejectPlaceholders` (POLICY-1). DNI and NIE only; the other types throw |
+  | `NOT_A_STRING` | not possible | Throws: the result is always a string |
+
+  The codes that depend on an option (`UNSUPPORTED_TYPE`, `PLACEHOLDER`) are the only ones where the value alone is not rejected by `validate()` with the default options. The tests check that every other value fails with exactly the requested code, 100,000 times per type.
+- **Output.** Canonical (upper case, no separators) by default. `format: true` or `format: { separator }` uses `format()`. `generateInvalid` ignores it: an invalid value has no display form.
+- **Synthetic data.** The JSDoc of every generator says it: the numbers are made up, may match a real person or company by chance, and are for tests only.
+
 ## Alternatives considered
 
 - **Languages selected by a string (`locale: "es"`)** from a table of all languages, as in the first v2 drafts. Rejected (#56): a bundler can't know which entries of the table are used, so every `validate()` user paid for every language (about 0.6 kB min+gz for Spanish alone), and each new language would have grown every bundle.

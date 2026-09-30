@@ -48,6 +48,23 @@ Messages and organisation names are in English by default. Each other language i
 
 Pass the object, not its code: `validate(value, { locale: es })`, `describeCifOrganisation("B", es)`. A string such as `"es"` is ignored and gives English.
 
+### Generating test data
+
+Need valid fake numbers for your tests, instead of a real person's? `nif-dni-nie-cif-validation/generate` makes them, and they are the same on every run and platform when you give a seed. It is opt-in: the main entry point doesn't include it.
+
+```ts
+import {
+  createGenerator, generateCif, generateInvalid,
+} from "nif-dni-nie-cif-validation/generate";
+
+generateCif({ seed: 1, orgKey: "B" });  // "B62707393": a valid CIF, the same every time
+generateCif({ control: "letter" });     // a key that takes a letter (N P Q R S W), CIF-3
+createGenerator(2024).dni();            // a stream of different values from one seed
+generateInvalid("DNI", { reason: "INVALID_LENGTH" }); // for negative tests: validate() says INVALID_LENGTH
+```
+
+There are also `generateDni` (with `kind: "K" | "L" | "M"`), `generateNie` (with `prefix`) and `generateNif` (with `types`), and every one takes `format: true` for the `12345678-Z` form. The numbers follow [SPEC.md](SPEC.md) and are never a placeholder such as `00000000T`, but they are synthetic: one may match a real person or company by chance, so use them in tests only. See [docs/api-design.md](docs/api-design.md).
+
 The package ships ES modules and CommonJS, each with its own type declarations, and tree-shakes: `import { isValidDni }` adds about 0.6 kB minified and gzipped, without the error messages; `import { validate }` about 2.7 kB, with the English messages.
 
 **Feel like supporting this free plugin?**
