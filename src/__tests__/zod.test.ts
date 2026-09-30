@@ -366,7 +366,7 @@ describe("the schemas work like any Zod schema", () => {
     const result = form.safeParse({
       nif: "12345678A",
       company: "B1",
-      others: ["X1234567L", "nope"],
+      others: ["X1234567L", "x12"],
     });
     expect(result.success).toBe(false);
     const issues = result.error?.issues ?? [];
