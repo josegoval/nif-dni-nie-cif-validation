@@ -19,7 +19,10 @@
   "files": [
     "/dist/**/*"
   ],
-  "repository": "https://github.com/josegoval/nif-dni-nie-cif-validation.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josegoval/nif-dni-nie-cif-validation.git"
+  },
   "author": "josegoval <josegovalmusic@gmail.com>",
   "license": "MIT",
   "scripts": {
