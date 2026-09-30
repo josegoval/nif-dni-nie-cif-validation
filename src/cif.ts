@@ -24,6 +24,7 @@
 import {
   FIRST_KEY,
   isNineCharsFrom0x30,
+  isWhiteSpace,
   normalize,
   normalizedForRetry,
 } from "./normalize";
@@ -149,19 +150,8 @@ export function hasValidCifDigitsAndControl(
 function looseDigitValue(code: number): number {
   const digit = code - 48;
   if (digit >>> 0 < 10) return digit;
-  return code === 0x20 ||
-    (code >= 0x09 && code <= 0x0d) ||
-    code === 0xa0 ||
-    code === 0x1680 ||
-    (code >= 0x2000 && code <= 0x200a) ||
-    code === 0x2028 ||
-    code === 0x2029 ||
-    code === 0x202f ||
-    code === 0x205f ||
-    code === 0x3000 ||
-    code === 0xfeff
-    ? 0
-    : -1;
+  // `Number()` trims exactly JavaScript's white space.
+  return isWhiteSpace(code) ? 0 : -1;
 }
 
 function isAscii(value: string): boolean {

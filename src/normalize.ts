@@ -16,27 +16,43 @@
  */
 import type { IsValidOptions } from "./types";
 
-/** NORM-2 / NORM-3: the ASCII separators (white space, `.`, `-`, `/`). */
-const ASCII_SEPARATORS = new Uint8Array(128);
-for (const char of "\t\n\v\f\r ./-") ASCII_SEPARATORS[char.charCodeAt(0)] = 1;
+/**
+ * NORM-2: white space is exactly JavaScript's `\s` (WhiteSpace and
+ * LineTerminator). With NORM-3's `.`, `-` and `/`, every separator is below
+ * "0" (0x30) or non-ASCII.
+ */
+const WHITE_SPACE = /\s/;
+
+/**
+ * Is the UTF-16 code unit in 0x30-0x7F? Then it is not a separator (see
+ * `isSeparator`). Internal helper.
+ */
+export function isFrom0x30To0x7F(code: number): boolean {
+  return (code - 0x30) >>> 0 < 0x50;
+}
+
+/**
+ * Is the UTF-16 code unit white space, as JavaScript's `\s` (which is also
+ * what `Number()` trims)? Internal helper.
+ */
+export function isWhiteSpace(code: number): boolean {
+  // ASCII white space is 0x09-0x0D and the space. Other code units ask the
+  // regular expression; `NaN` (read past the end) becomes U+0000, which is
+  // not white space.
+  return code < 0x80
+    ? code === 0x20 || (code - 0x09) >>> 0 < 5
+    : WHITE_SPACE.test(String.fromCharCode(code));
+}
 
 /**
  * NORM-2 / NORM-3: is the UTF-16 code unit a separator that cleanup
- * removes? White space is exactly JavaScript's `\s` (WhiteSpace and
- * LineTerminator), plus `.`, `-` and `/`. Internal helper.
+ * removes? Internal helper.
  */
 export function isSeparator(code: number): boolean {
-  if (code < 128) return ASCII_SEPARATORS[code] === 1;
+  // Most characters are in 0x30-0x7F, which has no separator: one test.
+  // NORM-3: `-`, `.` and `/` are 0x2D to 0x2F. NORM-2: white space.
   return (
-    code === 0xa0 ||
-    code === 0x1680 ||
-    (code >= 0x2000 && code <= 0x200a) ||
-    code === 0x2028 ||
-    code === 0x2029 ||
-    code === 0x202f ||
-    code === 0x205f ||
-    code === 0x3000 ||
-    code === 0xfeff
+    !isFrom0x30To0x7F(code) && ((code - 0x2d) >>> 0 < 3 || isWhiteSpace(code))
   );
 }
 
@@ -183,7 +199,7 @@ const MIN_CLEAN_LENGTH = 9;
 export function isNineCharsFrom0x30(value: string): boolean {
   if (value.length !== MIN_CLEAN_LENGTH) return false;
   for (let i = 0; i < MIN_CLEAN_LENGTH; i++)
-    if ((value.charCodeAt(i) - 0x30) >>> 0 >= 0x50) return false;
+    if (!isFrom0x30To0x7F(value.charCodeAt(i))) return false;
   return true;
 }
 
