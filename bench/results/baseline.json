@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-30T17:57:20.703Z",
+  "date": "2026-09-30T19:59:32.119Z",
   "machine": {
     "cpu": "Apple M1",
     "cores": 8,
@@ -10,7 +10,7 @@
   "tinybench": "6.2.0",
   "timePerTaskMs": 2000,
   "warmupPerTaskMs": 500,
-  "base": "refactor/v2-core (PR #76)",
+  "base": "build/dual-esm-cjs (#79)",
   "inputs": {
     "mixed": {
       "count": 1001,
@@ -29,147 +29,147 @@
       {
         "function": "isValidNif",
         "v1": {
-          "validationsPerSecond": 6422975,
-          "rmePercent": 0.12,
-          "samples": 12731
+          "validationsPerSecond": 6478313,
+          "rmePercent": 0.11,
+          "samples": 12850
         },
         "v1Compatible": {
-          "validationsPerSecond": 48531955,
-          "rmePercent": 0.02,
-          "samples": 96717
+          "validationsPerSecond": 51072299,
+          "rmePercent": 0.01,
+          "samples": 101953
         },
         "v2Defaults": {
-          "validationsPerSecond": 31150754,
-          "rmePercent": 0.03,
-          "samples": 61926
+          "validationsPerSecond": 32457667,
+          "rmePercent": 0.02,
+          "samples": 64733
         },
-        "speedup": 7.56,
+        "speedup": 7.88,
         "target": 5,
         "meetsTarget": true
       },
       {
         "function": "isValidNaturalPersonNif",
         "v1": {
-          "validationsPerSecond": 11002401,
-          "rmePercent": 0.08,
-          "samples": 21825
+          "validationsPerSecond": 11065837,
+          "rmePercent": 0.06,
+          "samples": 21987
         },
         "v1Compatible": {
-          "validationsPerSecond": 61718462,
-          "rmePercent": 0.02,
-          "samples": 122869
+          "validationsPerSecond": 62340938,
+          "rmePercent": 0.01,
+          "samples": 124445
         },
         "v2Defaults": {
-          "validationsPerSecond": 42247599,
-          "rmePercent": 0.03,
-          "samples": 83794
+          "validationsPerSecond": 43092622,
+          "rmePercent": 0.02,
+          "samples": 85911
         },
-        "speedup": 5.61,
+        "speedup": 5.63,
         "target": null,
         "meetsTarget": null
       },
       {
         "function": "isValidDni",
         "v1": {
-          "validationsPerSecond": 19211264,
-          "rmePercent": 0.05,
-          "samples": 38053
+          "validationsPerSecond": 19265202,
+          "rmePercent": 0.04,
+          "samples": 38248
         },
         "v1Compatible": {
-          "validationsPerSecond": 80556545,
-          "rmePercent": 0.02,
-          "samples": 159094
+          "validationsPerSecond": 82098755,
+          "rmePercent": 0.01,
+          "samples": 163876
         },
         "v2Defaults": {
-          "validationsPerSecond": 51801746,
-          "rmePercent": 0.03,
-          "samples": 102719
+          "validationsPerSecond": 51384239,
+          "rmePercent": 0.01,
+          "samples": 102456
         },
-        "speedup": 4.19,
+        "speedup": 4.26,
         "target": 2.5,
         "meetsTarget": true
       },
       {
         "function": "isValidNie",
         "v1": {
-          "validationsPerSecond": 21582130,
-          "rmePercent": 0.05,
-          "samples": 42699
+          "validationsPerSecond": 21636395,
+          "rmePercent": 0.04,
+          "samples": 42935
         },
         "v1Compatible": {
-          "validationsPerSecond": 93359291,
-          "rmePercent": 0.02,
-          "samples": 185683
+          "validationsPerSecond": 94014119,
+          "rmePercent": 0.01,
+          "samples": 187645
         },
         "v2Defaults": {
-          "validationsPerSecond": 70327721,
-          "rmePercent": 0.02,
-          "samples": 139973
+          "validationsPerSecond": 68242455,
+          "rmePercent": 0.01,
+          "samples": 136177
         },
-        "speedup": 4.33,
+        "speedup": 4.35,
         "target": 2.5,
         "meetsTarget": true
       },
       {
         "function": "isValidCif",
         "v1": {
-          "validationsPerSecond": 13553495,
-          "rmePercent": 0.06,
-          "samples": 26860
+          "validationsPerSecond": 13530462,
+          "rmePercent": 0.05,
+          "samples": 26905
         },
         "v1Compatible": {
-          "validationsPerSecond": 68479039,
-          "rmePercent": 0.02,
-          "samples": 136277
+          "validationsPerSecond": 67928486,
+          "rmePercent": 0.01,
+          "samples": 135605
         },
         "v2Defaults": {
-          "validationsPerSecond": 58341635,
+          "validationsPerSecond": 55872862,
           "rmePercent": 0.02,
-          "samples": 116014
+          "samples": 111412
         },
-        "speedup": 5.05,
+        "speedup": 5.02,
         "target": 2.5,
         "meetsTarget": true
       },
       {
         "function": "isValidDniLetter",
         "v1": {
-          "validationsPerSecond": 8658948,
-          "rmePercent": 0.1,
-          "samples": 17142
+          "validationsPerSecond": 8707670,
+          "rmePercent": 0.09,
+          "samples": 17251
         },
         "v1Compatible": {
-          "validationsPerSecond": 35440048,
-          "rmePercent": 0.03,
-          "samples": 70635
+          "validationsPerSecond": 35689782,
+          "rmePercent": 0.02,
+          "samples": 71220
         },
         "v2Defaults": {
-          "validationsPerSecond": 29865497,
-          "rmePercent": 0.03,
-          "samples": 59528
+          "validationsPerSecond": 29684930,
+          "rmePercent": 0.02,
+          "samples": 59231
         },
-        "speedup": 4.09,
+        "speedup": 4.1,
         "target": null,
         "meetsTarget": null
       },
       {
         "function": "isValidCifControlCode",
         "v1": {
-          "validationsPerSecond": 4843125,
-          "rmePercent": 0.13,
-          "samples": 9610
+          "validationsPerSecond": 4883430,
+          "rmePercent": 0.1,
+          "samples": 9716
         },
         "v1Compatible": {
-          "validationsPerSecond": 21848648,
-          "rmePercent": 0.03,
-          "samples": 43574
+          "validationsPerSecond": 21539300,
+          "rmePercent": 0.02,
+          "samples": 43011
         },
         "v2Defaults": {
-          "validationsPerSecond": 17765633,
-          "rmePercent": 0.04,
-          "samples": 35332
+          "validationsPerSecond": 17451017,
+          "rmePercent": 0.03,
+          "samples": 34761
         },
-        "speedup": 4.51,
+        "speedup": 4.41,
         "target": null,
         "meetsTarget": null
       }
@@ -178,159 +178,159 @@
       {
         "function": "isValidNif",
         "base": {
-          "validationsPerSecond": 49289363,
-          "rmePercent": 0.02,
-          "samples": 136294
+          "validationsPerSecond": 47467609,
+          "rmePercent": 0.01,
+          "samples": 131712
         },
         "v2Defaults": {
-          "validationsPerSecond": 47729941,
-          "rmePercent": 0.02,
-          "samples": 132201
+          "validationsPerSecond": 47299074,
+          "rmePercent": 0.01,
+          "samples": 131243
         },
-        "relative": 0.97,
+        "relative": 1,
         "withinBudget": true,
         "typed": {
-          "validationsPerSecond": 7402208,
-          "rmePercent": 0.09,
-          "samples": 29281
+          "validationsPerSecond": 10435577,
+          "rmePercent": 0.06,
+          "samples": 41442
         }
       },
       {
         "function": "isValidNaturalPersonNif",
         "base": {
-          "validationsPerSecond": 86123205,
-          "rmePercent": 0.02,
-          "samples": 237930
+          "validationsPerSecond": 79528985,
+          "rmePercent": 0.01,
+          "samples": 220613
         },
         "v2Defaults": {
-          "validationsPerSecond": 79302571,
-          "rmePercent": 0.02,
-          "samples": 219463
+          "validationsPerSecond": 79506801,
+          "rmePercent": 0.01,
+          "samples": 220601
         },
-        "relative": 0.92,
+        "relative": 1,
         "withinBudget": true,
         "typed": {
-          "validationsPerSecond": 9494634,
-          "rmePercent": 0.08,
-          "samples": 37489
+          "validationsPerSecond": 11253870,
+          "rmePercent": 0.07,
+          "samples": 44451
         }
       },
       {
         "function": "isValidDni",
         "base": {
-          "validationsPerSecond": 120894855,
+          "validationsPerSecond": 111919924,
           "rmePercent": 0.01,
-          "samples": 334487
+          "samples": 310333
         },
         "v2Defaults": {
-          "validationsPerSecond": 111874067,
+          "validationsPerSecond": 112142096,
           "rmePercent": 0.01,
-          "samples": 309485
+          "samples": 311064
         },
-        "relative": 0.93,
+        "relative": 1,
         "withinBudget": true,
         "typed": {
-          "validationsPerSecond": 12966872,
-          "rmePercent": 0.07,
-          "samples": 51077
+          "validationsPerSecond": 13390425,
+          "rmePercent": 0.06,
+          "samples": 53030
         }
       },
       {
         "function": "isValidNie",
         "base": {
-          "validationsPerSecond": 174748243,
+          "validationsPerSecond": 176014265,
           "rmePercent": 0.01,
-          "samples": 479050
+          "samples": 488142
         },
         "v2Defaults": {
-          "validationsPerSecond": 175658370,
+          "validationsPerSecond": 175824619,
           "rmePercent": 0.01,
-          "samples": 485715
+          "samples": 487750
         },
-        "relative": 1.01,
+        "relative": 1,
         "withinBudget": true,
         "typed": {
-          "validationsPerSecond": 14143323,
-          "rmePercent": 0.07,
-          "samples": 55679
+          "validationsPerSecond": 21376160,
+          "rmePercent": 0.04,
+          "samples": 84657
         }
       },
       {
         "function": "isValidCif",
         "base": {
-          "validationsPerSecond": 103115204,
+          "validationsPerSecond": 96572723,
           "rmePercent": 0.01,
-          "samples": 285371
+          "samples": 267885
         },
         "v2Defaults": {
-          "validationsPerSecond": 96293793,
+          "validationsPerSecond": 93737389,
           "rmePercent": 0.01,
-          "samples": 266307
+          "samples": 260066
         },
-        "relative": 0.93,
+        "relative": 0.97,
         "withinBudget": true,
         "typed": {
-          "validationsPerSecond": 12735775,
-          "rmePercent": 0.07,
-          "samples": 50153
+          "validationsPerSecond": 17550302,
+          "rmePercent": 0.04,
+          "samples": 69561
         }
       },
       {
         "function": "isValidDniLetter",
         "base": {
-          "validationsPerSecond": 46222945,
-          "rmePercent": 0.03,
-          "samples": 127720
+          "validationsPerSecond": 45076574,
+          "rmePercent": 0.01,
+          "samples": 125086
         },
         "v2Defaults": {
-          "validationsPerSecond": 44968553,
-          "rmePercent": 0.02,
-          "samples": 124564
+          "validationsPerSecond": 44985450,
+          "rmePercent": 0.01,
+          "samples": 124862
         },
-        "relative": 0.97,
+        "relative": 1,
         "withinBudget": true,
         "typed": {
-          "validationsPerSecond": 12981901,
-          "rmePercent": 0.06,
-          "samples": 51304
+          "validationsPerSecond": 13681830,
+          "rmePercent": 0.05,
+          "samples": 54249
         }
       },
       {
         "function": "isValidCifControlCode",
         "base": {
-          "validationsPerSecond": 24449274,
-          "rmePercent": 0.03,
-          "samples": 67744
+          "validationsPerSecond": 22839511,
+          "rmePercent": 0.02,
+          "samples": 63399
         },
         "v2Defaults": {
-          "validationsPerSecond": 24675368,
-          "rmePercent": 0.03,
-          "samples": 68384
+          "validationsPerSecond": 24716570,
+          "rmePercent": 0.02,
+          "samples": 68607
         },
-        "relative": 1.01,
+        "relative": 1.08,
         "withinBudget": true,
         "typed": {
-          "validationsPerSecond": 7082192,
+          "validationsPerSecond": 7046094,
           "rmePercent": 0.09,
-          "samples": 28029
+          "samples": 27921
         }
       }
     ],
     "validate": {
       "mixed": {
-        "validationsPerSecond": 10436717,
-        "rmePercent": 0.11,
-        "samples": 20528
+        "validationsPerSecond": 10118264,
+        "rmePercent": 0.1,
+        "samples": 19991
       },
       "canonical": {
-        "validationsPerSecond": 11437172,
-        "rmePercent": 0.09,
-        "samples": 31178
+        "validationsPerSecond": 10791509,
+        "rmePercent": 0.08,
+        "samples": 29594
       },
       "typed": {
-        "validationsPerSecond": 6058412,
-        "rmePercent": 0.1,
-        "samples": 23865
+        "validationsPerSecond": 5669018,
+        "rmePercent": 0.08,
+        "samples": 22461
       }
     }
   }
