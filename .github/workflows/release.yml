@@ -59,6 +59,10 @@ jobs:
       # rule has a test (scripts/check-spec-rules.mjs).
       - name: Check SPEC rule IDs
         run: pnpm spec:check
+      # The numbers in README.md and README.es.md are written from
+      # bench/results/latest.json by `pnpm readme:bench`; fail if they drift.
+      - name: Check the README sections generated from the benchmark
+        run: pnpm readme:bench --check
       - name: Typecheck
         run: pnpm typecheck
       - name: Test with coverage (100% enforced)
