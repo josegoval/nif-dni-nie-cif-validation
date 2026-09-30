@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import * as current from "../src/index";
 import {
@@ -81,6 +82,15 @@ describe("registry", () => {
         "jsvat",
       ].sort()
     );
+  });
+
+  it("has every call in the table of bench/README.md", () => {
+    const readme = readFileSync("bench/README.md", "utf8");
+    for (const contender of CONTENDERS) {
+      for (const call of Object.values(contender.calls)) {
+        if (call !== null) expect(readme).toContain(call);
+      }
+    }
   });
 
   it("describes how to bundle every call, as a module or as code", () => {

@@ -289,7 +289,7 @@ export const CONTENDERS = [
       full: { from: "validator", default: "validator" },
     },
     notes: [
-      "Its documentation says persons only: DNI and NIE, no CIF. The one call covers both. Its size includes the tax ID rules of every country it supports.",
+      "Its source (`src/lib/isTaxID.js`, which the README points to for the exact support) says persons only: DNI and NIE, no CIF. The one call covers both. Its size includes the tax ID rules of every country it supports.",
     ],
   },
   {
