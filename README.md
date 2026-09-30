@@ -458,7 +458,7 @@ isValidNif("G1234567D", { normalize: false, cifControl: "lenient" }); // true, a
 | validator.js `isIdentityCard(x, "ES")`, `isTaxID(x, "es-ES")` | `isValidNaturalPersonNif(x)` | validator.js has no CIF check: use `isValidCif(x)` or `isValidNif(x)`. It throws on non-strings; this package returns `false` |
 | spain-id `validateSpanishId(x)` | `isValidNif(x)` | Also accepts K/L/M NIFs. The CIF control follows CIF-3 (see below) |
 | spain-id `validDNI`, `validNIE`, `validCIF` | `isValidDni`, `isValidNie`, `isValidCif` | |
-| spain-id `spainIdType(x)` | `validate(x).type` | `"DNI"`, `"NIE"`, `"CIF"`, `"NIF_KLM"` or `null`; check `valid` too |
+| spain-id `spainIdType(x)` | `getNifType(x)` | Upper case: `"DNI"`, `"NIE"`, `"CIF"`, `"NIF_KLM"` or `null`. Like `spainIdType`, it reads the format and doesn't check the control character |
 
 Libraries that accept a letter or a digit control for every CIF key accept some numbers that CIF-3 rejects, such as `G1234567D`. If your stored data has them, pass `{ cifControl: "lenient" }` while you clean it up.
 
