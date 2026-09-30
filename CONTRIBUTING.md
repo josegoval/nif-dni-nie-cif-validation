@@ -13,6 +13,8 @@ pnpm test                        # Vitest, with coverage (100% enforced)
 pnpm build                       # compiles to dist/
 ```
 
+`tsconfig.json` type-checks the library, the tests and the Vitest config without emitting anything. `tsconfig.build.json` extends it and emits the CommonJS build and type declarations of `src/` (without tests) into `dist/`. Both use `strict`, `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`.
+
 `pnpm install` runs `husky` through the `prepare` script, which installs the git hooks. If you installed with `HUSKY=0` or cloned without running install, run `pnpm prepare` once.
 
 ### Supply-chain settings
