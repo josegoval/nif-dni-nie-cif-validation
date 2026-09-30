@@ -17,12 +17,14 @@ Xnnnnnnn
 Administración
 AEAT
 Ayuntamiento
+Bizkaia
 CAIB
 Código
 Decreto
 Documento
 ESNIC
 Extranjero
+Foral
 Identidad
 Ministerio
 Nacional
@@ -155,6 +157,7 @@ yacente
 # The names of the languages of the locales, in each language
 català
 valencià
+euskara
 
 # English words missing from the dictionaries
 alikes

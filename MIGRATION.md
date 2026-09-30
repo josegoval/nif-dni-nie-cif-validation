@@ -166,6 +166,7 @@ describeCifOrganisation("B", es); // "Sociedad de responsabilidad limitada"
 | English (default) | `nif-dni-nie-cif-validation/locales/en` | `en` |
 | Spanish | `nif-dni-nie-cif-validation/locales/es` | `es` |
 | Catalan, also for Valencian | `nif-dni-nie-cif-validation/locales/ca` | `ca` |
+| Basque | `nif-dni-nie-cif-validation/locales/eu` | `eu` |
 
 Each entry point also has a default export, and works with `require()`: `const { es } = require("nif-dni-nie-cif-validation/locales/es")`.
 

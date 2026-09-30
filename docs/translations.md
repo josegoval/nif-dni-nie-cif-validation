@@ -54,4 +54,32 @@ All 17 names are **official**: the AEAT's Catalan page on the NIF of legal entit
 
 Terminology: "caràcter de control"; "NIF", "NIE", "NIF K/L/M", "NIF de persona jurídica (CIF)", "NIF-IVA"; "xifra" for a digit (the AEAT page says "dígit"; both are standard, "xifra" is the usual word on Catalan forms). The user is addressed with *vós* ("Introduïu"), as Catalan software localisation usually does. "Aquí no s'admet cap DNI" uses *cap*, the natural negative, rather than a literal "un".
 
+## Basque (`eu`, `locales/eu`)
+
+All 17 names are **official**, from an official Basque text of the same key list: Bizkaia's Decreto Foral 205/2008, de 22 de diciembre (the Bizkaia tax obligations regulation), art. 32, which repeats the organisation keys of the Order (as amended by Orden HAP/5/2016) in its Basque version. The names below are its wording in the singular. No Basque version of Orden EHA/451/2008 itself was found: the BOE has none, and the AEAT's Basque page on the NIF of legal entities shows the Spanish text.
+
+- Source: <https://www.bizkaia.eus/documents/880307/15187815/eu_205_2008_2024.pdf> (consolidated Basque text, art. 32 "Erakundeen forma juridikoaren gakoak").
+
+| Key | Name (singular) | Source |
+| --- | --- | --- |
+| A | Sozietate anonimoa | official (DF 205/2008 art. 32.1) |
+| B | Erantzukizun mugatuko sozietatea | official (art. 32.1) |
+| C | Sozietate kolektiboa | official (art. 32.1) |
+| D | Sozietate komanditarioa | official (art. 32.1) |
+| E | Ondasun-erkidegoa, jaraunspen jasogabea edo bestelako gakoetan berariaz jasota ez dagoen nortasun juridikorik gabeko beste erakunde bat | official (art. 32.1), plural "gainerako erakundeak" made singular "beste erakunde bat" |
+| F | Sozietate kooperatiboa | official (art. 32.1) |
+| G | Elkartea | official (art. 32.1) |
+| H | Jabetza horizontalaren araubideko jabeen erkidegoa | official (art. 32.1) |
+| J | Sozietate zibila | official (art. 32.1) |
+| N | Atzerriko erakundea | official (art. 32.2: "erakundea atzerrikoa dela adierazteko"), as a noun phrase |
+| P | Toki korporazioa | official (art. 32.1) |
+| Q | Erakunde publikoa | official (art. 32.1) |
+| R | Kongregazio edo erakunde erlijiosoa | official (art. 32.1) |
+| S | Estatuaren Administrazioko edo autonomia-erkidego bateko organoa | official (art. 32.1) |
+| U | Aldi baterako enpresa-elkartea | official (art. 32.1) |
+| V | Beste gakoetan definitu ez den mota | official (art. 32.1) |
+| W | Espainiako lurraldeko egoiliar ez den erakunde baten establezimendu iraunkorra | official (art. 32.3) |
+
+Terminology: the messages use the Basque names of the documents, as the AEAT's Basque pages and the Basque administrations do: "IFZ" (*identifikazio fiskaleko zenbakia*) for NIF, "NAN" for DNI, "AIZ" for NIE, "IFK" for the old CIF ("pertsona juridikoaren IFZ (IFK)"), "IFZ-BEZ" for the VAT number (the AEAT's term). Also "kontrol-karakterea" and "digitu". Instructions use the bare imperative ("Sartu"). The document type is interpolated in positions where it needs no case ending ("NAN honetan", "dokumentu mota hau: NAN"), so the names never have to be declined. **Decision for review:** Basque users also see the Spanish acronyms (DNI, NIF, NIE) on many forms; if the reviewers prefer them, only `TYPES` and the literal acronyms in the messages change.
+
 <!-- cspell:enable -->

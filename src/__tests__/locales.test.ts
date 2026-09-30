@@ -14,6 +14,7 @@ import {
 import caDefault, { ca } from "../locales/ca";
 import enDefault, { en } from "../locales/en";
 import esDefault, { es } from "../locales/es";
+import euDefault, { eu } from "../locales/eu";
 
 // The locale objects (src/locales/): every locale has every text, the
 // interpolated values appear in the messages, validate() and
@@ -26,6 +27,7 @@ const LOCALES: [code: string, locale: NifLocale, byDefault: NifLocale][] = [
   ["en", en, enDefault],
   ["es", es, esDefault],
   ["ca", ca, caDefault],
+  ["eu", eu, euDefault],
 ];
 
 // Every key, listed by hand. The compile-time checks below fail if a key is
