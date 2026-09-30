@@ -83,6 +83,14 @@ validez
 válido
 órganos
 
+# Spanish words in the v2 messages, organisation names and docs
+carácter
+correcto
+debería
+limitada
+responsabilidad
+Sociedad
+
 # English words missing from the dictionaries
 alikes
 dotless
