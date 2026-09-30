@@ -120,7 +120,7 @@ Everything the package exports is available from the package itself, so the fix 
 What else changes for consumers, none of it breaking:
 
 - `import` and `require()` both work on Node 20 and newer and in every bundler. TypeScript finds the right declarations for each (`.d.mts` for `import`, `.d.cts` for `require`). Old tools that ignore `exports` still resolve `main`, `module` and `types`.
-- The package declares `"sideEffects": false`, so bundlers drop what you don't import. `import { isValidDni }` adds about 1 kB minified and gzipped and does not bundle the error messages or the organisation names.
+- The package declares `"sideEffects": false`, so bundlers drop what you don't import. `import { isValidDni }` adds about 0.6 kB minified and gzipped and does not bundle the error messages or the organisation names.
 - The emitted code is ES2016, as in v1, so it runs in every current browser without transpiling.
 
 **Restore v1:** not possible for deep imports; import from the package root.

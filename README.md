@@ -35,7 +35,7 @@ computeControlCharacter("B1234567"); // "4"
 
 Also new: `getNifType`, `describeCifOrganisation`, `isValidSpanishVat` (format only, not a VIES check), and the `rejectPlaceholders`, `types`, `allowVatPrefix` and `locale` options. Every function is fully typed and documented, and none throws on untrusted input (except the deprecated `replaceNieLetter`).
 
-The package ships ES modules and CommonJS, each with its own type declarations, and tree-shakes: `import { isValidDni }` adds about 1 kB minified and gzipped, without the error messages.
+The package ships ES modules and CommonJS, each with its own type declarations, and tree-shakes: `import { isValidDni }` adds about 0.6 kB minified and gzipped, without the error messages.
 
 **Feel like supporting this free plugin?**
 
