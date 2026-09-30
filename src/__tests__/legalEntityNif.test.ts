@@ -49,6 +49,27 @@ describe("CIF-3: the control type depends only on the organisation key (#33)", (
     expect(isValidCif("B0012345E")).toBe(false));
 });
 
+describe("CIF-3: N takes a letter control (#38)", () => {
+  it("CIF-3: N requires a letter control, so N18478586 is invalid", () =>
+    expect(isValidCif("N18478586")).toBe(false));
+
+  it("CIF-3: N1234567D is valid", () =>
+    expect(isValidCif("N1234567D")).toBe(true));
+
+  it("CIF-3: N12345674 is invalid (digit control)", () =>
+    expect(isValidCif("N12345674")).toBe(false));
+
+  it("CIF-3: n1234567d is valid (NORM-1)", () =>
+    expect(isValidCif("n1234567d")).toBe(true));
+
+  it("CIF-3: isValidCifControlCode rejects a digit control for N", () =>
+    expect(isValidCifControlCode("N18478586")).toBe(false));
+
+  // v1 keeps the lenient behaviour for C D F G J U V; v2 makes them digit-only.
+  it("CIF-3: G1234567D keeps its v1 behaviour (lenient until v2)", () =>
+    expect(isValidCif("G1234567D")).toBe(true));
+});
+
 describe("NORM-1: CIF validation is case-insensitive (#33)", () => {
   it("NORM-1: p1234567d gives the same result as P1234567D", () => {
     expect(isValidCif("P1234567D")).toBe(true);

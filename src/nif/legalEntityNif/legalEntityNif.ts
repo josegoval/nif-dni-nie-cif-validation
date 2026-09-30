@@ -2,7 +2,10 @@ export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
 export const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJNPQRSUVW][\d]{7}[\dA-J]$/i;
 // CIF-3 (AEAT D.I.T. 2008): the control type depends only on the
 // organisation key. There is no "number starts with 00" rule.
-const HAS_CONTROL_LETTER_REGEX = /^[PQRSW]/;
+// Letter control: N P Q R S W.
+const HAS_CONTROL_LETTER_REGEX = /^[NPQRSW]/;
+// Digit control: A B E H.
+// TODO(v2, #38): C D F G J U V are digit-only per CIF-3
 const HAS_CONTROL_NUMBER_REGEX = /^[ABEH]/;
 
 function sumEvenPositions(legalEntityNumbers: string): number {
@@ -65,6 +68,7 @@ function hasValidControlCode(legalEntityNif: string): boolean {
   if (isControlCodeNumber(legalEntityNif))
     return controlNumber === +controlCodeToVerify;
 
+  // C D F G J U V: v1 still accepts either a letter or a digit (see TODO).
   return isNaN(+controlCodeToVerify)
     ? LEGAL_ENTITY_CONTROL_LETTERS[controlNumber] === controlCodeToVerify
     : controlNumber === +controlCodeToVerify;
