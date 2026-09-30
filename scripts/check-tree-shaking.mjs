@@ -36,6 +36,7 @@ const PACKAGE = "nif-dni-nie-cif-validation";
 const LOCALES = {
   en: ["The control character is not correct", "Limited liability company"],
   es: ["El carácter de control", "Sociedad de responsabilidad limitada"],
+  ca: ["El caràcter de control", "Societat de responsabilitat limitada"],
 };
 const CODES = Object.keys(LOCALES);
 const localeModule = (code) => `locales/${code}.mjs`;

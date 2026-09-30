@@ -36,3 +36,11 @@ ignoreRegExpList:
 patterns:
   - name: NonAsciiRun
     pattern: /[^\x00-\x7F]{3,}/g
+overrides:
+  # The texts of the Catalan, Basque and Galician locales, and the marker
+  # strings the tree-shaking check looks for: the project has no dictionary
+  # for these languages, and a language review checks the locales
+  # (docs/translations.md). Comments are still spell-checked.
+  - filename: "{src/locales/{ca,eu,gl}.ts,scripts/check-tree-shaking.mjs}"
+    ignoreRegExpList:
+      - string

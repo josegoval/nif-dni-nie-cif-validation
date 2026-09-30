@@ -11,6 +11,7 @@ import {
   type ValidateOptions,
   validate,
 } from "..";
+import caDefault, { ca } from "../locales/ca";
 import enDefault, { en } from "../locales/en";
 import esDefault, { es } from "../locales/es";
 
@@ -24,6 +25,7 @@ import esDefault, { es } from "../locales/es";
 const LOCALES: [code: string, locale: NifLocale, byDefault: NifLocale][] = [
   ["en", en, enDefault],
   ["es", es, esDefault],
+  ["ca", ca, caDefault],
 ];
 
 // Every key, listed by hand. The compile-time checks below fail if a key is

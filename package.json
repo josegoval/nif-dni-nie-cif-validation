@@ -37,6 +37,16 @@
         "default": "./dist/cjs/locales/es.cjs"
       }
     },
+    "./locales/ca": {
+      "import": {
+        "types": "./dist/esm/locales/ca.d.mts",
+        "default": "./dist/esm/locales/ca.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/locales/ca.d.cts",
+        "default": "./dist/cjs/locales/ca.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {

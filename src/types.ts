@@ -121,6 +121,7 @@ export interface NifMessages {
  * separate imports, so a bundle only contains the languages it imports:
  *
  * - `nif-dni-nie-cif-validation/locales/es`: Spanish (`es`)
+ * - `nif-dni-nie-cif-validation/locales/ca`: Catalan, also for Valencian (`ca`)
  * - `nif-dni-nie-cif-validation/locales/en`: English (`en`), the default
  *
  * @example

@@ -152,6 +152,10 @@ Unión
 válida
 yacente
 
+# The names of the languages of the locales, in each language
+català
+valencià
+
 # English words missing from the dictionaries
 alikes
 dotless

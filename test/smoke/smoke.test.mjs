@@ -41,7 +41,7 @@ import esDefault, { es } from "nif-dni-nie-cif-validation/locales/es";
 const cjs = createRequire(import.meta.url)("nif-dni-nie-cif-validation");
 
 // Every locale subpath (`exports`).
-const LOCALES = ["en", "es"];
+const LOCALES = ["en", "es", "ca"];
 
 describe("ES module build", () => {
   it("exports the same names as the CommonJS build", () => {
