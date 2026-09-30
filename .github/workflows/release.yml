@@ -103,7 +103,7 @@ jobs:
   # `engines.node` floor in package.json). Consumers never run our dev
   # tooling, so this job installs no dev dependencies and no pnpm: it installs
   # the tarball that `check` packed into an empty folder and runs a plain
-  # `node:test` file against it.
+  # `node:test` file against it, once with `require()` and once with `import`.
   compat:
     name: Compat (Node 20)
     needs: check
@@ -113,7 +113,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          sparse-checkout: test/smoke # only the smoke test is needed
+          sparse-checkout: test/smoke # only the smoke tests are needed
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
@@ -131,8 +131,9 @@ jobs:
           npm init -y > /dev/null
           npm install --no-audit --no-fund "$RUNNER_TEMP"/pack/*.tgz
           cp "$GITHUB_WORKSPACE/test/smoke/smoke.test.cjs" .
+          cp "$GITHUB_WORKSPACE/test/smoke/smoke.test.mjs" .
           node --version
-          node --test smoke.test.cjs
+          node --test smoke.test.cjs smoke.test.mjs
 
   release:
     name: Release
