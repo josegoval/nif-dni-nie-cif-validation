@@ -77,7 +77,7 @@ The sources import each other without file extensions (`from "./nif"`) and the t
 - `"type": "module"`: `.js` files in the repository are ES modules. The published files all have explicit `.mjs` or `.cjs` extensions.
 - `exports`: `"."` and one `"./locales/<code>"` per language, `"./generate"` and one entry point per schema adapter (`"./zod"`, `"./valibot"`, `"./yup"`), each with an `import` and a `require` condition with its own `types`, plus `"./package.json"`. Nothing else is importable, so a file moved inside `dist/` is not a breaking change. `main`, `module` and `types` are fallbacks for tools that ignore `exports`; `typesVersions` does the same for the locale, generate and adapter entry points, so TypeScript's old `node10` resolution finds their types.
 - `"sideEffects": false`: every module only declares things, so a bundler may drop a module whose exports are unused. Don't add top-level code that does work when the module loads, not even filling a lookup table (see Size budgets).
-- `files`: `dist` plus the standard files (README, LICENSE, CHANGELOG).
+- `files`: `dist` plus the standard files (README, LICENSE, CHANGELOG) and the files for AI assistants (`llms.txt`, `llms-full.txt`, `AGENTS.md`), so an agent that only sees `node_modules` finds them.
 
 The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it runs in every current browser without transpiling. ES2018 would emit the same code, because the sources use nothing that TypeScript rewrites between the two. `pnpm check:es` runs `es-check` on both builds: no syntax and no built-in newer than ES2016 (ES2016 is a real floor: `Array.prototype.includes` is in `policy.ts`). Raise the `target` and that check together, and never to something your browser support doesn't cover.
 
@@ -145,7 +145,7 @@ Every validation branch in `src/` cites the rule it implements in a comment (`//
 
 ### Docs for AI assistants
 
-`llms.txt` (written by hand, under about 2,000 tokens, every snippet run by `readme-examples.test.ts`) and `llms-full.txt` (generated) follow the [llms.txt](https://llmstxt.org/) convention. `pnpm docs:llms` (`scripts/llms-full.mjs`) assembles `llms-full.txt` from README.md, docs/api-design.md, MIGRATION.md and SPEC.md, without the README's HTML and comments and with absolute links; CI runs `pnpm docs:llms --check`. So after changing any of those files, or running `pnpm readme:bench`, run `pnpm docs:llms` and commit `llms-full.txt` with them. Keep both files factual: no instructions aimed at agents that a human reader wouldn't see.
+`llms.txt` (written by hand, under about 2,000 tokens, every snippet run by `readme-examples.test.ts`) and `llms-full.txt` (generated) follow the [llms.txt](https://llmstxt.org/) convention and ship in the npm package, with `AGENTS.md`. `pnpm docs:llms` (`scripts/llms-full.mjs`) assembles `llms-full.txt` from README.md, docs/api-design.md, MIGRATION.md and SPEC.md, without the README's HTML and comments and with absolute links; CI runs `pnpm docs:llms --check`. So after changing any of those files, or running `pnpm readme:bench`, run `pnpm docs:llms` and commit `llms-full.txt` with them. Keep both files factual: no instructions aimed at agents that a human reader wouldn't see.
 
 ### Spelling
 

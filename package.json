@@ -145,7 +145,10 @@
     "dist",
     "README.md",
     "LICENSE",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "llms.txt",
+    "llms-full.txt",
+    "AGENTS.md"
   ],
   "repository": {
     "type": "git",
