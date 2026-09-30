@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: coverage/lcov-report/
+          path: coverage/html/
           retention-days: 14
       # `prepack` builds dist/. Pack into a separate folder so script output
       # (e.g. Husky's "skip install" notice) can't corrupt the filename.

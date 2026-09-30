@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { isValidCif, isValidCifControlCode, isValidLegalEntityNif } from "..";
 
 const testCases = [

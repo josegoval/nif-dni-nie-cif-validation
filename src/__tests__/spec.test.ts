@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { isValidCif, isValidDni, isValidNie, isValidNif } from "..";
 
 // Test values from the official rules spec (issue #36), checked against the

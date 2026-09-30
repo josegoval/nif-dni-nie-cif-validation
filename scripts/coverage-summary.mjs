@@ -1,4 +1,4 @@
-// Turns coverage/coverage-summary.json (Jest "json-summary" reporter) into a
+// Turns coverage/coverage-summary.json (the "json-summary" coverage reporter) into a
 // Markdown table. In GitHub Actions it is appended to the job summary;
 // locally it is printed to stdout.
 import { appendFileSync, readFileSync } from "node:fs";

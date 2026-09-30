@@ -4,12 +4,12 @@ Thanks for helping improve `nif-dni-nie-cif-validation`.
 
 ## Development setup
 
-The package manager is [pnpm](https://pnpm.io/). The exact version is pinned in `packageManager` in `package.json`; with [Corepack](https://nodejs.org/api/corepack.html) enabled (`corepack enable`) or a recent pnpm, the right version is used automatically. The release pipeline needs Node 24 (any Node 20, 22 or 24 works for development).
+The package manager is [pnpm](https://pnpm.io/). The exact version is pinned in `packageManager` in `package.json`; with [Corepack](https://nodejs.org/api/corepack.html) enabled (`corepack enable`) or a recent pnpm, the right version is used automatically. Development needs Node 22.12 or newer (Vitest 5 requires it) and the release pipeline runs on Node 24. The published package itself supports Node 20 and newer.
 
 ```sh
 pnpm install --frozen-lockfile   # also installs the Husky commit-msg hook
 pnpm typecheck                   # tsc --noEmit
-pnpm test                        # Jest, with coverage
+pnpm test                        # Vitest, with coverage (100% enforced)
 pnpm build                       # compiles to dist/
 ```
 
@@ -91,4 +91,4 @@ Do not run `npm publish` by hand. The `prepack` script builds `dist/` so a tarba
 Coverage never leaves GitHub; there is no third-party service:
 
 - Every CI run on Node 24 writes a coverage table to the run's **job summary** (`scripts/coverage-summary.mjs`) and uploads the HTML report as the `coverage-report` artifact.
-- Run `pnpm test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/lcov-report/index.html`.
+- Run `pnpm test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/html/index.html`.
