@@ -27,8 +27,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          # Pull requests need the history to lint every commit.
-          fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
+          # Full history so commitlint can walk the PR's commits. (Don't use
+          # `cond && 0 || 1`: expressions treat 0 as false.)
+          fetch-depth: 0
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
@@ -48,11 +49,12 @@ jobs:
         run: yarn test
       # Coverage stays inside GitHub: a table in the job summary and the
       # HTML report as a downloadable artifact. No third-party service.
+      # Also runs when the coverage threshold fails, but only if tests ran.
       - name: Coverage summary
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('coverage/coverage-summary.json') != '' }}
         run: node scripts/coverage-summary.mjs
       - name: Upload coverage report
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('coverage/coverage-summary.json') != '' }}
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
