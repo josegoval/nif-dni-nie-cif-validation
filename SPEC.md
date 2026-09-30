@@ -163,19 +163,19 @@ Policy (valid by default, rejected with `rejectPlaceholders`): `00000000T` · `0
 
 ## Source URLs
 
-Live status checked on 2026-09-30. Archive links are the closest Wayback Machine snapshot available at that date; no new captures were requested.
+Live status checked on 2026-09-30 with `curl -sI -L`. Archive links should point to the closest Wayback Machine snapshot (queried through `https://archive.org/wayback/available?url=<url>`, without requesting new captures). On 2026-09-30 that API answered HTTP 429 (Too Many Requests) to every query, including after several retries with back-off, so no snapshot could be resolved yet. Until the links are filled in, each entry says "archive: check manually", and you can look a page up at `https://web.archive.org/web/*/<url>`.
 
-- RD 1065/2007: <https://www.boe.es/buscar/act.php?id=BOE-A-2007-15984>
-- Orden EHA/451/2008 (consolidated): <https://www.boe.es/buscar/act.php?id=BOE-A-2008-3580>
-- Orden HAP/5/2016: <https://www.boe.es/buscar/doc.php?id=BOE-A-2016-358>
-- Orden INT/2058/2008: <https://www.boe.es/buscar/doc.php?id=BOE-A-2008-12050>
-- Orden 7/2/1997 (consolidated): <https://www.boe.es/buscar/act.php?id=BOE-A-1997-3364>
-- RD 255/2025 (DNI): <https://www.boe.es/buscar/act.php?id=BOE-A-2025-6601>
-- RD 1155/2024 (extranjería): <https://www.boe.es/buscar/act.php?id=BOE-A-2024-24099>
-- Decreto 2423/1975 (repealed): <https://www.boe.es/buscar/doc.php?id=BOE-A-1975-21698>
-- Interior, check-letter calculation: <https://www.interior.gob.es/opencms/es/servicios-al-ciudadano/tramites-y-gestiones/dni/calculo-del-digito-de-control-del-nif-nie/>
-- AEAT, NIF of natural persons: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-fisicas.html>
-- AEAT, NIF of legal entities: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html>
-- AEAT D.I.T. note (CAIB copy): <https://www.caib.es/sites/civitasmanualsisuport/f/41519>
-- AEAT, checking the NIF of third parties (census check, not format): <https://sede.agenciatributaria.gob.es/Sede/ayuda/consultas-informaticas/presentacion-declaraciones-ayuda-tecnica/modelo-030/comprobacion-nif-terceros-efectos-censales.html>
-- ESNIC placeholder examples (secondary): <https://www.openprovider.com/es/blog/comunicado-esnic>
+- RD 1065/2007: <https://www.boe.es/buscar/act.php?id=BOE-A-2007-15984> (archive: check manually)
+- Orden EHA/451/2008 (consolidated): <https://www.boe.es/buscar/act.php?id=BOE-A-2008-3580> (archive: check manually)
+- Orden HAP/5/2016: <https://www.boe.es/buscar/doc.php?id=BOE-A-2016-358> (archive: check manually)
+- Orden INT/2058/2008: <https://www.boe.es/buscar/doc.php?id=BOE-A-2008-12050> (archive: check manually)
+- Orden 7/2/1997 (consolidated): <https://www.boe.es/buscar/act.php?id=BOE-A-1997-3364> (archive: check manually)
+- RD 255/2025 (DNI): <https://www.boe.es/buscar/act.php?id=BOE-A-2025-6601> (archive: check manually)
+- RD 1155/2024 (extranjería): <https://www.boe.es/buscar/act.php?id=BOE-A-2024-24099> (archive: check manually)
+- Decreto 2423/1975 (repealed): <https://www.boe.es/buscar/doc.php?id=BOE-A-1975-21698> (archive: check manually)
+- Interior, check-letter calculation: <https://www.interior.gob.es/opencms/es/servicios-al-ciudadano/tramites-y-gestiones/dni/calculo-del-digito-de-control-del-nif-nie/> (live: HTTP 403 to automated requests, probably bot blocking; archive: check manually)
+- AEAT, NIF of natural persons: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-fisicas.html> (archive: check manually)
+- AEAT, NIF of legal entities: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html> (archive: check manually)
+- AEAT D.I.T. note (CAIB copy): <https://www.caib.es/sites/civitasmanualsisuport/f/41519> (archive: check manually)
+- AEAT, checking the NIF of third parties (census check, not format): <https://sede.agenciatributaria.gob.es/Sede/ayuda/consultas-informaticas/presentacion-declaraciones-ayuda-tecnica/modelo-030/comprobacion-nif-terceros-efectos-censales.html> (archive: check manually)
+- ESNIC placeholder examples (secondary): <https://www.openprovider.com/es/blog/comunicado-esnic> (archive: check manually)
