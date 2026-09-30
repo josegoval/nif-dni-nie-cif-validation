@@ -158,7 +158,7 @@ describe("v2 API", () => {
 });
 
 // Every locale subpath (`exports`), required as CommonJS.
-const LOCALES = ["en", "es", "ca", "eu"];
+const LOCALES = ["en", "es", "ca", "eu", "gl"];
 
 describe("locales", () => {
   for (const code of LOCALES) {

@@ -43,6 +43,7 @@ Messages and organisation names are in English by default. Each other language i
 | Spanish (español) | `import { es } from "nif-dni-nie-cif-validation/locales/es"` |
 | Catalan (català), also for Valencian (valencià) | `import { ca } from "nif-dni-nie-cif-validation/locales/ca"` |
 | Basque (euskara) | `import { eu } from "nif-dni-nie-cif-validation/locales/eu"` |
+| Galician (galego) | `import { gl } from "nif-dni-nie-cif-validation/locales/gl"` |
 | English (the default) | `import { en } from "nif-dni-nie-cif-validation/locales/en"` |
 
 Pass the object, not its code: `validate(value, { locale: es })`, `describeCifOrganisation("B", es)`. A string such as `"es"` is ignored and gives English.

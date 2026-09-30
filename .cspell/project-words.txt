@@ -32,6 +32,7 @@ Orden
 RGAT
 Sede
 Subsecretaría
+Xunta
 
 # Spanish words quoted from the official sources in SPEC.md
 Alfabético
@@ -156,8 +157,9 @@ yacente
 
 # The names of the languages of the locales, in each language
 català
-valencià
 euskara
+galego
+valencià
 
 # English words missing from the dictionaries
 alikes

@@ -82,4 +82,34 @@ All 17 names are **official**, from an official Basque text of the same key list
 
 Terminology: the messages use the Basque names of the documents, as the AEAT's Basque pages and the Basque administrations do: "IFZ" (*identifikazio fiskaleko zenbakia*) for NIF, "NAN" for DNI, "AIZ" for NIE, "IFK" for the old CIF ("pertsona juridikoaren IFZ (IFK)"), "IFZ-BEZ" for the VAT number (the AEAT's term). Also "kontrol-karakterea" and "digitu". Instructions use the bare imperative ("Sartu"). The document type is interpolated in positions where it needs no case ending ("NAN honetan", "dokumentu mota hau: NAN"), so the names never have to be declined. **Decision for review:** Basque users also see the Spanish acronyms (DNI, NIF, NIE) on many forms; if the reviewers prefer them, only `TYPES` and the literal acronyms in the messages change.
 
+## Galician (`gl`, `locales/gl`)
+
+All 17 names are **official**: the AEAT's Galician page on the NIF of legal entities, which lists the keys of the Order (arts. 3 to 5, as amended by Orden HAP/5/2016), put in the singular.
+
+- Source: <https://sede.agenciatributaria.gob.es/Sede/gl_es/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html>
+
+| Key | Name (singular) | Source |
+| --- | --- | --- |
+| A | Sociedade anónima | official (AEAT gl) |
+| B | Sociedade de responsabilidade limitada | official (AEAT gl) |
+| C | Sociedade colectiva | official (AEAT gl) |
+| D | Sociedade comanditaria | official (AEAT gl) |
+| E | Comunidade de bens, herdanza xacente ou outra entidade carente de personalidade xurídica non incluída expresamente noutras claves | official (AEAT gl) |
+| F | Sociedade cooperativa | official (AEAT gl) |
+| G | Asociación | official (AEAT gl) |
+| H | Comunidade de propietarios en réxime de propiedade horizontal | official (AEAT gl) |
+| J | Sociedade civil | official (AEAT gl) |
+| N | Entidade estranxeira | official (AEAT gl, summary table) |
+| P | Corporación local | official (AEAT gl) |
+| Q | Organismo público | official (AEAT gl) |
+| R | Congregación ou institución relixiosa | official (AEAT gl) |
+| S | Órgano da Administración do Estado ou dunha comunidade autónoma | official (AEAT gl) |
+| U | Unión temporal de empresas | official (AEAT gl; the page labels the key "Ou", a machine-translation slip for "U") |
+| V | Outro tipo non definido no resto de claves | official (AEAT gl) |
+| W | Establecemento permanente dunha entidade non residente en territorio español | official (AEAT gl, art. 5 wording) |
+
+Some names are spelled the same as in Spanish ("Asociación", "Corporación local", "Organismo público", "Unión temporal de empresas"): that is correct Galician.
+
+Terminology: "carácter de control"; "NIF", "NIE", "NIF K/L/M", "NIF de persoa xurídica (CIF)"; "díxito"; "NIF-IVE" for the VAT number (IVE, *imposto sobre o valor engadido*, the AEAT's Galician term). The user is addressed formally ("Introduza"), as Galician software localisation and the Xunta usually do. "Aquí non se admite ningún DNI" uses *ningún*, the natural negative.
+
 <!-- cspell:enable -->

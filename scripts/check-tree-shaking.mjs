@@ -38,6 +38,7 @@ const LOCALES = {
   es: ["El carácter de control", "Sociedad de responsabilidad limitada"],
   ca: ["El caràcter de control", "Societat de responsabilitat limitada"],
   eu: ["Kontrol-karakterea ez da zuzena", "Erantzukizun mugatuko sozietatea"],
+  gl: ["O carácter de control", "Sociedade de responsabilidade limitada"],
 };
 const CODES = Object.keys(LOCALES);
 const localeModule = (code) => `locales/${code}.mjs`;

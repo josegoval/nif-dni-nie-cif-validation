@@ -57,6 +57,16 @@
         "default": "./dist/cjs/locales/eu.cjs"
       }
     },
+    "./locales/gl": {
+      "import": {
+        "types": "./dist/esm/locales/gl.d.mts",
+        "default": "./dist/esm/locales/gl.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/locales/gl.d.cts",
+        "default": "./dist/cjs/locales/gl.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
