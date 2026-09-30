@@ -190,6 +190,7 @@
     "bench:report": "node bench/report.mjs",
     "readme:bench": "node scripts/readme-bench.mjs",
     "docs:llms": "node scripts/llms-full.mjs",
+    "docs:jsdoc": "pnpm build && node scripts/check-jsdoc.mjs",
     "format": "biome check --write .",
     "size": "pnpm build && size-limit",
     "check:es": "pnpm build && es-check es2016 \"dist/cjs/**/*.cjs\" --checkFeatures && es-check es2016 \"dist/esm/**/*.mjs\" --module --checkFeatures"
