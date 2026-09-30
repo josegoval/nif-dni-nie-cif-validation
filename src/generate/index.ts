@@ -40,9 +40,12 @@ export type { CifControl, DniKind, NiePrefix };
 /**
  * Options that every generator takes.
  * @example
- * generateDni({ seed: 42 }); // the same value every time
+ * generateDni({ seed: 42 }); // "60110375J"
+ * generateDni({ seed: 42 }); // "60110375J": the same seed gives the same value
  * @example
- * generateNie(); // a different value every time (Math.random)
+ * isValidNie(generateNie()); // true: without a seed, a different value every time
+ * @see SPEC.md#dni-1
+ * @since 2.0.0
  */
 export interface GenerateOptions {
   /**
@@ -62,6 +65,8 @@ export interface GenerateOptions {
  * generateDni({ seed: 1, format: true });  // "62707394-X"
  * @example
  * generateCif({ seed: 1, orgKey: "B", format: { separator: " " } }); // "B 6270739 3"
+ * @see SPEC.md#cif-1
+ * @since 2.0.0
  */
 export interface GenerateFormatOptions {
   /**
@@ -76,6 +81,10 @@ export interface GenerateFormatOptions {
  * Options of {@link generateDni}.
  * @example
  * generateDni({ seed: 1, kind: "K" }); // "K6270739L": K + 7 digits + letter
+ * @example
+ * generateDni({ seed: 1, kind: "K", format: true }); // "K-6270739-L"
+ * @see SPEC.md#klm-1
+ * @since 2.0.0
  */
 export interface GenerateDniOptions
   extends GenerateOptions,
@@ -91,6 +100,10 @@ export interface GenerateDniOptions
  * Options of {@link generateNie}.
  * @example
  * generateNie({ seed: 1, prefix: "Z" }); // "Z6270739R"
+ * @example
+ * generateNie({ seed: 1, prefix: "Y", format: { separator: " " } }); // "Y 6270739 X"
+ * @see SPEC.md#nie-1
+ * @since 2.0.0
  */
 export interface GenerateNieOptions
   extends GenerateOptions,
@@ -105,6 +118,8 @@ export interface GenerateNieOptions
  * generateCif({ seed: 1, orgKey: "B" }); // "B62707393": a digit control
  * @example
  * generateCif({ seed: 1, control: "letter" }); // "R0027357C": N P Q R S or W
+ * @see SPEC.md#cif-3
+ * @since 2.0.0
  */
 export interface GenerateCifOptions
   extends GenerateOptions,
@@ -126,6 +141,10 @@ export interface GenerateCifOptions
  * Options of {@link generateNif}.
  * @example
  * generateNif({ seed: 1, types: ["DNI", "NIE"] }); // "X5274470H": a DNI or an NIE
+ * @example
+ * generateNif({ seed: 1, types: ["CIF"] }); // "A52744703"
+ * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export interface GenerateNifOptions
   extends GenerateOptions,
@@ -141,6 +160,10 @@ export interface GenerateNifOptions
  * Options of {@link generateInvalid}.
  * @example
  * generateInvalid("CIF", { seed: 1, reason: "INVALID_LENGTH" }); // "P0027C"
+ * @example
+ * generateInvalid("DNI", { seed: 1 }); // "62707394A": the default, a wrong control letter
+ * @see SPEC.md#dni-2
+ * @since 2.0.0
  */
 export interface GenerateInvalidOptions extends GenerateOptions {
   /**
@@ -183,6 +206,7 @@ function output(
  * generateDni({ seed: 1, kind: "K", format: true }); // "K-6270739-L"
  * @see SPEC.md#dni-1
  * @see SPEC.md#klm-2
+ * @since 2.0.0
  */
 export function generateDni(opts: GenerateDniOptions = {}): string {
   return output(buildDni(randomFor(opts?.seed), opts?.kind), opts);
@@ -207,6 +231,7 @@ export function generateDni(opts: GenerateDniOptions = {}): string {
  * generateNie({ seed: 1, prefix: "Y", format: { separator: " " } }); // "Y 6270739 X"
  * @see SPEC.md#nie-1
  * @see SPEC.md#nie-2
+ * @since 2.0.0
  */
 export function generateNie(opts: GenerateNieOptions = {}): string {
   return output(buildNie(randomFor(opts?.seed), opts?.prefix), opts);
@@ -236,10 +261,11 @@ export function generateNie(opts: GenerateNieOptions = {}): string {
  * generateCif({ seed: 1, orgKey: "B" }); // always "B62707393"
  * generateCif({ seed: 1, orgKey: "P" }); // "P6270739C": P takes a letter
  * @example
- * generateCif({ control: "letter" });            // N, P, Q, R, S or W
- * generateCif({ orgKey: "B", control: "letter" }); // throws a RangeError (CIF-3)
+ * validate(generateCif({ control: "letter" })).valid; // true: N, P, Q, R, S or W
+ * generateCif({ orgKey: "B", control: "letter" }); // throws RangeError
  * @see SPEC.md#cif-3
  * @see SPEC.md#cif-4
+ * @since 2.0.0
  */
 export function generateCif(opts: GenerateCifOptions = {}): string {
   return output(
@@ -268,6 +294,7 @@ export function generateCif(opts: GenerateCifOptions = {}): string {
  * generateNif({ seed: 1, types: ["CIF"] }); // "A52744703"
  * validate(generateNif({ types: ["CIF"] })).type; // "CIF"
  * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export function generateNif(opts: GenerateNifOptions = {}): string {
   return output(buildNif(randomFor(opts?.seed), opts?.types), opts);
@@ -312,6 +339,7 @@ export function generateNif(opts: GenerateNifOptions = {}): string {
  * const fake = generateInvalid("DNI", { reason: "PLACEHOLDER" });
  * validate(fake, { rejectPlaceholders: true }).error?.code; // "PLACEHOLDER"
  * @see SPEC.md#dni-2
+ * @since 2.0.0
  */
 export function generateInvalid(
   type: NifType,
@@ -331,6 +359,8 @@ export function generateInvalid(
  * const a = createGenerator(5).cif({ orgKey: "B" });
  * const b = createGenerator(5).cif({ orgKey: "B" });
  * a === b; // true
+ * @see SPEC.md#cif-3
+ * @since 2.0.0
  */
 export interface Generator {
   /** The next DNI, or K/L/M NIF. See {@link generateDni}. */
@@ -361,11 +391,13 @@ export interface Generator {
  * @example
  * const gen = createGenerator(2024);
  * const users = Array.from({ length: 3 }, () => ({ dni: gen.dni() }));
- * // three different DNIs, the same three on every run
+ * users.map((user) => user.dni); // ["81176236J", "71082149M", "65052588D"]
  * @example
  * const gen = createGenerator(1);
  * gen.nie({ prefix: "Z", format: true }); // "Z-6270739-R"
  * validate(gen.invalid("CIF", { reason: "INVALID_FORMAT" })).valid; // false
+ * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export function createGenerator(seed: number): Generator {
   const random = seeded(seed);

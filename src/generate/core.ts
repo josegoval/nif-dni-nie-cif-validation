@@ -28,13 +28,40 @@ import { computeControlCharacter } from "../format";
 import type { CifOrganisationKey, NifType } from "../types";
 import { describe, nextInt, pad, pick, pickChar, type Random } from "./random";
 
-/** What `generateDni` makes: a DNI, or a K, L or M NIF. */
+/**
+ * What `generateDni` makes: a DNI, or a K, L or M NIF (KLM-1).
+ * @example
+ * generateDni({ seed: 1, kind: "K" }); // "K6270739L"
+ * @example
+ * const kinds: DniKind[] = ["DNI", "K", "L", "M"];
+ * kinds.every((kind) => isValidDni(generateDni({ kind }))); // true
+ * @see SPEC.md#klm-1
+ * @since 2.0.0
+ */
 export type DniKind = "DNI" | "K" | "L" | "M";
 
-/** The prefix of an NIE. */
+/**
+ * The first letter of an NIE (NIE-1): X, Y or Z.
+ * @example
+ * generateNie({ seed: 1, prefix: "Z" }); // "Z6270739R"
+ * @example
+ * const prefix: NiePrefix = "Y";
+ * generateNie({ prefix }).startsWith("Y"); // true
+ * @see SPEC.md#nie-1
+ * @since 2.0.0
+ */
 export type NiePrefix = "X" | "Y" | "Z";
 
-/** The control character of a CIF: a digit or a letter. */
+/**
+ * The control character of a CIF: a digit or a letter (CIF-3).
+ * @example
+ * generateCif({ seed: 1, control: "letter" }); // "R0027357C"
+ * @example
+ * const control: CifControl = "digit";
+ * validate(generateCif({ control })).valid; // true
+ * @see SPEC.md#cif-3
+ * @since 2.0.0
+ */
 export type CifControl = "letter" | "digit";
 
 export const DNI_KINDS: readonly DniKind[] = ["DNI", "K", "L", "M"];
