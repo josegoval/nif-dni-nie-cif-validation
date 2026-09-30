@@ -26,6 +26,9 @@
   "author": "josegoval <josegovalmusic@gmail.com>",
   "license": "MIT",
   "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc",
     "prepare": "husky",
@@ -33,7 +36,6 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "jest --config jest.config.json"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.16.5",
     "@babel/preset-env": "^7.16.5",

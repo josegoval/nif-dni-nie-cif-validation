@@ -62,8 +62,9 @@ Keep commits atomic: one logical change per commit, with a message that explains
 ## Pull requests
 
 - Open PRs against `master`. The **CI** workflow (`.github/workflows/release.yml`) must pass before merging:
-  - `Check (Node 24)`: commit lint, type check, tests with 100% coverage enforced, coverage summary and report, then packs the tarball and checks it with `publint` and `@arethetypeswrong/cli`.
-  - `Compat (Node 20)` and `Compat (Node 22)`: the tests on older Node versions.
+  - `Check (Node 24)`: commit lint, type check, tests with 100% coverage enforced, coverage summary and report, then packs the tarball, checks it with `publint` and `@arethetypeswrong/cli` and uploads it as the `package-tarball` artifact.
+  - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke test in `test/smoke/smoke.test.cjs` with Node's built-in test runner. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` a copy of the file from there.
+  - `PR title`: checks that the pull request title is a valid Conventional Commit (see `.github/workflows/pr-title.yml`).
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.
 
 ### How to merge
