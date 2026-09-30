@@ -98,7 +98,7 @@ export function hasVatPrefix(clean: string): boolean {
 }
 
 /** NIF-1: the type selected by the first character of a canonical value. */
-function typeOf(first: number): NifType | null {
+export function typeOf(first: number): NifType | null {
   // DNI-1: a digit.
   if ((first - 48) >>> 0 < 10) return "DNI";
   // KLM-1: K, L or M.
