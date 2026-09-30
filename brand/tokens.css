@@ -25,7 +25,8 @@
   /* type */
   --brand-font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --brand-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --brand-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --brand-font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --brand-weight-regular: 400;
   --brand-weight-medium: 500;
   --brand-weight-semibold: 600;
