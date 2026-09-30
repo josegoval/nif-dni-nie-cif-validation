@@ -161,6 +161,14 @@ válida
 valores
 yacente
 
+# Catalan words of the README's example of the Catalan messages
+aquest
+caràcter
+correcte
+hauria
+responsabilitat
+Societat
+
 # The names of the languages of the locales, in each language
 català
 euskara
@@ -182,6 +190,7 @@ esbuild
 josegoval
 jsvat
 kreyo
+llms
 maistik
 npmjs
 publint
