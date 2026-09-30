@@ -1,6 +1,10 @@
 export { isValidNif, isValidNaturalPersonNif } from "./nif";
-export { isValidDniLetter, DNI_CONTROL_LETTERS } from "./shared";
-export { isValidDni, DNI_REGEX } from "./dni";
+export {
+  isValidDniLetter,
+  DNI_CONTROL_LETTERS,
+  isValidDni,
+  DNI_REGEX,
+} from "./dni";
 export { isValidNie, NIE_REGEX, replaceNieLetter } from "./nie";
 export {
   isValidLegalEntityNifControlCode,

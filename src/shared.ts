@@ -1,30 +1,11 @@
-export const DNI_CONTROL_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
-
 /**
- * Checks the control letter of a value that is already upper case.
- * Internal helper, not exported from the package entry point.
- */
-export function hasValidDniLetter(dni: string): boolean {
-  // DNI-2: letter = DNI_CONTROL_LETTERS[number mod 23].
-  // KLM-2: for K/L/M only the 7 digits count (the prefix is stripped here).
-  const letterIndex = +dni.replace(/[^\d]/g, "") % 23;
-
-  const letter = dni.slice(-1);
-  return DNI_CONTROL_LETTERS.charAt(letterIndex) === letter;
-}
-
-/**
- * Checks if the dni control code (letter) provided is valid.
+ * Upper-cases the UTF-16 code of an ASCII letter (`a`-`z`, `A`-`Z`) and
+ * returns -1 for anything else. Internal helper.
  *
- * It does include checks for DNI K, L and M.
- * @WARNING It does not check the `DNI_REGEX`.
- *
- * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
- * @param dni The value to check.
- * @returns true for valid input and false for invalid input.
+ * `code & ~32` clears the lower-case bit, but only after the range check:
+ * non-ASCII look-alikes that `toUpperCase()` maps to ASCII (U+0131 "ı" -> "I",
+ * U+017F "ſ" -> "S") must stay invalid (NORM-1 accepts lower-case ASCII only).
  */
-export function isValidDniLetter(dni: string): boolean {
-  if (typeof dni !== "string") return false;
-  // NORM-1: accept lower-case input. Upper-case once, check that value.
-  return hasValidDniLetter(dni.toUpperCase());
+export function toUpperAsciiLetter(code: number): number {
+  return ((code | 32) - 97) >>> 0 < 26 ? code & ~32 : -1;
 }

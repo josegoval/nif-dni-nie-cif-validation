@@ -1,4 +1,5 @@
-import { hasValidDniLetter } from "./shared";
+import { hasDniDigitsAndLetter } from "./dni";
+import { toUpperAsciiLetter } from "./shared";
 
 /**
  * Pattern of a NIE. It does not check the control letter.
@@ -7,10 +8,34 @@ import { hasValidDniLetter } from "./shared";
  * - NIE-3 (Orden INT/2058/2008, transitional provision; AEAT): old
  *   10-character NIEs, `X` + `0` + 7 digits + check letter (for example
  *   `X01234567L`), are still valid. Only for X: Y and Z came later.
+ *
+ * Kept as a public constant for v1 compatibility; `isValidNie` doesn't use it.
  */
 export const NIE_REGEX = /^(?:X0?|[YZ])[\d]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
 
+const NIE_LENGTH = 9;
 const OLD_NIE_LENGTH = 10;
+
+/**
+ * NIE-2 value of a NIE prefix (X -> 0, Y -> 1, Z -> 2, either case), or a
+ * number outside 0-2 for anything else. Internal helper.
+ */
+export function niePrefixValue(code: number): number {
+  return toUpperAsciiLetter(code) - 88;
+}
+
+/**
+ * NIE-3: checks an old 10-character NIE, `X` + `0` + 7 digits + letter. The
+ * canonical form drops the zero right after the X, and X counts as 0 (NIE-2),
+ * so only the 7 digits count. Internal helper; the caller checks the length.
+ */
+export function isValidOldNie(nie: string): boolean {
+  return (
+    niePrefixValue(nie.charCodeAt(0)) === 0 &&
+    nie.charCodeAt(1) === 48 &&
+    hasDniDigitsAndLetter(nie, 2, 0)
+  );
+}
 
 /**
  * Returns a new string with the nie letter (XYZ) replaced by its digit
@@ -48,17 +73,13 @@ export function replaceNieLetter(nie: string): string {
  */
 export function isValidNie(nie: string): boolean {
   if (typeof nie !== "string") return false;
-  // NIE-1 / NIE-3. The /i regex runs on the raw input: without the `u` flag
-  // it only folds ASCII letters, so look-alikes that toUpperCase() maps to
-  // ASCII (U+0131 "ı" -> "I", U+017F "ſ" -> "S") stay invalid.
-  if (!NIE_REGEX.test(nie)) return false;
-  // NORM-1: accept lower-case input. Upper-case once, check that value.
-  const upperNie = nie.toUpperCase();
-  // NIE-3: the canonical form drops the zero right after the X.
-  const canonicalNie =
-    upperNie.length === OLD_NIE_LENGTH
-      ? upperNie[0] + upperNie.slice(2)
-      : upperNie;
-  // NIE-2: X -> 0, Y -> 1, Z -> 2, then DNI-2.
-  return hasValidDniLetter(replaceNieLetter(canonicalNie));
+  const length = nie.length;
+  if (length === NIE_LENGTH) {
+    // NIE-1: X, Y or Z + 7 digits + letter. NIE-2: the prefix counts as its
+    // digit (X -> 0, Y -> 1, Z -> 2), then DNI-2.
+    const prefix = niePrefixValue(nie.charCodeAt(0));
+    return prefix >>> 0 < 3 && hasDniDigitsAndLetter(nie, 1, prefix);
+  }
+  // NIE-3: old 10-character form.
+  return length === OLD_NIE_LENGTH && isValidOldNie(nie);
 }
