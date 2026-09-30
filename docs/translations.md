@@ -135,3 +135,17 @@ Changes applied (`fix(locales): apply the native-language review`):
 A confirmation review of the changed strings follows; a native speaker's review is still welcome for every language.
 
 <!-- cspell:enable -->
+
+### Confirmation review (2026-09-30)
+
+A second Codex pass re-reviewed every string of every locale after the fixes above:
+
+| Locale | Verdict |
+|---|---|
+| ca | approve |
+| eu | approve |
+| gl | approve |
+| es | approve |
+| en | changes required, then fixed: "An NIE" (the initialism starts with a vowel sound); the unsupported-type template now reads "This … is not accepted here." so it's grammatical for every document type; organisation H follows the AEAT's English label, "Community of owners under a horizontal property regime". |
+
+All previously requested fixes (the CIF label covering legal persons and entities without legal personality, the sequence wording, and the placeholder message) were confirmed as applied in every locale.

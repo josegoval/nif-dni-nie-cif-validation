@@ -27,7 +27,7 @@ export const en: NifLocale = {
       "DNI-1": "A DNI has 9 characters: 8 digits and a letter.",
       "KLM-1":
         "A K/L/M NIF has 9 characters: K, L or M, 7 digits and a letter.",
-      "NIE-1": "A NIE has 9 characters: X, Y or Z, 7 digits and a letter.",
+      "NIE-1": "An NIE has 9 characters: X, Y or Z, 7 digits and a letter.",
       "NIE-3":
         "Only old NIEs have 10 characters: X, a 0, 7 digits and a letter.",
       "CIF-1":
@@ -43,13 +43,13 @@ export const en: NifLocale = {
         "A K/L/M NIF starts with K, L or M, followed by 7 digits and a letter.",
       "KLM-3": "The 7 characters after K, L or M must be digits.",
       "NIE-1":
-        "A NIE starts with X, Y or Z, followed by 7 digits and a letter.",
+        "An NIE starts with X, Y or Z, followed by 7 digits and a letter.",
       "CIF-1":
         "A NIF of a legal person or entity (CIF) consists of a letter, 7 digits and a control character (a digit or a letter).",
     },
     INVALID_CONTROL_CHARACTER: (type, expected) =>
       `The control character is not correct: for this ${TYPES[type]} it should be "${expected}".`,
-    UNSUPPORTED_TYPE: (type) => `A ${TYPES[type]} is not accepted here.`,
+    UNSUPPORTED_TYPE: (type) => `This ${TYPES[type]} is not accepted here.`,
     PLACEHOLDER:
       "This number is on the list of known placeholder values, which are not accepted here.",
   },
@@ -61,7 +61,7 @@ export const en: NifLocale = {
     E: "Community of property, estate in abeyance or other entity without legal personality not covered by another key",
     F: "Cooperative society",
     G: "Association",
-    H: "Community of owners under horizontal property",
+    H: "Community of owners under a horizontal property regime",
     J: "Civil partnership",
     N: "Foreign entity",
     P: "Local authority",
