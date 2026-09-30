@@ -31,23 +31,38 @@ src/
   dni.ts        DNI and K/L/M NIF (DNI-*, KLM-*)
   nie.ts        NIE (NIE-*)
   cif.ts        legal entity NIF, formerly CIF (CIF-*)
+  normalize.ts  normalize() and the boolean validators' retry path (NORM-*, NIE-3)
+  policy.ts     opt-in policies: placeholders (POLICY-1)
+  validate.ts   validate() and getNifType(): error codes and rules
+  messages.ts   error messages in English and Spanish (validate() only)
+  organisations.ts  describeCifOrganisation(): CIF organisation keys
+  vat.ts        isValidSpanishVat() (VAT-1)
+  format.ts     format() and computeControlCharacter()
   shared.ts     internal helpers
-  types.ts      public types (NifType)
+  types.ts      public types
   __tests__/    Vitest tests, one file per module plus cross-cutting suites
+test/fixtures/  SPEC test values as JSON, run by src/__tests__/fixtures.test.ts
 test/smoke/     smoke test of the packed tarball (plain Node, see Pull requests)
 bench/          benchmark against v1.0.11 and another build (see Performance)
 scripts/        CI helpers: coverage summary, SPEC rule check
 ```
 
-Each module starts with a header comment: what the document is, its format and its control algorithm, with the [SPEC.md](SPEC.md) rule IDs. The `isValid*` functions validate in a single pass with `charCodeAt`: no regex, no `split`/`replace`/template strings and no allocations on the hot path. The exported regexes (`DNI_REGEX` and so on) are public constants kept for compatibility; the validators don't use them.
+Each module starts with a header comment: what the document is, its format and its control algorithm, with the [SPEC.md](SPEC.md) rule IDs. The `isValid*` functions validate in a single pass with `charCodeAt`: no regex, no `split`/`replace`/template strings and no allocations on the hot path. With normalization on (the default), a value that fails the raw check is normalized and checked again only when normalizing could change the verdict (see `normalizedForRetry` in normalize.ts); keep that retry out of the hot function. `validate()` may allocate. The messages and organisation names live in their own modules, which the booleans must not import, so they stay out of bundles that only use the booleans. The exported regexes (`DNI_REGEX` and so on) are public constants kept for compatibility; the validators don't use them.
 
 ### Rule IDs and SPEC.md
 
-Every validation branch in `src/` cites the rule it implements in a comment (`// CIF-3`), and every rule has a test whose name starts with its ID (`it("CIF-3: ...")`, or a case table with `rule: "CIF-3"`). `pnpm spec:check` (`scripts/check-spec-rules.mjs`, also run in CI) fails if an ID in `src/` or in a test is not defined in SPEC.md, or if a SPEC rule has no test. Rules that can't have a test yet are listed, with a reason, in `NOT_TESTED_YET` inside the script; remove an entry when its test lands.
+Every validation branch in `src/` cites the rule it implements in a comment (`// CIF-3`), and every rule has a test whose name starts with its ID (`it("CIF-3: ...")`, or a case table with `rule: "CIF-3"`). `pnpm spec:check` (`scripts/check-spec-rules.mjs`, also run in CI) fails if an ID in `src/` or in a test is not defined in SPEC.md, or if a SPEC rule has no test. JSON fixtures under `test/` count as tests. Rules that can't have a test yet would be listed, with a reason, in `NOT_TESTED_YET` inside the script; it is empty since v2.
+
+### Tests
+
+- `fixtures.test.ts` runs every entry of `test/fixtures/*.json` (`{ input, expected, type, rule, note }`) against `validate()` and the booleans, with the options of its file. Add SPEC test values there.
+- `properties.test.ts` (fast-check, seeded): nothing throws, generated documents validate, `computeControlCharacter` completes them, single-character substitutions (documented exceptions in SPEC.md), `normalize` is idempotent, and the booleans always agree with `validate()`.
+- `stdnum.test.ts` compares `validate()` with stdnum on about 50,000 inputs; every difference must be in its allow-list and in SPEC.md, "Differences from other libraries".
+- Every error's `rule` must be defined in SPEC.md (tested).
 
 ### Behaviour guarantee: the differential test
 
-`src/__tests__/differential.test.ts` compares every export with the published v1.0.11, installed as the `nif-v1` dev dependency alias. It checks export names, aliases and constants, and runs every function on about 490,000 seeded inputs (valid IDs, mutations, case variants, look-alikes, every BMP code unit at the first and last position, long strings, non-strings), expecting identical results and identical errors. A refactor or performance change must keep it green. An intended behaviour change must update the test and say so in the PR, and is a breaking change if it changes what is accepted by default (see SPEC.md).
+`src/__tests__/differential.test.ts` compares every v1 export with the published v1.0.11, installed as the `nif-v1` dev dependency alias. It checks export names, aliases and constants, and runs every function, with the v1-compatible options `{ normalize: false, cifControl: "lenient" }`, on about 490,000 seeded inputs (valid IDs, mutations, case variants, look-alikes, every BMP code unit at the first and last position, long strings, non-strings), expecting identical results and identical errors. With the v2 defaults, it checks that every difference is one of the documented breaking changes (MIGRATION.md). A refactor or performance change must keep it green. An intended behaviour change must update the test and say so in the PR, and is a breaking change if it changes what is accepted by default (see SPEC.md).
 
 ### Performance
 

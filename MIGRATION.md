@@ -16,6 +16,16 @@ isValidNif(value, V1_COMPATIBLE);
 
 Use it as a stopgap for stored data, then move to the defaults.
 
+## Summary
+
+| # | Change | Who is affected | Restore v1 |
+|---|---|---|---|
+| 1 | CIF keys C D F G J U V need a digit control (CIF-3) | CIFs such as `G1234567D` stop validating | `{ cifControl: "lenient" }` |
+| 2 | Input is normalized by default (NORM-2 to NORM-4) | Values with spaces, dots, hyphens or slashes, or a DNI without its leading zeros, start validating | `{ normalize: false }` |
+| 3 | TypeScript: validators have a second parameter | `ids.filter(isValidNif)` no longer compiles | Wrap the call: `ids.filter((id) => isValidNif(id))` |
+
+Nothing else changes: every v1 export keeps its name, aliases (`isValidCif`, `isValidCifControlCode`, `CIF_REGEX`, `CIF_CONTROL_LETTERS`) and constants; `replaceNieLetter` is still deprecated and still throws exactly as in v1; the package is still CommonJS with type declarations.
+
 ## Breaking changes
 
 ### 1. CIF keys C, D, F, G, J, U and V need a digit control (#38)
@@ -87,3 +97,32 @@ ids.filter((id) => isValidNif(id));
 At runtime nothing changes: a number (or `null`) as options is ignored, so plain JavaScript code keeps working.
 
 **Restore v1:** not needed at runtime; in TypeScript, wrap the call as above.
+
+## New in v2 (not breaking)
+
+All of these are additions; see the JSDoc of each function and [docs/api-design.md](docs/api-design.md).
+
+- `validate(value, opts)` returns `{ valid, type, normalized, error?, meta? }`: the document type, its canonical form, and for invalid values an error code, the [SPEC.md](SPEC.md) rule that failed, a message in English or Spanish (`locale: "es"`), and the expected control character.
+
+  ```ts
+  validate("12345678A");
+  // { valid: false, type: "DNI", normalized: "12345678A",
+  //   error: { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+  //            message: 'The control character is not correct: for this DNI it should be "Z".' } }
+  ```
+
+- `getNifType(value)`: the document type from its format, without checking the control character.
+- `normalize(value)`: the canonical form to store, for example `"12345678Z"` for `" 12.345.678-z "`.
+- `format(value, { separator })`: `"12345678-Z"`, `"X-1234567-L"`, `"B-1234567-4"`, or `null` if invalid.
+- `computeControlCharacter(partial)`: `"Z"` for `"12345678"`, `"4"` for `"B1234567"`.
+- `describeCifOrganisation(key, locale)`: `"Limited liability company"` for `"B"`.
+- `isValidSpanishVat(value)`: `ES` + a valid NIF. It checks the format only, not whether the number is registered in VIES.
+- Options: `rejectPlaceholders` (reject `00000000T`, `00000001R`, `99999999R`, `X0000000T`), and for `validate` also `types`, `allowVatPrefix` and `locale`.
+- Types: `NifType`, `NifErrorCode`, `NifLocale`, `CifControlMode`, `ValidateOptions`, `IsValidOptions`, `GetNifTypeOptions`, `ValidationResult`, `NifValidationError`, `CifOrganisationMeta`, `FormatOptions`.
+
+## Checklist
+
+1. Upgrade, and run your tests.
+2. If stored CIFs with a letter control for C D F G J U V must stay valid, pass `{ cifControl: "lenient" }` where you validate them, and plan to fix the data (the AEAT assigns a digit to those keys).
+3. If some code relied on `false` for values with separators (for example to force users to type the canonical form), pass `{ normalize: false }`, or better, store `normalize(value)`.
+4. In TypeScript, replace `array.filter(isValidX)` with an arrow function.

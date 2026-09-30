@@ -21,6 +21,10 @@ Last verified: 2026-09-30
   - [Opt-in policies](#opt-in-policies-off-by-default)
 - [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis)
 - [Decisions](#decisions)
+  - [How input cleanup works](#how-input-cleanup-works-settled-by-the-v2-api-2026-09-30)
+  - [Type detection is format-based](#type-detection-is-format-based-getniftype-settled-2026-09-30)
+  - [Display format](#display-format-format-settled-2026-09-30)
+  - [Single-character substitutions](#single-character-substitutions-checked-by-the-property-tests)
 - [Known conflicts between sources](#known-conflicts-between-sources)
 - [Open questions](#open-questions)
 - [Differences from other libraries](#differences-from-other-libraries)
@@ -146,6 +150,43 @@ These rules are not in any official source. They never apply unless the caller a
 - An opt-in option `cifControl: "lenient"` keeps the legacy behaviour (either a letter or a digit) for these keys, for old data.
 - v1.x kept accepting either a letter or a digit for C, D, F, G, J, U and V, so existing users were not broken. 2.0.0 implements the decision: `cifControl` defaults to `"official"`, and `{ cifControl: "lenient" }` restores the v1 behaviour (see MIGRATION.md).
 - The keys A, B, E and H (digit) and N, P, Q, R, S and W (letter) already follow CIF-3 in v1.
+
+### How input cleanup works (settled by the v2 API, 2026-09-30)
+
+NORM-1 to NORM-4 say what is ignored; the implementation (`normalize()`) settles the details:
+
+- **White space** is exactly JavaScript's `\s` (spaces, tabs, line breaks, no-break spaces, the BOM…), removed anywhere, which also trims. Dots, hyphen-minus (`-`) and slashes are removed anywhere. Other punctuation (`_`, `,`, the en dash `–`) is kept, so the value stays invalid.
+- **Case**: only ASCII letters and `ñ` are upper-cased. Non-ASCII look-alikes that `toUpperCase()` maps to ASCII letters (`ı` → `I`, `ſ` → `S`) are kept, so they never become valid.
+- **Order**: separators and case, then NIE-3 (`X0nnnnnnnL` → `XnnnnnnnL`), then NORM-4 (1 to 7 digits and a letter are left-padded to 8 digits).
+- **`normalize: false`** turns off NORM-2 to NORM-4. Lower case (NORM-1) and the old NIE form (NIE-3) are still accepted, as in v1.
+- **`ES` is not cleanup**: an `ES` prefix makes a VAT number (VAT-1), accepted only with `allowVatPrefix` or by `isValidSpanishVat`.
+
+### Type detection is format-based (`getNifType()`, settled 2026-09-30)
+
+`getNifType()` returns the type that `validate()` reports: the one selected by the first character (NIF-1), once the length, the digits and the class of the control character (a letter for DNI, K/L/M and NIE; a letter or a digit for CIF) match that type's format. It does **not** check the control character: `12345678A` is a `"DNI"` and `B1234567D` is a `"CIF"`, although both are invalid. So a non-null type never means "valid".
+
+### Display format (`format()`, settled 2026-09-30)
+
+No official source defines a display grouping. `format()` splits the canonical form into the parts the rules define, joined by a separator (`-` by default, a space, or nothing):
+
+| Type | Parts | Rules | Example |
+|---|---|---|---|
+| DNI | 8 digits · letter | DNI-1 | `12345678-Z` |
+| NIE | prefix · 7 digits · letter | NIE-1 | `X-1234567-L` |
+| K/L/M NIF | prefix · 7 digits · letter | KLM-1 | `K-1234567-L` |
+| Legal entity NIF | key · 7 digits · control | CIF-1 | `B-1234567-4` |
+
+Only valid documents are formatted (default options); `format()` returns `null` otherwise and never adds an `ES` prefix.
+
+### Single-character substitutions (checked by the property tests)
+
+Replacing one character of a valid document (positions 2 to 9) always gives an invalid one: DNI-2 changes with every digit (10^k mod 23 is never 0), CIF-4 too (doubling a digit and adding the digits of the result is a permutation), a letter in the number breaks the format, and another control character is wrong. Replacing the **first** character can give another valid document, because the prefix counts for little or nothing in the control:
+
+- K, L and M are interchangeable (KLM-2 ignores the prefix);
+- organisation keys with the same control class are interchangeable (CIF-4 ignores the key);
+- across types: a DNI starting with 0, 1 or 2 has the same letter as the NIE X, Y or Z (NIE-2) and, for 0, the K/L/M NIF with the same digits; other swaps can hit a control that happens to match.
+
+With `cifControl: "lenient"`, the digit and the letter of the same control value are both valid for C D F G J U V.
 
 ## Known conflicts between sources
 

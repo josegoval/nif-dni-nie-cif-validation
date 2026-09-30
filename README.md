@@ -9,6 +9,32 @@ with NIF (spanish identifiers) easier.
 
 Validation rules and their official sources: [SPEC.md](SPEC.md)
 
+## v2 API at a glance
+
+Version 2 follows [SPEC.md](SPEC.md) by default and explains its answers. Upgrading from v1? Read [MIGRATION.md](MIGRATION.md): there are breaking changes, and `{ normalize: false, cifControl: "lenient" }` restores the v1 results.
+
+```ts
+import {
+  validate, isValidNif, normalize, format, computeControlCharacter,
+} from "nif-dni-nie-cif-validation";
+
+validate(" b-1234567-4 ");
+// { valid: true, type: "CIF", normalized: "B12345674",
+//   meta: { orgKey: "B", orgDescription: "Limited liability company" } }
+
+validate("12345678A", { locale: "es" }).error;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+//   message: "El carácter de control no es correcto: para este DNI debería ser «Z»." }
+
+isValidNif("12.345.678-Z");          // true: input is normalized by default
+isValidNif("G1234567D");             // false: G takes a digit control (CIF-3)
+normalize(" x-0123456-7l ");         // "X1234567L"
+format("12345678z");                 // "12345678-Z"
+computeControlCharacter("B1234567"); // "4"
+```
+
+Also new: `getNifType`, `describeCifOrganisation`, `isValidSpanishVat` (format only, not a VIES check), and the `rejectPlaceholders`, `types`, `allowVatPrefix` and `locale` options. Every function is fully typed and documented, and none throws on untrusted input (except the deprecated `replaceNieLetter`).
+
 **Feel like supporting this free plugin?**
 
 <a href="https://www.buymeacoffee.com/josegoval" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>

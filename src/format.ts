@@ -14,7 +14,15 @@ import { DNI_CONTROL_LETTERS } from "./dni";
 import { areDigits, cleanup } from "./normalize";
 import { inspect, typeOf } from "./validate";
 
-/** Options of `format()`. */
+/**
+ * Options of `format()`.
+ * @example
+ * format("B12345674");                   // "B-1234567-4"
+ * format("B12345674", { separator: " " }); // "B 1234567 4"
+ * @example
+ * format(" b-1234567-4 ", { separator: "" }); // "B12345674" (canonical)
+ * @see SPEC.md#cif-1
+ */
 export interface FormatOptions {
   /** What goes between the parts: `"-"` (default), `" "` or `""`. */
   separator?: "-" | " " | "";
