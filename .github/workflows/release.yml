@@ -63,6 +63,10 @@ jobs:
       # bench/results/latest.json by `pnpm readme:bench`; fail if they drift.
       - name: Check the README sections generated from the benchmark
         run: pnpm readme:bench --check
+      # llms-full.txt is assembled from the README and the docs by
+      # `pnpm docs:llms`; fail if it is out of date with them.
+      - name: Check llms-full.txt
+        run: pnpm docs:llms --check
       - name: Typecheck
         run: pnpm typecheck
       - name: Test with coverage (100% enforced)
