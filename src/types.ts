@@ -12,10 +12,37 @@
  * - `"CIF"`: legal entity NIF, organisation key + 7 digits + control
  *   (CIF-1 to CIF-4).
  *
- * The v1 functions don't use it yet; the upcoming `validate()` API (#56)
- * reports it.
+ * `validate()` and `getNifType()` report it.
  */
 export type NifType = "DNI" | "NIE" | "CIF" | "NIF_KLM";
+
+/**
+ * Why `validate()` rejected a value. See `docs/api-design.md` for the
+ * SPEC.md rule that goes with each case.
+ *
+ * - `"NOT_A_STRING"`: the value is not a string (INPUT-1).
+ * - `"EMPTY"`: the value is empty, or only separators (INPUT-2).
+ * - `"INVALID_LENGTH"`: the wrong number of characters.
+ * - `"INVALID_FORMAT"`: the wrong characters for the document (for
+ *   example letters in the number part), or an unknown first character.
+ * - `"INVALID_CONTROL_CHARACTER"`: the format is right, the control
+ *   character is not; `error.expected` has the right one.
+ * - `"UNSUPPORTED_TYPE"`: a document of a type not in `options.types`
+ *   (POLICY-2).
+ * - `"PLACEHOLDER"`: a placeholder number, with `rejectPlaceholders`
+ *   (POLICY-1).
+ */
+export type NifErrorCode =
+  | "NOT_A_STRING"
+  | "EMPTY"
+  | "INVALID_LENGTH"
+  | "INVALID_FORMAT"
+  | "INVALID_CONTROL_CHARACTER"
+  | "UNSUPPORTED_TYPE"
+  | "PLACEHOLDER";
+
+/** Language of the messages: English (the default) or Spanish. */
+export type NifLocale = "en" | "es";
 
 /**
  * Which control characters a legal entity NIF (CIF) may have (CIF-3):
@@ -31,10 +58,16 @@ export type NifType = "DNI" | "NIE" | "CIF" | "NIF_KLM";
 export type CifControlMode = "official" | "lenient";
 
 /**
- * Options of the boolean validators (`isValidNif` and the others). Every
- * option is optional and defaults to the official behaviour.
+ * Options of `validate()`. Every option is optional and defaults to the
+ * official behaviour.
  */
-export interface IsValidOptions {
+export interface ValidateOptions {
+  /**
+   * Accept only these document types. A valid document of another type
+   * gives `UNSUPPORTED_TYPE` (POLICY-2). Default: every type.
+   * @see SPEC.md#policy-2
+   */
+  types?: NifType[];
   /**
    * Normalize the input before validating it (default `true`): remove white
    * space and dots (NORM-2), hyphens and slashes (NORM-3), left-pad a DNI
@@ -59,4 +92,52 @@ export interface IsValidOptions {
    * @see SPEC.md#policy-1
    */
   rejectPlaceholders?: boolean;
+  /** Language of `error.message` (default `"en"`). */
+  locale?: NifLocale;
+}
+
+/**
+ * Options of the boolean validators (`isValidNif` and the others): the
+ * options of `validate()` that change the verdict.
+ */
+export type IsValidOptions = Pick<
+  ValidateOptions,
+  "normalize" | "cifControl" | "rejectPlaceholders"
+>;
+
+/** Options of `getNifType()`: the options that change what is parsed. */
+export type GetNifTypeOptions = Pick<ValidateOptions, "normalize">;
+
+/** Why a value is invalid. */
+export interface NifValidationError {
+  /** What went wrong. */
+  code: NifErrorCode;
+  /** A message for the user, in the requested locale. */
+  message: string;
+  /** The SPEC.md rule ID that failed, for example `"DNI-2"`. */
+  rule: string;
+  /**
+   * The correct control character, only with
+   * `INVALID_CONTROL_CHARACTER`.
+   */
+  expected?: string;
+}
+
+/** The result of `validate()`. */
+export interface ValidationResult {
+  /** Whether the value is a valid document (with the given options). */
+  valid: boolean;
+  /**
+   * The document type, as soon as the format is recognisable, even if the
+   * control character is wrong. `null` otherwise.
+   */
+  type: NifType | null;
+  /**
+   * The canonical official form (upper case, no separators, old NIE form
+   * collapsed, short DNI padded), when the format is recognisable. `null`
+   * otherwise.
+   */
+  normalized: string | null;
+  /** Why the value is invalid; absent when it is valid. */
+  error?: NifValidationError;
 }

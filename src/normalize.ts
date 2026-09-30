@@ -85,6 +85,26 @@ export function cleanup(value: string): string {
   return clean;
 }
 
+/**
+ * NORM-1 only: upper-cases ASCII letters and ñ, without removing anything.
+ * What `normalize: false` still accepts, as v1 did. Returns `value` itself
+ * when nothing changes. Internal helper.
+ */
+export function upperCase(value: string): string {
+  const length = value.length;
+  let i = 0;
+  while (i < length && !isLowerCaseLetter(value.charCodeAt(i))) i++;
+  if (i === length) return value;
+  let upper = value.slice(0, i);
+  for (; i < length; i++) {
+    const code = value.charCodeAt(i);
+    upper += isLowerCaseLetter(code)
+      ? String.fromCharCode(code - 32)
+      : value.charAt(i);
+  }
+  return upper;
+}
+
 /** NIE-3: `X` + `0` + 7 digits + letter. */
 const OLD_NIE_LENGTH = 10;
 /** DNI-1: 8 digits + letter. */

@@ -41,7 +41,7 @@ const CIF_LENGTH = 9;
 // organisation key. There is no "number starts with 00" rule.
 export const NOT_A_KEY = 0;
 /** A B E H: digit control, in both modes. */
-export const DIGIT_CONTROL = 1;
+const DIGIT_CONTROL = 1;
 /** N P Q R S W: letter control, in both modes. */
 export const LETTER_CONTROL = 2;
 /**

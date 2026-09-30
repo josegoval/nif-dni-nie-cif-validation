@@ -85,12 +85,30 @@ válido
 órganos
 
 # Spanish words in the v2 messages, organisation names and docs
+admite
+antiguos
+Aquí
 carácter
+conocido
 correcto
+debe
+deben
 debería
+ejemplo
+empezar
+español
+jurídica
 limitada
+prefijo
 responsabilidad
+seguido
+seguidos
+siguen
 Sociedad
+texto
+tiene
+tienen
+válida
 
 # English words missing from the dictionaries
 alikes

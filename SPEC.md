@@ -10,12 +10,14 @@ Last verified: 2026-09-30
 - [How to propose a change](#how-to-propose-a-change)
 - [Source tiers](#source-tiers)
 - [Rules](#rules)
+  - [Every NIF](#every-nif)
   - [Natural persons: DNI](#natural-persons-dni)
   - [Natural persons: K / L / M NIF](#natural-persons-k--l--m-nif)
   - [Natural persons: NIE](#natural-persons-nie)
   - [Legal entities: NIF (formerly CIF)](#legal-entities-nif-formerly-cif)
   - [VAT (intra-EU)](#vat-intra-eu)
   - [Input cleanup](#input-cleanup-never-changes-validity-only-parsing)
+  - [Input contract](#input-contract-library-behaviour-no-official-content)
   - [Opt-in policies](#opt-in-policies-off-by-default)
 - [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis)
 - [Decisions](#decisions)
@@ -47,6 +49,12 @@ Last verified: 2026-09-30
 | **T4: Convention** | Industry practice with no official text | Documented. Never on by default unless it only affects input cleanup. |
 
 ## Rules
+
+### Every NIF
+
+| ID | Rule | Tier | Source |
+|---|---|---|---|
+| <a id="nif-1"></a>NIF-1 | The first character selects exactly one format: a digit (DNI-1), K L M (KLM-1), X Y Z (NIE-1) or an organisation key (CIF-2). These sets never overlap. Any other first character (for example `T`, see [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis)) is not a NIF | follows from DNI-1, KLM-1, NIE-1 and CIF-2 | RD 1065/2007 arts. 19–22 |
 
 ### Natural persons: DNI
 
@@ -101,6 +109,15 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 | <a id="norm-3"></a>NORM-3 | Hyphens and slashes are ignored | T4 | — |
 | <a id="norm-4"></a>NORM-4 | A DNI entered with fewer than 8 digits is left-padded with zeros to its canonical form | T2 (canonical) / T4 (padding input) | AEAT Sede: "los primeros pueden ser ceros" |
 
+### Input contract (library behaviour, no official content)
+
+These rules don't decide which documents are valid. They say how the library treats input that is not a document at all, so that every error can cite a rule.
+
+| ID | Rule | Tier | Source |
+|---|---|---|---|
+| <a id="input-1"></a>INPUT-1 | Only strings are validated. Any other value (`null`, numbers, objects) is rejected without being converted to a string, and no validator throws | Library contract | #40 |
+| <a id="input-2"></a>INPUT-2 | A value that is empty, or only separators (NORM-2, NORM-3), is reported as empty | Library contract | #56 |
+
 ### Opt-in policies (off by default)
 
 These rules are not in any official source. They never apply unless the caller asks for them, so the default result always follows the official rules above.
@@ -108,6 +125,7 @@ These rules are not in any official source. They never apply unless the caller a
 | ID | Rule | Tier | Source |
 |---|---|---|---|
 | <a id="policy-1"></a>POLICY-1 | Placeholder numbers `00000000T`, `00000001R`, `99999999R` and `X0000000T` are valid documents by default. With `rejectPlaceholders: true` they are rejected (error `PLACEHOLDER`), in any accepted form (lower case, old NIE form `X00000000T`, with separators) | T4 | ESNIC (.es registry) filters them as obviously fake; no law forbids them. See [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis) |
+| <a id="policy-2"></a>POLICY-2 | The caller may accept only some document types (option `types`). A document of another type is rejected (error `UNSUPPORTED_TYPE`), even when it is valid | Library option | #56 |
 
 ## Explicitly NOT implemented (no official basis)
 
@@ -115,7 +133,7 @@ These rules are not in any official source. They never apply unless the caller a
 |---|---|---|
 | "A CIF number starting with `00` must have a letter control" | No official list has ever had province code 00. It traces back to an uncited Wikipedia table | **Do not implement.** Remove the dead code; don't turn it on |
 | "C D F G J U V accept either letter or digit" | Contradicts CIF-3 (T3) | Off by default. Opt-in `cifControl: "lenient"` for legacy data (**decision approved 2026-09-30**; breaking change in v2) |
-| NIE / NIF with a `T` prefix | No official source | **Not supported** |
+| NIE / NIF with a `T` prefix | No official source | **Not supported** (rejected as [NIF-1](#nif-1)) |
 | Province-code validation for CIFs | Repealed; random since 2008 | **Not implemented** |
 | Rejecting 00000000T, 00000001R, 99999999R, X0000000T | No law forbids them; ESNIC (.es registry) filters them as obviously fake | Valid by default. Opt-in `rejectPlaceholders: true` ([POLICY-1](#policy-1)) |
 

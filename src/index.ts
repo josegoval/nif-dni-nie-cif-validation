@@ -11,6 +11,8 @@
  * - cif.ts: legal entity NIF (formerly CIF).
  * - normalize.ts: input cleanup (NORM-1 to NORM-4, NIE-3).
  * - policy.ts: opt-in policies (POLICY-1, placeholders).
+ * - validate.ts: validate() and getNifType(), the detailed API.
+ * - messages.ts: error messages in English and Spanish (validate() only).
  */
 export { isValidNif, isValidNaturalPersonNif } from "./nif";
 export {
@@ -31,4 +33,15 @@ export {
   LEGAL_ENTITY_NIF_REGEX as CIF_REGEX,
 } from "./cif";
 export { normalize } from "./normalize";
-export type { CifControlMode, IsValidOptions, NifType } from "./types";
+export { getNifType, validate } from "./validate";
+export type {
+  CifControlMode,
+  GetNifTypeOptions,
+  IsValidOptions,
+  NifErrorCode,
+  NifLocale,
+  NifType,
+  NifValidationError,
+  ValidateOptions,
+  ValidationResult,
+} from "./types";
