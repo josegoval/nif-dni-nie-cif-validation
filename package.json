@@ -2,9 +2,24 @@
   "name": "nif-dni-nie-cif-validation",
   "version": "1.0.10",
   "description": "Validate NIF, DNI, NIE and CIF documents easily.",
+  "type": "module",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.mjs",
   "types": "./dist/cjs/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.mts",
+        "default": "./dist/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
   "readme": "README.md",
   "keywords": [
     "nif",

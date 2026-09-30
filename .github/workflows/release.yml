@@ -94,8 +94,8 @@ jobs:
           retention-days: 7
       - name: Lint package with publint
         run: pnpm dlx publint run "${{ steps.pack.outputs.tarball }}" --strict
-      # The package is CJS-only until the dual ESM/CJS build lands (#48).
-      # If attw flags a rule only #48 can fix, add `--ignore-rules <rule>`.
+      # Fails unless the types resolve in node10, node16 (CJS and ESM) and
+      # bundler modes.
       - name: Check types with attw
         run: pnpm dlx @arethetypeswrong/cli "${{ steps.pack.outputs.tarball }}"
 
