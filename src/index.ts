@@ -29,14 +29,14 @@ export {
 } from "./dni";
 export { isValidNie, NIE_REGEX, replaceNieLetter } from "./nie";
 export {
-  isValidLegalEntityNifControlCode,
-  isValidLegalEntityNifControlCode as isValidCifControlCode,
+  CIF_CONTROL_LETTERS,
+  CIF_REGEX,
+  isValidCif,
+  isValidCifControlCode,
   isValidLegalEntityNif,
-  isValidLegalEntityNif as isValidCif,
+  isValidLegalEntityNifControlCode,
   LEGAL_ENTITY_CONTROL_LETTERS,
-  LEGAL_ENTITY_CONTROL_LETTERS as CIF_CONTROL_LETTERS,
   LEGAL_ENTITY_NIF_REGEX,
-  LEGAL_ENTITY_NIF_REGEX as CIF_REGEX,
 } from "./cif";
 export { normalize } from "./normalize";
 export { describeCifOrganisation } from "./organisations";
