@@ -2,8 +2,9 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    // Unit tests only. test/smoke is plain Node and runs against the tarball.
-    include: ["src/**/*.test.ts"],
+    // Unit tests only (the benchmark has its own, in bench/). test/smoke is
+    // plain Node and runs against the tarball.
+    include: ["src/**/*.test.ts", "bench/**/*.test.mjs"],
     coverage: {
       // On by default so `pnpm test` enforces the thresholds. The compat job
       // turns it off with `--coverage.enabled=false`.

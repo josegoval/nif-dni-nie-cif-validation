@@ -149,3 +149,36 @@ function typed(value) {
  * one goes through normalization (NORM-1 to NORM-3).
  */
 export const TYPED_INPUTS = valid.map(typed);
+
+// Per-type sets of the competitor benchmark (#49). Each one holds valid
+// documents of a single type (the slices of `valid` above: 150 DNI, 50 K/L/M,
+// 100 NIE, 20 old-form NIE, 180 CIF) in canonical form (9 upper-case
+// characters), plus the same documents with a wrong control character for
+// every second one. Every library can read these without normalizing, so the
+// throughput of a type compares the validation itself. Generated after every
+// set above, so none of them changes.
+
+const VALID_SLICES = { DNI: [0, 150], NIE: [200, 300], CIF: [320, 500] };
+
+function typeSet(documents) {
+  return [
+    ...documents,
+    ...documents.filter((_, i) => i % 2 === 0).map(withWrongControl),
+  ];
+}
+
+/** Sets of a single document type, in canonical form. */
+export const TYPE_INPUTS = Object.fromEntries(
+  Object.entries(VALID_SLICES).map(([type, [from, to]]) => [
+    type,
+    typeSet(valid.slice(from, to)),
+  ])
+);
+
+/** How each per-type set is made up, for the report. */
+export const TYPE_INPUT_MIX = Object.fromEntries(
+  Object.entries(VALID_SLICES).map(([type, [from, to]]) => [
+    type,
+    { valid: to - from, wrongControl: Math.ceil((to - from) / 2) },
+  ])
+);
