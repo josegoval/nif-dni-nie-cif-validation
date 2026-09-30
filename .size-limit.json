@@ -77,5 +77,29 @@
     "import": "*",
     "gzip": true,
     "limit": "3225 B"
+  },
+  {
+    "name": "import { zNif } from /zod (without Zod)",
+    "path": "dist/esm/zod/index.mjs",
+    "import": "{ zNif }",
+    "ignore": ["zod"],
+    "gzip": true,
+    "limit": "3160 B"
+  },
+  {
+    "name": "import { vNif } from /valibot (without Valibot)",
+    "path": "dist/esm/valibot/index.mjs",
+    "import": "{ vNif }",
+    "ignore": ["valibot"],
+    "gzip": true,
+    "limit": "3255 B"
+  },
+  {
+    "name": "import { yNif } from /yup (without Yup)",
+    "path": "dist/esm/yup/index.mjs",
+    "import": "{ yNif }",
+    "ignore": ["yup"],
+    "gzip": true,
+    "limit": "3205 B"
   }
 ]

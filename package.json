@@ -77,6 +77,36 @@
         "default": "./dist/cjs/generate/index.cjs"
       }
     },
+    "./zod": {
+      "import": {
+        "types": "./dist/esm/zod/index.d.mts",
+        "default": "./dist/esm/zod/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/zod/index.d.cts",
+        "default": "./dist/cjs/zod/index.cjs"
+      }
+    },
+    "./valibot": {
+      "import": {
+        "types": "./dist/esm/valibot/index.d.mts",
+        "default": "./dist/esm/valibot/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/valibot/index.d.cts",
+        "default": "./dist/cjs/valibot/index.cjs"
+      }
+    },
+    "./yup": {
+      "import": {
+        "types": "./dist/esm/yup/index.d.mts",
+        "default": "./dist/esm/yup/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/yup/index.d.cts",
+        "default": "./dist/cjs/yup/index.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -86,6 +116,15 @@
       ],
       "generate": [
         "./dist/cjs/generate/index.d.cts"
+      ],
+      "zod": [
+        "./dist/cjs/zod/index.d.cts"
+      ],
+      "valibot": [
+        "./dist/cjs/valibot/index.d.cts"
+      ],
+      "yup": [
+        "./dist/cjs/yup/index.d.cts"
       ]
     }
   },
