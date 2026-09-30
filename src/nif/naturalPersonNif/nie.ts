@@ -1,6 +1,7 @@
-import { isValidDniLetter } from "./shared";
+import { hasValidDniLetter } from "./shared";
 
-export const NIE_REGEX = /^[XYZ][\d]{7}[TRWAGMYFPDXBNJZSQVHLCKET]$/i;
+// NIE-1: X, Y or Z + 7 digits + check letter.
+export const NIE_REGEX = /^[XYZ][\d]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
 
 /**
  * Returns a new string with the nie letter (XYZ) replaced.
@@ -23,5 +24,11 @@ export function replaceNieLetter(nie: string): string {
  * @returns true for valid input and false for invalid input.
  */
 export function isValidNie(nie: string): boolean {
-  return NIE_REGEX.test(nie) && isValidDniLetter(replaceNieLetter(nie));
+  // NIE-1. The /i regex runs on the raw input: without the `u` flag it only
+  // folds ASCII letters, so look-alikes that toUpperCase() maps to ASCII
+  // (U+0131 "ı" -> "I", U+017F "ſ" -> "S") stay invalid.
+  if (!NIE_REGEX.test(nie)) return false;
+  // NORM-1: accept lower-case input. Upper-case once, check that value.
+  // NIE-2: X -> 0, Y -> 1, Z -> 2, then DNI-2.
+  return hasValidDniLetter(replaceNieLetter(nie.toUpperCase()));
 }
