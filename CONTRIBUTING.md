@@ -33,7 +33,7 @@ src/
   nif.ts        isValidNif, isValidNaturalPersonNif: pick the format from the first character
   dni.ts        DNI and K/L/M NIF (DNI-*, KLM-*)
   nie.ts        NIE (NIE-*)
-  cif.ts        legal entity NIF, formerly CIF (CIF-*)
+  cif.ts        NIF of a legal person or entity, formerly CIF (CIF-*)
   normalize.ts  normalize() and the boolean validators' retry path (NORM-*, NIE-3)
   policy.ts     opt-in policies: placeholders (POLICY-1)
   validate.ts   validate() and getNifType(): error codes and rules
@@ -83,9 +83,9 @@ The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it 
 | `import { isValidNie }` | 586 B | 605 B |
 | `import { isValidCif }` | 562 B | 580 B |
 | `import { isValidSpanishVat }` | 965 B | 995 B |
-| `import { validate }` (English built in) | 2685 B | 2765 B |
-| `import { validate }` + `locales/es` | 3471 B | 3575 B |
-| `import *` (the whole ES module build) | 4615 B | 4755 B |
+| `import { validate }` (English built in) | 2713 B | 2795 B |
+| `import { validate }` + `locales/es` | 3528 B | 3635 B |
+| `import *` (the whole ES module build) | 4648 B | 4790 B |
 
 The booleans stay this small because they never reach `normalize()` or `validate()`: their slow path only removes separators (`removeSeparators`) and checks again, and POLICY-1 reads the number of the document (`isPlaceholderDocument`). Keep module-level code to declarations: a table filled by a loop when the module loads can't be dropped by a bundler, so prefer a string or arithmetic.
 

@@ -9,7 +9,7 @@
  * - `"NIF_KLM"`: K, L or M + 7 digits + check letter (KLM-1, KLM-2).
  * - `"NIE"`: X, Y or Z + 7 digits + check letter (NIE-1, NIE-2), or the old
  *   10-character form (NIE-3).
- * - `"CIF"`: legal entity NIF, organisation key + 7 digits + control
+ * - `"CIF"`: NIF of a legal person or entity, organisation key + 7 digits + control
  *   (CIF-1 to CIF-4).
  *
  * `validate()` and `getNifType()` report it.
@@ -75,7 +75,7 @@ export type NifFormatRule =
   | "CIF-1";
 
 /**
- * The organisation keys of a legal entity NIF (CIF): its first letter
+ * The organisation keys of the NIF of a legal person or entity (CIF): its first letter
  * (Orden EHA/451/2008 arts. 3 to 5, as amended by Orden HAP/5/2016).
  * @see SPEC.md#cif-2
  */
@@ -154,7 +154,7 @@ export interface NifLocale {
 }
 
 /**
- * Which control characters a legal entity NIF (CIF) may have (CIF-3):
+ * Which control characters the NIF of a legal person or entity (CIF) may have (CIF-3):
  *
  * - `"official"` (the default): what the AEAT D.I.T. note says. A digit for
  *   A B C D E F G H J U V, a letter for N P Q R S W.
@@ -201,7 +201,7 @@ export interface ValidateOptions {
    */
   normalize?: boolean;
   /**
-   * Control characters accepted for a legal entity NIF (CIF). Default
+   * Control characters accepted for the NIF of a legal person or entity (CIF). Default
    * `"official"`. See {@link CifControlMode}.
    * @see SPEC.md#cif-3
    */
@@ -288,7 +288,7 @@ export interface NifValidationError {
 }
 
 /**
- * What the organisation key of a legal entity NIF (CIF) says about the
+ * What the organisation key of the NIF of a legal person or entity (CIF) says about the
  * entity (Orden EHA/451/2008 arts. 3 to 5, as amended by Orden HAP/5/2016).
  * @example
  * validate("B12345674").meta;
@@ -336,7 +336,7 @@ export interface ValidationResult {
   /** Why the value is invalid; absent when it is valid. */
   error?: NifValidationError;
   /**
-   * For a legal entity NIF (CIF) only, whenever `type` is `"CIF"` (valid
+   * For the NIF of a legal person or entity (CIF) only, whenever `type` is `"CIF"` (valid
    * or not): its organisation key and what it means.
    * @see SPEC.md#cif-2
    */

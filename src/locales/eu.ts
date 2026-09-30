@@ -23,7 +23,7 @@ const TYPES: Record<NifType, string> = {
   DNI: "NAN",
   NIF_KLM: "K/L/M IFZ",
   NIE: "AIZ",
-  CIF: "pertsona juridikoaren IFZ (IFK)",
+  CIF: "pertsona juridiko edo erakunde baten IFZ (IFK)",
 };
 
 /** Basque (euskara). */
@@ -42,28 +42,30 @@ export const eu: NifLocale = {
       "NIE-3":
         "AIZ zaharrek bakarrik dituzte 10 karaktere: X, 0 bat, 7 digitu eta letra bat.",
       "CIF-1":
-        "Pertsona juridikoaren IFZ (IFK) batek 9 karaktere ditu: letra bat, 7 digitu eta kontrol-karaktere bat.",
+        "Pertsona juridiko edo erakunde baten IFZ (IFK) batek 9 karaktere ditu: letra bat, 7 digitu eta kontrol-karaktere bat.",
       "VAT-1":
-        "Espainiako IFZ-BEZ bat ES da, eta ondoren 9 karaktereko IFZ bat.",
+        "Espainiako IFZ-BEZ batek ES aurrizkia eta, ondoren, 9 karaktereko IFZ bat ditu.",
     },
     INVALID_FORMAT: {
       "NIF-1":
         "Hau ez da IFZ, AIZ edo IFK bat: digitu batekin edo letra baliodun batekin hasi behar du.",
       "VAT-1": "Sartu IFZa ES aurrizkirik gabe.",
-      "DNI-1": "NAN bat 8 digitu eta ondoren letra bat da.",
-      "KLM-1": "K/L/M IFZ bat K, L edo M, 7 digitu eta letra bat da.",
+      "DNI-1": "NAN baten formatua hau da: 8 digitu eta, ondoren, letra bat.",
+      "KLM-1":
+        "K/L/M IFZ baten formatua hau da: K, L edo M hasieran, ondoren 7 digitu eta amaieran letra bat.",
       "KLM-3":
         "K, L edo M letraren ondorengo 7 karaktereek digituak izan behar dute.",
-      "NIE-1": "AIZ bat X, Y edo Z, 7 digitu eta letra bat da.",
+      "NIE-1":
+        "AIZ baten formatua hau da: X, Y edo Z hasieran, ondoren 7 digitu eta amaieran letra bat.",
       "CIF-1":
-        "Pertsona juridikoaren IFZ (IFK) bat letra bat, 7 digitu eta kontrol-karaktere bat (digitu bat edo letra bat) da.",
+        "Pertsona juridiko edo erakunde baten IFZ (IFK) batek osaera hau du: letra bat, 7 digitu eta kontrol-karaktere bat (digitu bat edo letra bat), hurrenkera horretan.",
     },
     INVALID_CONTROL_CHARACTER: (type, expected) =>
       `Kontrol-karakterea ez da zuzena: ${TYPES[type]} honetan «${expected}» izan beharko luke.`,
     UNSUPPORTED_TYPE: (type) =>
       `Hemen ez da onartzen dokumentu mota hau: ${TYPES[type]}.`,
     PLACEHOLDER:
-      "Zenbaki hau adibide-balio ezagun bat da, ez benetako dokumentu bat.",
+      "Zenbaki hau ordezko balio ezagunen zerrendan dago, eta hemen ez da onartzen.",
   },
   // Official: Bizkaia's Decreto Foral 205/2008, art. 32 (source above), in
   // the singular.

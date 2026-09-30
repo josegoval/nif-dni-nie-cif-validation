@@ -2,7 +2,7 @@
 // PRNG, so every run (and every machine) measures exactly the same strings.
 //
 // It mixes what a validator sees in practice: valid DNI, K/L/M, NIE (new and
-// old form) and legal entity NIFs (CIF) of every organisation key, their
+// old form) and NIFs of legal persons and entities (CIF) of every organisation key, their
 // lower-case forms, the same documents with a wrong control character, and
 // junk (wrong lengths, random characters, the empty string).
 //

@@ -138,7 +138,7 @@ function checkLetter(value: string, type: NifType): Document {
   return { type, normalized: value, control: { rule, expected } };
 }
 
-/** CIF-3, CIF-4: checks the control of a legal entity NIF. */
+/** CIF-3, CIF-4: checks the control of a NIF of a legal person or entity (CIF). */
 function checkCifControl(value: string, lenient: boolean): Document {
   // CIF-4: the control value; CIF-3: the key decides digit or letter.
   const control = cifControlValue(value);
@@ -255,8 +255,8 @@ function withMeta(
 }
 
 /**
- * Validates a Spanish NIF (DNI, K/L/M NIF, NIE or legal entity NIF, formerly
- * CIF) and explains the result.
+ * Validates a Spanish NIF (DNI, K/L/M NIF, NIE or NIF of a legal person or entity,
+ * formerly CIF) and explains the result.
  *
  * - `valid`: whether it is a valid document with these options.
  * - `type`: `"DNI"`, `"NIF_KLM"`, `"NIE"` or `"CIF"`, as soon as the format

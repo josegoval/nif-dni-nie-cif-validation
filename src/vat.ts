@@ -14,7 +14,7 @@ import type { IsValidOptions } from "./types";
 
 /**
  * Checks the format of a Spanish VAT number: `ES` followed by a valid NIF
- * (DNI, K/L/M NIF, NIE or legal entity NIF), as RD 1065/2007 art. 25.1
+ * (DNI, K/L/M NIF, NIE or NIF of a legal person or entity), as RD 1065/2007 art. 25.1
  * defines it (VAT-1). The `ES` prefix is required.
  *
  * **A valid format is not the same as a registered number**: this does not

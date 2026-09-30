@@ -1,5 +1,5 @@
 /**
- * What the organisation key (the first letter) of a legal entity NIF (CIF)
+ * What the organisation key (the first letter) of the NIF of a legal person or entity (CIF)
  * says about the entity.
  *
  * Source: Orden EHA/451/2008 arts. 3 to 5 (CIF-2), art. 3 as amended by
@@ -18,7 +18,7 @@ import type { CifOrganisationKey, NifLocale } from "./types";
 const KEYS = "ABCDEFGHJNPQRSUVW";
 
 /**
- * Describes the kind of entity that a legal entity NIF (CIF) organisation
+ * Describes the kind of entity that the organisation key of a NIF of a legal person or entity (CIF)
  * key stands for, from Orden EHA/451/2008 arts. 3 to 5 (as amended by Orden
  * HAP/5/2016).
  *

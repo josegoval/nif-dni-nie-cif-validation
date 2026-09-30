@@ -1,6 +1,6 @@
 /**
  * Entry point of `nif-dni-nie-cif-validation`: validators for Spanish NIF,
- * DNI, K/L/M, NIE and legal entity NIF (CIF) numbers.
+ * DNI, K/L/M, NIE and CIF (NIF of a legal person or entity) numbers.
  *
  * The export names are the public API: keep them stable. Every rule the
  * validators apply has an ID in SPEC.md, cited in the modules below:
@@ -8,7 +8,7 @@
  * - nif.ts: any NIF (isValidNif) and natural persons (isValidNaturalPersonNif).
  * - dni.ts: DNI and K/L/M NIF.
  * - nie.ts: NIE.
- * - cif.ts: legal entity NIF (formerly CIF).
+ * - cif.ts: NIF of a legal person or entity (formerly CIF).
  * - normalize.ts: input cleanup (NORM-1 to NORM-4, NIE-3).
  * - policy.ts: opt-in policies (POLICY-1, placeholders).
  * - validate.ts: validate() and getNifType(), the detailed API.

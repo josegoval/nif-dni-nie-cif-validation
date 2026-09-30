@@ -1,5 +1,5 @@
 /**
- * Legal entity NIF, formerly CIF (Código de Identificación Fiscal): the tax
+ * NIF of a legal person or entity, formerly CIF (Código de Identificación Fiscal): the tax
  * ID of companies, associations, public bodies and other entities.
  *
  * Format:
@@ -35,7 +35,7 @@ import type { IsValidOptions } from "./types";
 export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
 
 /**
- * Pattern of a legal entity NIF (CIF). It does not check the control code.
+ * Pattern of the NIF of a legal person or entity (CIF). It does not check the control code.
  * Kept as a public constant for v1 compatibility; the validators below don't
  * use it.
  */
@@ -128,7 +128,7 @@ function matchesControl(
 
 /**
  * Checks, in one pass and without allocating, the 7 digits (CIF-1) and the
- * control character (CIF-3, CIF-4) of a 9-character legal entity NIF whose
+ * control character (CIF-3, CIF-4) of a 9-character NIF of a legal person or entity whose
  * organisation key has the given kind. Internal helper; the caller checks
  * the length and the key.
  */
@@ -198,8 +198,8 @@ function hasLooseControlCode(
 }
 
 /**
- * Checks if the legal entity nif control code (letter or number)
- * provided is valid.
+ * Checks if the control code (letter or number) of the given NIF of a legal person or entity
+ * (formerly CIF) is valid.
  *
  * @WARNING It does not check the `LEGAL_ENTITY_NIF_REGEX`.
  *
@@ -286,7 +286,7 @@ function retryCif(value: string, opts: IsValidOptions | null): boolean {
   return checkCif(removeSeparators(value), opts);
 }
 
-/** Legal entity NIF, on the raw string. */
+/** NIF of a legal person or entity (CIF), on the raw string. */
 function checkCif(value: string, opts: IsValidOptions | null): boolean {
   // CIF-1: 9 characters.
   if (value.length !== CIF_LENGTH) return false;

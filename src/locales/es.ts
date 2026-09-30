@@ -1,8 +1,9 @@
 /**
  * Spanish (español): `import { es } from "nif-dni-nie-cif-validation/locales/es"`.
  *
- * Terminology: "carácter de control", "NIF de persona jurídica (CIF)", the
- * AEAT's names for the documents.
+ * Terminology: "carácter de control", "NIF de persona jurídica o entidad
+ * (CIF)" (Orden EHA/451/2008 covers "personas jurídicas y entidades sin
+ * personalidad jurídica"), the AEAT's names for the documents.
  *
  * Organisation names (CIF-2): the wording of Orden EHA/451/2008 arts. 3 to 5
  * (art. 3 as amended by Orden HAP/5/2016), in the singular.
@@ -15,7 +16,7 @@ const TYPES: Record<NifType, string> = {
   DNI: "DNI",
   NIF_KLM: "NIF K/L/M",
   NIE: "NIE",
-  CIF: "NIF de persona jurídica (CIF)",
+  CIF: "NIF de persona jurídica o entidad (CIF)",
 };
 
 /** Spanish (español). */
@@ -33,7 +34,7 @@ export const es: NifLocale = {
       "NIE-3":
         "Solo los NIE antiguos tienen 10 caracteres: X, un 0, 7 dígitos y una letra.",
       "CIF-1":
-        "Un NIF de persona jurídica (CIF) tiene 9 caracteres: una letra, 7 dígitos y un carácter de control.",
+        "Un NIF de persona jurídica o entidad (CIF) tiene 9 caracteres: una letra, 7 dígitos y un carácter de control.",
       "VAT-1": "Un NIF-IVA español es ES seguido de un NIF de 9 caracteres.",
     },
     INVALID_FORMAT: {
@@ -41,17 +42,18 @@ export const es: NifLocale = {
         "No es un NIF, NIE ni CIF: debe empezar por un dígito o por una letra válida.",
       "VAT-1": "Introduce el NIF sin el prefijo ES.",
       "DNI-1": "Un DNI son 8 dígitos seguidos de una letra.",
-      "KLM-1": "Un NIF K/L/M es K, L o M, 7 dígitos y una letra.",
+      "KLM-1":
+        "Un NIF K/L/M empieza por K, L o M, seguido de 7 dígitos y una letra.",
       "KLM-3": "Los 7 caracteres que siguen a K, L o M deben ser dígitos.",
-      "NIE-1": "Un NIE es X, Y o Z, 7 dígitos y una letra.",
+      "NIE-1": "Un NIE empieza por X, Y o Z, seguido de 7 dígitos y una letra.",
       "CIF-1":
-        "Un NIF de persona jurídica (CIF) es una letra, 7 dígitos y un carácter de control (un dígito o una letra).",
+        "Un NIF de persona jurídica o entidad (CIF) consta de una letra, 7 dígitos y un carácter de control (un dígito o una letra).",
     },
     INVALID_CONTROL_CHARACTER: (type, expected) =>
       `El carácter de control no es correcto: para este ${TYPES[type]} debería ser «${expected}».`,
     UNSUPPORTED_TYPE: (type) => `Aquí no se admite un ${TYPES[type]}.`,
     PLACEHOLDER:
-      "Este número es un valor de ejemplo conocido, no un documento real.",
+      "Este número figura en la lista de valores de ejemplo que no se admiten aquí.",
   },
   // Official: Orden EHA/451/2008 arts. 3 to 5, in the singular.
   organisations: {

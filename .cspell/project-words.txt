@@ -90,6 +90,7 @@ válido
 
 # Spanish words in the v2 messages, organisation names and docs
 admite
+admiten
 anónima
 antiguos
 Aquí
@@ -105,6 +106,7 @@ comunidad
 Comunidad
 Congregación
 conocido
+consta
 cooperativa
 Corporación
 correcto
@@ -114,6 +116,7 @@ debería
 definido
 ejemplo
 empezar
+empieza
 empresas
 entidad
 Entidad
@@ -122,11 +125,13 @@ Establecimiento
 Estado
 expresamente
 extranjera
+figura
 herencia
 incluida
 institución
 jurídica
 limitada
+lista
 Organismo
 Órgano
 otra
@@ -153,6 +158,7 @@ tienen
 tipo
 Unión
 válida
+valores
 yacente
 
 # The names of the languages of the locales, in each language

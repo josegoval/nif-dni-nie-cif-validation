@@ -13,7 +13,7 @@ const TYPES: Record<NifType, string> = {
   DNI: "DNI",
   NIF_KLM: "K/L/M NIF",
   NIE: "NIE",
-  CIF: "legal entity NIF (CIF)",
+  CIF: "NIF of a legal person or entity (CIF)",
 };
 
 /** English. */
@@ -31,7 +31,7 @@ export const en: NifLocale = {
       "NIE-3":
         "Only old NIEs have 10 characters: X, a 0, 7 digits and a letter.",
       "CIF-1":
-        "A legal entity NIF (CIF) has 9 characters: a letter, 7 digits and a control character.",
+        "A NIF of a legal person or entity (CIF) has 9 characters: a letter, 7 digits and a control character.",
       "VAT-1": "A Spanish VAT number is ES followed by a 9-character NIF.",
     },
     INVALID_FORMAT: {
@@ -39,16 +39,19 @@ export const en: NifLocale = {
         "This is not a NIF, NIE or CIF: it must start with a digit or a valid letter.",
       "VAT-1": "Enter the NIF without the ES prefix.",
       "DNI-1": "A DNI is 8 digits followed by a letter.",
-      "KLM-1": "A K/L/M NIF is K, L or M, 7 digits and a letter.",
+      "KLM-1":
+        "A K/L/M NIF starts with K, L or M, followed by 7 digits and a letter.",
       "KLM-3": "The 7 characters after K, L or M must be digits.",
-      "NIE-1": "A NIE is X, Y or Z, 7 digits and a letter.",
+      "NIE-1":
+        "A NIE starts with X, Y or Z, followed by 7 digits and a letter.",
       "CIF-1":
-        "A legal entity NIF (CIF) is a letter, 7 digits and a control character (a digit or a letter).",
+        "A NIF of a legal person or entity (CIF) consists of a letter, 7 digits and a control character (a digit or a letter).",
     },
     INVALID_CONTROL_CHARACTER: (type, expected) =>
       `The control character is not correct: for this ${TYPES[type]} it should be "${expected}".`,
     UNSUPPORTED_TYPE: (type) => `A ${TYPES[type]} is not accepted here.`,
-    PLACEHOLDER: "This number is a known placeholder, not a real document.",
+    PLACEHOLDER:
+      "This number is on the list of known placeholder values, which are not accepted here.",
   },
   organisations: {
     A: "Public limited company",

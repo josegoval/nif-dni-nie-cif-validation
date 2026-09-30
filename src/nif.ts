@@ -3,7 +3,8 @@
  * arts. 18-22). Every person or entity has one:
  *
  * - natural persons: a DNI, a K/L/M NIF (see dni.ts) or a NIE (see nie.ts);
- * - legal entities: a legal entity NIF, formerly CIF (see cif.ts).
+ * - legal persons and other entities: the NIF of a legal person or entity, formerly CIF (see
+ *   cif.ts).
  *
  * All of them have 9 characters, except old 10-character NIEs (NIE-3). The
  * first character tells them apart: a digit (DNI-1), K L M (KLM-1), X Y Z
@@ -128,14 +129,14 @@ function retryNaturalPersonNif(
 }
 
 /**
- * Checks if the given nif (legal entity NIF or natural person NIF
+ * Checks if the given nif (NIF of a legal person or entity, or natural person NIF
  * (DNI, DNI K, DNI L, DNI M, or NIE)) is valid.
  *
  * The input is normalized first (NORM-1 to NORM-4, NIE-3), so
  * `" b-1234567-4 "` is valid. Pass `{ normalize: false }` for v1's strict
  * parsing.
  *
- * A legal entity NIF (CIF) follows CIF-3 by default. Pass
+ * The NIF of a legal person or entity (CIF) follows CIF-3 by default. Pass
  * `{ cifControl: "lenient" }` to also accept a letter control for
  * C D F G J U V, as v1 did.
  *

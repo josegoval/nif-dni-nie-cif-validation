@@ -14,7 +14,7 @@ Last verified: 2026-09-30
   - [Natural persons: DNI](#natural-persons-dni)
   - [Natural persons: K / L / M NIF](#natural-persons-k--l--m-nif)
   - [Natural persons: NIE](#natural-persons-nie)
-  - [Legal entities: NIF (formerly CIF)](#legal-entities-nif-formerly-cif)
+  - [Legal persons and entities: NIF (formerly CIF)](#legal-persons-and-entities-nif-formerly-cif)
   - [VAT (intra-EU)](#vat-intra-eu)
   - [Input cleanup](#input-cleanup-never-changes-validity-only-parsing)
   - [Input contract](#input-contract-library-behaviour-no-official-content)
@@ -89,7 +89,7 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 | <a id="nie-2"></a>NIE-2 | For the check, X→0, Y→1, Z→2, then apply DNI-2 | T2 + T3 | Interior: "se sustituye: X → 0 Y → 1 Z → 2 y se aplica el mismo algoritmo que para el NIF"; AEAT D.I.T. note |
 | <a id="nie-3"></a>NIE-3 | **Old 10-character NIEs** (X + 8 digits + letter) stay valid. The canonical form drops the zero right after the X: `X0nnnnnnnL` → `XnnnnnnnL` | T1 + T2 | Orden INT/2058/2008, transitional provision ("seguirán teniendo validez"); AEAT Sede ("omitiendo el primer cero que figuraba después de la X") |
 
-### Legal entities: NIF (formerly CIF)
+### Legal persons and entities: NIF (formerly CIF)
 
 | ID | Rule | Tier | Source |
 |---|---|---|---|
@@ -174,7 +174,7 @@ No official source defines a display grouping. `format()` splits the canonical f
 | DNI | 8 digits · letter | DNI-1 | `12345678-Z` |
 | NIE | prefix · 7 digits · letter | NIE-1 | `X-1234567-L` |
 | K/L/M NIF | prefix · 7 digits · letter | KLM-1 | `K-1234567-L` |
-| Legal entity NIF | key · 7 digits · control | CIF-1 | `B-1234567-4` |
+| NIF of a legal person or entity | key · 7 digits · control | CIF-1 | `B-1234567-4` |
 
 Only valid documents are formatted (default options); `format()` returns `null` otherwise and never adds an `ES` prefix.
 
@@ -259,7 +259,7 @@ Live status checked on 2026-09-30 with `curl -sI -L`. Archive links should point
 - Decreto 2423/1975 (repealed): <https://www.boe.es/buscar/doc.php?id=BOE-A-1975-21698> (archive: check manually)
 - Interior, check-letter calculation: <https://www.interior.gob.es/opencms/es/servicios-al-ciudadano/tramites-y-gestiones/dni/calculo-del-digito-de-control-del-nif-nie/> (live: HTTP 403 to automated requests, probably bot blocking; archive: check manually)
 - AEAT, NIF of natural persons: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-fisicas.html> (archive: check manually)
-- AEAT, NIF of legal entities: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html> (archive: check manually)
+- AEAT, NIF of legal persons and entities: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html> (archive: check manually)
 - AEAT D.I.T. note (CAIB copy): <https://www.caib.es/sites/civitasmanualsisuport/f/41519> (archive: check manually)
 - AEAT, checking the NIF of third parties (census check, not format): <https://sede.agenciatributaria.gob.es/Sede/ayuda/consultas-informaticas/presentacion-declaraciones-ayuda-tecnica/modelo-030/comprobacion-nif-terceros-efectos-censales.html> (archive: check manually)
 - ESNIC placeholder examples (secondary): <https://www.openprovider.com/es/blog/comunicado-esnic> (archive: check manually)

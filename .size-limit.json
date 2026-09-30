@@ -39,7 +39,7 @@
     "path": "dist/esm/index.mjs",
     "import": "{ validate }",
     "gzip": true,
-    "limit": "2765 B"
+    "limit": "2795 B"
   },
   {
     "name": "import { validate } + locales/es",
@@ -48,13 +48,13 @@
       "dist/esm/locales/es.mjs": "{ es }"
     },
     "gzip": true,
-    "limit": "3575 B"
+    "limit": "3635 B"
   },
   {
     "name": "import * (the whole ES module build)",
     "path": "dist/esm/index.mjs",
     "import": "*",
     "gzip": true,
-    "limit": "4755 B"
+    "limit": "4790 B"
   }
 ]

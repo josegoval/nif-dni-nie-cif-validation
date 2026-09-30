@@ -31,7 +31,7 @@ Nothing else changes: every v1 export keeps its name, aliases (`isValidCif`, `is
 
 ### 1. CIF keys C, D, F, G, J, U and V need a digit control (#38)
 
-The AEAT D.I.T. note ([SPEC.md CIF-3](SPEC.md#cif-3)) says the control character of a legal entity NIF (CIF) is a digit for A B C D E F G H J U V and a letter for N P Q R S W. v1 accepted a letter or a digit for C D F G J U V, which has no official basis.
+The AEAT D.I.T. note ([SPEC.md CIF-3](SPEC.md#cif-3)) says the control character of the NIF of a legal person or entity (CIF) is a digit for A B C D E F G H J U V and a letter for N P Q R S W. v1 accepted a letter or a digit for C D F G J U V, which has no official basis.
 
 Affects `isValidNif`, `isValidLegalEntityNif` / `isValidCif` and `isValidLegalEntityNifControlCode` / `isValidCifControlCode`.
 
