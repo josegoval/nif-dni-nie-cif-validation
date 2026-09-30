@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { isValidNaturalPersonNif, isValidNif } from "..";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import { isValidNaturalPersonNif, isValidNif, type NifType } from "..";
 
 const testCases = [
   { text: "whatever", expect: false },
@@ -62,4 +62,9 @@ describe("natural person nif validation", () => {
     it(`test case ${testCase.text}`, () =>
       expect(isValidNaturalPersonNif(testCase.text)).toBe(testCase.expect));
   });
+});
+
+describe("NifType", () => {
+  it("is the union of the supported document kinds", () =>
+    expectTypeOf<NifType>().toEqualTypeOf<"DNI" | "NIE" | "CIF" | "NIF_KLM">());
 });
