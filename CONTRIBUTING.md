@@ -75,6 +75,18 @@ The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it 
 
 **Size budgets.** `pnpm size` builds and runs [size-limit](https://github.com/ai/size-limit) with its esbuild plugin and `.size-limit.json`: it bundles `import { x } from "dist/esm/index.mjs"` for each entry, minifies, gzips and fails if the result is over the `limit`. The entries are the four boolean validators, `isValidSpanishVat`, `validate` (which includes the messages and organisation names) and the whole ES module build. The budgets sit a few percent above the measured sizes, so they catch a real regression (for example a boolean that starts importing `messages.ts`, about 2 kB) and not noise. When a change is meant to grow the library, say why in the PR and raise the limit in the same commit. For reference, v1.0.11 measures 1308 B with the same tool (all its functions, CommonJS). The sizes are measured with esbuild; other bundlers differ by a few percent.
 
+| Entry (`.size-limit.json`) | Size | Limit |
+| --- | ---: | ---: |
+| `import { isValidNif }` | 929 B | 960 B |
+| `import { isValidDni }` | 624 B | 645 B |
+| `import { isValidNie }` | 586 B | 605 B |
+| `import { isValidCif }` | 562 B | 580 B |
+| `import { isValidSpanishVat }` | 965 B | 995 B |
+| `import { validate }` (with the messages) | 3318 B | 3420 B |
+| `import *` (the whole ES module build) | 5257 B | 5415 B |
+
+The booleans stay this small because they never reach `normalize()` or `validate()`: their slow path only removes separators (`removeSeparators`) and checks again, and POLICY-1 reads the number of the document (`isPlaceholderDocument`). Keep module-level code to declarations: a table filled by a loop when the module loads can't be dropped by a bundler, so prefer a string or arithmetic.
+
 **Tree shaking check.** `node scripts/check-tree-shaking.mjs <tarball>` unpacks the tarball into a temporary project, bundles one import at a time with esbuild (resolving the package through its `exports`, as a consumer does), and fails if the bundle of any boolean validator, `normalize` or `format` contains a message or an organisation name, or the `messages` or `organisations` module. It also bundles `validate` and `describeCifOrganisation`, which must contain them, so the check can't pass by looking for strings it can't find. CI runs it on the tarball that `Check` packs.
 
 ### Rule IDs and SPEC.md
