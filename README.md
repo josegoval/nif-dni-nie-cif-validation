@@ -53,6 +53,8 @@ console.log(isValidNif("9332057M")) // false
 
 The following sections cover all the features and utilities of this package.
 
+Every `isValid*` function is safe to call with untrusted input: it never throws and always returns a boolean. Any value that is not a string (for example `null`, `undefined`, a number or an object) returns `false`. The only exported function that can throw is the deprecated `replaceNieLetter`.
+
 ## Main functions
 
 | Function                  | Description                                                                                                                                    | Expects inputs                                                                                                    | Valid examples                                   |
@@ -69,7 +71,7 @@ The following sections cover all the features and utilities of this package.
 | Function                           | Description                                                                                                                                                       | Expected inputs                                         | Valid examples                             |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------ |
 | `isValidDniLetter`                 | Checks if the dni control code (letter) provided is valid. It does include checks for DNI K, L and M. _(WARNING!: It does not check the `DNI_REGEX`.)_            | `/^([KLM][\d]{7}\|[\d]{8})[TRWAGMYFPDXBNJZSQVHLCKE]$/i` | `57655929N` `K0867756N`                    |
-| `replaceNieLetter`                 | Returns a new string with the nie letter (XYZ) replaced. However it will throw an error if the first character is not X, Y or Z.                                  | `/^[XYZ][\d]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i`            | `Z9332057L` `X9864761S` `Y2541026T`        |
+| `replaceNieLetter`                 | _(Deprecated.)_ Returns a new string with the nie letter (XYZ) replaced. Throws if the first character is not X, Y or Z, or if the input is not a string.         | `/^[XYZ][\d]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i`            | `Z9332057L` `X9864761S` `Y2541026T`        |
 | `isValidLegalEntityNifControlCode` | Checks if the legal entity nif (old known as CIF) control code (letter or number) provided is valid. _(WARNING!: It does not check the `LEGAL_ENITY_NIF_REGEX`.)_ | `/^[ABCDEFGHJNPQRSUVW][\d]{7}[\dA-J]$/i`                | `A07727886` `E05070164` `J34790493`        |
 | `isValidCifControlCode`            | Same as `isValidLegalEntityNifControlCode`                                                                                                                        | Same as `isValidLegalEntityNifControlCode`              | Same as `isValidLegalEntityNifControlCode` |
 

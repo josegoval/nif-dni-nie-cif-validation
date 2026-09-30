@@ -78,14 +78,17 @@ function hasValidControlCode(legalEntityNif: string): boolean {
  * Checks if the legal entity nif control code (letter or number)
  * provided is valid.
  *
- * @WARNING It does not check the `LEGAL_ENITY_NIF_REGEX`.
- * @throws May throw an error if the string is not long enough (9 characters)
- * @param legalEntityNif
- * @returns
+ * @WARNING It does not check the `LEGAL_ENTITY_NIF_REGEX`.
+ *
+ * Never throws, whatever the length of the string. Typed `string`, but any
+ * other value (e.g. `null`) returns `false`.
+ * @param legalEntityNif The value to check.
+ * @returns true for a valid control code and false otherwise.
  */
 export function isValidLegalEntityNifControlCode(
   legalEntityNif: string
 ): boolean {
+  if (typeof legalEntityNif !== "string") return false;
   // NORM-1: accept lower-case input. Upper-case once, check that value.
   return hasValidControlCode(legalEntityNif.toUpperCase());
 }
@@ -94,10 +97,13 @@ export function isValidLegalEntityNifControlCode(
  * Checks if the legalEntityNif provided is valid.
  *
  * It does not include old K, L and M formats.
- * @param legalEntityNif
+ *
+ * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * @param legalEntityNif The value to check.
  * @returns true for valid input and false for invalid input.
  */
 export function isValidLegalEntityNif(legalEntityNif: string): boolean {
+  if (typeof legalEntityNif !== "string") return false;
   // CIF-1 / CIF-2. The /i regex runs on the raw input: without the `u` flag
   // it only folds ASCII letters, so look-alikes that toUpperCase() maps to
   // ASCII (U+0131 "ı" -> "I", U+017F "ſ" -> "S") stay invalid.

@@ -18,10 +18,13 @@ export function hasValidDniLetter(dni: string): boolean {
  *
  * It does include checks for DNI K, L and M.
  * @WARNING It does not check the `DNI_REGEX`.
- * @param dni
+ *
+ * Never throws. Typed `string`, but any other value (e.g. `null`) returns `false`.
+ * @param dni The value to check.
  * @returns true for valid input and false for invalid input.
  */
 export function isValidDniLetter(dni: string): boolean {
+  if (typeof dni !== "string") return false;
   // NORM-1: accept lower-case input. Upper-case once, check that value.
   return hasValidDniLetter(dni.toUpperCase());
 }
