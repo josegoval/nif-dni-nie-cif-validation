@@ -19,6 +19,7 @@ pnpm spell                       # cspell: spelling of code, tests, docs and CI 
 pnpm spec:check                  # rule IDs in src/ and tests match SPEC.md
 pnpm bench                       # builds, then benchmarks against v1.0.11
 pnpm bench:competitors           # builds, then benchmarks against other libraries (bench/README.md)
+pnpm readme:bench                # writes the generated parts of README.md and README.es.md from bench/results/latest.json
 node scripts/check-tree-shaking.mjs <tarball>   # bundles the packed tarball, see Build and package layout
 node scripts/check-adapters.mjs <tarball>       # runs the /zod, /valibot and /yup adapters from import and require
 ```
@@ -53,7 +54,7 @@ src/
 test/fixtures/  SPEC test values as JSON, run by src/__tests__/fixtures.test.ts
 test/smoke/     smoke tests of the packed tarball, CommonJS and ES module (plain Node, see Pull requests)
 bench/          benchmarks: against v1.0.11 and another build, and against other libraries (see Performance)
-scripts/        build script, CI helpers: coverage summary, SPEC rule check, tree-shaking check
+scripts/        build script, CI helpers: coverage summary, SPEC rule check, tree-shaking check, README generator
 .size-limit.json  bundle size budgets (see Build and package layout)
 ```
 
@@ -138,11 +139,11 @@ Every validation branch in `src/` cites the rule it implements in a comment (`//
 
 `BENCH_BASE` is a `dist/` directory with `cjs/index.cjs` (the layout of this repository) or `index.js` (branches from before the dual build). To compare with another branch, build it into a temporary directory, for example `git archive <branch> src tsconfig.json tsconfig.build.json | tar -x -C /tmp/base && pnpm exec tsc -p /tmp/base/tsconfig.build.json`, then `BENCH_BASE=/tmp/base/dist BENCH_BASE_LABEL=<branch> pnpm bench`. Commit the new results when a change affects performance, and run it on an otherwise idle machine. `BENCH_TIME_MS` and `BENCH_WARMUP_MS` change the time per task (defaults: 2000 and 500).
 
-`pnpm bench:competitors` compares the current build with v1.0.11 and with the other Spanish ID libraries on npm: throughput per document type, agreement with the SPEC fixtures and bundle size. It writes `bench/results/latest.json`, the single source of the numbers that the README and the site show (none is typed by hand), and `latest.md`, rendered from it. [bench/README.md](bench/README.md) is the methodology (inputs, fairness rules, noise, the schema of the JSON); `bench/competitors.mjs` lists each library and the exact call used. The manual workflow `.github/workflows/bench.yml` runs it on `ubuntu-latest` and uploads the results as an artifact; a maintainer commits the files of a run they choose.
+`pnpm bench:competitors` compares the current build with v1.0.11 and with the other Spanish ID libraries on npm: throughput per document type, agreement with the SPEC fixtures and bundle size. It writes `bench/results/latest.json`, the single source of the numbers that the README and the site show (none is typed by hand), and `latest.md`, rendered from it. `pnpm readme:bench` (`scripts/readme-bench.mjs`) writes the parts of README.md and README.es.md that come from it, between `<!-- name:start -->` and `<!-- name:end -->` markers: the size badge (`size-badge`), the Performance section (`bench`) and the comparison table (`compare`, whose features and release dates are in the script, with the date they were checked). CI runs `pnpm readme:bench --check`, which fails if either README is out of date, so commit a new `latest.json` together with the READMEs it produces. Don't edit between the markers by hand. [bench/README.md](bench/README.md) is the methodology (inputs, fairness rules, noise, the schema of the JSON); `bench/competitors.mjs` lists each library and the exact call used. The manual workflow `.github/workflows/bench.yml` runs it on `ubuntu-latest` and uploads the results as an artifact; a maintainer commits the files of a run they choose.
 
 ### Spelling
 
-`pnpm spell` runs [cspell](https://cspell.org/) with `cspell.config.yaml` (English, British spelling). Real words it doesn't know, such as the Spanish legal terms quoted from the sources, go in `.cspell/project-words.txt`. `README.es.md` is checked with the Spanish (Spain) dictionary too (`@cspell/dict-es-es`, a dev dependency). The string literals of the Catalan, Basque and Galician locales (and the tree-shaking markers) are not spell-checked, by an override in `cspell.config.yaml`, and docs/translations.md turns cspell off around its tables: the project has no dictionary for those languages, and the language review covers them.
+`pnpm spell` runs [cspell](https://cspell.org/) with `cspell.config.yaml` (English, British spelling). Real words it doesn't know, such as the Spanish legal terms quoted from the sources, go in `.cspell/project-words.txt`. `README.es.md` and `scripts/readme-bench.mjs` (which writes its Spanish parts) are checked with the Spanish (Spain) dictionary too (`@cspell/dict-es-es`, a dev dependency). The string literals of the Catalan, Basque and Galician locales (and the tree-shaking markers) are not spell-checked, by an override in `cspell.config.yaml`, and docs/translations.md turns cspell off around its tables: the project has no dictionary for those languages, and the language review covers them.
 
 ### Subpaths and peer dependencies
 

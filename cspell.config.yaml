@@ -47,7 +47,8 @@ overrides:
   - filename: "{src/locales/{ca,eu,gl}.ts,scripts/check-tree-shaking.mjs}"
     ignoreRegExpList:
       - string
-  # The Spanish README is checked in Spanish and English: its prose is
-  # Spanish, its code and identifiers English.
-  - filename: "README.es.md"
+  # The Spanish README, and the script that writes its generated parts, are
+  # checked in Spanish and English: their prose is in both, their code and
+  # identifiers in English.
+  - filename: "{README.es.md,scripts/readme-bench.mjs}"
     language: en,en-GB,es,es-ES

@@ -185,6 +185,7 @@
     "bench": "pnpm build && node bench/run.mjs",
     "bench:competitors": "pnpm build && node bench/run-competitors.mjs",
     "bench:report": "node bench/report.mjs",
+    "readme:bench": "node scripts/readme-bench.mjs",
     "format": "biome check --write .",
     "size": "pnpm build && size-limit",
     "check:es": "pnpm build && es-check es2016 \"dist/cjs/**/*.cjs\" --checkFeatures && es-check es2016 \"dist/esm/**/*.mjs\" --module --checkFeatures"

@@ -191,6 +191,7 @@ uncited
 arethetypeswrong
 attw
 commitlint
+darwin
 deno
 esbuild
 josegoval
