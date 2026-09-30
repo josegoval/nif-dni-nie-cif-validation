@@ -21,12 +21,22 @@ const FUNCTIONS = [
   "isValidLegalEntityNif",
   "isValidCif",
 ];
-const STRINGS = ["DNI_CONTROL_LETTERS", "LEGAL_ENTITY_CONTROL_LETTERS", "CIF_CONTROL_LETTERS"];
-const REGEXES = ["DNI_REGEX", "NIE_REGEX", "LEGAL_ENTITY_NIF_REGEX", "CIF_REGEX"];
+const STRINGS = [
+  "DNI_CONTROL_LETTERS",
+  "LEGAL_ENTITY_CONTROL_LETTERS",
+  "CIF_CONTROL_LETTERS",
+];
+const REGEXES = [
+  "DNI_REGEX",
+  "NIE_REGEX",
+  "LEGAL_ENTITY_NIF_REGEX",
+  "CIF_REGEX",
+];
 
 describe("public exports", () => {
   for (const name of FUNCTIONS) {
-    it(`${name} is a function`, () => assert.equal(typeof lib[name], "function"));
+    it(`${name} is a function`, () =>
+      assert.equal(typeof lib[name], "function"));
   }
   for (const name of STRINGS) {
     it(`${name} is a string`, () => assert.equal(typeof lib[name], "string"));
@@ -36,7 +46,10 @@ describe("public exports", () => {
   }
   it("CIF names are aliases of the legal entity names", () => {
     assert.equal(lib.isValidCif, lib.isValidLegalEntityNif);
-    assert.equal(lib.isValidCifControlCode, lib.isValidLegalEntityNifControlCode);
+    assert.equal(
+      lib.isValidCifControlCode,
+      lib.isValidLegalEntityNifControlCode
+    );
     assert.equal(lib.CIF_REGEX, lib.LEGAL_ENTITY_NIF_REGEX);
     assert.equal(lib.CIF_CONTROL_LETTERS, lib.LEGAL_ENTITY_CONTROL_LETTERS);
   });

@@ -8,8 +8,8 @@ The package manager is [pnpm](https://pnpm.io/). The exact version is pinned in 
 
 ```sh
 pnpm install --frozen-lockfile   # also installs the Husky commit-msg hook
-pnpm lint                        # Biome (recommended lint rules)
-pnpm format                      # Biome, applies the safe fixes
+pnpm lint                        # Biome: lint rules, formatting and import order
+pnpm format                      # Biome: fix what it can (formatting, import order, safe lint fixes)
 pnpm typecheck                   # tsc --noEmit
 pnpm test                        # Vitest, with coverage (100% enforced)
 pnpm build                       # compiles to dist/

@@ -4,13 +4,19 @@
 import { appendFileSync, readFileSync } from "node:fs";
 import { relative } from "node:path";
 
-const summary = JSON.parse(readFileSync("coverage/coverage-summary.json", "utf8"));
+const summary = JSON.parse(
+  readFileSync("coverage/coverage-summary.json", "utf8")
+);
 const metrics = ["statements", "branches", "functions", "lines"];
-const cell = (m) => (m.total === 0 ? "n/a" : `${m.pct}% (${m.covered}/${m.total})`);
+const cell = (m) =>
+  m.total === 0 ? "n/a" : `${m.pct}% (${m.covered}/${m.total})`;
 
 const rows = Object.entries(summary)
   .filter(([file]) => file !== "total")
-  .map(([file, m]) => `| \`${relative(process.cwd(), file)}\` | ${metrics.map((k) => cell(m[k])).join(" | ")} |`);
+  .map(
+    ([file, m]) =>
+      `| \`${relative(process.cwd(), file)}\` | ${metrics.map((k) => cell(m[k])).join(" | ")} |`
+  );
 
 const table = [
   "## Coverage",
@@ -22,5 +28,6 @@ const table = [
   "",
 ].join("\n");
 
-if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, table);
+if (process.env.GITHUB_STEP_SUMMARY)
+  appendFileSync(process.env.GITHUB_STEP_SUMMARY, table);
 else process.stdout.write(table);

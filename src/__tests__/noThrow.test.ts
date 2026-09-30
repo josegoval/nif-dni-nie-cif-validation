@@ -150,7 +150,9 @@ describe("#40: replaceNieLetter keeps its v1 behaviour and throws (deprecated)",
   });
 
   it("throws a TypeError for non-string input", () => {
-    expect(() => replaceNieLetter(null as unknown as string)).toThrow(TypeError);
+    expect(() => replaceNieLetter(null as unknown as string)).toThrow(
+      TypeError
+    );
     expect(() => replaceNieLetter(123 as unknown as string)).toThrow(TypeError);
   });
 });

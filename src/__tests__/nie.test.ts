@@ -1,4 +1,4 @@
-import { describe, expect, it, } from "vitest";
+import { describe, expect, it } from "vitest";
 import { isValidNaturalPersonNif, isValidNie, isValidNif, NIE_REGEX } from "..";
 
 const testCases = [

@@ -10,7 +10,9 @@ const HAS_CONTROL_NUMBER_REGEX = /^[ABEH]/;
 
 function sumEvenPositions(legalEntityNumbers: string): number {
   return (
-    Number(legalEntityNumbers[1]) + Number(legalEntityNumbers[3]) + Number(legalEntityNumbers[5])
+    Number(legalEntityNumbers[1]) +
+    Number(legalEntityNumbers[3]) +
+    Number(legalEntityNumbers[5])
   );
 }
 

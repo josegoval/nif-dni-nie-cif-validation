@@ -13,7 +13,12 @@ export default defineConfig({
       exclude: ["src/**/*.test.ts"],
       // `text` for the terminal, `json-summary` for scripts/coverage-summary.mjs,
       // `html` for the CI artifact, `lcovonly` for editors and other tools.
-      reporter: ["text", "json-summary", ["html", { subdir: "html" }], "lcovonly"],
+      reporter: [
+        "text",
+        "json-summary",
+        ["html", { subdir: "html" }],
+        "lcovonly",
+      ],
       // Write the reports even when a test or a threshold fails.
       reportOnFailure: true,
       thresholds: {
