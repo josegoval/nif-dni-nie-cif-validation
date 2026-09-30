@@ -36,6 +36,7 @@ import type { IsValidOptions } from "./types";
  * isValidSpanishVat("12345678Z");   // false: no ES prefix
  * isValidSpanishVat("ES12345678A"); // false: the NIF is invalid (DNI-2)
  * @see SPEC.md#vat-1
+ * @since 2.0.0
  */
 export function isValidSpanishVat(
   value: unknown,

@@ -22,6 +22,7 @@ import { inspect, typeOf } from "./validate";
  * @example
  * format(" b-1234567-4 ", { separator: "" }); // "B12345674" (canonical)
  * @see SPEC.md#cif-1
+ * @since 2.0.0
  */
 export interface FormatOptions {
   /** What goes between the parts: `"-"` (default), `" "` or `""`. */
@@ -56,6 +57,7 @@ const NO_FORMAT_OPTIONS: FormatOptions = {};
  * format("12345678A");                   // null (wrong letter)
  * @see SPEC.md#dni-1
  * @see SPEC.md#cif-1
+ * @since 2.0.0
  */
 export function format(
   value: unknown,
@@ -100,6 +102,7 @@ export function format(
  * computeControlCharacter("T1234567"); // null (NIF-1)
  * @see SPEC.md#dni-2
  * @see SPEC.md#cif-3
+ * @since 2.0.0
  */
 export function computeControlCharacter(partial: unknown): string | null {
   if (typeof partial !== "string") return null;

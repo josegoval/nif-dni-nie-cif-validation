@@ -41,6 +41,7 @@ const KEYS = "ABCDEFGHJNPQRSUVW";
  * describeCifOrganisation("b", es); // "Sociedad de responsabilidad limitada"
  * describeCifOrganisation("P", es); // "Corporación local"
  * @see SPEC.md#cif-2
+ * @since 2.0.0
  */
 export function describeCifOrganisation(
   key: unknown,

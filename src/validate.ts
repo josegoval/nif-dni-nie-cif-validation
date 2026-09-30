@@ -280,12 +280,16 @@ function withMeta(
  * @param value The value to validate, typically untrusted form input.
  * @param opts `types`, `normalize`, `cifControl`, `rejectPlaceholders`,
  * `allowVatPrefix`, `locale`. See {@link ValidateOptions}.
- * @returns The result; allocated on every call.
+ * @returns A result object, allocated on every call: `valid` is `true` only
+ * for a valid document (with these options), and then `error` is absent.
+ * Otherwise `error` says why (`code`, `rule`, `message` and, for a wrong
+ * control character, `expected`), and `type`, `normalized` and `meta` are
+ * set as far as the format was recognisable (`null` where it was not).
  * @example
  * validate("12345678A");
  * // { valid: false, type: "DNI", normalized: "12345678A",
- * //   error: { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2",
- * //            expected: "Z", message: "The control character is not ..." } }
+ * //   error: { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+ * //            message: 'The control character is not correct: for this DNI it should be "Z".' } }
  * @example
  * import { es } from "nif-dni-nie-cif-validation/locales/es";
  *
@@ -293,10 +297,13 @@ function withMeta(
  * // { valid: true, type: "CIF", normalized: "B12345674",
  * //   meta: { orgKey: "B", orgDescription: "Sociedad de responsabilidad limitada" } }
  * @example
- * validate("G1234567D").error?.rule;                    // "CIF-3"
+ * validate("G1234567D").error?.rule;                      // "CIF-3"
  * validate("G1234567D", { cifControl: "lenient" }).valid; // true
  * validate("12345678Z", { types: ["CIF"] }).error?.code;  // "UNSUPPORTED_TYPE"
- * @see SPEC.md
+ * validate(null).error?.code;                             // "NOT_A_STRING"
+ * @see SPEC.md#cif-3
+ * @see SPEC.md#norm-2
+ * @since 2.0.0
  */
 export function validate(
   value: unknown,
@@ -387,6 +394,7 @@ function check(
  * getNifType("T1234567A"); // null (no document starts with T, NIF-1)
  * getNifType("123456789"); // null (a DNI ends in a letter, DNI-1)
  * @see SPEC.md#nif-1
+ * @since 2.0.0
  */
 export function getNifType(
   value: unknown,

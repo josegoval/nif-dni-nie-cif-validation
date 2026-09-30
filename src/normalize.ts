@@ -198,6 +198,7 @@ export function canonicalize(value: string, pad: boolean): string {
  * @see SPEC.md#norm-1
  * @see SPEC.md#norm-4
  * @see SPEC.md#nie-3
+ * @since 2.0.0
  */
 export function normalize(value: string): string {
   if (typeof value !== "string") return "";
