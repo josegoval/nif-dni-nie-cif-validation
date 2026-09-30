@@ -20,6 +20,14 @@ const FUNCTIONS = [
   "isValidCifControlCode",
   "isValidLegalEntityNif",
   "isValidCif",
+  // v2
+  "validate",
+  "getNifType",
+  "normalize",
+  "format",
+  "computeControlCharacter",
+  "describeCifOrganisation",
+  "isValidSpanishVat",
 ];
 const STRINGS = [
   "DNI_CONTROL_LETTERS",
@@ -103,5 +111,38 @@ describe("specific validators", () => {
     assert.equal(lib.isValidCif("A58818501"), true);
     assert.equal(lib.isValidCif("P2807900B"), true);
     assert.equal(lib.isValidCif("12345678Z"), false);
+  });
+});
+
+describe("v2 API", () => {
+  it("validate explains a wrong control character", () => {
+    const result = lib.validate("12345678A");
+    assert.equal(result.valid, false);
+    assert.equal(result.type, "DNI");
+    assert.equal(result.error.code, "INVALID_CONTROL_CHARACTER");
+    assert.equal(result.error.rule, "DNI-2");
+    assert.equal(result.error.expected, "Z");
+  });
+  it("validate normalizes and describes a CIF", () => {
+    const result = lib.validate(" b-1234567-4 ", { locale: "es" });
+    assert.equal(result.valid, true);
+    assert.equal(result.normalized, "B12345674");
+    assert.equal(
+      result.meta.orgDescription,
+      "Sociedad de responsabilidad limitada"
+    );
+  });
+  it("the booleans follow CIF-3 by default and restore v1 on request", () => {
+    assert.equal(lib.isValidCif("G1234567D"), false);
+    const v1 = { normalize: false, cifControl: "lenient" };
+    assert.equal(lib.isValidCif("G1234567D", v1), true);
+    assert.equal(lib.isValidNif(" 12.345.678-Z "), true);
+    assert.equal(lib.isValidNif(" 12.345.678-Z ", v1), false);
+  });
+  it("normalize, format, computeControlCharacter and isValidSpanishVat", () => {
+    assert.equal(lib.normalize(" x-0123456-7l "), "X1234567L");
+    assert.equal(lib.format("12345678z"), "12345678-Z");
+    assert.equal(lib.computeControlCharacter("B1234567"), "4");
+    assert.equal(lib.isValidSpanishVat("ES12345678Z"), true);
   });
 });
