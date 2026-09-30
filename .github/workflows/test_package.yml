@@ -1,23 +1,57 @@
 name: Test package
 
 on:
-  pull_request
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HUSKY: "0" # do not install git hooks in CI
 
 jobs:
-  build:
-
+  test:
+    name: Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      id-token: write # Codecov OIDC upload
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [18.x]
-
+        node-version: [20, 22, 24]
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install
-      - run: yarn build
-      - run: yarn test
+          cache: yarn
+      # --ignore-engines: the release tooling (semantic-release 25 and its
+      # plugins) needs Node >= 22.22, but the package itself is tested on
+      # Node 20 too. Only the release job runs semantic-release.
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-engines
+      - name: Typecheck
+        run: yarn typecheck
+      - name: Test with coverage
+        run: yarn test --coverage
+      - name: Build
+        run: yarn build
+      - name: Upload coverage to Codecov
+        # One upload is enough, and OIDC is not available to Dependabot
+        # or fork PRs. A missing upload must never fail the build.
+        if: matrix.node-version == 24 && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v7
+        continue-on-error: true
+        with:
+          use_oidc: true
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
