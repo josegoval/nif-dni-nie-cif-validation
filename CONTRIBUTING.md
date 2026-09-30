@@ -78,4 +78,7 @@ Do not run `npm publish` by hand. The `prepack` script builds `dist/` so a tarba
 
 ### Coverage
 
-The test workflow uploads coverage to Codecov with OIDC (`use_oidc: true`), so no secret is needed once the repository is enabled on Codecov. To use a token instead, add a `CODECOV_TOKEN` repository secret and pass it as `token:` to `codecov/codecov-action`.
+Coverage never leaves GitHub; there is no third-party service:
+
+- Every CI run on Node 24 writes a coverage table to the run's **job summary** (`scripts/coverage-summary.mjs`) and uploads the HTML report as the `coverage-report` artifact.
+- Run `yarn test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/lcov-report/index.html`.

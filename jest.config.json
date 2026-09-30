@@ -1,3 +1,4 @@
 {
-  "collectCoverage": true
+  "collectCoverage": true,
+  "coverageReporters": ["text", "lcov", "json-summary"]
 }

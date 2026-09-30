@@ -19,9 +19,6 @@ jobs:
   test:
     name: Test (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write # Codecov OIDC upload
     strategy:
       fail-fast: false
       matrix:
@@ -45,16 +42,18 @@ jobs:
         run: yarn test --coverage
       - name: Build
         run: yarn build
-      - name: Upload coverage to Codecov
-        # One upload is enough, and OIDC is not available to Dependabot
-        # or fork PRs. A missing upload must never fail the build.
-        if: matrix.node-version == 24 && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7
-        continue-on-error: true
+      # Coverage stays inside GitHub: a table in the job summary and the
+      # HTML report as a downloadable artifact. No third-party service.
+      - name: Coverage summary
+        if: matrix.node-version == 24
+        run: node scripts/coverage-summary.mjs
+      - name: Upload coverage report
+        if: matrix.node-version == 24
+        uses: actions/upload-artifact@v7
         with:
-          use_oidc: true
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
+          name: coverage-report
+          path: coverage/lcov-report/
+          retention-days: 14
 
   package:
     name: Package (publint, attw)
