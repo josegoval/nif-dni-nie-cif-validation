@@ -1,6 +1,6 @@
 {
   "name": "nif-dni-nie-cif-validation",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "description": "Validate NIF, DNI, NIE and CIF documents easily.",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
