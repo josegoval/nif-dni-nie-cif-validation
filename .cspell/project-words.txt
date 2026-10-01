@@ -197,6 +197,7 @@ buymeacoffee
 commitlint
 darwin
 deno
+denoland
 esbuild
 hookform
 josegoval
@@ -210,4 +211,5 @@ releaserc
 spain
 stdnum
 valibot
+vite
 vitest
