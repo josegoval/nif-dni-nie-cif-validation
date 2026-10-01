@@ -22,6 +22,8 @@ pnpm bench:competitors           # builds, then benchmarks against other librari
 pnpm readme:bench                # writes the generated parts of README.md and README.es.md from bench/results/latest.json
 pnpm docs:llms                   # writes llms-full.txt from README.md, docs/api-design.md, MIGRATION.md and SPEC.md
 pnpm docs:jsdoc                  # builds, then checks the JSDoc of every export (see JSDoc)
+pnpm examples:install            # packs the package and installs the dependencies of examples/ (see Examples)
+pnpm examples:check              # runs every example's check, except Deno and Bun (see Examples)
 node scripts/check-tree-shaking.mjs <tarball>   # bundles the packed tarball, see Build and package layout
 node scripts/check-adapters.mjs <tarball>       # runs the /zod, /valibot and /yup adapters from import and require
 ```
@@ -56,6 +58,7 @@ src/
 test/fixtures/  SPEC test values as JSON, run by src/__tests__/fixtures.test.ts
 test/smoke/     smoke tests of the packed tarball, CommonJS and ES module (plain Node, see Pull requests)
 bench/          benchmarks: against v1.0.11 and another build, and against other libraries (see Performance)
+examples/       runnable projects that use the package, their own pnpm workspace (see Examples)
 scripts/        build script, CI helpers: coverage summary, SPEC rule and JSDoc checks, tree-shaking check, README and llms-full.txt generators
 .size-limit.json  bundle size budgets (see Build and package layout)
 ```
@@ -164,6 +167,16 @@ Constants and types need a summary and `@since`; give them examples too when the
 
 `llms.txt` (written by hand, under about 2,000 tokens, every snippet run by `readme-examples.test.ts`) and `llms-full.txt` (generated) follow the [llms.txt](https://llmstxt.org/) convention and ship in the npm package, with `AGENTS.md`. `pnpm docs:llms` (`scripts/llms-full.mjs`) assembles `llms-full.txt` from README.md, docs/api-design.md, MIGRATION.md and SPEC.md, without the README's HTML and comments and with absolute links; CI runs `pnpm docs:llms --check`. So after changing any of those files, or running `pnpm readme:bench`, run `pnpm docs:llms` and commit `llms-full.txt` with them. Keep both files factual: no instructions aimed at agents that a human reader wouldn't see.
 
+### Examples
+
+`examples/` has runnable projects (Node with CommonJS and ES modules, React Hook Form with Zod, Express, Valibot, Yup, a Vitest fixture factory, a CSV bulk validation, Deno and Bun), each with its own `package.json` and a README with its run command. See [examples/README.md](examples/README.md).
+
+- **They use the packed package.** `pnpm examples:install` runs `pnpm pack` and unpacks the tarball into `examples/.pack/package` (`scripts/pack-for-examples.mjs`; ignored by Git). Every example depends on it with `"file:../.pack/package"`, so it runs against the `exports`, the `files` and the types that npm would ship, not against `src/`. Run `pnpm examples:pack` again after changing the library.
+- **They don't touch the library's install.** `examples/` is its own pnpm workspace (`examples/pnpm-workspace.yaml`, its own `pnpm-lock.yaml`), and the root `pnpm-workspace.yaml` has no `packages`, so the root `pnpm install --frozen-lockfile` never installs React, Vite or Express. The examples' workspace repeats the root's supply-chain policy: `minimumReleaseAge: 4320` and `allowBuilds` (esbuild's install script stays denied, as in the root). Dependabot is not set up for `examples/`: it would have to resolve the `file:../.pack/package` dependency, a folder that exists only after packing. Update the examples by hand with `pnpm examples:pack && pnpm --dir examples update`; GitHub's dependency alerts still read `examples/pnpm-lock.yaml`. Excluding the folder from the root workspace, rather than making the examples workspace packages of it with install filters, keeps the root install and its lockfile exactly as they were, and a change to an example can't alter the library's dependencies.
+- **`pnpm check` is the check.** Every example has a `check` script that builds, type-checks or runs it with assertions, and exits with an error when the output is wrong (the CSV example takes `--expect-invalid`, the Express example posts to the app it starts).
+- **CI** is `.github/workflows/examples.yml`, not a job of `release.yml`, because the examples install packages from the registry, so a failure there can come from outside this repository and must not block a release. It runs on every pull request (any change to the library can break an example) and on the release branches. A `Pack` job packs the library once, and a matrix runs each example in its own job: it unpacks the tarball, installs only that example (`pnpm install --filter ./<name>`), checks that `examples/pnpm-lock.yaml` didn't change (`--frozen-lockfile` can't be used, see the comment in the workflow), and runs `pnpm check`. When you add an example, add it to the matrix.
+- **Deno and Bun run in CI**, with `denoland/setup-deno` and `oven-sh/setup-bun`, the official actions of the two projects, pinned to an exact release (Dependabot updates them) and only used by their own job. The package says it works there, so CI proves it: the cost is two more third-party actions, each limited to one matrix job that has no secrets (the workflow only has `contents: read`). Run them locally with `deno run main.ts` and `bun run index.ts`.
+
 ### Spelling
 
 `pnpm spell` runs [cspell](https://cspell.org/) with `cspell.config.yaml` (English, British spelling). Real words it doesn't know, such as the Spanish legal terms quoted from the sources, go in `.cspell/project-words.txt`. `README.es.md` and `scripts/readme-bench.mjs` (which writes its Spanish parts) are checked with the Spanish (Spain) dictionary too (`@cspell/dict-es-es`, a dev dependency). The string literals of the Catalan, Basque and Galician locales (and the tree-shaking markers) are not spell-checked, by an override in `cspell.config.yaml`, and docs/translations.md turns cspell off around its tables: the project has no dictionary for those languages, and the language review covers them.
@@ -231,6 +244,7 @@ Keep commits atomic: one logical change per commit, with a message that explains
   - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, spell check (`pnpm spell`), SPEC rule ID check (`pnpm spec:check`), the README sections generated from the benchmark (`pnpm readme:bench --check`) and `llms-full.txt` (`pnpm docs:llms --check`), type check, tests with 100% coverage enforced (including the differential test against v1.0.11), coverage summary and report, the size budgets (`pnpm size`), the JSDoc of every export (`node scripts/check-jsdoc.mjs`), the ES2016 syntax check (`pnpm check:es`), then packs the tarball, checks that it tree-shakes (`scripts/check-tree-shaking.mjs`), checks it with `publint --strict` and `@arethetypeswrong/cli` (green in every resolution mode) and uploads it as the `package-tarball` artifact.
   - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke tests in `test/smoke/` with Node's built-in test runner: `smoke.test.cjs` loads the package with `require()` and `smoke.test.mjs` with `import`. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` copies of both files from there.
   - `PR title`: checks that the pull request title is a valid Conventional Commit (see `.github/workflows/pr-title.yml`).
+  - `Examples` (`.github/workflows/examples.yml`): packs the library and runs each project of `examples/` in its own job against it (see Examples). It is a separate workflow and not part of the release gate, so a registry outage can't block a release.
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.
 
 ### How to merge

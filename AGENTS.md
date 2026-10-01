@@ -18,6 +18,7 @@ src/adapter.ts, src/{zod,valibot,yup}/  schema adapters (optional peers)
 src/__tests__/      Vitest suites (fixtures, properties, differential, stdnum, docs samples)
 test/fixtures/      SPEC test values as JSON; test/smoke/: tarball smoke tests
 bench/              benchmarks; bench/results/latest.json is the source of every number
+examples/           runnable projects (own pnpm workspace); they install the packed package
 scripts/            build, SPEC rule, JSDoc, tree-shaking and adapter checks, doc generators
 SPEC.md             the rules; docs/api-design.md the API; MIGRATION.md v1 to v2
 README.md, README.es.md, llms.txt, llms-full.txt  user docs (partly generated)
@@ -34,6 +35,7 @@ pnpm build         # dist/esm and dist/cjs
 pnpm spell         # cspell (British English; README.es.md also in Spanish)
 pnpm spec:check    # rule IDs in src/ and tests match SPEC.md
 pnpm docs:jsdoc    # every export has a summary, @param, @returns, two @example, @see, @since
+pnpm examples:install && pnpm examples:check   # pack the package, install and check examples/ (CI: examples.yml)
 pnpm size          # bundle size budgets (.size-limit.json)
 pnpm check:es      # dist/ uses nothing newer than ES2016
 pnpm bench         # against v1.0.11; pnpm bench:competitors: against other libraries

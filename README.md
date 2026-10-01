@@ -286,6 +286,8 @@ Each schema takes the options of `validate()` and accepts exactly what `validate
 
 ## Recipes
 
+Each recipe, and more, is a runnable project in [examples/](examples/): [Node, CommonJS](examples/node-cjs) and [ES modules](examples/node-esm), [React Hook Form with Zod](examples/zod-react-hook-form) (Vite and React), [Express](examples/express-middleware), [Valibot](examples/valibot), [Yup](examples/yup), [Vitest fixtures with the generators](examples/generate-test-data), [bulk validation of a CSV, with its throughput](examples/csv-bulk-validation), [Deno](examples/deno) and [Bun](examples/bun). CI builds, type-checks or runs each one against the packed package.
+
 ### Zod and React Hook Form
 
 The schema takes the user's language and outputs the normalized value:
