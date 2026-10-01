@@ -1,0 +1,121 @@
+---
+title: Normalizing and formatting input
+description: How nif-dni-nie-cif-validation cleans up Spanish NIF, DNI, NIE and CIF input (case, spaces, dots, hyphens, missing zeros, the old NIE form), what to store, and how to display a number grouped.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+People type the same NIF in many ways: `12345678z`, `12.345.678-Z`, `1234567L` without its leading zero, or an old NIE with 10 characters. The library accepts all of them, checks the document they stand for, and gives you one canonical form to store. Cleaning up never makes an invalid document valid: it only accepts more ways of writing a valid one.
+
+## What normalization does
+
+`normalize()` returns the canonical form: the form of the official sources, and the one to store. In order:
+
+1. It removes white space anywhere, which also trims, and dots ([NORM-2](/nif-dni-nie-cif-validation/reference/official-sources/#norm-2)), hyphens and slashes ([NORM-3](/nif-dni-nie-cif-validation/reference/official-sources/#norm-3)).
+2. It turns lower-case letters into upper case ([NORM-1](/nif-dni-nie-cif-validation/reference/official-sources/#norm-1)).
+3. It collapses the old 10-character NIE, `X0` + 7 digits + letter, into its 9-character form ([NIE-3](/nif-dni-nie-cif-validation/reference/official-sources/#nie-3)).
+4. It adds the leading zeros to a DNI typed with fewer than 8 digits ([NORM-4](/nif-dni-nie-cif-validation/reference/official-sources/#norm-4)).
+
+```ts
+import { normalize } from "nif-dni-nie-cif-validation";
+
+normalize(" 12.345.678-z ");  // "12345678Z"
+normalize("b/1234567/4");     // "B12345674"
+normalize("x-0123456-7l");    // "X1234567L": the old NIE form, collapsed
+normalize("1234567L");        // "01234567L": the leading zero added back
+normalize("12345678\tZ");     // "12345678Z": tabs and other white space too
+```
+
+`normalize()` doesn't validate: it returns the cleaned-up string even when the document is invalid. Other punctuation is kept on purpose (an underscore, a comma, an en dash), so such a value stays invalid, and so do look-alike characters from other alphabets:
+
+```ts
+import { isValidNif, normalize } from "nif-dni-nie-cif-validation";
+
+normalize("12_345_678Z");  // "12_345_678Z": underscores are not separators
+isValidNif("12_345_678Z"); // false
+```
+
+Every validator, `validate()` and every schema normalize their input first, with the same rules, so `isValidNif(x)` and `validate(x).valid` always agree.
+
+<Aside type="tip">
+Store `validate(value).normalized` (or `normalize(value)` after a successful check), never the raw input. Two users who type the same document in different ways then get the same stored value, and lookups and uniqueness constraints work.
+</Aside>
+
+## Validate and normalize in one call
+
+`validate()` gives the canonical form in `normalized`, together with the verdict:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate(" b-1234567-4 ").normalized; // "B12345674"
+validate("x01234567l").normalized;    // "X1234567L"
+validate("12345678A").normalized;     // "12345678A": set even when the letter is wrong
+validate("hello").normalized;         // null: not recognisable as any document
+```
+
+`normalized` is set as soon as the format is recognisable, even when the control character is wrong, so you can show it back to the user next to the error.
+
+## Turning normalization off
+
+`{ normalize: false }` turns off the removal of separators and the padding with zeros. Lower case and the old NIE form are still accepted, as they were in version 1:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif(" 12.345.678-Z ", { normalize: false }); // false: separators are refused
+isValidNif("12345678z", { normalize: false });      // true: lower case is still fine
+isValidNif("X01234567L", { normalize: false });     // true: so is the old NIE form
+```
+
+Use it when the input must already be canonical, for example to check stored data.
+
+## VAT numbers and the ES prefix
+
+An `ES` prefix is not cleanup: `ES` followed by a NIF is a VAT number, a different identifier ([VAT-1](/nif-dni-nie-cif-validation/reference/official-sources/#vat-1)). `normalize()` keeps it, and `validate()` refuses it unless you pass `allowVatPrefix`:
+
+```ts
+import { normalize, validate } from "nif-dni-nie-cif-validation";
+
+normalize("es-12345678-z");                                   // "ES12345678Z"
+validate("ES12345678Z").error?.code;                          // "INVALID_FORMAT"
+validate("es 12345678 z", { allowVatPrefix: true }).normalized; // "12345678Z"
+```
+
+`normalized` never keeps the prefix. To store a VAT number, add `ES` to it, or use `zSpanishVat()` and the other VAT schemas, whose output keeps it.
+
+## Displaying a number: format()
+
+No official source defines how to group a NIF for display. `format()` splits the canonical form into the parts the rules define, joined by a hyphen, a space, or nothing:
+
+| Type | Parts | Example |
+| --- | --- | --- |
+| DNI | 8 digits · letter | `12345678-Z` |
+| NIE | prefix · 7 digits · letter | `X-1234567-L` |
+| K/L/M NIF | prefix · 7 digits · letter | `K-1234567-L` |
+| CIF | organisation key · 7 digits · control | `B-1234567-4` |
+
+```ts
+import { format } from "nif-dni-nie-cif-validation";
+
+format("12345678z");                     // "12345678-Z"
+format("x01234567l");                    // "X-1234567-L"
+format(" b-1234567-4 ");                 // "B-1234567-4"
+format("B12345674", { separator: " " }); // "B 1234567 4"
+format("B12345674", { separator: "" });  // "B12345674"
+format("12345678A");                     // null: only valid documents are formatted
+```
+
+`format()` validates with the default options, and returns `null` for anything invalid, so it is safe to call on raw input. It never adds an `ES` prefix.
+
+## Separators the library accepts
+
+| Input | Accepted? | Rule |
+| --- | --- | --- |
+| Lower case (`12345678z`) | Yes, even with `normalize: false` | [NORM-1](/nif-dni-nie-cif-validation/reference/official-sources/#norm-1) |
+| Spaces, tabs, line breaks, dots | Yes | [NORM-2](/nif-dni-nie-cif-validation/reference/official-sources/#norm-2) |
+| Hyphens (`-`) and slashes (`/`) | Yes | [NORM-3](/nif-dni-nie-cif-validation/reference/official-sources/#norm-3) |
+| A DNI without its leading zeros (`1234567L`) | Yes | [NORM-4](/nif-dni-nie-cif-validation/reference/official-sources/#norm-4) |
+| The old NIE form (`X01234567L`) | Yes, even with `normalize: false` | [NIE-3](/nif-dni-nie-cif-validation/reference/official-sources/#nie-3) |
+| Underscores, commas, en dashes, other punctuation | No | — |
+| `ES` prefix | Only with `allowVatPrefix`, or in the VAT functions | [VAT-1](/nif-dni-nie-cif-validation/reference/official-sources/#vat-1) |

@@ -1,0 +1,204 @@
+---
+title: Inprimakiak egiaztatzea
+description: Egiaztatu inprimakietako Espainiako IFZ, NAN, AIZ eta IFK eremuak Zod eta React Hook Form, Valibot edo Yup erabilita, baita zerbitzarian ere, zure hizkuntzako mezuekin eta gorde behar den balio normalizatuarekin.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+IFZ baterako inprimaki-eremu batek hiru gauza behar ditu: jendeak idazteko dituen moduak onartzea (`12.345.678-z`), zenbaki oker bat mezu ulergarri batekin baztertzea eta balio kanoniko bakar bat gordetzea. Liburutegi honen eskemek hirurak egiten dituzte, Zod, Valibot eta Yup-entzat, eta `validate()` funtzioak gauza bera egiten du beste edozein testuingurutan.
+
+Eskema guztiek:
+
+- `validate()` funtzioak onartzen duen gauza bera onartzen dute, aukera berekin (`types`, `locale`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `normalize`);
+- balio **normalizatua** itzultzen dute: `" 12.345.678-z "` `"12345678Z"` gisa ateratzen da;
+- balio bat baztertzen dutenean, `validate()` funtzioaren mezua ematen dute, adierazten duzun hizkuntzan, errore-kodearekin eta SPEC arauarekin batera.
+
+Zod, Valibot eta Yup aukerako peer mendekotasunak dira: instalatu erabiltzen duzuna. Sarrera-puntu nagusia inportatzeak ez ditu inoiz kargatzen.
+
+## Zod eta React Hook Form
+
+Zod 4rako eskemak `zNif`, `zDni`, `zNie`, `zCif` eta `zSpanishVat` dira, `nif-dni-nie-cif-validation/zod` sarrera-puntukoak. Definitu eskema behin, erabiltzailearen hizkuntzarekin:
+
+```ts
+// nif-schema.ts
+import { z } from "zod";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+import { zNif } from "nif-dni-nie-cif-validation/zod";
+
+export const schema = z.object({ nif: zNif({ types: ["DNI", "NIE"], locale: es }) });
+
+schema.parse({ nif: " 12.345.678-z " });                      // { nif: "12345678Z" }
+schema.safeParse({ nif: "12345678A" }).error?.issues[0]?.message;
+// "El carácter de control no es correcto: para este DNI debería ser «Z»."
+schema.safeParse({ nif: "B12345674" }).error?.issues[0]?.message;
+// "Aquí no se admite un NIF de persona jurídica o entidad (CIF)."
+```
+
+`@hookform/resolvers` paketeak dagoen bezala funtzionatzen du harekin. Sarrera eta irteera testu-kateak dira, eta `handleSubmit` funtzioak balio normalizatua jasotzen du:
+
+{/* docs-test: skip (React component) */}
+```tsx
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
+import { schema } from "./nif-schema";
+
+export function NifForm({ save }: { save: (nif: string) => void }) {
+  const { register, handleSubmit, formState: { errors } } = useForm<
+    z.input<typeof schema>, unknown, z.output<typeof schema>
+  >({ resolver: zodResolver(schema) });
+  return (
+    <form onSubmit={handleSubmit(({ nif }) => save(nif))}>
+      <input {...register("nif")} />
+      {errors.nif && <p role="alert">{errors.nif.message}</p>}
+    </form>
+  );
+}
+```
+
+Inprimaki oso bat, Vite-rekin, [examples/zod-react-hook-form](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/zod-react-hook-form) karpetan duzu.
+
+Errore-kodea eta araua issue-aren `params` eremuan daude, analitikarako edo zure mezuetarako nahi badituzu:
+
+```ts
+import { z } from "zod";
+import { zDni } from "nif-dni-nie-cif-validation/zod";
+
+const issue = zDni().safeParse("12345678A").error?.issues[0] as z.core.$ZodIssueCustom;
+issue.params;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z" }
+```
+
+Aukerako eremu bat kate hutsarekiko bildura bat da; horrela, sarrera hutsak «bat ere ez» esan nahi du:
+
+```ts
+import { z } from "zod";
+import { zCif } from "nif-dni-nie-cif-validation/zod";
+
+const company = z.object({ cif: z.union([z.literal(""), zCif()]) });
+
+company.parse({ cif: "" });            // { cif: "" }
+company.parse({ cif: "b-1234567-4" }); // { cif: "B12345674" }
+```
+
+<Aside type="note" title="Zod 3">
+Egokitzaileak Zod 4rako dira. Zod 3rekin, erabili `validate()` `transform` baten barruan: ikusi [APIaren diseinu-oharrak](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md#d12-schema-adapters-zod-valibot-yup-58) (ingelesez).
+</Aside>
+
+## Valibot
+
+Valibot 1erako eskemak `vNif`, `vDni`, `vNie`, `vCif` eta `vSpanishVat` dira, `nif-dni-nie-cif-validation/valibot` sarrera-puntukoak. Kodea, araua eta espero den karakterea issue-aren propietateak dira:
+
+```ts
+import * as v from "valibot";
+import { ca } from "nif-dni-nie-cif-validation/locales/ca";
+import { type NifIssue, vNie, vNif } from "nif-dni-nie-cif-validation/valibot";
+
+v.parse(vNie(), "x-0123456-7l"); // "X1234567L"
+
+const form = v.object({ nif: vNif({ locale: ca }) });
+const issue = v.safeParse(form, { nif: "12345678A" }).issues?.[0] as NifIssue;
+issue.message;  // "El caràcter de control no és correcte: per a aquest DNI hauria de ser «Z»."
+issue.code;     // "INVALID_CONTROL_CHARACTER"
+issue.rule;     // "DNI-2"
+issue.expected; // "Z"
+```
+
+React Hook Form-ekin, erabili `@hookform/resolvers/valibot` paketeko `valibotResolver(form)`.
+
+## Yup
+
+Yup 1erako eskemak `yNif`, `yDni`, `yNie`, `yCif` eta `ySpanishVat` dira, `nif-dni-nie-cif-validation/yup` sarrera-puntukoak. Yup-en `string()` ez bezala, derrigorrezkoak dira eta ez dute inoiz zenbaki bat testu bihurtzen: aukerako eremu baterako, erabili `.optional()` edo `.nullable()`.
+
+```ts
+import { object, ValidationError } from "yup";
+import { gl } from "nif-dni-nie-cif-validation/locales/gl";
+import { yCif } from "nif-dni-nie-cif-validation/yup";
+
+const form = object({ cif: yCif({ locale: gl }) });
+
+await form.validate({ cif: "b-1234567-4" }); // { cif: "B12345674" }
+
+const error = await form
+  .validate({ cif: "B12345675" })
+  .then(() => null, (caught: ValidationError) => caught);
+error?.message;
+// "O carácter de control non é correcto: para este NIF de entidade (CIF) debería ser «4»."
+error?.params?.rule; // "CIF-4"
+```
+
+React Hook Form-ekin, erabili `@hookform/resolvers/yup` paketeko `yupResolver(form)`.
+
+## Zerbitzarian
+
+Egiaztatu berriro zerbitzarian: nabigatzaileko egiaztapenak saihets daitezke. `validate()` funtzioak edozein balio onartzen du; beraz, eskaeraren gorputza iristen den bezala pasa diezaiokezu. Kudeatzaile honek `Request` eta `Response` estandarrak erabiltzen ditu, Next.js-en route handler-ek, Hono-k, Deno-k eta Bun-ek bezala:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+export async function POST(request: Request): Promise<Response> {
+  const body = (await request.json()) as { nif?: unknown };
+  const result = validate(body.nif);
+  if (!result.valid) {
+    return Response.json({ error: result.error }, { status: 400 });
+  }
+  return Response.json({ nif: result.normalized }); // gorde balio normalizatua
+}
+
+const response = await POST(
+  new Request("https://example.com/customers", {
+    method: "POST",
+    body: JSON.stringify({ nif: "12345678A" }),
+  })
+);
+response.status;                    // 400
+(await response.json()).error.rule; // "DNI-2"
+```
+
+Express-ekin, middleware batek gauza bera egiten du, eta IFZ normalizatua hurrengo urratsera pasatzen du:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+export function requireNif(
+  req: { body: { nif?: unknown } },
+  res: { status(code: number): { json(body: unknown): unknown } },
+  next: () => void,
+): void {
+  const result = validate(req.body.nif);
+  if (!result.valid) {
+    res.status(400).json({ error: result.error }); // { code, message, rule, expected? }
+    return;
+  }
+  req.body.nif = result.normalized; // "12345678Z", gordetzeko prest
+  next();
+}
+
+// app.post("/customers", express.json(), requireNif, createCustomer);
+```
+
+Eskema berak zerbitzarian ere balio dute, adibidez server action baten `FormData` objektuarekin:
+
+```ts
+import { zNif } from "nif-dni-nie-cif-validation/zod";
+
+const data = new FormData();
+data.set("nif", " 12.345.678-z ");
+
+zNif().safeParse(data.get("nif")).data;   // "12345678Z"
+zNif().safeParse(null).error?.issues[0]?.message; // "The value must be text."
+```
+
+## Zer onartzen duen eremuak
+
+| Eremua honetarako da… | Zod | Valibot | Yup |
+| --- | --- | --- | --- |
+| Edozein IFZ | `zNif()` | `vNif()` | `yNif()` |
+| Mota batzuk bakarrik | `zNif({ types: ["DNI", "NIE"] })` | `vNif({ types: […] })` | `yNif({ types: […] })` |
+| NAN bat edo K/L/M IFZ bat | `zDni()` | `vDni()` | `yDni()` |
+| AIZ bat | `zNie()` | `vNie()` | `yNie()` |
+| Enpresa bat edo beste erakunde bat | `zCif()` | `vCif()` | `yCif()` |
+| Espainiako IFZ-BEZ bat (`ES` derrigorrezkoa, irteeran mantentzen da) | `zSpanishVat()` | `vSpanishVat()` | `ySpanishVat()` |
+| IFZ bat, `ES` aurrizkiarekin edo gabe (irteerak kentzen du) | `zNif({ allowVatPrefix: true })` | `vNif({ allowVatPrefix: true })` | `yNif({ allowVatPrefix: true })` |
+
+Eremuak onartzen ez duen mota bateko dokumentu baliozko batek `UNSUPPORTED_TYPE` ematen du, hala dioen mezu batekin («Hemen ez da onartzen dokumentu mota hau: pertsona juridiko edo erakunde baten IFZ (IFK).»), ez «ez da baliozkoa». [Errore-kodeen gidak](/nif-dni-nie-cif-validation/eu/guides/errors-and-languages/) mezu guztiak biltzen ditu.

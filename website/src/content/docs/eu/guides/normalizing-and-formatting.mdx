@@ -1,0 +1,121 @@
+---
+title: Sarrera normalizatzea eta formatua ematea
+description: Nola garbitzen duen nif-dni-nie-cif-validation liburutegiak Espainiako IFZ, NAN, AIZ edo IFK batean idatzitakoa (maiuskulak, zuriuneak, puntuak, marrak, falta diren zeroak, AIZ zaharra), zer gorde eta zenbaki bat taldekatuta nola erakutsi.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Jendeak IFZ bera modu askotara idazten du: `12345678z`, `12.345.678-Z`, `1234567L` hasierako zerorik gabe, edo 10 karaktereko AIZ zahar bat. Liburutegiak denak onartzen ditu, adierazten duten dokumentua egiaztatzen du eta gordetzeko forma kanoniko bakar bat ematen dizu. Garbiketak ez du inoiz dokumentu baliogabe bat baliozko bihurtzen: dokumentu baliozko bat idazteko modu gehiago onartzen ditu, besterik ez.
+
+## Zer egiten duen normalizazioak
+
+`normalize()` funtzioak forma kanonikoa itzultzen du: iturri ofizialena, eta gorde behar duzuna. Hurrenkera honetan:
+
+1. Zuriuneak kentzen ditu edozein posiziotan, eta horrek muturrak ere mozten ditu, baita puntuak ([NORM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-2)), marrak eta barrak ere ([NORM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-3)).
+2. Minuskulak maiuskula bihurtzen ditu ([NORM-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-1)).
+3. 10 karaktereko AIZ zaharra (`X0` + 7 digitu + letra) 9 karaktereko formara murrizten du ([NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3)).
+4. Hasierako zeroak gehitzen dizkio 8 digitu baino gutxiagorekin idatzitako NAN bati ([NORM-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-4)).
+
+```ts
+import { normalize } from "nif-dni-nie-cif-validation";
+
+normalize(" 12.345.678-z ");  // "12345678Z"
+normalize("b/1234567/4");     // "B12345674"
+normalize("x-0123456-7l");    // "X1234567L": AIZaren forma zaharra, murriztuta
+normalize("1234567L");        // "01234567L": hasierako zeroa berriro gehitzen da
+normalize("12345678\tZ");     // "12345678Z": tabulazioak eta beste zuriune batzuk ere bai
+```
+
+`normalize()` funtzioak ez du egiaztatzen: kate garbia itzultzen du, dokumentua baliozkoa ez bada ere. Gainerako puntuazio-ikurrak nahita mantentzen dira (azpimarra bat, koma bat, marra luze bat); horrela, balio hori baliogabea izaten jarraitzen du, latinezkoen antza duten beste alfabeto batzuetako karaktereak bezala:
+
+```ts
+import { isValidNif, normalize } from "nif-dni-nie-cif-validation";
+
+normalize("12_345_678Z");  // "12_345_678Z": azpimarrak ez dira bereizleak
+isValidNif("12_345_678Z"); // false
+```
+
+Egiaztatzaile guztiek, `validate()` funtzioak eta eskema guztiek sarrera normalizatzen dute lehenik, arau berekin; beraz, `isValidNif(x)` eta `validate(x).valid` bat datoz beti.
+
+<Aside type="tip">
+Gorde `validate(value).normalized` (edo `normalize(value)` egiaztapen zuzen baten ondoren), ez inoiz sarrera dagoen bezala. Horrela, dokumentu bera modu desberdinetan idazten duten bi erabiltzailek gordetako balio bera lortzen dute, eta bilaketek eta bakartasun-murriztapenek funtzionatzen dute.
+</Aside>
+
+## Dei bakar batean egiaztatu eta normalizatu
+
+`validate()` funtzioak forma kanonikoa itzultzen du `normalized` eremuan, emaitzarekin batera:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate(" b-1234567-4 ").normalized; // "B12345674"
+validate("x01234567l").normalized;    // "X1234567L"
+validate("12345678A").normalized;     // "12345678A": letra okerra izan arren, badago
+validate("hello").normalized;         // null: ez da inongo dokumentu gisa ezagutzen
+```
+
+`normalized` formatua ezagutu daitekeen unetik dago, kontrol-karakterea okerra izan arren; horrela, erroreen ondoan erakuts diezaiokezu erabiltzaileari.
+
+## Normalizazioa desaktibatzea
+
+`{ normalize: false }` aukerak bereizleak kentzea eta zeroekin betetzea desaktibatzen ditu. Minuskulak eta AIZaren forma zaharra onartzen jarraitzen dira, 1. bertsioan bezala:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif(" 12.345.678-Z ", { normalize: false }); // false: bereizleak baztertzen dira
+isValidNif("12345678z", { normalize: false });      // true: minuskulek balio dute oraindik
+isValidNif("X01234567L", { normalize: false });     // true: baita AIZaren forma zaharrak ere
+```
+
+Erabili sarrerak dagoeneko forma kanonikoan egon behar duenean, adibidez gordetako datuak berrikusteko.
+
+## IFZ-BEZ eta ES aurrizkia
+
+`ES` aurrizki bat ez da garbiketa: `ES` eta ondoren IFZ bat IFZ-BEZ bat da, beste identifikatzaile bat ([VAT-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#vat-1)). `normalize()` funtzioak mantendu egiten du, eta `validate()` funtzioak baztertu egiten du, `allowVatPrefix` pasatzen ez baduzu:
+
+```ts
+import { normalize, validate } from "nif-dni-nie-cif-validation";
+
+normalize("es-12345678-z");                                   // "ES12345678Z"
+validate("ES12345678Z").error?.code;                          // "INVALID_FORMAT"
+validate("es 12345678 z", { allowVatPrefix: true }).normalized; // "12345678Z"
+```
+
+`normalized` eremuak ez du inoiz aurrizkia mantentzen. IFZ-BEZ bat gordetzeko, gehitu `ES`, edo erabili `zSpanishVat()` eta IFZ-BEZerako gainerako eskemak; haien irteerak mantendu egiten du.
+
+## Zenbaki bat erakustea: format()
+
+Iturri ofizial batek ere ez du zehazten nola taldekatu IFZ bat erakusteko. `format()` funtzioak forma kanonikoa arauek zehazten dituzten zatitan banatzen du, marra batekin, zuriune batekin edo ezerekin lotuta:
+
+| Mota | Zatiak | Adibidea |
+| --- | --- | --- |
+| NAN | 8 digitu · letra | `12345678-Z` |
+| AIZ | aurrizkia · 7 digitu · letra | `X-1234567-L` |
+| K/L/M IFZ | aurrizkia · 7 digitu · letra | `K-1234567-L` |
+| IFK | erakunde-gakoa · 7 digitu · kontrola | `B-1234567-4` |
+
+```ts
+import { format } from "nif-dni-nie-cif-validation";
+
+format("12345678z");                     // "12345678-Z"
+format("x01234567l");                    // "X-1234567-L"
+format(" b-1234567-4 ");                 // "B-1234567-4"
+format("B12345674", { separator: " " }); // "B 1234567 4"
+format("B12345674", { separator: "" });  // "B12345674"
+format("12345678A");                     // null: dokumentu baliozkoei bakarrik ematen zaie formatua
+```
+
+`format()` funtzioak aukera lehenetsiekin egiaztatzen du, eta `null` itzultzen du balio baliogabe ororentzat; beraz, prozesatu gabeko sarrerarekin dei dezakezu. Ez du inoiz `ES` aurrizkia gehitzen.
+
+## Liburutegiak onartzen dituen bereizleak
+
+| Sarrera | Onartzen da? | Araua |
+| --- | --- | --- |
+| Minuskulak (`12345678z`) | Bai, baita `normalize: false` aukerarekin ere | [NORM-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-1) |
+| Zuriuneak, tabulazioak, lerro-jauziak, puntuak | Bai | [NORM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-2) |
+| Marrak (`-`) eta barrak (`/`) | Bai | [NORM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-3) |
+| Hasierako zerorik gabeko NAN bat (`1234567L`) | Bai | [NORM-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-4) |
+| AIZaren forma zaharra (`X01234567L`) | Bai, baita `normalize: false` aukerarekin ere | [NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3) |
+| Azpimarrak, komak, marra luzeak eta beste ikur batzuk | Ez | — |
+| `ES` aurrizkia | `allowVatPrefix` aukerarekin bakarrik, edo IFZ-BEZerako funtzioetan | [VAT-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#vat-1) |

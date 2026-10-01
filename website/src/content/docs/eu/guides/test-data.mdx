@@ -1,0 +1,114 @@
+---
+title: Proba-datuak sortzea
+description: Sortu Espainiako NAN, K/L/M IFZ, AIZ, IFK eta IFZ baliozkoak eta baliogabeak probetarako eta fixture-etarako, haziarekin exekuzio bakoitzean berdinak izan daitezen, nif-dni-nie-cif-validation/generate erabilita.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Probek IFZak behar dituzte, eta benetako pertsonen zenbakiek ez dute biltegi batean amaitu behar. `nif-dni-nie-cif-validation/generate` sarrera-puntuak mota guztietako zenbaki baliozkoak sortzen ditu, baita errore-kode bakoitzerako zenbaki baliogabeak ere. Hazi batekin, berdinak dira exekuzio bakoitzean, makina bakoitzean eta Node.js-en bertsio bakoitzarekin.
+
+<Aside type="caution">
+Sortutako zenbakiak asmatuak dira, baina baliteke kasualitatez benetako pertsona edo enpresa batenarekin bat etortzea. Erabili probetan bakarrik, inoiz ez benetako datu gisa.
+</Aside>
+
+## Zenbaki baliozkoak
+
+```ts
+import { generateCif, generateDni, generateNie, generateNif } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1 });               // "62707394X"
+generateDni({ seed: 1, kind: "K" });    // "K6270739L": K/L/M IFZ bat
+generateNie({ seed: 1, prefix: "Z" });  // "Z6270739R"
+generateCif({ seed: 1, orgKey: "B" });  // "B62707393"
+generateCif({ seed: 1, control: "letter" }); // "R0027357C": letra daraman gako bat
+generateNif({ seed: 1, types: ["DNI", "NIE"] }); // "X5274470H": mota hauetako edozein
+```
+
+| Funtzioa | Zer sortzen duen | Aukerak |
+| --- | --- | --- |
+| `generateDni(opts)` | NAN bat, edo K/L/M IFZ bat | `kind`: `"DNI"` (lehenetsia), `"K"`, `"L"` edo `"M"` |
+| `generateNie(opts)` | AIZ bat, beti 9 karaktereko forman | `prefix`: `"X"`, `"Y"` edo `"Z"` |
+| `generateCif(opts)` | IFK bat | `orgKey`: 17 gakoetako bat; `control`: `"digit"` edo `"letter"` |
+| `generateNif(opts)` | Aurrekoetako edozein | `types`: zein motaren artean aukeratu |
+
+Sorgailu guztiek `seed` eta `format` aukerak ere onartzen dituzte. Balioek [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) betetzen dute: kontrol-karakterea liburutegiaren beraren `computeControlCharacter()` funtzioak kalkulatzen du, IFK batek ez du probintzia-koderik, eta balio bat ere ez da `00000000T` bezalako ordezko balio bat ([POLICY-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#policy-1)).
+
+`format: true` aukerak [`format()`](/nif-dni-nie-cif-validation/eu/guides/normalizing-and-formatting/#zenbaki-bat-erakustea-format) funtzioaren aurkezpen-forma ematen du, eta `format: { separator: " " }` aukerak beste bereizle bat:
+
+```ts
+import { generateCif, generateDni } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1, format: true });                           // "62707394-X"
+generateCif({ seed: 1, orgKey: "P", format: { separator: " " } }); // "P 6270739 C"
+```
+
+## Haziak eta sekuentziak
+
+`seed` aukera duen dei batek balio bera itzultzen du beti; beraz, `generateDni({ seed: 1 })` NAN bera da aldi bakoitzean. Exekuzio bakoitzean berdinak izango diren balio desberdin asko lortzeko, sortu sorgailu bat: dei bakoitzak bere haziaren hurrengo balioak hartzen ditu.
+
+```ts
+import { createGenerator } from "nif-dni-nie-cif-validation/generate";
+
+const gen = createGenerator(42);
+gen.dni();             // "60110375J"
+gen.dni();             // "44829056D": hurrengo balioa, ez bera
+gen.nie();             // "Z6697340K"
+gen.cif({ orgKey: "A" }); // sozietate anonimo baten IFK bat
+```
+
+Hazirik gabe, sorgailuek `Math.random` erabiltzen dute, eta dei bakoitzak balio desberdin bat ematen du. Haziarekin, `Math.random` ez da inoiz irakurtzen.
+
+## Zure probetarako fixture-ak
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { createGenerator } from "nif-dni-nie-cif-validation/generate";
+
+const gen = createGenerator(2024);
+const customers = Array.from({ length: 5 }, (_, id) => ({ id, nif: gen.nif() }));
+
+customers.length;                                            // 5
+customers.every((customer) => validate(customer.nif).valid); // true
+```
+
+Sortutako fixture-ak dituen Vitest proiektu oso bat [examples/generate-test-data](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/generate-test-data) karpetan duzu.
+
+## Zenbaki baliogabeak
+
+`generateInvalid(type, { reason })` funtzioak motako zenbaki baliozko batetik abiatu eta gauza bakar bat hondatzen du; horrela, balioak adierazten duenaren itxura du, eta `validate()` funtzioak errore-kode horrekin baztertzen du, hain zuzen. Arrazoi lehenetsia kontrol-karaktere oker bat da, kasu negatibo ohikoena:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { generateInvalid } from "nif-dni-nie-cif-validation/generate";
+
+generateInvalid("DNI", { seed: 1 });                            // "62707394A"
+generateInvalid("DNI", { seed: 1, reason: "INVALID_LENGTH" });  // "652707394X"
+validate(generateInvalid("CIF", { seed: 3, reason: "INVALID_FORMAT" })).error?.code; // "INVALID_FORMAT"
+validate(generateInvalid("NIE", { seed: 7 })).error?.code;      // "INVALID_CONTROL_CHARACTER"
+```
+
+| `reason` | Balioa | `validate()` funtzioak baztertzen du aukera lehenetsiekin |
+| --- | --- | --- |
+| `INVALID_CONTROL_CHARACTER` (lehenetsia) | Kontrol-karakterea bakarrik dago gaizki | Bai |
+| `INVALID_LENGTH` | Digituak soberan edo falta | Bai |
+| `INVALID_FORMAT` | Letra bat digitu baten ordez, edo mota okerreko kontrol-karaktere bat | Bai |
+| `EMPTY` | Kate huts bat, edo bereizleak bakarrik | Bai |
+| `UNSUPPORTED_TYPE` | Zenbaki baliozko bat | `types` aukerak bere mota kanpoan uzten badu bakarrik |
+| `PLACEHOLDER` | Ordezko balio bat (NAN eta AIZ bakarrik) | `rejectPlaceholders: true` aukerarekin bakarrik |
+
+## Aukera ezinezkoek salbuespen bat jaurtitzen dute
+
+Egiaztatzaileek ez bezala (horiek ez dute inoiz salbuespenik jaurtitzen erabiltzaileak idatzitakoarekin), sorgailuek `RangeError` bat jaurtitzen dute beren aukerak bete ezin dituztenean: programazio-akatsak dira, eta abisurik gabeko balio oker bat okerragoa litzateke.
+
+```ts
+import { generateCif, generateDni } from "nif-dni-nie-cif-validation/generate";
+
+generateCif({ orgKey: "B", control: "letter" }); // throws RangeError
+generateDni({ seed: 1.5 });                      // throws RangeError
+```
+
+`B` gakoak digitua darama ([CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3)); beraz, ezin da letra duen `B` IFK bat sortu, eta haziak zenbaki oso bat izan behar du.
+
+## Bundlearen tamaina
+
+Sarrera-puntu nagusiak ez ditu inoiz sorgailuak inportatzen; beraz, `import { isValidNif }` erabiltzeak ez dio sorgailuen koderik gehitzen zure bundleari. Inportatu `nif-dni-nie-cif-validation/generate` zure probetatik bakarrik.

@@ -1,0 +1,114 @@
+---
+title: DNI, NIE, NIF e CIF
+description: Que son o NIF, o DNI, o NIE, o NIF K/L/M e o CIF españois, a quen se asigna cada un, os seus formatos, o NIE antigo de 10 caracteres e por que o CIF agora se chama NIF, con exemplos que pode validar.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import CifKeysTable from "../../../../components/docs/CifKeysTable.astro";
+
+Os identificadores fiscais españois teñen varios nomes, e solápanse. En resumo: **todo número que valida esta biblioteca é un NIF**, e o DNI, o NIE, o NIF K/L/M e o CIF son clases de NIF.
+
+## O NIF: o paraugas
+
+O NIF (número de identificación fiscal) identifica cada persoa e cada entidade ante a Administración tributaria española. O Real decreto 1065/2007 (arts. 19 a 22) define quen recibe cada clase. O primeiro carácter do número distingue as clases, que nunca se solapan ([NIF-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nif-1)):
+
+| Clase | A quen se asigna | Formato | Exemplo | `type` en `validate()` |
+| --- | --- | --- | --- | --- |
+| DNI | Cidadáns españois | 8 díxitos e unha letra de control | `12345678Z` | `"DNI"` |
+| NIF K/L/M | Persoas sen DNI nin NIE (véxase máis abaixo) | K, L ou M, 7 díxitos e unha letra de control | `K1234567L` | `"NIF_KLM"` |
+| NIE | Persoas estranxeiras | X, Y ou Z, 7 díxitos e unha letra de control | `X1234567L` | `"NIE"` |
+| CIF | Empresas e outras entidades | Unha clave de entidade, 7 díxitos e un carácter de control (un díxito ou unha letra) | `B12345674` | `"CIF"` |
+
+```ts
+import { getNifType } from "nif-dni-nie-cif-validation";
+
+getNifType("12345678Z"); // "DNI"
+getNifType("K1234567L"); // "NIF_KLM"
+getNifType("X1234567L"); // "NIE"
+getNifType("B12345674"); // "CIF"
+getNifType("T1234567A"); // null: ningunha clase de NIF comeza por T
+```
+
+`getNifType()` só mira o formato: `getNifType("12345678A")` é `"DNI"` aínda que a súa letra sexa incorrecta. Para saber se un número é válido, use `validate()` ou unha función `isValid…`.
+
+## DNI: cidadáns españois
+
+Para un cidadán español, o NIF é o número do seu DNI (documento nacional de identidade): 8 díxitos, incluídos os ceros á esquerda, e unha letra de control en maiúscula calculada a partir do número ([DNI-1, DNI-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#dni-1)). Moita xente escríbeo sen os ceros iniciais, ou con puntos e un guión; a biblioteca acepta as dúas cousas e garda a forma canónica:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("1234567L").normalized;      // "01234567L": engádese de novo o cero inicial
+validate("12.345.678-z").normalized; // "12345678Z"
+```
+
+## NIE: persoas estranxeiras
+
+As persoas estranxeiras reciben un NIE (número de identidade de estranxeiro): X, Y ou Z, 7 díxitos e unha letra de control ([NIE-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nie-1)). Primeiro usouse a serie X; cando se esgotou, seguiu a Y, e despois a Z.
+
+Ata 2008, os NIE tiñan 10 caracteres: unha X, 8 díxitos e unha letra. Eses números seguen sendo válidos, e a súa forma canónica elimina o cero que segue á X ([NIE-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nie-3)):
+
+```ts
+import { isValidNie, validate } from "nif-dni-nie-cif-validation";
+
+isValidNie("X01234567L");             // true: a forma antiga de 10 caracteres
+validate("X01234567L").normalized;    // "X1234567L"
+isValidNie("X11234567L");             // false: só se pode suprimir un 0 inicial
+```
+
+## NIF K/L/M: persoas sen DNI nin NIE
+
+Algunhas persoas físicas necesitan un NIF pero non teñen DNI nin NIE. Reciben un NIF que comeza por unha letra ([KLM-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#klm-1)):
+
+- **K**: españois menores de 14 anos residentes en España que non teñen DNI.
+- **L**: españois residentes no estranxeiro que non teñen DNI.
+- **M**: persoas estranxeiras que non teñen NIE (por exemplo, mentres se tramita; un NIF M pode ser temporal).
+
+Son persoas, non empresas. `isValidDni()` e `isValidNaturalPersonNif()` acéptanos, e `validate()` identifícaos como `"NIF_KLM"`:
+
+```ts
+import { isValidCif, isValidDni, validate } from "nif-dni-nie-cif-validation";
+
+isValidDni("K1234567L");      // true
+isValidCif("K1234567L");      // false: K non é unha clave de entidade
+validate("M1234567L").type;   // "NIF_KLM"
+```
+
+## CIF: empresas e outras entidades
+
+As empresas, as asociacións, os organismos públicos e as demais entidades teñen un NIF que comeza por unha **clave de entidade**, unha letra que indica que tipo de entidade é, seguida de 7 díxitos e un carácter de control ([CIF-1, CIF-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-1)).
+
+Ata 2008, este número chamábase CIF (código de identificación fiscal). A Orde EHA/451/2008 cambioulle o nome: oficialmente agora é o «NIF de persoa xurídica ou entidade». Todo o mundo segue a buscar «CIF», así que a biblioteca mantén o nome (`isValidCif`, `type: "CIF"`), con `isValidLegalEntityNif` como alias.
+
+```ts
+import { describeCifOrganisation, validate } from "nif-dni-nie-cif-validation";
+
+validate("B12345674").meta;   // { orgKey: "B", orgDescription: "Limited liability company" }
+describeCifOrganisation("G"); // "Association"
+```
+
+Estas son as 17 claves de entidade, co nome que a biblioteca lle dá a cada unha no idioma desta páxina e a clase de carácter de control que leva cada clave ([CIF-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-3)):
+
+<CifKeysTable />
+
+Desde 2008, os 7 díxitos son aleatorios: xa non din nada da provincia, así que a biblioteca non comproba códigos de provincia ([CIF-5](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-5)).
+
+## NIF-IVE
+
+Un NIF-IVE español, que se usa nas operacións intracomunitarias, é `ES` seguido do NIF ([VAT-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#vat-1)). `isValidSpanishVat()` comproba ese formato; `validate()` só acepta o prefixo se o pide:
+
+```ts
+import { isValidSpanishVat, validate } from "nif-dni-nie-cif-validation";
+
+isValidSpanishVat("ES12345678Z");                               // true
+validate("ES12345678Z").error?.code;                            // "INVALID_FORMAT"
+validate("ES12345678Z", { allowVatPrefix: true }).normalized;   // "12345678Z"
+```
+
+<Aside type="caution">
+Que o formato sexa válido non significa que o número estea dado de alta para operacións intracomunitarias. Para comprobalo, consulte o servizo VIES da Comisión Europea.
+</Aside>
+
+## O que non é un NIF
+
+Algunhas regras que atopará en internet non teñen fonte oficial, e a biblioteca non as aplica. Un número que comeza por `T` non é un NIF, un CIF que comeza por `00` non necesita unha letra e os díxitos do CIF non levan código de provincia. As [preguntas frecuentes](/nif-dni-nie-cif-validation/gl/guides/faq/) explican cada caso, e as [fontes oficiais](/nif-dni-nie-cif-validation/gl/reference/official-sources/#explicitly-not-implemented-no-official-basis) enuméranos.

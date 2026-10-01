@@ -1,0 +1,134 @@
+---
+title: Error codes and localized messages
+description: Every error code of validate() for Spanish NIF, DNI, NIE and CIF numbers, the SPEC rules each one cites, its message in English, Spanish, Catalan, Basque and Galician, and how to choose a locale.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import ErrorCodesTable from "../../../components/docs/ErrorCodesTable.astro";
+
+{/* cspell:ignore Kontrol karakterea zuzena honetan izan beharko Erantzukizun mugatuko sozietatea */}
+
+When a value is invalid, `validate()` says why, in four fields of `error`:
+
+- `code`: what kind of error it is, one of seven codes, for your code to branch on;
+- `rule`: the ID of the [SPEC.md rule](/nif-dni-nie-cif-validation/reference/official-sources/) that failed, such as `DNI-2`;
+- `message`: a sentence for the user, in the locale you pass;
+- `expected`: for a wrong control character only, the right one, for a "did you mean…?" hint.
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678A").error;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+//   message: 'The control character is not correct: for this DNI it should be "Z".' }
+```
+
+`validate()` checks the value step by step and stops at the first failure, so there is always exactly one error. Its `type` and `normalized` are set as soon as the format is recognisable, even when the control character is wrong.
+
+## Every error code
+
+| `error.code` | When |
+| --- | --- |
+| `NOT_A_STRING` | The value is not a string (`null`, a number, an object). It is never converted to one |
+| `EMPTY` | The value is empty, or only spaces and separators |
+| `INVALID_LENGTH` | The value has the wrong number of characters for its type |
+| `INVALID_FORMAT` | A wrong first character, letters where digits go, a control character of the wrong kind, or an `ES` prefix without `allowVatPrefix` |
+| `INVALID_CONTROL_CHARACTER` | The format is right, but the check letter or digit is wrong; `expected` has the right one |
+| `UNSUPPORTED_TYPE` | A valid document of a type that `types` leaves out |
+| `PLACEHOLDER` | A placeholder number (`00000000T`, `00000001R`, `99999999R`, `X0000000T`) with `rejectPlaceholders: true` |
+
+The last two only happen with an option: with the default options, a valid document is always valid.
+
+## Every rule, and its message
+
+The table below lists, for each code, every SPEC rule it can cite and the message that comes with it, in the language of this page. The messages come from the library itself, so they are exactly what your users see.
+
+<ErrorCodesTable />
+
+The rule tells apart cases that share a code. For example, `INVALID_CONTROL_CHARACTER` cites `DNI-3` when the letter is one that never appears (I, Ñ, O, U), `CIF-3` when a CIF control is a letter where the key takes a digit (or the other way round), and `CIF-4` when it is the right kind but the wrong value:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678I").error?.rule; // "DNI-3"
+validate("B1234567A").error?.rule; // "CIF-3": B takes a digit
+validate("B12345675").error?.rule; // "CIF-4": a digit, but the wrong one
+validate("T1234567A").error?.rule; // "NIF-1": no NIF starts with T
+validate("X11234567L").error?.rule; // "NIE-3": 10 characters, but not the old NIE form
+```
+
+## Choosing a locale
+
+English is built in. Every other language is a separate entry point, so a bundle only contains the languages it imports. Import the locale object and pass it as `locale`:
+
+| Language | Import |
+| --- | --- |
+| English (the default) | `import { en } from "nif-dni-nie-cif-validation/locales/en"` |
+| Spanish (español) | `import { es } from "nif-dni-nie-cif-validation/locales/es"` |
+| Catalan (català), also for Valencian | `import { ca } from "nif-dni-nie-cif-validation/locales/ca"` |
+| Basque (euskara) | `import { eu } from "nif-dni-nie-cif-validation/locales/eu"` |
+| Galician (galego) | `import { gl } from "nif-dni-nie-cif-validation/locales/gl"` |
+
+```ts
+import { describeCifOrganisation, validate } from "nif-dni-nie-cif-validation";
+import { eu } from "nif-dni-nie-cif-validation/locales/eu";
+
+validate("12345678A", { locale: eu }).error?.message;
+// "Kontrol-karakterea ez da zuzena: NAN honetan «Z» izan beharko luke."
+describeCifOrganisation("B", eu); // "Erantzukizun mugatuko sozietatea"
+```
+
+The same `locale` option works in `validate()`, `describeCifOrganisation()` and every schema (`zNif({ locale })`, `vNif({ locale })`, `yNif({ locale })`). It also translates `meta.orgDescription`, the kind of organisation of a CIF.
+
+To follow the user's language, map the language tag to a locale, with a fallback:
+
+```ts
+import { type NifLocale, validate } from "nif-dni-nie-cif-validation";
+import { ca } from "nif-dni-nie-cif-validation/locales/ca";
+import { en } from "nif-dni-nie-cif-validation/locales/en";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+
+const LOCALES: Record<string, NifLocale> = { ca, en, es };
+const localeFor = (language: string) => LOCALES[language.slice(0, 2)] ?? en;
+const locale = localeFor("ca-ES"); // for example navigator.language
+
+validate("12345678A", { locale }).error?.message;
+// "El caràcter de control no és correcte: per a aquest DNI hauria de ser «Z»."
+validate("B12345674", { locale }).meta?.orgDescription; // "Societat de responsabilitat limitada"
+```
+
+Catalan also serves Valencian: the AEAT gives the same organisation names in both, and the messages use no form that differs between them.
+
+<Aside type="caution" title="Pass the object, not its code">
+`{ locale: "es" }` is a TypeScript error, and at runtime a string is ignored: the messages stay in English. Nothing throws, so a form keeps working, but in the wrong language. Import the object instead.
+</Aside>
+
+## Your own messages
+
+`code` and `rule` are stable, so you can map them to your own texts and keep the library's message as the fallback:
+
+```ts
+import { type NifErrorCode, validate } from "nif-dni-nie-cif-validation";
+
+const MESSAGES: Partial<Record<NifErrorCode, string>> = {
+  EMPTY: "Please enter your tax ID.",
+  UNSUPPORTED_TYPE: "Please enter a personal tax ID, not a company's.",
+};
+
+const error = validate("B12345674", { types: ["DNI", "NIE"] }).error;
+error && (MESSAGES[error.code] ?? error.message); // "Please enter a personal tax ID, not a company's."
+```
+
+A locale is a plain object (`NifLocale`), so you can also write one for another language. A locale that lacks a text gives English for that text. The terminology and the sources of every translated organisation name are in [docs/translations.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/translations.md).
+
+## In the schemas
+
+The Zod, Valibot and Yup schemas give the same message, and put the code and the rule where each library allows:
+
+| Library | Message | Code and rule |
+| --- | --- | --- |
+| Zod | the issue's `message` | the issue's `params`: `{ code, rule, expected? }` |
+| Valibot | the issue's `message` | the issue itself: `issue.code`, `issue.rule`, `issue.expected` |
+| Yup | the `ValidationError`'s `message` | the error's `params`: `{ code, rule, expected? }` |
+
+See [Validating forms](/nif-dni-nie-cif-validation/guides/validating-forms/) for examples.

@@ -1,0 +1,90 @@
+---
+title: Ohiko galderak
+description: Espainiako IFZ, NAN, AIZ eta IFK zenbakien egiaztapenari buruzko erantzunak, iturriekin. Baliozkoa da 00000000T NANa? IFK zaharrek balio dute oraindik? Ba al dago T letraz hasten den AIZik? Eta VIES eta IFKaren 00 araua?
+---
+
+Erantzun laburrak, bakoitza bere oinarria den [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) arauarekin.
+
+## Baliozkoa da 00000000T NANa?
+
+Bai. `00000000T` zenbakiak kontrol-letra zuzena du, eta ez du inongo legek debekatzen; beraz, baliozkoa da lehenespenez, `00000001R`, `99999999R` eta `X0000000T` ordezko balio ezagunak bezala. Erregistro batzuek iragazi egiten dituzte, argi eta garbi asmatuak direlako (ESNICek, `.es` domeinuen erregistroak, hala egiten du). Zuk ere baztertu nahi badituzu, pasa `rejectPlaceholders: true`, eta `validate()` funtzioak `PLACEHOLDER` kodea itzuliko du ([POLICY-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#policy-1)).
+
+```ts
+import { isValidDni, validate } from "nif-dni-nie-cif-validation";
+
+isValidDni("00000000T");                                   // true
+isValidDni("00000000T", { rejectPlaceholders: true });     // false
+validate("x-0000000-t", { rejectPlaceholders: true }).error?.code; // "PLACEHOLDER"
+```
+
+## IFK zaharrek balio dute oraindik?
+
+Bai. 2008an, EHA/451/2008 Aginduak «IFK» izena «pertsona juridiko edo erakunde baten IFZ» izenarekin ordezkatu zuen, baina zenbakiak ez ziren aldatu, eta ez da inoiz erakunde-gakorik kendu ([CIF-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-2)). Agindu horrekin bi gauza aldatu ziren: 7 digituak ausazkoak izatera igaro ziren, eta, beraz, jada ez dute probintziarik kodetzen; eta liburutegiak ez ditu probintzia-kodeak egiaztatzen ([CIF-5](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-5)).
+
+Balio zaharren mota bat ez da baliozkoa lehenespenez: C, D, F, G, J, U edo V gakoa eta kontrol-karaktere gisa letra bat dituen IFK bat. Ikusi [hurrengo galdera](#zergatik-ez-da-baliozkoa-g1234567d).
+
+## Zergatik ez da baliozkoa G1234567D?
+
+G gakoak digitu bat daramalako. AEATren IFZari buruzko ohar teknikoak digitu bat esleitzen die A B C D E F G H J U V gakoei, eta letra bat N P Q R S W gakoei ([CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3)). Liburutegi askok, baita honen 1. bertsioak ere, edozein onartzen zuten C, D, F, G, J, U eta V gakoetan, eta horrek ez du oinarri ofizialik. Balio bera duen digitua baliozkoa da:
+
+```ts
+import { isValidCif, validate } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                            // false
+validate("G1234567D").error?.expected;              // "4"
+isValidCif("G12345674");                            // true
+isValidCif("G1234567D", { cifControl: "lenient" }); // true: 1. bertsioaren portaera
+```
+
+Zure gordetako datuek horrelako zenbakiak badituzte, pasa `{ cifControl: "lenient" }` garbitzen dituzun bitartean. C, D, F, G, J, U eta V gakoei bakarrik eragiten die: A, B, E eta H gakoek digitua daramate beti, eta N, P, Q, R, S eta W gakoek, letra.
+
+## Ba al dago T letraz hasten den AIZik?
+
+Ez. Iturri ofizial batek ere ez du zehazten `T` letraz hasten den IFZ edo AIZ bat. AIZak X, Y edo Z letraz hasten dira ([NIE-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-1)), eta IFZ motek erabiltzen ez duten karaktere batez hasten den balio bat [NIF-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nif-1) arauarekin baztertzen da:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("T1234567A").error?.code; // "INVALID_FORMAT"
+validate("T1234567A").error?.rule; // "NIF-1"
+```
+
+## 00 zifrekin hasten den IFK batek letra eraman behar du?
+
+Ez. Liburutegi batzuek kontrol-letra bat eskatzen dute IFK baten digituak `00` zifrekin hasten direnean. Arau horrek iturririk gabeko taula batean du jatorria, eta zerrenda ofizial batek ere ez du inoiz izan `00` probintzia-koderik; beraz, liburutegiak ez du aplikatzen (ikusi [Explicitly NOT implemented](/nif-dni-nie-cif-validation/eu/reference/official-sources/#explicitly-not-implemented-no-official-basis)). Kontrol mota gakoaren araberakoa da soilik:
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("B00123455"); // true: B gakoak digitua darama, digituak edozein direla ere
+```
+
+## IFZ-BEZ baliozko batek esan nahi du VIESen alta emanda dagoela?
+
+Ez. `isValidSpanishVat()` funtzioak formatua egiaztatzen du: `ES` eta ondoren IFZ baliozko bat ([VAT-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#vat-1)). Zenbakia Europar Batasuneko barne-eragiketetarako alta emanda dagoen ala ez Zerga Administrazioak bakarrik daki: horretarako, kontsultatu Europako Batzordearen VIES zerbitzua. Era berean, IFZ baliozko bat ondo osatutako zenbaki bat da, ez norbaiti esleitu zaionaren froga: AEATk bere zerbitzua du hirugarren baten IFZa egiaztatzeko.
+
+```ts
+import { isValidSpanishVat } from "nif-dni-nie-cif-validation";
+
+isValidSpanishVat("ES12345678Z"); // true: formatua zuzena da
+isValidSpanishVat("12345678Z");   // false: ES aurrizkia derrigorrezkoa da
+```
+
+## 10 karaktereko AIZ zaharrak balio du oraindik?
+
+Bai. 2008 baino lehen emandako AIZek X bat, 8 digitu eta letra bat dituzte, `X01234567L` bezala. Baliozkoak dira oraindik, eta haien forma kanonikoak X-aren ondoko zeroa kentzen du: `X1234567L` ([NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3)). `validate()` funtzioak forma hori itzultzen du `normalized` eremuan.
+
+## Zergatik onartzen ditu isValidDni funtzioak K, L eta M?
+
+K, L eta M IFZak NANik ez duten pertsonei esleitzen zaizkielako, eta NANaren kontrol-letra erabiltzen dutelako ([KLM-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-1), [KLM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-2)). `isValidDni()` funtzioak 1. bertsiotik onartzen ditu. NANa bakarrik onartzeko, erabili `validate(value, { types: ["DNI"] })`:
+
+```ts
+import { isValidDni, validate } from "nif-dni-nie-cif-validation";
+
+isValidDni("K1234567L");                                 // true
+validate("K1234567L", { types: ["DNI"] }).error?.code;   // "UNSUPPORTED_TYPE"
+```
+
+## Nondik dator NANaren letraren algoritmoa?
+
+Barne Ministeriotik, hark argitaratzen baitu, eta AEATren IFZari buruzko ohar teknikotik. Ez dago inongo legetan: legeak NAN bat kontrol-letra batekin amaitzen dela besterik ez du esaten. [Nola funtzionatzen duen kontrol-karaktereak](/nif-dni-nie-cif-validation/eu/guides/control-character/) orriak urratsez urrats azaltzen du, arau bakoitzaren iturriarekin.

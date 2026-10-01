@@ -100,6 +100,20 @@ export default defineConfig({
       expressiveCode: { defaultProps: { wrap: true } },
       sidebar: [
         {
+          ...groups.guides,
+          items: [
+            "guides/getting-started",
+            "guides/document-types",
+            "guides/control-character",
+            "guides/validating-forms",
+            "guides/normalizing-and-formatting",
+            "guides/test-data",
+            "guides/errors-and-languages",
+            "guides/ai-agents",
+            "guides/faq",
+          ],
+        },
+        {
           ...groups.reference,
           items: [
             "reference/api",

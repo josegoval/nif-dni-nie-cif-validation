@@ -1,0 +1,114 @@
+---
+title: Generating test data
+description: Generate valid and invalid Spanish DNI, K/L/M NIF, NIE, CIF and NIF numbers for tests and fixtures, seeded so they are the same on every run, with nif-dni-nie-cif-validation/generate.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Tests need NIFs, and real people's numbers don't belong in a repository. The `nif-dni-nie-cif-validation/generate` entry point makes valid numbers of every type, and invalid ones for each error code. With a seed, they are the same on every run, machine and Node.js version.
+
+<Aside type="caution">
+Generated numbers are made up, but one may match a real person or company by chance. Use them in tests only, never as real data.
+</Aside>
+
+## Valid numbers
+
+```ts
+import { generateCif, generateDni, generateNie, generateNif } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1 });               // "62707394X"
+generateDni({ seed: 1, kind: "K" });    // "K6270739L": a K/L/M NIF
+generateNie({ seed: 1, prefix: "Z" });  // "Z6270739R"
+generateCif({ seed: 1, orgKey: "B" });  // "B62707393"
+generateCif({ seed: 1, control: "letter" }); // "R0027357C": a key that takes a letter
+generateNif({ seed: 1, types: ["DNI", "NIE"] }); // "X5274470H": any of these types
+```
+
+| Function | Makes | Options |
+| --- | --- | --- |
+| `generateDni(opts)` | A DNI, or a K/L/M NIF | `kind`: `"DNI"` (default), `"K"`, `"L"` or `"M"` |
+| `generateNie(opts)` | An NIE, always the 9-character form | `prefix`: `"X"`, `"Y"` or `"Z"` |
+| `generateCif(opts)` | A CIF | `orgKey`: one of the 17 keys; `control`: `"digit"` or `"letter"` |
+| `generateNif(opts)` | Any of the above | `types`: which types to draw from |
+
+Every generator also takes `seed` and `format`. The values follow [SPEC.md](/nif-dni-nie-cif-validation/reference/official-sources/): the control character comes from the library's own `computeControlCharacter()`, a CIF has no province code, and no value is a placeholder such as `00000000T` ([POLICY-1](/nif-dni-nie-cif-validation/reference/official-sources/#policy-1)).
+
+`format: true` gives the display form of [`format()`](/nif-dni-nie-cif-validation/guides/normalizing-and-formatting/#displaying-a-number-format), and `format: { separator: " " }` another separator:
+
+```ts
+import { generateCif, generateDni } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1, format: true });                           // "62707394-X"
+generateCif({ seed: 1, orgKey: "P", format: { separator: " " } }); // "P 6270739 C"
+```
+
+## Seeds and streams
+
+A call with a `seed` always returns the same value, so `generateDni({ seed: 1 })` is the same DNI every time. For many different values that are still the same on every run, create a generator: each call takes the next values of its seed.
+
+```ts
+import { createGenerator } from "nif-dni-nie-cif-validation/generate";
+
+const gen = createGenerator(42);
+gen.dni();             // "60110375J"
+gen.dni();             // "44829056D": the next value, not the same one
+gen.nie();             // "Z6697340K"
+gen.cif({ orgKey: "A" }); // a CIF of a public limited company
+```
+
+Without a seed, the generators use `Math.random`, and every call gives a different value. With a seed, `Math.random` is never read.
+
+## Fixtures for your tests
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { createGenerator } from "nif-dni-nie-cif-validation/generate";
+
+const gen = createGenerator(2024);
+const customers = Array.from({ length: 5 }, (_, id) => ({ id, nif: gen.nif() }));
+
+customers.length;                                            // 5
+customers.every((customer) => validate(customer.nif).valid); // true
+```
+
+A complete Vitest project with generated fixtures is in [examples/generate-test-data](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/generate-test-data).
+
+## Invalid numbers
+
+`generateInvalid(type, { reason })` starts from a valid number of the type and breaks one thing, so the value looks like what it stands for, and `validate()` refuses it with exactly that error code. The default reason is a wrong control character, the most common negative case:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { generateInvalid } from "nif-dni-nie-cif-validation/generate";
+
+generateInvalid("DNI", { seed: 1 });                            // "62707394A"
+generateInvalid("DNI", { seed: 1, reason: "INVALID_LENGTH" });  // "652707394X"
+validate(generateInvalid("CIF", { seed: 3, reason: "INVALID_FORMAT" })).error?.code; // "INVALID_FORMAT"
+validate(generateInvalid("NIE", { seed: 7 })).error?.code;      // "INVALID_CONTROL_CHARACTER"
+```
+
+| `reason` | The value | Refused by `validate()` with the default options |
+| --- | --- | --- |
+| `INVALID_CONTROL_CHARACTER` (default) | Only the control character is wrong | Yes |
+| `INVALID_LENGTH` | Digits added or removed | Yes |
+| `INVALID_FORMAT` | A letter instead of a digit, or a control character of the wrong kind | Yes |
+| `EMPTY` | An empty string, or only separators | Yes |
+| `UNSUPPORTED_TYPE` | A valid number | Only when `types` leaves its type out |
+| `PLACEHOLDER` | A placeholder number (DNI and NIE only) | Only with `rejectPlaceholders: true` |
+
+## Impossible options throw
+
+Unlike the validators, which never throw on user input, the generators throw a `RangeError` when their options can't be met: those are programming errors, and a silent wrong value would be worse.
+
+```ts
+import { generateCif, generateDni } from "nif-dni-nie-cif-validation/generate";
+
+generateCif({ orgKey: "B", control: "letter" }); // throws RangeError
+generateDni({ seed: 1.5 });                      // throws RangeError
+```
+
+`B` takes a digit ([CIF-3](/nif-dni-nie-cif-validation/reference/official-sources/#cif-3)), so a `B` CIF with a letter can't be made, and a seed must be an integer.
+
+## Bundle size
+
+The main entry point never imports the generators, so `import { isValidNif }` adds no generator code to your bundle. Import `nif-dni-nie-cif-validation/generate` from your tests only.

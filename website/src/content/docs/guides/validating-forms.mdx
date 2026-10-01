@@ -1,0 +1,206 @@
+---
+title: Validating forms
+description: Validate Spanish NIF, DNI, NIE and CIF form fields with Zod and React Hook Form, Valibot or Yup, and on the server, with localized messages and the normalized value to store.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+{/* cspell:ignore entidade */}
+
+A form field for a NIF needs three things: accept the ways people type it (`12.345.678-z`), refuse a wrong number with a message they understand, and store one canonical value. The schemas of this library do all three, for Zod, Valibot and Yup, and `validate()` does the same anywhere else.
+
+Every schema:
+
+- accepts exactly what `validate()` accepts, with the same options (`types`, `locale`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `normalize`);
+- outputs the **normalized** value: `" 12.345.678-z "` comes out as `"12345678Z"`;
+- refuses a value with the message of `validate()`, in the locale you pass, plus the error code and the SPEC rule.
+
+Zod, Valibot and Yup are optional peer dependencies: install the one you use. Importing the main entry point never loads them.
+
+## Zod and React Hook Form
+
+The Zod 4 schemas are `zNif`, `zDni`, `zNie`, `zCif` and `zSpanishVat`, from `nif-dni-nie-cif-validation/zod`. Define the schema once, with the user's language:
+
+```ts
+// nif-schema.ts
+import { z } from "zod";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+import { zNif } from "nif-dni-nie-cif-validation/zod";
+
+export const schema = z.object({ nif: zNif({ types: ["DNI", "NIE"], locale: es }) });
+
+schema.parse({ nif: " 12.345.678-z " });                      // { nif: "12345678Z" }
+schema.safeParse({ nif: "12345678A" }).error?.issues[0]?.message;
+// "El carácter de control no es correcto: para este DNI debería ser «Z»."
+schema.safeParse({ nif: "B12345674" }).error?.issues[0]?.message;
+// "Aquí no se admite un NIF de persona jurídica o entidad (CIF)."
+```
+
+`@hookform/resolvers` works with it as it is. The input and the output are both strings, and `handleSubmit` receives the normalized value:
+
+{/* docs-test: skip (React component) */}
+```tsx
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
+import { schema } from "./nif-schema";
+
+export function NifForm({ save }: { save: (nif: string) => void }) {
+  const { register, handleSubmit, formState: { errors } } = useForm<
+    z.input<typeof schema>, unknown, z.output<typeof schema>
+  >({ resolver: zodResolver(schema) });
+  return (
+    <form onSubmit={handleSubmit(({ nif }) => save(nif))}>
+      <input {...register("nif")} />
+      {errors.nif && <p role="alert">{errors.nif.message}</p>}
+    </form>
+  );
+}
+```
+
+A complete form, with Vite, is in [examples/zod-react-hook-form](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/zod-react-hook-form).
+
+The error code and the rule are in the issue's `params`, if you want them for analytics or for your own messages:
+
+```ts
+import { z } from "zod";
+import { zDni } from "nif-dni-nie-cif-validation/zod";
+
+const issue = zDni().safeParse("12345678A").error?.issues[0] as z.core.$ZodIssueCustom;
+issue.params;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z" }
+```
+
+An optional field is a union with the empty string, so that an empty input means "none":
+
+```ts
+import { z } from "zod";
+import { zCif } from "nif-dni-nie-cif-validation/zod";
+
+const company = z.object({ cif: z.union([z.literal(""), zCif()]) });
+
+company.parse({ cif: "" });            // { cif: "" }
+company.parse({ cif: "b-1234567-4" }); // { cif: "B12345674" }
+```
+
+<Aside type="note" title="Zod 3">
+The adapters are for Zod 4. With Zod 3, use `validate()` in a `transform`: see the [API design notes](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md#d12-schema-adapters-zod-valibot-yup-58).
+</Aside>
+
+## Valibot
+
+The Valibot 1 schemas are `vNif`, `vDni`, `vNie`, `vCif` and `vSpanishVat`, from `nif-dni-nie-cif-validation/valibot`. The code, the rule and the expected character are properties of the issue:
+
+```ts
+import * as v from "valibot";
+import { ca } from "nif-dni-nie-cif-validation/locales/ca";
+import { type NifIssue, vNie, vNif } from "nif-dni-nie-cif-validation/valibot";
+
+v.parse(vNie(), "x-0123456-7l"); // "X1234567L"
+
+const form = v.object({ nif: vNif({ locale: ca }) });
+const issue = v.safeParse(form, { nif: "12345678A" }).issues?.[0] as NifIssue;
+issue.message;  // "El caràcter de control no és correcte: per a aquest DNI hauria de ser «Z»."
+issue.code;     // "INVALID_CONTROL_CHARACTER"
+issue.rule;     // "DNI-2"
+issue.expected; // "Z"
+```
+
+With React Hook Form, use `valibotResolver(form)` from `@hookform/resolvers/valibot`.
+
+## Yup
+
+The Yup 1 schemas are `yNif`, `yDni`, `yNie`, `yCif` and `ySpanishVat`, from `nif-dni-nie-cif-validation/yup`. Unlike Yup's `string()`, they are required, and they never turn a number into a string: use `.optional()` or `.nullable()` for an optional field.
+
+```ts
+import { object, ValidationError } from "yup";
+import { gl } from "nif-dni-nie-cif-validation/locales/gl";
+import { yCif } from "nif-dni-nie-cif-validation/yup";
+
+const form = object({ cif: yCif({ locale: gl }) });
+
+await form.validate({ cif: "b-1234567-4" }); // { cif: "B12345674" }
+
+const error = await form
+  .validate({ cif: "B12345675" })
+  .then(() => null, (caught: ValidationError) => caught);
+error?.message;
+// "O carácter de control non é correcto: para este NIF de entidade (CIF) debería ser «4»."
+error?.params?.rule; // "CIF-4"
+```
+
+With React Hook Form, use `yupResolver(form)` from `@hookform/resolvers/yup`.
+
+## On the server
+
+Validate again on the server: the browser's checks can be skipped. `validate()` takes any value, so you can pass it the parsed body as it is. This handler uses the standard `Request` and `Response`, as in Next.js route handlers, Hono, Deno and Bun:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+export async function POST(request: Request): Promise<Response> {
+  const body = (await request.json()) as { nif?: unknown };
+  const result = validate(body.nif);
+  if (!result.valid) {
+    return Response.json({ error: result.error }, { status: 400 });
+  }
+  return Response.json({ nif: result.normalized }); // store the normalized value
+}
+
+const response = await POST(
+  new Request("https://example.com/customers", {
+    method: "POST",
+    body: JSON.stringify({ nif: "12345678A" }),
+  })
+);
+response.status;                    // 400
+(await response.json()).error.rule; // "DNI-2"
+```
+
+With Express, a middleware does the same, and passes the normalized NIF on:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+export function requireNif(
+  req: { body: { nif?: unknown } },
+  res: { status(code: number): { json(body: unknown): unknown } },
+  next: () => void,
+): void {
+  const result = validate(req.body.nif);
+  if (!result.valid) {
+    res.status(400).json({ error: result.error }); // { code, message, rule, expected? }
+    return;
+  }
+  req.body.nif = result.normalized; // "12345678Z", ready to store
+  next();
+}
+
+// app.post("/customers", express.json(), requireNif, createCustomer);
+```
+
+The same schemas work on the server too, for example with the `FormData` of a server action:
+
+```ts
+import { zNif } from "nif-dni-nie-cif-validation/zod";
+
+const data = new FormData();
+data.set("nif", " 12.345.678-z ");
+
+zNif().safeParse(data.get("nif")).data;   // "12345678Z"
+zNif().safeParse(null).error?.issues[0]?.message; // "The value must be text."
+```
+
+## Choosing what the field accepts
+
+| The field is for… | Zod | Valibot | Yup |
+| --- | --- | --- | --- |
+| Any NIF | `zNif()` | `vNif()` | `yNif()` |
+| Some types only | `zNif({ types: ["DNI", "NIE"] })` | `vNif({ types: […] })` | `yNif({ types: […] })` |
+| A DNI or a K/L/M NIF | `zDni()` | `vDni()` | `yDni()` |
+| An NIE | `zNie()` | `vNie()` | `yNie()` |
+| A company or other entity | `zCif()` | `vCif()` | `yCif()` |
+| A Spanish VAT number (`ES` required, kept in the output) | `zSpanishVat()` | `vSpanishVat()` | `ySpanishVat()` |
+| A NIF, with or without `ES` (the output drops it) | `zNif({ allowVatPrefix: true })` | `vNif({ allowVatPrefix: true })` | `yNif({ allowVatPrefix: true })` |
+
+A valid document of a type the field doesn't accept gives `UNSUPPORTED_TYPE`, with a message that says so ("This NIF of a legal person or entity (CIF) is not accepted here."), not "invalid". The [error codes guide](/nif-dni-nie-cif-validation/guides/errors-and-languages/) lists every message.

@@ -1,0 +1,123 @@
+---
+title: How the control character works
+description: How the check letter of a Spanish DNI, K/L/M NIF and NIE (mod 23) and the control character of a CIF are computed, step by step, with the official source and tier of each rule.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+The last character of every NIF is a **control character**, computed from the rest of the number, so that a typo is caught. This page explains how each one is computed and where each rule comes from. Not every step has the same kind of source: some are law, some only official guidance, and one is a convention. The tiers are explained on the [official sources](/nif-dni-nie-cif-validation/reference/official-sources/#source-tiers) page.
+
+<Aside>
+You don't need to write any of this: `computeControlCharacter()` returns the control character of a number without its last character, and every validator checks it.
+</Aside>
+
+## DNI: the number mod 23
+
+The check letter of a DNI is the remainder of dividing its 8-digit number by 23, looked up in this table ([DNI-2](/nif-dni-nie-cif-validation/reference/official-sources/#dni-2)):
+
+| Remainder | Letter | Remainder | Letter | Remainder | Letter |
+| ---: | --- | ---: | --- | ---: | --- |
+| 0 | T | 8 | P | 16 | Q |
+| 1 | R | 9 | D | 17 | V |
+| 2 | W | 10 | X | 18 | H |
+| 3 | A | 11 | B | 19 | L |
+| 4 | G | 12 | N | 20 | C |
+| 5 | M | 13 | J | 21 | K |
+| 6 | Y | 14 | Z | 22 | E |
+| 7 | F | 15 | S | | |
+
+For `12345678`: 12345678 = 23 × 536768 + 14, and the letter for 14 is **Z**, so the DNI is `12345678Z`.
+
+```ts
+import { computeControlCharacter } from "nif-dni-nie-cif-validation";
+
+const LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+12345678 % 23;                       // 14
+LETTERS[12345678 % 23];              // "Z"
+computeControlCharacter("12345678"); // "Z"
+```
+
+The letters I, Ñ, O and U are not in the table, so a DNI never ends with them ([DNI-3](/nif-dni-nie-cif-validation/reference/official-sources/#dni-3)). When a user types one of them, `validate()` says which rule failed and which letter was expected:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678I").error?.rule;     // "DNI-3"
+validate("12345678I").error?.expected; // "Z"
+```
+
+**Source.** The format of the DNI is law: Royal Decree 1065/2007, art. 19 (tier T1). The mod-23 algorithm is not in any law: the Ministerio del Interior publishes it, and so does the AEAT's technical note on the NIF (tiers T2 and T3).
+
+## K/L/M NIF: the 7 digits only
+
+A K, L or M NIF uses the same table, over its 7 digits. The letter at the start is not converted to a digit, so K, L and M with the same digits have the same check letter ([KLM-2](/nif-dni-nie-cif-validation/reference/official-sources/#klm-2)):
+
+```ts
+import { computeControlCharacter } from "nif-dni-nie-cif-validation";
+
+computeControlCharacter("K1234567"); // "L": 1234567 % 23 is 19
+computeControlCharacter("M1234567"); // "L"
+```
+
+**Source.** The AEAT's technical note on the NIF (T3). The law calls the 7 characters "alphanumeric", but the algorithm only works with digits, so the library follows the note and requires digits ([KLM-3](/nif-dni-nie-cif-validation/reference/official-sources/#klm-3), a [known conflict](/nif-dni-nie-cif-validation/reference/official-sources/#known-conflicts-between-sources) between sources).
+
+## NIE: replace the prefix, then mod 23
+
+For an NIE, the prefix becomes a digit (X → 0, Y → 1, Z → 2), and the 8-digit number that results goes through the DNI table ([NIE-2](/nif-dni-nie-cif-validation/reference/official-sources/#nie-2)). So `Y1234567` becomes 11234567, whose remainder is 10, letter **X**:
+
+```ts
+import { computeControlCharacter, isValidNie } from "nif-dni-nie-cif-validation";
+
+11234567 % 23;                       // 10
+computeControlCharacter("Y1234567"); // "X"
+computeControlCharacter("X1234567"); // "L": the same as the DNI 01234567
+isValidNie("Y1234567L");             // false: the prefix changes the letter
+```
+
+The old 10-character NIE (`X0` + 7 digits + letter) has the same letter as its 9-character form, because the leading zero doesn't change the number ([NIE-3](/nif-dni-nie-cif-validation/reference/official-sources/#nie-3)).
+
+**Source.** The Ministerio del Interior's page and the AEAT's technical note (T2 and T3); the X, Y and Z series are in Orden INT/2058/2008 (T1).
+
+## CIF: a digit or a letter, by organisation key
+
+The control character of a CIF is either a digit or a letter, and the organisation key decides which ([CIF-3](/nif-dni-nie-cif-validation/reference/official-sources/#cif-3)):
+
+- a **digit** for A, B, C, D, E, F, G, H, J, U and V (Spanish companies and other entities);
+- a **letter** for N, P, Q, R, S and W (foreign entities, local authorities, public bodies, religious institutions, State bodies and permanent establishments).
+
+The value is computed from the 7 digits ([CIF-4](/nif-dni-nie-cif-validation/reference/official-sources/#cif-4)):
+
+1. Add the digits in even positions (the 2nd, 4th and 6th).
+2. Double each digit in an odd position (the 1st, 3rd, 5th and 7th), and add the digits of each result (14 counts as 1 + 4).
+3. Add both sums. The control digit is 10 minus the last digit of the total, or 0 when the last digit is 0.
+4. When the key takes a letter, the digit becomes a letter: 0 → J, 1 → A, 2 → B, … 9 → I (`JABCDEFGHI`).
+
+For `B1234567`: the even positions give 2 + 4 + 6 = 12; the odd ones give 2 + 6 + (1 + 0) + (1 + 4) = 14; the total is 26, so the control digit is 10 − 6 = **4**, and the CIF is `B12345674`. A key that takes a letter would get D, the fifth letter of `JABCDEFGHI`.
+
+```ts
+import { computeControlCharacter, isValidCif } from "nif-dni-nie-cif-validation";
+
+computeControlCharacter("B1234567"); // "4"
+computeControlCharacter("N1234567"); // "D": N takes a letter
+computeControlCharacter("P2807900"); // "B": Ayuntamiento de Madrid, P2807900B
+isValidCif("B1234567D");             // false: B takes a digit
+```
+
+**Source.** The organisation keys are law: Orden EHA/451/2008 (T1). Which keys take a digit and which a letter comes only from the AEAT's internal technical note (T3). The arithmetic is not published in any official text that we could find: it is a convention (T4), followed by every implementation and checked against real NIFs of public bodies, such as P2807900B (Ayuntamiento de Madrid) and Q2826000H (the AEAT itself).
+
+<Aside type="note" title="C, D, F, G, J, U and V">
+Many libraries, and version 1 of this one, accept either a digit or a letter for the keys C, D, F, G, J, U and V. The AEAT's note gives them a digit, so version 2 rejects a letter by default. For old data, `{ cifControl: "lenient" }` accepts both: see the [FAQ](/nif-dni-nie-cif-validation/guides/faq/#why-is-g1234567d-invalid).
+</Aside>
+
+## Summary of the sources
+
+| Step | Rule | Tier |
+| --- | --- | --- |
+| DNI format: 8 digits and a letter | [DNI-1](/nif-dni-nie-cif-validation/reference/official-sources/#dni-1) | T1 law, T2 official page |
+| DNI letter: mod 23 | [DNI-2](/nif-dni-nie-cif-validation/reference/official-sources/#dni-2) | T2 official page, T3 AEAT note |
+| K/L/M letter: the 7 digits | [KLM-2](/nif-dni-nie-cif-validation/reference/official-sources/#klm-2) | T3 AEAT note |
+| NIE prefix: X → 0, Y → 1, Z → 2 | [NIE-2](/nif-dni-nie-cif-validation/reference/official-sources/#nie-2) | T2 official page, T3 AEAT note |
+| CIF organisation keys | [CIF-2](/nif-dni-nie-cif-validation/reference/official-sources/#cif-2) | T1 law |
+| CIF control: digit or letter by key | [CIF-3](/nif-dni-nie-cif-validation/reference/official-sources/#cif-3) | T3 AEAT note |
+| CIF control arithmetic | [CIF-4](/nif-dni-nie-cif-validation/reference/official-sources/#cif-4) | T4 convention |

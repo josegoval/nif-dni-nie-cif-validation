@@ -1,0 +1,48 @@
+---
+// The 17 CIF organisation keys (CIF-2), with the name the package gives each
+// one in the page's language and the kind of control character it takes
+// (CIF-3). Everything comes from the package: the names from its locale
+// object, the kind from computeControlCharacter().
+import { type CifOrganisationKey, computeControlCharacter } from "nif-dni-nie-cif-validation";
+import { localeFor } from "../../data/locales";
+import { langOf, stringsFor } from "../../i18n";
+import TableScroll from "./TableScroll.astro";
+
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const t = stringsFor(lang).docs.cifKeys;
+const locale = localeFor(lang);
+const keys = Object.keys(locale.organisations) as CifOrganisationKey[];
+const rows = keys.map((key) => {
+  const control = computeControlCharacter(`${key}0000000`);
+  if (control === null) throw new Error(`No control character for key ${key}`);
+  return {
+    key,
+    organisation: locale.organisations[key],
+    control: /^\d$/.test(control) ? t.digit : t.letter,
+  };
+});
+---
+
+<TableScroll labelledby="cif-keys-caption">
+  <table>
+    <caption id="cif-keys-caption">{t.caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{t.key}</th>
+        <th scope="col">{t.organisation}</th>
+        <th scope="col">{t.control}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <th scope="row"><code>{row.key}</code></th>
+            <td>{row.organisation}</td>
+            <td>{row.control}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</TableScroll>

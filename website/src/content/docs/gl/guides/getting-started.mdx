@@ -1,0 +1,132 @@
+---
+title: Primeiros pasos
+description: Instale nif-dni-nie-cif-validation e valide o seu primeiro NIF, DNI, NIE ou CIF español en JavaScript ou TypeScript; despois, descubra por que un número non é válido e que valor debe gardar.
+---
+
+import { LinkCard, CardGrid, Tabs, TabItem } from "@astrojs/starlight/components";
+
+`nif-dni-nie-cif-validation` comproba identificadores fiscais españois (NIF, DNI, NIF K/L/M, NIE e CIF) segundo as regras oficiais, e indícalle por que un número non é válido. Non ten dependencias, inclúe os seus propios tipos de TypeScript e funciona con `import` e con `require` en Node.js 20 ou posterior, en todos os navegadores actuais, en Deno e en Bun.
+
+## Instalación
+
+<Tabs syncKey="package-manager">
+<TabItem label="npm">
+
+```sh
+npm install nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="yarn">
+
+```sh
+yarn add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="bun">
+
+```sh
+bun add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="deno">
+
+```sh
+deno add npm:nif-dni-nie-cif-validation
+```
+
+</TabItem>
+</Tabs>
+
+## Comprobe un número
+
+As funcións `isValid…` responden si ou non. Aceptan calquera valor e nunca lanzan excepcións, así que pode pasarlles o que escribise a persoa usuaria:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif("12345678Z");      // true: un DNI
+isValidNif("X1234567L");      // true: un NIE
+isValidNif("B12345674");      // true: un CIF
+isValidNif(" 12.345.678-z "); // true: admítense espazos, puntos, guións e minúsculas
+isValidNif("12345678A");      // false: a letra de control non é correcta
+isValidNif(null);             // false: nunca lanza excepcións
+```
+
+Con CommonJS, `require` funciona igual:
+
+```js
+const { isValidNif } = require("nif-dni-nie-cif-validation");
+
+isValidNif("12345678Z"); // true
+```
+
+## Escolla a función axeitada
+
+`isValidNif` acepta todos os tipos. Se un campo só admite algúns, use a función máis específica:
+
+| O campo admite… | Use |
+| --- | --- |
+| Calquera NIF: DNI, NIF K/L/M, NIE ou CIF | `isValidNif(value)` |
+| Só persoas físicas: DNI, NIF K/L/M ou NIE | `isValidNaturalPersonNif(value)` |
+| Un DNI (ou un NIF K/L/M) | `isValidDni(value)` |
+| Un NIE | `isValidNie(value)` |
+| Empresas e outras entidades (CIF) | `isValidCif(value)` |
+| Un NIF-IVE español (`ES` + NIF, só o formato) | `isValidSpanishVat(value)` |
+
+```ts
+import { isValidCif, isValidNaturalPersonNif } from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("X1234567L"); // true
+isValidNaturalPersonNif("B12345674"); // false: un CIF non é unha persoa física
+isValidCif("P2807900B");              // true: Concello de Madrid
+```
+
+Non ten claro que documento é cada un? Consulte [DNI, NIE, NIF e CIF](/nif-dni-nie-cif-validation/gl/guides/document-types/).
+
+## Descubra por que e garde a forma canónica
+
+`validate()` devolve o tipo, a forma canónica que debe gardar e, se o valor non é válido, un erro cun código, a [regra de SPEC.md](/nif-dni-nie-cif-validation/gl/reference/official-sources/) que non se cumpre, unha mensaxe e o carácter de control esperado:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate(" 12.345.678-z ");
+// { valid: true, type: "DNI", normalized: "12345678Z" }
+
+validate("12345678A").error;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+//   message: 'The control character is not correct: for this DNI it should be "Z".' }
+```
+
+Garde `normalized`, non o que escribiu a persoa usuaria: está en maiúsculas, sen separadores, e é igual para todas as maneiras de escribir o mesmo documento.
+
+## Mostre a mensaxe no idioma da persoa usuaria
+
+As mensaxes están en inglés de forma predeterminada. O castelán, o catalán, o éuscaro e o galego impórtanse por separado, así que o seu bundle só inclúe os idiomas que use:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+
+validate("12345678A", { locale: es }).error?.message;
+// "El carácter de control no es correcto: para este DNI debería ser «Z»."
+```
+
+## Seguintes pasos
+
+<CardGrid>
+  <LinkCard title="Validar formularios" description="Zod, Valibot, Yup, React Hook Form e validación no servidor." href="/nif-dni-nie-cif-validation/gl/guides/validating-forms/" />
+  <LinkCard title="Códigos de erro e mensaxes" description="Todos os códigos de erro, a regra que cita cada un e como escoller o idioma." href="/nif-dni-nie-cif-validation/gl/guides/errors-and-languages/" />
+  <LinkCard title="Xerar datos de proba" description="Números válidos e non válidos para as súas probas, iguais en cada execución." href="/nif-dni-nie-cif-validation/gl/guides/test-data/" />
+  <LinkCard title="Referencia da API" description="Todas as exportacións, coas súas opcións e exemplos." href="/nif-dni-nie-cif-validation/gl/reference/api/" />
+</CardGrid>

@@ -1,0 +1,114 @@
+---
+title: Generar dades de prova
+description: Genereu DNI, NIF K/L/M, NIE, CIF i NIF espanyols vàlids i no vàlids per a tests i fixtures, amb llavor perquè siguin iguals a cada execució, amb nif-dni-nie-cif-validation/generate.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Els tests necessiten NIF, i els números de persones reals no han d'acabar en un repositori. El punt d'entrada `nif-dni-nie-cif-validation/generate` genera números vàlids de tots els tipus, i números no vàlids per a cada codi d'error. Amb una llavor, són iguals a cada execució, a cada màquina i amb cada versió de Node.js.
+
+<Aside type="caution">
+Els números generats són ficticis, però algun podria coincidir per casualitat amb el d'una persona o empresa real. Feu-los servir només en tests, mai com a dades reals.
+</Aside>
+
+## Números vàlids
+
+```ts
+import { generateCif, generateDni, generateNie, generateNif } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1 });               // "62707394X"
+generateDni({ seed: 1, kind: "K" });    // "K6270739L": un NIF K/L/M
+generateNie({ seed: 1, prefix: "Z" });  // "Z6270739R"
+generateCif({ seed: 1, orgKey: "B" });  // "B62707393"
+generateCif({ seed: 1, control: "letter" }); // "R0027357C": una clau que porta lletra
+generateNif({ seed: 1, types: ["DNI", "NIE"] }); // "X5274470H": qualsevol d'aquests tipus
+```
+
+| Funció | Genera | Opcions |
+| --- | --- | --- |
+| `generateDni(opts)` | Un DNI, o un NIF K/L/M | `kind`: `"DNI"` (per defecte), `"K"`, `"L"` o `"M"` |
+| `generateNie(opts)` | Un NIE, sempre en la forma de 9 caràcters | `prefix`: `"X"`, `"Y"` o `"Z"` |
+| `generateCif(opts)` | Un CIF | `orgKey`: una de les 17 claus; `control`: `"digit"` o `"letter"` |
+| `generateNif(opts)` | Qualsevol dels anteriors | `types`: els tipus entre els quals triar |
+
+Tots els generadors accepten també `seed` i `format`. Els valors compleixen [SPEC.md](/nif-dni-nie-cif-validation/ca/reference/official-sources/): el caràcter de control el calcula la mateixa `computeControlCharacter()` de la biblioteca, un CIF no porta codi de província i cap valor no és un número d'exemple com `00000000T` ([POLICY-1](/nif-dni-nie-cif-validation/ca/reference/official-sources/#policy-1)).
+
+`format: true` dona la forma de presentació de [`format()`](/nif-dni-nie-cif-validation/ca/guides/normalizing-and-formatting/#mostrar-un-número-format), i `format: { separator: " " }` un altre separador:
+
+```ts
+import { generateCif, generateDni } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1, format: true });                           // "62707394-X"
+generateCif({ seed: 1, orgKey: "P", format: { separator: " " } }); // "P 6270739 C"
+```
+
+## Llavors i seqüències
+
+Una crida amb `seed` retorna sempre el mateix valor, de manera que `generateDni({ seed: 1 })` és el mateix DNI cada vegada. Per obtenir molts valors diferents que tot i així siguin iguals a cada execució, creeu un generador: cada crida pren els valors següents de la seva llavor.
+
+```ts
+import { createGenerator } from "nif-dni-nie-cif-validation/generate";
+
+const gen = createGenerator(42);
+gen.dni();             // "60110375J"
+gen.dni();             // "44829056D": el valor següent, no el mateix
+gen.nie();             // "Z6697340K"
+gen.cif({ orgKey: "A" }); // un CIF d'una societat anònima
+```
+
+Sense llavor, els generadors fan servir `Math.random`, i cada crida dona un valor diferent. Amb llavor, `Math.random` no es llegeix mai.
+
+## Fixtures per als vostres tests
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { createGenerator } from "nif-dni-nie-cif-validation/generate";
+
+const gen = createGenerator(2024);
+const customers = Array.from({ length: 5 }, (_, id) => ({ id, nif: gen.nif() }));
+
+customers.length;                                            // 5
+customers.every((customer) => validate(customer.nif).valid); // true
+```
+
+Teniu un projecte complet de Vitest amb fixtures generades a [examples/generate-test-data](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/generate-test-data).
+
+## Números no vàlids
+
+`generateInvalid(type, { reason })` parteix d'un número vàlid del tipus i n'espatlla una sola cosa, de manera que el valor sembla el que representa, i `validate()` el rebutja exactament amb aquest codi d'error. El motiu per defecte és un caràcter de control incorrecte, el cas negatiu més habitual:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { generateInvalid } from "nif-dni-nie-cif-validation/generate";
+
+generateInvalid("DNI", { seed: 1 });                            // "62707394A"
+generateInvalid("DNI", { seed: 1, reason: "INVALID_LENGTH" });  // "652707394X"
+validate(generateInvalid("CIF", { seed: 3, reason: "INVALID_FORMAT" })).error?.code; // "INVALID_FORMAT"
+validate(generateInvalid("NIE", { seed: 7 })).error?.code;      // "INVALID_CONTROL_CHARACTER"
+```
+
+| `reason` | El valor | El rebutja `validate()` amb les opcions per defecte |
+| --- | --- | --- |
+| `INVALID_CONTROL_CHARACTER` (per defecte) | Només el caràcter de control és incorrecte | Sí |
+| `INVALID_LENGTH` | Sobren o falten xifres | Sí |
+| `INVALID_FORMAT` | Una lletra en lloc d'una xifra, o un caràcter de control de la classe equivocada | Sí |
+| `EMPTY` | Una cadena buida, o només separadors | Sí |
+| `UNSUPPORTED_TYPE` | Un número vàlid | Només si `types` n'exclou el tipus |
+| `PLACEHOLDER` | Un número d'exemple (només DNI i NIE) | Només amb `rejectPlaceholders: true` |
+
+## Les opcions impossibles llancen una excepció
+
+A diferència dels validadors, que mai no llancen excepcions amb el que escriu l'usuari, els generadors llancen un `RangeError` quan no poden complir les seves opcions: són errors de programació, i un valor equivocat sense avís seria pitjor.
+
+```ts
+import { generateCif, generateDni } from "nif-dni-nie-cif-validation/generate";
+
+generateCif({ orgKey: "B", control: "letter" }); // throws RangeError
+generateDni({ seed: 1.5 });                      // throws RangeError
+```
+
+La `B` porta xifra ([CIF-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-3)), de manera que no es pot generar un CIF `B` amb lletra, i la llavor ha de ser un nombre enter.
+
+## Mida del bundle
+
+El punt d'entrada principal mai no importa els generadors, de manera que `import { isValidNif }` no afegeix codi dels generadors al vostre bundle. Importeu `nif-dni-nie-cif-validation/generate` només des dels vostres tests.
