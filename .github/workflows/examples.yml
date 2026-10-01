@@ -44,6 +44,11 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # The examples' lockfile has its own dependency tree (React, Vite,
+      # Express...), which the audit of release.yml doesn't see. Same
+      # threshold: high and critical advisories fail, the rest only show.
+      - name: Audit the examples' dependencies
+        run: pnpm --dir examples audit --audit-level high
       # `prepack` builds dist/. Pack into a separate folder so script output
       # can't corrupt the filename.
       - name: Pack
