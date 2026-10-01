@@ -6,6 +6,12 @@ settings:
 
 importers:
 
+  csv-bulk-validation:
+    dependencies:
+      nif-dni-nie-cif-validation:
+        specifier: file:../.pack/package
+        version: file:.pack/package(valibot@1.5.0)(yup@1.7.1)(zod@4.6.5)
+
   express-middleware:
     dependencies:
       express:
