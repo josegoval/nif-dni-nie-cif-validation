@@ -100,6 +100,8 @@ export const eu: SiteStrings = {
       basic: "Oinarrizkoa",
       validate: "validate()",
       zod: "Zod",
+      valibot: "Valibot",
+      yup: "Yup",
       generators: "Sorgailuak",
     },
     comments: {

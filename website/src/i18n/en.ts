@@ -91,6 +91,8 @@ export const en: SiteStrings = {
       basic: "Basic",
       validate: "validate()",
       zod: "Zod",
+      valibot: "Valibot",
+      yup: "Yup",
       generators: "Generators",
     },
     comments: {

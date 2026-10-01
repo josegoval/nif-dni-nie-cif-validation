@@ -110,6 +110,11 @@ test.describe("without JavaScript", () => {
     await page.getByText(en.code.tabs.zod, { exact: true }).click();
     await expect(page.locator('[data-panel="zod"]')).toBeVisible();
     await expect(page.locator('[data-panel="basic"]')).toBeHidden();
+    for (const id of ["valibot", "yup"] as const) {
+      await page.getByText(en.code.tabs[id], { exact: true }).click();
+      await expect(page.locator(`[data-panel="${id}"]`)).toBeVisible();
+      await expect(page.locator('[data-panel="zod"]')).toBeHidden();
+    }
   });
 });
 

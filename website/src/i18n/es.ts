@@ -98,6 +98,8 @@ export const es: SiteStrings = {
       basic: "Básico",
       validate: "validate()",
       zod: "Zod",
+      valibot: "Valibot",
+      yup: "Yup",
       generators: "Generadores",
     },
     comments: {

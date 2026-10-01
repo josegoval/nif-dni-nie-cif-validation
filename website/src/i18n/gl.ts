@@ -99,6 +99,8 @@ export const gl: SiteStrings = {
       basic: "Básico",
       validate: "validate()",
       zod: "Zod",
+      valibot: "Valibot",
+      yup: "Yup",
       generators: "Xeradores",
     },
     comments: {
