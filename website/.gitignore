@@ -4,3 +4,6 @@ dist
 test-results
 playwright-report
 .starlight-links-validator
+# Generated at build time from SPEC.md (plugins/official-sources.mjs)
+src/content/docs/reference/official-sources.md
+src/content/docs/*/reference/official-sources.md

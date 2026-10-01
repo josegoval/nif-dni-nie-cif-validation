@@ -2,7 +2,7 @@
 // "Why" cards. Every number is read at build time: the benchmark figures
 // from bench/results/latest.json, the rule count from SPEC.md.
 import { bench } from "../../data/bench";
-import { ruleCount, SPEC_URL } from "../../data/spec";
+import { officialSourcesUrl, ruleCount } from "../../data/spec";
 import {
   formatDate,
   formatList,
@@ -54,7 +54,7 @@ const cards = [
         <li class="card" data-card={card.id}>
           <h3>
             {card.id === "correct" ? (
-              <a href={SPEC_URL}>{card.title}</a>
+              <a href={officialSourcesUrl(lang)}>{card.title}</a>
             ) : (
               card.title
             )}

@@ -4,7 +4,7 @@
 // for the page's language, in the browser. Without JavaScript the form is
 // inert and a notice says so; the rest of the page doesn't need it.
 
-import { SPEC_URL } from "../../data/spec";
+import { officialSourcesUrl } from "../../data/spec";
 import { langOf, stringsFor } from "../../i18n";
 
 const lang = langOf(Astro.locals.starlightRoute.lang);
@@ -19,7 +19,7 @@ const types = ["DNI", "NIE", "CIF"] as const;
     class="panel"
     data-validator
     data-lang={lang}
-    data-spec={SPEC_URL}
+    data-spec={officialSourcesUrl(lang)}
     data-strings={JSON.stringify(t.ui)}
   >
     <label for="nif-input">{t.label}</label>

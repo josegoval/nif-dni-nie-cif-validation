@@ -5,11 +5,59 @@ import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import { repoFiles } from "./integrations/repo-files.mjs";
+import { officialSources } from "./plugins/official-sources.mjs";
 
 // GitHub Pages serves a project site from https://<owner>.github.io/<repo>/.
 // For a custom domain, set `site` to it and `base` to "/" (README.md).
 const site = "https://josegoval.github.io";
 const base = "/nif-dni-nie-cif-validation/";
+
+// The labels of the sidebar's groups. The pages' own labels are their titles,
+// in each language (src/content/docs/<lang>/).
+// cspell:disable
+const groups = {
+  guides: {
+    label: "Guides",
+    translations: { es: "Guías", ca: "Guies", eu: "Gidak", gl: "Guías" },
+  },
+  migrating: {
+    label: "Migrating",
+    translations: {
+      es: "Migración",
+      ca: "Migració",
+      eu: "Migrazioa",
+      gl: "Migración",
+    },
+  },
+  reference: {
+    label: "Reference",
+    translations: {
+      es: "Referencia",
+      ca: "Referència",
+      eu: "Erreferentzia",
+      gl: "Referencia",
+    },
+  },
+  entryPoints: {
+    label: "Entry points",
+    translations: {
+      es: "Puntos de entrada",
+      ca: "Punts d'entrada",
+      eu: "Sarrera-puntuak",
+      gl: "Puntos de entrada",
+    },
+  },
+  project: {
+    label: "Project",
+    translations: {
+      es: "Proyecto",
+      ca: "Projecte",
+      eu: "Proiektua",
+      gl: "Proxecto",
+    },
+  },
+};
+// cspell:enable
 
 export default defineConfig({
   site,
@@ -47,16 +95,12 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "Benchmarks",
-          translations: {
-            // cspell:disable
-            es: "Rendimiento",
-            ca: "Rendiment",
-            eu: "Errendimendua",
-            gl: "Rendemento",
-            // cspell:enable
-          },
-          slug: "benchmarks",
+          ...groups.reference,
+          items: ["reference/official-sources"],
+        },
+        {
+          ...groups.project,
+          items: ["benchmarks"],
         },
       ],
       customCss: ["./src/styles/fonts.css", "./src/styles/theme.css"],
@@ -66,14 +110,19 @@ export default defineConfig({
       },
       // Icons, Open Graph image and JSON-LD in the <head> (src/routeData.ts).
       routeMiddleware: "./src/routeData.ts",
-      plugins: [starlightLinksValidator()],
+      plugins: [
+        // A generated page: SPEC.md as /reference/official-sources/
+        // (plugins/official-sources.mjs).
+        officialSources(),
+        starlightLinksValidator(),
+      ],
     }),
     repoFiles(),
   ],
   vite: {
     server: {
       // The library is linked from the repository root (`link:..`), and
-      // brand/, bench/ and the llms files are read from there.
+      // brand/, bench/, SPEC.md and the llms files are read from there.
       fs: { allow: [".."] },
     },
   },

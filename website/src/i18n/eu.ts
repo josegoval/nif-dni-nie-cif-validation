@@ -134,7 +134,7 @@ export const eu: SiteStrings = {
     github: "GitHub",
     npm: "npm",
     license: "MIT lizentzia",
-    spec: "SPEC.md",
+    spec: "Iturri ofizialak",
     coverage: "Proben estaldura",
     llms: "llms.txt",
     sponsor: "Lagundu proiektuari",

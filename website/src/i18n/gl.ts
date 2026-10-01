@@ -133,7 +133,7 @@ export const gl: SiteStrings = {
     github: "GitHub",
     npm: "npm",
     license: "Licenza MIT",
-    spec: "SPEC.md",
+    spec: "Fontes oficiais",
     coverage: "Cobertura das probas",
     llms: "llms.txt",
     sponsor: "Apoie o proxecto",

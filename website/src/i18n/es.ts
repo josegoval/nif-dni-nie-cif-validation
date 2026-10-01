@@ -132,7 +132,7 @@ export const es: SiteStrings = {
     github: "GitHub",
     npm: "npm",
     license: "Licencia MIT",
-    spec: "SPEC.md",
+    spec: "Fuentes oficiales",
     coverage: "Cobertura de tests",
     llms: "llms.txt",
     sponsor: "Apoya el proyecto",
