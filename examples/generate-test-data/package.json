@@ -1,0 +1,19 @@
+{
+  "name": "example-generate-test-data",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A Vitest fixture factory that makes valid and invalid NIFs with createGenerator(seed).",
+  "scripts": {
+    "start": "vitest",
+    "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit && vitest run"
+  },
+  "dependencies": {
+    "nif-dni-nie-cif-validation": "file:../.pack/package"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
+  }
+}
