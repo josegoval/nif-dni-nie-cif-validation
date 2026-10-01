@@ -9,7 +9,7 @@ export const ca: SiteStrings = {
     logoAlt:
       "nif-dni-nie-cif-validation: validació de NIF, DNI, NIE i CIF espanyols",
     installLabel: "Instal·lació amb npm",
-    copy: "Copia",
+    copy: "Copieu",
     copied: "Copiat",
   },
   validator: {
@@ -17,8 +17,8 @@ export const ca: SiteStrings = {
     intro:
       "Escriviu o enganxeu un NIF, DNI, NIE o CIF. La mateixa biblioteca el comprova mentre escriviu i us diu per què no és vàlid.",
     label: "NIF, DNI, NIE o CIF",
-    hint: "Podeu fer servir espais, punts, guionets i minúscules, com a 12.345.678-z.",
-    generateLabel: "Genera un número aleatori",
+    hint: "Podeu fer servir espais, punts, guionets i minúscules; per exemple, 12.345.678-z.",
+    generateLabel: "Genereu un número aleatori",
     generate: {
       DNI: "DNI aleatori",
       NIE: "NIE aleatori",
@@ -51,14 +51,14 @@ export const ca: SiteStrings = {
     correct: {
       title: "Correcta, amb fonts",
       body: (rules) =>
-        `${rules} regles, cadascuna amb un identificador (DNI-2, NIE-3, CIF-3…) i la seva font oficial a SPEC.md: el BOE, l'AEAT o una convenció identificada com a tal. Cada error indica la regla que no s'ha complert.`,
+        `${rules} regles, cadascuna amb un identificador (DNI-2, NIE-3, CIF-3…) i la seva font documentada a SPEC.md: una font oficial (el BOE, l'AEAT), una convenció identificada com a tal o el contracte de la biblioteca. Cada error indica la regla que no s'ha complert.`,
     },
     fast: {
       title: "Ràpida",
       headline: (speedup) =>
         `Com a mínim ${speedup} vegades el rendiment de qualsevol altra biblioteca provada`,
       body: (mops, v1Low, v1High) =>
-        `${mops} M ops/s amb DNI (milions de validacions per segon; com més, més ràpida) i entre ${v1Low} i ${v1High} vegades més ràpida que la v1.`,
+        `${mops} M ops/s amb DNI (milions de validacions per segon; com més alta és la xifra, més alt és el rendiment), amb un rendiment d'entre ${v1Low} i ${v1High} vegades el de la v1.`,
     },
     small: {
       title: "Petita",
@@ -104,7 +104,7 @@ export const ca: SiteStrings = {
     comments: {
       normalized:
         "s'eliminen els espais, els punts i els guionets, i les minúscules passen a majúscules",
-      wrongControl: "el dígit de control no és correcte",
+      wrongControl: "la xifra de control no és correcta",
       neverThrows: "no llança mai excepcions",
       storeThis: "deseu aquest valor",
       cifRejected: "aquí no s'accepta cap CIF",
@@ -116,17 +116,17 @@ export const ca: SiteStrings = {
   compare: {
     heading: "Comparació",
     intro:
-      "Rendiment amb el conjunt de DNI, en milions de validacions per segon (M ops/s; com més, més ràpida), i mida d'un validador de qualsevol tipus (min+gzip; com menys, més petita).",
+      "Rendiment amb el conjunt de DNI, en milions de validacions per segon (M ops/s; com més alta és la xifra, més alt és el rendiment), i mida d'un validador de qualsevol tipus (min+gzip; com més baixa és la xifra, més petita és la mida).",
     caption:
       "Rendiment i mida de les biblioteques d'identificadors espanyols a npm",
     library: "Biblioteca",
     dni: "DNI, M ops/s",
     size: "Mida, qualsevol tipus",
     thisBuild: "aquesta versió",
-    unsupported: "no disponible",
+    unsupported: "no admès",
     more: "Rendiment i comparació complets",
     caveat:
-      "Totes les xifres surten de bench/results/latest.json. La velocitat no ho és tot: la pàgina de rendiment també compara la concordança amb SPEC.md i les funcionalitats.",
+      "Totes les xifres surten de bench/results/latest.json. La velocitat no ho és tot: la pàgina de rendiment enllaça els resultats complets, que també comparen la concordança amb SPEC.md i les funcionalitats.",
   },
   footer: {
     label: "Enllaços del projecte",

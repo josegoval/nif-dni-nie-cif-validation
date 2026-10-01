@@ -43,14 +43,14 @@ export const en: SiteStrings = {
     correct: {
       title: "Correct, with sources",
       body: (rules) =>
-        `${rules} rules, each with an ID (DNI-2, NIE-3, CIF-3…) and its official source in SPEC.md: the BOE, the AEAT, or a convention labelled as such. Every error names the rule that failed.`,
+        `${rules} rules, each with an ID (DNI-2, NIE-3, CIF-3…) and its documented basis in SPEC.md: an official source (the BOE, the AEAT), a convention labelled as such, or the library's contract. Every error names the rule that failed.`,
     },
     fast: {
       title: "Fast",
       headline: (speedup) =>
         `At least ${speedup}× the throughput of every other library tested`,
       body: (mops, v1Low, v1High) =>
-        `${mops} M ops/s on DNI (millions of validations per second, higher is faster), and ${v1Low}× to ${v1High}× as fast as v1.`,
+        `${mops} M ops/s on DNI (millions of validations per second, higher is faster), and ${v1Low}× to ${v1High}× the throughput of v1.`,
     },
     small: {
       title: "Small",
@@ -116,7 +116,7 @@ export const en: SiteStrings = {
     unsupported: "unsupported",
     more: "Full benchmarks and comparison",
     caveat:
-      "Every number comes from bench/results/latest.json. Speed is not everything: the benchmarks page also compares agreement with SPEC.md and features.",
+      "Every number comes from bench/results/latest.json. Speed is not everything: the benchmarks page links to the full results, which also compare agreement with SPEC.md and features.",
   },
   footer: {
     label: "Project links",

@@ -3,7 +3,13 @@
 // from bench/results/latest.json, the rule count from SPEC.md.
 import { bench } from "../../data/bench";
 import { ruleCount, SPEC_URL } from "../../data/spec";
-import { formatList, formatNumber, langOf, stringsFor } from "../../i18n";
+import {
+  formatDate,
+  formatList,
+  formatNumber,
+  langOf,
+  stringsFor,
+} from "../../i18n";
 
 const lang = langOf(Astro.locals.starlightRoute.lang);
 const t = stringsFor(lang).why;
@@ -62,7 +68,7 @@ const cards = [
       ))
     }
   </ul>
-  <p class="measured">{t.measured(bench.machine, bench.node, bench.measuredOn)}</p>
+  <p class="measured">{t.measured(bench.machine, bench.node, formatDate(lang, bench.measuredOn))}</p>
 </section>
 
 <style>

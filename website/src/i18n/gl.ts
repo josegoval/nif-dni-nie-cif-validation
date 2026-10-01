@@ -51,14 +51,14 @@ export const gl: SiteStrings = {
     correct: {
       title: "Correcta, con fontes",
       body: (rules) =>
-        `${rules} regras, cada unha cun identificador (DNI-2, NIE-3, CIF-3…) e a súa fonte oficial en SPEC.md: o BOE, a AEAT ou unha convención identificada como tal. Cada erro indica a regra que non se cumpriu.`,
+        `${rules} regras, cada unha cun identificador (DNI-2, NIE-3, CIF-3…) e a súa fonte en SPEC.md: o BOE, a AEAT, unha convención identificada como tal ou o contrato da biblioteca. Cada erro indica a regra que non se cumpriu.`,
     },
     fast: {
       title: "Rápida",
       headline: (speedup) =>
         `Polo menos ${speedup} veces o rendemento de calquera outra biblioteca probada`,
       body: (mops, v1Low, v1High) =>
-        `${mops} M ops/s con DNI (millóns de validacións por segundo; canto máis, máis rápida) e entre ${v1Low} e ${v1High} veces máis rápida ca a v1.`,
+        `${mops} M ops/s con DNI (millóns de validacións por segundo; canto maior sexa a cifra, maior será o rendemento), cun rendemento de entre ${v1Low} e ${v1High} veces o da v1.`,
     },
     small: {
       title: "Pequena",
@@ -116,17 +116,17 @@ export const gl: SiteStrings = {
   compare: {
     heading: "Comparación",
     intro:
-      "Rendemento co conxunto de DNI, en millóns de validacións por segundo (M ops/s; canto máis, máis rápida), e tamaño dun validador de calquera tipo (min+gzip; canto menos, máis pequena).",
+      "Rendemento co conxunto de DNI, en millóns de validacións por segundo (M ops/s; canto maior sexa a cifra, maior será o rendemento), e tamaño dun validador de calquera tipo (min+gzip; canto menor sexa a cifra, menor será o tamaño).",
     caption:
       "Rendemento e tamaño das bibliotecas de identificadores españois en npm",
     library: "Biblioteca",
     dni: "DNI, M ops/s",
     size: "Tamaño, calquera tipo",
-    thisBuild: "esta versión",
-    unsupported: "non dispoñible",
+    thisBuild: "esta compilación",
+    unsupported: "non compatible",
     more: "Rendemento e comparación completos",
     caveat:
-      "Todas as cifras saen de bench/results/latest.json. A velocidade non o é todo: a páxina de rendemento tamén compara a concordancia con SPEC.md e as funcionalidades.",
+      "Todas as cifras saen de bench/results/latest.json. A velocidade non o é todo: a páxina de rendemento ligazona os resultados completos, que tamén comparan a concordancia con SPEC.md e as funcionalidades.",
   },
   footer: {
     label: "Ligazóns do proxecto",

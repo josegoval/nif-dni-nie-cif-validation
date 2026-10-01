@@ -52,6 +52,22 @@ export function formatNumber(
   }).format(rounded);
 }
 
+// cspell:ignore septiembre irailaren
+/**
+ * A date (YYYY-MM-DD) in the language's long format: "30 September 2026",
+ * "30 de septiembre de 2026". Basque keeps the ISO form: ICU writes its
+ * long dates with placeholder suffixes ("2026(e)ko irailaren 30(a)").
+ */
+export function formatDate(lang: Lang, isoDate: string): string {
+  if (lang === "eu") return isoDate;
+  return new Intl.DateTimeFormat(intlLocale(lang), {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${isoDate}T00:00:00Z`));
+}
+
 /** A list in the language's format: "a, b and c". */
 export function formatList(lang: Lang, items: string[]): string {
   return new Intl.ListFormat(intlLocale(lang), { type: "conjunction" }).format(

@@ -52,14 +52,14 @@ export const eu: SiteStrings = {
     correct: {
       title: "Zuzena, iturriekin",
       body: (rules) =>
-        `${rules} arau, bakoitza bere identifikatzailearekin (DNI-2, NIE-3, CIF-3…) eta SPEC.md fitxategiko iturri ofizialarekin: BOE, AEAT edo hala identifikatutako konbentzio bat. Errore bakoitzak zein arau ez den bete adierazten du.`,
+        `${rules} arau, bakoitza bere identifikatzailearekin (DNI-2, NIE-3, CIF-3…) eta SPEC.md fitxategian dokumentatutako iturriarekin: iturri ofizial bat (BOE, AEAT), hala identifikatutako konbentzio bat edo liburutegiaren kontratua. Errore bakoitzak zein arau ez den bete adierazten du.`,
     },
     fast: {
       title: "Azkarra",
       headline: (speedup) =>
         `Probatutako beste edozein liburutegi baino gutxienez ${speedup} aldiz azkarragoa`,
       body: (mops, v1Low, v1High) =>
-        `${mops} M ops/s NAN zenbakiekin (milioi egiaztapen segundoko; zenbat eta gehiago, orduan eta azkarragoa), eta v1 baino ${v1Low}-${v1High} aldiz azkarragoa.`,
+        `${mops} M ops/s NAN zenbakiekin (milioi egiaztapen segundoko; zenbat eta gehiago, orduan eta azkarragoa), eta v1 baino ${v1Low}–${v1High} aldiz azkarragoa.`,
     },
     small: {
       title: "Txikia",
@@ -78,7 +78,7 @@ export const eu: SiteStrings = {
     },
     safe: {
       title: "Ez du inoiz salbuespenik jaurtitzen",
-      body: "Egiaztatzaileek unknown onartzen dute: null, zenbakiak eta objektuak false dira, edo NOT_A_STRING validate() erabiltzean. Erabiltzaileak idatzitakoak ez du inoiz hausten.",
+      body: "Egiaztatzaileek unknown motako balioak onartzen dituzte: null, zenbaki edo objektu bat jasotzean, false itzultzen dute; validate() funtzioak, berriz, NOT_A_STRING errorea itzultzen du. Erabiltzailearen sarrerak ez du inoiz hutsik eragiten.",
     },
     languages: {
       title: "5 hizkuntza",
@@ -123,11 +123,11 @@ export const eu: SiteStrings = {
     library: "Liburutegia",
     dni: "NAN, M ops/s",
     size: "Tamaina, edozein mota",
-    thisBuild: "bertsio hau",
-    unsupported: "ez dago",
+    thisBuild: "konpilazio hau",
+    unsupported: "ez da onartzen",
     more: "Errendimendua eta konparazioa, osorik",
     caveat:
-      "Zenbaki guztiak bench/results/latest.json fitxategitik datoz. Abiadura ez da dena: errendimenduaren orriak SPEC.md fitxategiarekiko adostasuna eta ezaugarriak ere konparatzen ditu.",
+      "Zenbaki guztiak bench/results/latest.json fitxategitik datoz. Abiadura ez da dena: errendimenduaren orriak emaitza osoetarako esteka du, eta emaitza horiek SPEC.md fitxategiarekiko adostasuna eta ezaugarriak ere konparatzen dituzte.",
   },
   footer: {
     label: "Proiektuaren estekak",
