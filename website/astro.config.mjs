@@ -94,6 +94,13 @@ export default defineConfig({
           href: "https://github.com/josegoval/nif-dni-nie-cif-validation",
         },
       ],
+      // "Edit page" links to the page's file on GitHub, and the date of the
+      // page's last commit (the generated pages set their own, or none).
+      editLink: {
+        baseUrl:
+          "https://github.com/josegoval/nif-dni-nie-cif-validation/edit/master/website/",
+      },
+      lastUpdated: true,
       // Long lines of code wrap instead of scrolling sideways: a scrolling
       // block would have to be focusable for keyboard users (axe's
       // scrollable-region-focusable), and wrapped code reads better on a phone.

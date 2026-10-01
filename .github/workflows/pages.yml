@@ -62,6 +62,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          # The whole history: each page's "Last updated" date is the date of
+          # its file's last commit.
+          fetch-depth: 0
       - name: Setup pnpm
         # Version comes from `packageManager` in package.json.
         uses: pnpm/action-setup@v6
