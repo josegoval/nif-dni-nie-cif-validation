@@ -5,7 +5,7 @@ description: Generate valid and invalid Spanish DNI, K/L/M NIF, NIE, CIF and NIF
 
 import { Aside } from "@astrojs/starlight/components";
 
-Tests need NIFs, and real people's numbers don't belong in a repository. The `nif-dni-nie-cif-validation/generate` entry point makes valid numbers of every type, and invalid ones for each reason that `generateInvalid()` supports. With a seed, they are the same on every run, machine and Node.js version.
+Tests need NIFs, and real people's numbers don't belong in a repository. The `nif-dni-nie-cif-validation/generate` entry point makes valid numbers of every type, and negative test values for each reason that `generateInvalid()` supports. With a seed, they are the same on every run, machine and Node.js version.
 
 <Aside type="caution">
 Generated numbers are made up, but one may match a real person or company by chance. Use them in tests only, never as real data.
@@ -75,7 +75,7 @@ A complete Vitest project with generated fixtures is in [examples/generate-test-
 
 ## Invalid numbers
 
-`generateInvalid(type, { reason })` starts from a valid number of the type and breaks one thing, so the value looks like what it stands for, and `validate()` refuses it with exactly that error code. The default reason is a wrong control character, the most common negative case:
+`generateInvalid(type, { reason })` starts from a valid number of the type and breaks one thing, so the value looks like what it stands for. `validate()` refuses it with exactly that error code; for `UNSUPPORTED_TYPE` and `PLACEHOLDER`, only when you pass the matching `types` or `rejectPlaceholders` option, because those values are valid by default. The default reason is a wrong control character, the most common negative case:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";

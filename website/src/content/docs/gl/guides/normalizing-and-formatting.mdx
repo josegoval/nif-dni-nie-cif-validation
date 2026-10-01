@@ -26,7 +26,7 @@ normalize("1234567L");        // "01234567L": engádese de novo o cero inicial
 normalize("12345678\tZ");     // "12345678Z": tamén tabuladores e outros espazos en branco
 ```
 
-`normalize()` non valida: devolve a cadea limpa aínda que o documento non sexa válido. Os demais signos de puntuación mantéñense a propósito (un guión baixo, unha coma, unha raia), de modo que ese valor segue sen ser válido, igual que os caracteres doutros alfabetos que se parecen aos latinos:
+`normalize()` non valida: devolve a cadea limpa aínda que o documento non sexa válido. Os demais signos de puntuación mantéñense a propósito (un guión baixo, unha coma, unha semirraia (–)), de modo que ese valor segue sen ser válido, igual que os caracteres doutros alfabetos que se parecen aos latinos:
 
 ```ts
 import { isValidNif, normalize } from "nif-dni-nie-cif-validation";
@@ -117,5 +117,5 @@ format("12345678A");                     // null: só se formatan documentos vá
 | Guións (`-`) e barras (`/`) | Si | [NORM-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#norm-3) |
 | Un DNI sen os seus ceros iniciais (`1234567L`) | Si | [NORM-4](/nif-dni-nie-cif-validation/gl/reference/official-sources/#norm-4) |
 | A forma antiga do NIE (`X01234567L`) | Si, mesmo con `normalize: false` | [NIE-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nie-3) |
-| Guións baixos, comas, raias e outros signos | Non | — |
+| Guións baixos, comas, semirraias (–) e outros signos | Non | — |
 | Prefixo `ES` | Só con `allowVatPrefix`, ou nas funcións de NIF-IVE | [VAT-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#vat-1) |

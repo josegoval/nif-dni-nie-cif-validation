@@ -26,7 +26,7 @@ normalize("1234567L");        // "01234567L": s'hi torna a afegir el zero inicia
 normalize("12345678\tZ");     // "12345678Z": també tabuladors i altres espais en blanc
 ```
 
-`normalize()` no valida: retorna la cadena neta encara que el document no sigui vàlid. La resta de signes de puntuació es mantenen expressament (un guió baix, una coma, un guió llarg), de manera que aquest valor continua sense ser vàlid, igual que els caràcters d'altres alfabets que s'assemblen als llatins:
+`normalize()` no valida: retorna la cadena neta encara que el document no sigui vàlid. La resta de signes de puntuació es mantenen expressament (un guió baix, una coma, un guió mitjà (–)), de manera que aquest valor continua sense ser vàlid, igual que els caràcters d'altres alfabets que s'assemblen als llatins:
 
 ```ts
 import { isValidNif, normalize } from "nif-dni-nie-cif-validation";
@@ -117,5 +117,5 @@ format("12345678A");                     // null: només es formaten documents v
 | Guions (`-`) i barres (`/`) | Sí | [NORM-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-3) |
 | Un DNI sense els zeros inicials (`1234567L`) | Sí | [NORM-4](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-4) |
 | La forma antiga del NIE (`X01234567L`) | Sí, fins i tot amb `normalize: false` | [NIE-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#nie-3) |
-| Guions baixos, comes, guions llargs i altres signes | No | — |
+| Guions baixos, comes, guions mitjans (–) i altres signes | No | — |
 | Prefix `ES` | Només amb `allowVatPrefix`, o a les funcions de NIF-IVA | [VAT-1](/nif-dni-nie-cif-validation/ca/reference/official-sources/#vat-1) |

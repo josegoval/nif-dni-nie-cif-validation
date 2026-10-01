@@ -5,7 +5,7 @@ description: Xere DNI, NIF K/L/M, NIE, CIF e NIF españois válidos e non válid
 
 import { Aside } from "@astrojs/starlight/components";
 
-As probas necesitan NIF, e os números de persoas reais non deben acabar nun repositorio. O punto de entrada `nif-dni-nie-cif-validation/generate` xera números válidos de todos os tipos, e números non válidos para cada motivo que admite `generateInvalid()`. Cunha semente, son iguais en cada execución, en cada máquina e con cada versión de Node.js.
+As probas necesitan NIF, e os números de persoas reais non deben acabar nun repositorio. O punto de entrada `nif-dni-nie-cif-validation/generate` xera números válidos de todos os tipos, e valores de proba negativos para cada motivo que admite `generateInvalid()`. Cunha semente, son iguais en cada execución, en cada máquina e con cada versión de Node.js.
 
 <Aside type="caution">
 Os números xerados son ficticios, pero algún podería coincidir por casualidade co dunha persoa ou empresa real. Úseos só en probas, nunca como datos reais.
@@ -75,7 +75,7 @@ Ten un proxecto completo de Vitest con fixtures xeradas en [examples/generate-te
 
 ## Números non válidos
 
-`generateInvalid(type, { reason })` parte dun número válido do tipo e estraga unha soa cousa, de modo que o valor parece o que representa, e `validate()` rexéitao exactamente con ese código de erro. O motivo predeterminado é un carácter de control incorrecto, o caso negativo máis habitual:
+`generateInvalid(type, { reason })` parte dun número válido do tipo e estraga unha soa cousa, de modo que o valor parece o que representa. `validate()` rexéitao exactamente con ese código de erro; con `UNSUPPORTED_TYPE` e `PLACEHOLDER`, só se pasa a opción `types` ou `rejectPlaceholders` correspondente, porque eses valores son válidos por defecto. O motivo predeterminado é un carácter de control incorrecto, o caso negativo máis habitual:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";

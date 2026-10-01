@@ -61,7 +61,7 @@ Un tipo que una librería no valida se excluye de sus cifras, así que compara l
 
 - **Entradas.** Se generan con un generador pseudoaleatorio con semilla, así que todas las ejecuciones y todas las máquinas miden las mismas cadenas: documentos válidos y los mismos documentos con un carácter de control incorrecto, para cada tipo.
 - **Llamadas.** Cada librería se llama exactamente como indica su documentación, con sus opciones por defecto, sobre la cadena de entrada sin procesar. La única excepción es jsvat, un validador de NIF-IVA, a cuyas entradas se les añade el prefijo `ES` fuera del bucle cronometrado.
-- **Medición.** [tinybench](https://github.com/tinylibs/tinybench) ejecuta cada tarea en su propio proceso, tras un calentamiento, para que lo que V8 aprende de una librería no cambie la cifra de la siguiente. La ejecución completa se repite en varias rondas, el orden de las librerías rota entre conjuntos y rondas, y cada cifra es su ronda mediana.
+- **Medición.** [tinybench](https://github.com/tinylibs/tinybench) ejecuta cada tarea en su propio proceso, tras un calentamiento, para que lo que V8 aprende de una librería no cambie la cifra de la siguiente. La ejecución completa se repite en varias rondas, el orden de las librerías rota entre conjuntos y rondas, y cada cifra es la de la ronda mediana.
 - **Tamaño.** La importación de una sola función que documenta cada librería, empaquetada y minificada con esbuild y comprimida con gzip al nivel 9, menos el coste de una importación vacía.
 - **Concordancia.** La llamada «cualquier tipo» de cada librería sobre los casos que prueban las opciones por defecto, juzgando cada caso como válido o no válido.
 

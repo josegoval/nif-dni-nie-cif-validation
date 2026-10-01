@@ -26,7 +26,7 @@ normalize("1234567L");        // "01234567L": hasierako zeroa berriro gehitzen d
 normalize("12345678\tZ");     // "12345678Z": tabulazioak eta beste zuriune batzuk ere bai
 ```
 
-`normalize()` funtzioak ez du egiaztatzen: kate garbia itzultzen du, dokumentua baliozkoa ez bada ere. Gainerako puntuazio-ikurrak nahita mantentzen dira (azpimarra bat, koma bat, marra luze bat); horrela, balio hori baliogabea izaten jarraitzen du, latinezkoen antza duten beste alfabeto batzuetako karaktereak bezala:
+`normalize()` funtzioak ez du egiaztatzen: kate garbia itzultzen du, dokumentua baliozkoa ez bada ere. Gainerako puntuazio-ikurrak nahita mantentzen dira (azpimarra bat, koma bat, marra ertain bat (–)); horrela, balio hori baliogabea izaten jarraitzen du, latinezkoen antza duten beste alfabeto batzuetako karaktereak bezala:
 
 ```ts
 import { isValidNif, normalize } from "nif-dni-nie-cif-validation";
@@ -117,5 +117,5 @@ format("12345678A");                     // null: dokumentu baliozkoei bakarrik 
 | Marrak (`-`) eta barrak (`/`) | Bai | [NORM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-3) |
 | Hasierako zerorik gabeko NAN bat (`1234567L`) | Bai | [NORM-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-4) |
 | AIZaren forma zaharra (`X01234567L`) | Bai, baita `normalize: false` aukerarekin ere | [NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3) |
-| Azpimarrak, komak, marra luzeak eta beste ikur batzuk | Ez | — |
+| Azpimarrak, komak, marra ertainak (–) eta beste ikur batzuk | Ez | — |
 | `ES` aurrizkia | `allowVatPrefix` aukerarekin bakarrik, edo IFZ-BEZerako funtzioetan | [VAT-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#vat-1) |

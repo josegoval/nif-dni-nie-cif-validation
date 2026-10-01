@@ -5,7 +5,7 @@ description: Sortu Espainiako NAN, K/L/M IFZ, AIZ, IFK eta IFZ baliozkoak eta ba
 
 import { Aside } from "@astrojs/starlight/components";
 
-Probek IFZak behar dituzte, eta benetako pertsonen zenbakiek ez dute biltegi batean amaitu behar. `nif-dni-nie-cif-validation/generate` sarrera-puntuak mota guztietako zenbaki baliozkoak sortzen ditu, baita `generateInvalid()` funtzioak onartzen dituen arrazoi bakoitzerako zenbaki baliogabeak ere. Hazi batekin, berdinak dira exekuzio bakoitzean, makina bakoitzean eta Node.js-en bertsio bakoitzarekin.
+Probek IFZak behar dituzte, eta benetako pertsonen zenbakiek ez dute biltegi batean amaitu behar. `nif-dni-nie-cif-validation/generate` sarrera-puntuak mota guztietako zenbaki baliozkoak sortzen ditu, baita `generateInvalid()` funtzioak onartzen dituen arrazoi bakoitzerako proba-balio negatiboak ere. Hazi batekin, berdinak dira exekuzio bakoitzean, makina bakoitzean eta Node.js-en bertsio bakoitzarekin.
 
 <Aside type="caution">
 Sortutako zenbakiak asmatuak dira, baina baliteke kasualitatez benetako pertsona edo enpresa batenarekin bat etortzea. Erabili probetan bakarrik, inoiz ez benetako datu gisa.
@@ -75,7 +75,7 @@ Sortutako fixture-ak dituen Vitest proiektu oso bat [examples/generate-test-data
 
 ## Zenbaki baliogabeak
 
-`generateInvalid(type, { reason })` funtzioak motako zenbaki baliozko batetik abiatu eta gauza bakar bat hondatzen du; horrela, balioak adierazten duenaren itxura du, eta `validate()` funtzioak errore-kode horrekin baztertzen du, hain zuzen. Arrazoi lehenetsia kontrol-karaktere oker bat da, kasu negatibo ohikoena:
+`generateInvalid(type, { reason })` funtzioak motako zenbaki baliozko batetik abiatu eta gauza bakar bat hondatzen du; horrela, balioak adierazten duenaren itxura du. `validate()` funtzioak errore-kode horrekin baztertzen du, hain zuzen; `UNSUPPORTED_TYPE` eta `PLACEHOLDER` arrazoiekin, ordea, dagokion `types` edo `rejectPlaceholders` aukera ematen duzunean bakarrik, balio horiek lehenespenez baliozkoak baitira. Arrazoi lehenetsia kontrol-karaktere oker bat da, kasu negatibo ohikoena:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";
