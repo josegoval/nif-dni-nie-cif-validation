@@ -126,7 +126,7 @@ export const gl: SiteStrings = {
     unsupported: "non compatible",
     more: "Rendemento e comparación completos",
     caveat:
-      "Todas as cifras saen de bench/results/latest.json. A velocidade non o é todo: a páxina de rendemento ligazona os resultados completos, que tamén comparan a concordancia con SPEC.md e as funcionalidades.",
+      "Todas as cifras saen de bench/results/latest.json. A velocidade non o é todo: a páxina de rendemento inclúe ligazóns aos resultados completos, que tamén comparan a concordancia con SPEC.md e as funcionalidades.",
   },
   footer: {
     label: "Ligazóns do proxecto",

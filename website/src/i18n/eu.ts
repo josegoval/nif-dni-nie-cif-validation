@@ -57,9 +57,9 @@ export const eu: SiteStrings = {
     fast: {
       title: "Azkarra",
       headline: (speedup) =>
-        `Probatutako beste edozein liburutegi baino gutxienez ${speedup} aldiz azkarragoa`,
+        `Probatutako beste edozein liburutegiren errendimenduaren ${speedup} halakoa, gutxienez`,
       body: (mops, v1Low, v1High) =>
-        `${mops} M ops/s NAN zenbakiekin (milioi egiaztapen segundoko; zenbat eta gehiago, orduan eta azkarragoa), eta v1 baino ${v1Low}–${v1High} aldiz azkarragoa.`,
+        `${mops} M ops/s NAN zenbakiekin (milioi egiaztapen segundoko; zenbat eta gehiago, orduan eta azkarragoa), eta v1-ekiko errendimendu-ratioa ${v1Low}–${v1High} da.`,
     },
     small: {
       title: "Txikia",
