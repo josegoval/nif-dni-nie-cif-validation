@@ -1,0 +1,13 @@
+{
+  "name": "example-node-cjs",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Validate Spanish NIF, DNI, NIE and CIF numbers from a CommonJS Node.js script.",
+  "scripts": {
+    "start": "node index.cjs",
+    "check": "node index.cjs"
+  },
+  "dependencies": {
+    "nif-dni-nie-cif-validation": "file:../.pack/package"
+  }
+}

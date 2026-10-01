@@ -1,0 +1,40 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  node-cjs:
+    dependencies:
+      nif-dni-nie-cif-validation:
+        specifier: file:../.pack/package
+        version: file:.pack/package
+
+  node-esm:
+    dependencies:
+      nif-dni-nie-cif-validation:
+        specifier: file:../.pack/package
+        version: file:.pack/package
+
+packages:
+
+  nif-dni-nie-cif-validation@file:.pack/package:
+    resolution: {directory: .pack/package, type: directory}
+    engines: {node: '>=20'}
+    peerDependencies:
+      valibot: ^1.0.0
+      yup: ^1.0.0
+      zod: ^4.0.0
+    peerDependenciesMeta:
+      valibot:
+        optional: true
+      yup:
+        optional: true
+      zod:
+        optional: true
+
+snapshots:
+
+  nif-dni-nie-cif-validation@file:.pack/package: {}
