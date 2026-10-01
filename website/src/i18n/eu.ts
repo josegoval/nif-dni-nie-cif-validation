@@ -140,4 +140,151 @@ export const eu: SiteStrings = {
     sponsor: "Lagundu proiektuari",
     madeBy: "Egilea: josegoval.",
   },
+  docs: {
+    library: "Liburutegia",
+    thisBuild: "konpilazio hau",
+    unsupported: "ez da onartzen",
+    bytes: (formatted) => `${formatted} B`,
+    cifKeys: {
+      caption:
+        "IFKaren erakunde-gakoak, bakoitzak adierazten duen erakunde mota eta daraman kontrol-karaktere mota",
+      key: "Gakoa",
+      organisation: "Erakunde mota",
+      control: "Kontrol-karakterea",
+      digit: "digitu bat",
+      letter: "letra bat",
+    },
+    errors: {
+      caption:
+        "validate() funtzioaren errore-kode guztiak, bakoitzak aipa dezakeen SPEC arau bakoitza, errore hori ematen duen sarrera bat eta haren mezua euskaraz",
+      code: "Kodea",
+      rule: "Araua",
+      example: "Adibidea",
+      message: "Mezua",
+    },
+    entryPoints: {
+      caption: "Paketearen sarrera-puntuak, eta bakoitzak zer esportatzen duen",
+      entryPoint: "Sarrera-puntua",
+      contents: "Zer esportatzen duen",
+      main: "Egiaztatzaileak, validate(), normalize(), format(), getNifType(), computeControlCharacter(), describeCifOrganisation(), 1. bertsioko konstanteak eta motak. Ingelesezko mezuak barne ditu.",
+      locale: (language) =>
+        `Hizkuntza-objektua (${language}), validate() eta describeCifOrganisation() funtzioei eta eskemei locale gisa pasatzeko.`,
+      generate:
+        "Zenbaki baliozko eta baliogabeen sorgailu hazidunak, probetarako. Sarrera-puntu nagusiak ez ditu inoiz inportatzen.",
+      schemas: (library) =>
+        `${library} eskemak mota guztietarako eta IFZ-BEZerako. ${library.split(" ")[0]} aukerako peer mendekotasun bat da.`,
+      languages: {
+        en: "ingelesa",
+        es: "gaztelania",
+        ca: "katalana (valentzierarako ere bai)",
+        eu: "euskara",
+        gl: "galegoa",
+      },
+    },
+    apiFallback: {
+      title: (module) => `${module}: APIaren erreferentzia`,
+      description: (module) =>
+        `${module} sarrera-puntuaren APIaren erreferentzia (ingelesez): sinadurak, aukerak eta probatutako adibideak.`,
+    },
+    bench: {
+      run: {
+        caption: "Non eta nola exekutatu zen errendimendu-proba",
+        machine: "Makina",
+        cores: "Nukleoak",
+        memory: "Memoria",
+        os: "Sistema eragilea",
+        node: "Node.js",
+        date: "Data",
+        commit: "Neurtutako commita",
+        method: "Metodoa",
+        methodValue: (rounds, time, warmup) =>
+          `${rounds} txanda; zeregin bakoitza ${time} ms, ${warmup} ms-ko berotzearen ondoren, bere prozesuan; zenbakia txanda medianarena da`,
+      },
+      throughput: {
+        caption: (set, inputs) =>
+          `${{ DNI: "NAN", NIE: "AIZ", CIF: "IFK" }[set] ?? set}: milioi egiaztapen segundoko (M ops/s; zenbat eta gehiago, orduan eta azkarragoa), forma kanonikoko ${inputs} dokumentu baliozko eta baliogaberekin, eta zenbat aldiz den azkarragoa konpilazio hau`,
+        ops: "M ops/s",
+        speedup: "Konpilazio hau",
+        times: (value) => `${value} aldiz azkarragoa`,
+        noneFaster: (set) =>
+          `Beste liburutegi bat ere ez zen azkarragoa izan ${{ DNI: "NAN", NIE: "AIZ", CIF: "IFK" }[set] ?? set} multzoan.`,
+        faster: (set, libraries) =>
+          `Konpilazio hau baino azkarragoak ${{ DNI: "NAN", NIE: "AIZ", CIF: "IFK" }[set] ?? set} multzoan: ${libraries}.`,
+      },
+      size: {
+        chartCaption:
+          "Edozein motatako egiaztatzaile baten tamaina (min+gzip; zenbat eta gutxiago, orduan eta txikiagoa)",
+        tableCaption:
+          "Mota bakoitzeko egiaztatzaile baten eta liburutegi osoaren tamaina (min+gzip; zenbat eta gutxiago, orduan eta txikiagoa)",
+        columns: {
+          DNI: "NAN",
+          NIE: "AIZ",
+          CIF: "IFK",
+          any: "Edozein mota",
+          full: "Liburutegi osoa",
+        },
+        smaller: (libraries) =>
+          `Konpilazio hau baino txikiagoak edozein motatako egiaztatzaile baterako: ${libraries}.`,
+        noneSmaller:
+          "Beste liburutegi bat ere ez da txikiagoa edozein motatako egiaztatzaile baterako.",
+        alternative: (library, bytes) =>
+          `Hau ere neurtu da: ${library}, Espainiako IFZaren modulua zuzenean inportatuta (dokumentatu gabea), ${bytes}.`,
+      },
+      agreement: {
+        chartCaption:
+          "SPEC.md fitxategiarekiko adostasuna (ez zuzentasun absolutua): liburutegi bakoitzak SPEC.md fitxategiak bezala epaitzen dituen kasuen ehunekoa, kasu guztietan eta sarrera kanonikoan bakarrik",
+        tableCaption:
+          "SPEC.md fitxategiarekiko adostasuna dokumentu motaren arabera, eta SPEC.md fitxategiak dokumentatzen dituen erabakiek eragindako desadostasunak",
+        all: "Kasu guztiak",
+        canonical: "Sarrera kanonikoa bakarrik",
+        buckets: { DNI: "NAN", NIE: "AIZ", CIF: "IFK", KLM: "K/L/M" },
+        disagreements: "Desadostasunak",
+        documented: "Erabaki dokumentatu baten ondorioz",
+      },
+    },
+    features: {
+      caption:
+        "npm-ko Espainiako identifikatzaileen liburutegien ezaugarriak, errenkada bakoitza berrikusteko erabilitako iturriekin",
+      checkedOn: (date) =>
+        `Berrikuste-data: ${date}, liburutegi bakoitzaren README-arekin, package.json fitxategiarekin eta npm orriarekin. Bertsioak eta tamainak errendimendu-proben emaitzetatik datoz.`,
+      columns: {
+        types: "Motak",
+        klm: "K/L/M",
+        normalizes: "Sarrera normalizatzen du",
+        result: "Emaitza-objektua",
+        messages: "Mezu itzuliak",
+        generators: "Proba-datuen sorgailuak",
+        schemas: "Eskemak",
+        modules: "Moduluak",
+        size: "Tamaina, edozein mota (min+gzip)",
+        released: "Azken bertsioa",
+        sources: "Iturriak",
+      },
+      phrases: {
+        yes: "bai",
+        no: "ez",
+        partial: "partziala",
+        optIn: "aukerakoa",
+        separateNormalize: "normalize() bereizia",
+        resultCodeRuleMessage: "bai: kodea, SPEC araua, mezua",
+        resultTypeOnly: "ez (mota bakarrik)",
+        resultErrorClass: "bai: errore-klasea",
+        resultParseWithoutReason: "partziala: parse(), arrazoirik gabe",
+        resultValidityCountry: "bai: baliozkotasuna eta herrialdea",
+        englishOnly: "ingelesa bakarrik",
+        typesStdnum: "NAN, AIZ, IFK, K/L/M eta 90 herrialde inguru",
+        typesJsvat: "EBko IFZ-BEZak (ES + IFZ)",
+        cjsUmdOnly: "CJS / UMD bakarrik",
+        cjsOnly: "CJS bakarrik",
+        esmDeepImportsCjs: "ESM (barne-bideak) + CJS",
+        thisRelease: "bertsio hau",
+        deprecatedOn: "{date}, zaharkitua",
+      },
+      readme: "README",
+      npm: "npm",
+    },
+    jsonLd: {
+      docsName: "nif-dni-nie-cif-validation liburutegiaren dokumentazioa",
+    },
+  },
 };

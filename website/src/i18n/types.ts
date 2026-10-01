@@ -6,6 +6,7 @@
 //
 // Every number is passed in already formatted for the language, and comes
 // from bench/results/latest.json or SPEC.md (src/data/).
+import type { Phrase } from "../../../bench/comparison.mjs";
 
 export interface ValidatorStrings {
   /** Status line before anything is typed. */
@@ -111,5 +112,133 @@ export interface SiteStrings {
     llms: string;
     sponsor: string;
     madeBy: string;
+  };
+  docs: DocsStrings;
+}
+
+/**
+ * The texts of the components of the documentation pages (guides,
+ * reference, benchmarks, comparison). Their prose is in the pages
+ * themselves; these are the labels of the tables and charts that the pages
+ * build from the package, SPEC.md and bench/results/latest.json.
+ */
+export interface DocsStrings {
+  /** Shared labels. */
+  library: string;
+  thisBuild: string;
+  unsupported: string;
+  /** "12,345 B": a size in bytes, already formatted. */
+  bytes: (formatted: string) => string;
+  /** The CIF organisation keys (CifKeysTable). */
+  cifKeys: {
+    caption: string;
+    key: string;
+    organisation: string;
+    control: string;
+    digit: string;
+    letter: string;
+  };
+  /** Every error code and rule (ErrorCodesTable). */
+  errors: {
+    caption: string;
+    code: string;
+    rule: string;
+    example: string;
+    message: string;
+  };
+  /** The entry points of the package (EntryPointsTable). */
+  entryPoints: {
+    caption: string;
+    entryPoint: string;
+    contents: string;
+    main: string;
+    /** A locale entry point; `language` is its name in this language. */
+    locale: (language: string) => string;
+    generate: string;
+    /** A schema entry point; `library` is "Zod 4", "Valibot 1" or "Yup 1". */
+    schemas: (library: string) => string;
+    /** The names of the package's languages, in this language. */
+    languages: Record<"en" | "es" | "ca" | "eu" | "gl", string>;
+  };
+  /** The pages of the API reference, shown in English (src/routeData.ts). */
+  apiFallback: {
+    /** The title of a reference page; `module` is its import specifier. */
+    title: (module: string) => string;
+    description: (module: string) => string;
+  };
+  /** The benchmarks page. */
+  bench: {
+    run: {
+      caption: string;
+      machine: string;
+      cores: string;
+      memory: string;
+      os: string;
+      node: string;
+      date: string;
+      commit: string;
+      method: string;
+      /** "3 rounds of 2,000 ms per task, after 500 ms of warmup" */
+      methodValue: (rounds: string, time: string, warmup: string) => string;
+    };
+    throughput: {
+      /** The caption of a set's chart: "DNI: 225 valid and invalid…". */
+      caption: (set: string, inputs: string) => string;
+      ops: string;
+      speedup: string;
+      /** "7.5×" */
+      times: (value: string) => string;
+      /** No other library was faster than this build on this set. */
+      noneFaster: (set: string) => string;
+      /** Some were: `libraries` is a formatted list. */
+      faster: (set: string, libraries: string) => string;
+    };
+    size: {
+      chartCaption: string;
+      tableCaption: string;
+      columns: Record<"DNI" | "NIE" | "CIF" | "any" | "full", string>;
+      /** The libraries smaller than this build: a formatted list. */
+      smaller: (libraries: string) => string;
+      noneSmaller: string;
+      /** An extra measurement, such as stdnum's deep import. */
+      alternative: (library: string, bytes: string) => string;
+    };
+    agreement: {
+      chartCaption: string;
+      tableCaption: string;
+      all: string;
+      canonical: string;
+      buckets: Record<"DNI" | "NIE" | "CIF" | "KLM", string>;
+      disagreements: string;
+      documented: string;
+    };
+  };
+  /** The comparison page (FeatureMatrix). */
+  features: {
+    caption: string;
+    checkedOn: (date: string) => string;
+    columns: Record<
+      | "types"
+      | "klm"
+      | "normalizes"
+      | "result"
+      | "messages"
+      | "generators"
+      | "schemas"
+      | "modules"
+      | "size"
+      | "released"
+      | "sources",
+      string
+    >;
+    /** The texts of bench/comparison.mjs's phrases; `{date}` is a date. */
+    phrases: Record<Phrase, string>;
+    readme: string;
+    npm: string;
+  };
+  /** JSON-LD of the guides (src/routeData.ts). */
+  jsonLd: {
+    /** The name of the site's guides, for `isPartOf`. */
+    docsName: string;
   };
 }

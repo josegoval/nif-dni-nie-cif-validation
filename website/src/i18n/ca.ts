@@ -139,4 +139,149 @@ export const ca: SiteStrings = {
     sponsor: "Doneu suport al projecte",
     madeBy: "Fet per josegoval.",
   },
+  docs: {
+    library: "Biblioteca",
+    thisBuild: "aquesta versió",
+    unsupported: "no admès",
+    bytes: (formatted) => `${formatted} B`,
+    cifKeys: {
+      caption:
+        "Les claus d'entitat del CIF, el tipus d'entitat que representa cadascuna i la classe de caràcter de control que porta",
+      key: "Clau",
+      organisation: "Tipus d'entitat",
+      control: "Caràcter de control",
+      digit: "una xifra",
+      letter: "una lletra",
+    },
+    errors: {
+      caption:
+        "Tots els codis d'error de validate(), cada regla de SPEC que poden citar, una entrada que els produeix i el seu missatge en català",
+      code: "Codi",
+      rule: "Regla",
+      example: "Exemple",
+      message: "Missatge",
+    },
+    entryPoints: {
+      caption: "Els punts d'entrada del paquet i què exporta cadascun",
+      entryPoint: "Punt d'entrada",
+      contents: "Què exporta",
+      main: "Els validadors, validate(), normalize(), format(), getNifType(), computeControlCharacter(), describeCifOrganisation(), les constants de la v1 i els tipus. Inclou els missatges en anglès.",
+      locale: (language) =>
+        `L'objecte d'idioma en ${language}, que es passa com a locale a validate(), a describeCifOrganisation() i als esquemes.`,
+      generate:
+        "Generadors amb llavor de números vàlids i no vàlids, per a tests. El punt d'entrada principal no els importa mai.",
+      schemas: (library) =>
+        `Esquemes de ${library} per a tots els tipus i per al NIF-IVA. ${library.split(" ")[0]} és una dependència peer opcional.`,
+      languages: {
+        en: "anglès",
+        es: "castellà",
+        ca: "català (també per al valencià)",
+        eu: "basc",
+        gl: "gallec",
+      },
+    },
+    apiFallback: {
+      title: (module) => `${module}: referència de l'API`,
+      description: (module) =>
+        `Referència de l'API de ${module} (en anglès): signatures, opcions i exemples provats.`,
+    },
+    bench: {
+      run: {
+        caption: "On i com es va executar el benchmark",
+        machine: "Màquina",
+        cores: "Nuclis",
+        memory: "Memòria",
+        os: "Sistema operatiu",
+        node: "Node.js",
+        date: "Data",
+        commit: "Commit mesurat",
+        method: "Mètode",
+        methodValue: (rounds, time, warmup) =>
+          `${rounds} rondes; cada tasca, ${time} ms després de ${warmup} ms d'escalfament, en el seu propi procés; la xifra és la de la ronda mitjana`,
+      },
+      throughput: {
+        caption: (set, inputs) =>
+          `${set}: milions de validacions per segon (M ops/s; com més alta és la xifra, més ràpida és) amb ${inputs} documents vàlids i no vàlids en forma canònica, i quantes vegades més ràpida és aquesta versió`,
+        ops: "M ops/s",
+        speedup: "Aquesta versió és",
+        times: (value) => `${value} vegades més ràpida`,
+        noneFaster: (set) =>
+          `Cap altra biblioteca no va ser més ràpida amb el conjunt ${set}.`,
+        faster: (set, libraries) =>
+          `Més ràpides que aquesta versió amb el conjunt ${set}: ${libraries}.`,
+      },
+      size: {
+        chartCaption:
+          "Mida d'un validador de qualsevol tipus (min+gzip; com més baixa és la xifra, més petit és)",
+        tableCaption:
+          "Mida d'un validador de cada tipus i de la biblioteca sencera (min+gzip; com més baixa és la xifra, més petit és)",
+        columns: {
+          DNI: "DNI",
+          NIE: "NIE",
+          CIF: "CIF",
+          any: "Qualsevol tipus",
+          full: "Biblioteca sencera",
+        },
+        smaller: (libraries) =>
+          `Més petites que aquesta versió per a un validador de qualsevol tipus: ${libraries}.`,
+        noneSmaller:
+          "Cap altra biblioteca no és més petita per a un validador de qualsevol tipus.",
+        alternative: (library, bytes) =>
+          `També s'ha mesurat ${library} amb una importació directa del seu mòdul del NIF espanyol (no documentada): ${bytes}.`,
+      },
+      agreement: {
+        chartCaption:
+          "Concordança amb SPEC.md (no correcció absoluta): el percentatge de casos que cada biblioteca jutja igual que SPEC.md, en tots i només en l'entrada canònica",
+        tableCaption:
+          "Concordança amb SPEC.md per tipus de document, i les discrepàncies degudes a decisions que SPEC.md documenta",
+        all: "Tots els casos",
+        canonical: "Només entrada canònica",
+        buckets: { DNI: "DNI", NIE: "NIE", CIF: "CIF", KLM: "K/L/M" },
+        disagreements: "Discrepàncies",
+        documented: "Per una decisió documentada",
+      },
+    },
+    features: {
+      caption:
+        "Funcionalitats de les biblioteques d'identificadors espanyols a npm, amb les fonts amb què s'ha revisat cada fila",
+      checkedOn: (date) =>
+        `Revisat el ${date} amb el README, el package.json i la pàgina d'npm de cada biblioteca. Les versions i les mides surten dels resultats del benchmark.`,
+      columns: {
+        types: "Tipus",
+        klm: "K/L/M",
+        normalizes: "Normalitza l'entrada",
+        result: "Objecte de resultat",
+        messages: "Missatges traduïts",
+        generators: "Generadors de dades de prova",
+        schemas: "Esquemes",
+        modules: "Mòduls",
+        size: "Mida, qualsevol tipus (min+gzip)",
+        released: "Última versió",
+        sources: "Fonts",
+      },
+      phrases: {
+        yes: "sí",
+        no: "no",
+        partial: "parcial",
+        optIn: "opcional",
+        separateNormalize: "normalize() a part",
+        resultCodeRuleMessage: "sí: codi, regla de SPEC, missatge",
+        resultTypeOnly: "no (només el tipus)",
+        resultErrorClass: "sí: classe d'error",
+        resultParseWithoutReason: "parcial: parse(), sense el motiu",
+        resultValidityCountry: "sí: validesa i país",
+        englishOnly: "només anglès",
+        typesStdnum: "DNI, NIE, CIF, K/L/M i uns 90 països",
+        typesJsvat: "NIF-IVA de la UE (ES + NIF)",
+        cjsUmdOnly: "només CJS / UMD",
+        cjsOnly: "només CJS",
+        esmDeepImportsCjs: "ESM (rutes internes) + CJS",
+        thisRelease: "aquesta versió",
+        deprecatedOn: "{date}, obsoleta",
+      },
+      readme: "README",
+      npm: "npm",
+    },
+    jsonLd: { docsName: "Documentació de nif-dni-nie-cif-validation" },
+  },
 };

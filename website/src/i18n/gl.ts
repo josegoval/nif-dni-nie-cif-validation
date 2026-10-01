@@ -139,4 +139,149 @@ export const gl: SiteStrings = {
     sponsor: "Apoie o proxecto",
     madeBy: "Feito por josegoval.",
   },
+  docs: {
+    library: "Biblioteca",
+    thisBuild: "esta compilación",
+    unsupported: "non compatible",
+    bytes: (formatted) => `${formatted} B`,
+    cifKeys: {
+      caption:
+        "As claves de entidade do CIF, o tipo de entidade que representa cada unha e a clase de carácter de control que leva",
+      key: "Clave",
+      organisation: "Tipo de entidade",
+      control: "Carácter de control",
+      digit: "un díxito",
+      letter: "unha letra",
+    },
+    errors: {
+      caption:
+        "Todos os códigos de erro de validate(), cada regra de SPEC que poden citar, unha entrada que os produce e a súa mensaxe en galego",
+      code: "Código",
+      rule: "Regra",
+      example: "Exemplo",
+      message: "Mensaxe",
+    },
+    entryPoints: {
+      caption: "Os puntos de entrada do paquete e que exporta cada un",
+      entryPoint: "Punto de entrada",
+      contents: "Que exporta",
+      main: "Os validadores, validate(), normalize(), format(), getNifType(), computeControlCharacter(), describeCifOrganisation(), as constantes da v1 e os tipos. Inclúe as mensaxes en inglés.",
+      locale: (language) =>
+        `O obxecto de idioma en ${language}, que se pasa como locale a validate(), a describeCifOrganisation() e aos esquemas.`,
+      generate:
+        "Xeradores con semente de números válidos e non válidos, para probas. O punto de entrada principal nunca os importa.",
+      schemas: (library) =>
+        `Esquemas de ${library} para todos os tipos e para o NIF-IVE. ${library.split(" ")[0]} é unha dependencia peer opcional.`,
+      languages: {
+        en: "inglés",
+        es: "castelán",
+        ca: "catalán (tamén para o valenciano)",
+        eu: "éuscaro",
+        gl: "galego",
+      },
+    },
+    apiFallback: {
+      title: (module) => `${module}: referencia da API`,
+      description: (module) =>
+        `Referencia da API de ${module} (en inglés): sinaturas, opcións e exemplos probados.`,
+    },
+    bench: {
+      run: {
+        caption: "Onde e como se executou o benchmark",
+        machine: "Máquina",
+        cores: "Núcleos",
+        memory: "Memoria",
+        os: "Sistema operativo",
+        node: "Node.js",
+        date: "Data",
+        commit: "Commit medido",
+        method: "Método",
+        methodValue: (rounds, time, warmup) =>
+          `${rounds} roldas; cada tarefa, ${time} ms tras ${warmup} ms de quecemento, no seu propio proceso; a cifra é a da rolda mediana`,
+      },
+      throughput: {
+        caption: (set, inputs) =>
+          `${set}: millóns de validacións por segundo (M ops/s; canto maior sexa a cifra, máis rápida é) con ${inputs} documentos válidos e non válidos en forma canónica, e cantas veces máis rápida é esta compilación`,
+        ops: "M ops/s",
+        speedup: "Esta compilación é",
+        times: (value) => `${value} veces máis rápida`,
+        noneFaster: (set) =>
+          `Ningunha outra biblioteca foi máis rápida co conxunto ${set}.`,
+        faster: (set, libraries) =>
+          `Máis rápidas ca esta compilación co conxunto ${set}: ${libraries}.`,
+      },
+      size: {
+        chartCaption:
+          "Tamaño dun validador de calquera tipo (min+gzip; canto menor sexa a cifra, máis pequeno é)",
+        tableCaption:
+          "Tamaño dun validador de cada tipo e da biblioteca completa (min+gzip; canto menor sexa a cifra, máis pequeno é)",
+        columns: {
+          DNI: "DNI",
+          NIE: "NIE",
+          CIF: "CIF",
+          any: "Calquera tipo",
+          full: "Biblioteca completa",
+        },
+        smaller: (libraries) =>
+          `Máis pequenas ca esta compilación para un validador de calquera tipo: ${libraries}.`,
+        noneSmaller:
+          "Ningunha outra biblioteca é máis pequena para un validador de calquera tipo.",
+        alternative: (library, bytes) =>
+          `Tamén se mediu ${library} cunha importación directa do seu módulo do NIF español (non documentada): ${bytes}.`,
+      },
+      agreement: {
+        chartCaption:
+          "Concordancia con SPEC.md (non corrección absoluta): a porcentaxe de casos que cada biblioteca xulga igual ca SPEC.md, en todos eles e só na entrada canónica",
+        tableCaption:
+          "Concordancia con SPEC.md por tipo de documento, e as discrepancias debidas a decisións que SPEC.md documenta",
+        all: "Todos os casos",
+        canonical: "Só entrada canónica",
+        buckets: { DNI: "DNI", NIE: "NIE", CIF: "CIF", KLM: "K/L/M" },
+        disagreements: "Discrepancias",
+        documented: "Por unha decisión documentada",
+      },
+    },
+    features: {
+      caption:
+        "Funcionalidades das bibliotecas de identificadores españois en npm, coas fontes coas que se revisou cada fila",
+      checkedOn: (date) =>
+        `Revisado o ${date} co README, o package.json e a páxina de npm de cada biblioteca. As versións e os tamaños saen dos resultados do benchmark.`,
+      columns: {
+        types: "Tipos",
+        klm: "K/L/M",
+        normalizes: "Normaliza a entrada",
+        result: "Obxecto de resultado",
+        messages: "Mensaxes traducidas",
+        generators: "Xeradores de datos de proba",
+        schemas: "Esquemas",
+        modules: "Módulos",
+        size: "Tamaño, calquera tipo (min+gzip)",
+        released: "Última versión",
+        sources: "Fontes",
+      },
+      phrases: {
+        yes: "si",
+        no: "non",
+        partial: "parcial",
+        optIn: "opcional",
+        separateNormalize: "normalize() á parte",
+        resultCodeRuleMessage: "si: código, regra de SPEC, mensaxe",
+        resultTypeOnly: "non (só o tipo)",
+        resultErrorClass: "si: clase de erro",
+        resultParseWithoutReason: "parcial: parse(), sen o motivo",
+        resultValidityCountry: "si: validez e país",
+        englishOnly: "só inglés",
+        typesStdnum: "DNI, NIE, CIF, K/L/M e uns 90 países",
+        typesJsvat: "NIF-IVE da UE (ES + NIF)",
+        cjsUmdOnly: "só CJS / UMD",
+        cjsOnly: "só CJS",
+        esmDeepImportsCjs: "ESM (rutas internas) + CJS",
+        thisRelease: "esta versión",
+        deprecatedOn: "{date}, obsoleta",
+      },
+      readme: "README",
+      npm: "npm",
+    },
+    jsonLd: { docsName: "Documentación de nif-dni-nie-cif-validation" },
+  },
 };
