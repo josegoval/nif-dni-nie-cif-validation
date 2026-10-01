@@ -1,0 +1,14 @@
+---
+title: Errendimendua
+description: nif-dni-nie-cif-validation liburutegiaren eta npm-ko Espainiako IFZ, NAN, AIZ eta IFK beste egiaztatzaileen errendimendua eta bundle tamaina, argitaratutako benchmark emaitzen arabera.
+prev: false
+next: false
+---
+
+import ComparisonTable from "../../../components/landing/ComparisonTable.astro";
+
+Errendimenduaren eta konparazioaren orri osoa laster izango da. Bitartean, beheko taulak zenbaki nagusiak biltzen ditu: NAN multzoko errendimendua, milioi egiaztapen segundoko (**M ops/s; zenbat eta gehiago, orduan eta azkarragoa**), eta edozein motatako egiaztatzaile baten tamaina (**min+gzip; zenbat eta gutxiago, orduan eta txikiagoa**).
+
+<ComparisonTable />
+
+Zenbaki guztiak [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json) fitxategitik datoz. Emaitza osoak (AIZ eta IFK zenbakiekin, SPEC.md fitxategiarekiko adostasunarekin eta ohar guztiekin) [`bench/results/latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md) fitxategian daude, eta metodoa [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md) fitxategian (ingelesez).

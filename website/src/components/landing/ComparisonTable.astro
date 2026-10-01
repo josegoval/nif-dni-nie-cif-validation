@@ -1,0 +1,128 @@
+---
+// Throughput on the DNI set and the size of one validator of any type, for
+// every library of the benchmark, fastest first: a table, with a bar per row
+// drawn in CSS. Every number comes from bench/results/latest.json.
+import { bench } from "../../data/bench";
+import { formatNumber, langOf, stringsFor } from "../../i18n";
+
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const t = stringsFor(lang).compare;
+const fastest = Math.max(...bench.rows.map((row) => row.dni ?? 0));
+---
+
+<table class="comparison">
+  <caption class="sr-only">{t.caption}</caption>
+  <thead>
+    <tr>
+      <th scope="col">{t.library}</th>
+      <th scope="col" class="num">{t.dni}</th>
+      <th scope="col" class="num">{t.size}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      bench.rows.map((row) => (
+        <tr data-kind={row.kind}>
+          <th scope="row">
+            <span class="name">{row.label}</span>{" "}
+            <span class="version">
+              {row.kind === "subject" ? t.thisBuild : row.version}
+            </span>
+          </th>
+          <td class="num">
+            {row.dni === null ? (
+              <span class="muted">{t.unsupported}</span>
+            ) : (
+              <span class="bar-cell">
+                <span
+                  class="bar"
+                  aria-hidden="true"
+                  style={`--share: ${(row.dni / fastest).toFixed(4)}`}
+                />
+                <span>{formatNumber(lang, row.dni / 1e6, 2)}</span>
+              </span>
+            )}
+          </td>
+          <td class="num">
+            {row.anyBytes === null ? (
+              <span class="muted">{t.unsupported}</span>
+            ) : (
+              `${formatNumber(lang, row.anyBytes)} B`
+            )}
+          </td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>
+
+<style>
+  .comparison {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--sl-text-sm);
+  }
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--site-border);
+    text-align: start;
+    vertical-align: middle;
+  }
+  thead th {
+    color: var(--sl-color-gray-3);
+    font-weight: var(--brand-weight-semibold);
+  }
+  tbody th {
+    font-weight: var(--brand-weight-regular);
+    color: var(--sl-color-white);
+  }
+  .num {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .name {
+    font-family: var(--brand-font-mono);
+    overflow-wrap: anywhere;
+  }
+  .version,
+  .muted {
+    color: var(--sl-color-gray-3);
+  }
+  tr[data-kind="subject"] th,
+  tr[data-kind="subject"] td {
+    font-weight: var(--brand-weight-semibold);
+    color: var(--sl-color-white);
+  }
+  .bar-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .bar {
+    display: inline-block;
+    width: calc(var(--share) * 8rem);
+    min-width: 2px;
+    height: 0.625rem;
+    border-radius: 2px;
+    background: var(--sl-color-gray-4);
+  }
+  tr[data-kind="subject"] .bar {
+    background: var(--sl-color-accent);
+  }
+  @media (max-width: 30rem) {
+    .comparison {
+      font-size: var(--sl-text-xs);
+    }
+    .bar {
+      display: none;
+    }
+    th,
+    td {
+      padding-inline: 0.375rem;
+    }
+  }
+</style>

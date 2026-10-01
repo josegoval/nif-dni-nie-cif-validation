@@ -1,0 +1,14 @@
+---
+title: Rendiment
+description: Rendiment i mida del bundle de nif-dni-nie-cif-validation i dels altres validadors de NIF, DNI, NIE i CIF espanyols a npm, segons els resultats publicats del benchmark.
+prev: false
+next: false
+---
+
+import ComparisonTable from "../../../components/landing/ComparisonTable.astro";
+
+La pàgina completa de rendiment i comparació és en camí. Mentrestant, la taula següent recull les xifres principals: el rendiment amb el conjunt de DNI, en milions de validacions per segon (**M ops/s; com més, més ràpida**), i la mida d'un validador de qualsevol tipus (**min+gzip; com menys, més petita**).
+
+<ComparisonTable />
+
+Totes les xifres surten de [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json). Els resultats complets, amb NIE i CIF, la concordança amb SPEC.md i totes les advertències, són a [`bench/results/latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md), i el mètode a [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md) (en anglès).

@@ -1,0 +1,14 @@
+---
+title: Benchmarks
+description: Throughput and bundle size of nif-dni-nie-cif-validation and the other Spanish NIF, DNI, NIE and CIF validators on npm, from the published benchmark results.
+prev: false
+next: false
+---
+
+import ComparisonTable from "../../components/landing/ComparisonTable.astro";
+
+The full benchmarks and comparison page is on its way. Until then, the table below has the headline figures: throughput on the DNI set, in millions of validations per second (**M ops/s, higher is faster**), and the size of one validator of any type (**min+gzip, lower is smaller**).
+
+<ComparisonTable />
+
+Every number comes from [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json). The complete results, with NIE and CIF, agreement with SPEC.md and every caveat, are in [`bench/results/latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md), and the method in [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md).

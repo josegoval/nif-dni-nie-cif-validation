@@ -1,0 +1,101 @@
+---
+// The install command, with a copy button. Without JavaScript the command is
+// plain, selectable text and the button stays hidden.
+import { langOf, stringsFor } from "../../i18n";
+
+const t = stringsFor(langOf(Astro.locals.starlightRoute.lang));
+const command = "npm i nif-dni-nie-cif-validation";
+---
+
+<div class="install" data-install>
+  <code
+    ><span class="sr-only">{t.hero.installLabel}: </span><span
+      class="prompt"
+      aria-hidden="true">$</span
+    > {command}</code
+  >
+  <button
+    type="button"
+    hidden
+    data-copy={command}
+    data-copied-label={t.hero.copied}>{t.hero.copy}</button
+  >
+  <span class="sr-only" aria-live="polite" data-copy-status></span>
+</div>
+
+<script>
+  for (const group of document.querySelectorAll<HTMLElement>(
+    "[data-install]"
+  )) {
+    const button = group.querySelector<HTMLButtonElement>("button");
+    const status = group.querySelector<HTMLElement>("[data-copy-status]");
+    if (!button || !status || !navigator.clipboard) continue;
+    const label = button.textContent ?? "";
+    const copied = button.dataset.copiedLabel ?? label;
+    button.hidden = false;
+    button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(button.dataset.copy ?? "");
+      button.textContent = copied;
+      status.textContent = copied;
+      setTimeout(() => {
+        button.textContent = label;
+        status.textContent = "";
+      }, 2000);
+    });
+  }
+</script>
+
+<style>
+  .install {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 100%;
+    padding: 0.375rem 0.375rem 0.375rem 1rem;
+    border-radius: var(--brand-radius-lg);
+    background: var(--brand-ink);
+    color: var(--brand-paper);
+    border: 1px solid var(--brand-ink-800);
+  }
+  code {
+    overflow-x: auto;
+    white-space: nowrap;
+    font-family: var(--brand-font-mono);
+    font-size: var(--sl-text-sm);
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+  .prompt {
+    color: var(--brand-gualda); /* 11.44:1 on Ink */
+  }
+  button {
+    flex-shrink: 0;
+    min-height: 2.25rem;
+    padding: 0.375rem 0.875rem;
+    border: 1px solid #334155;
+    border-radius: var(--brand-radius-md);
+    background: var(--brand-ink-800);
+    color: var(--brand-paper); /* 13.99:1 on Ink 800 */
+    font: inherit;
+    font-size: var(--sl-text-sm);
+    font-weight: var(--brand-weight-semibold);
+    cursor: pointer;
+  }
+  button:hover {
+    border-color: var(--brand-slate-400);
+  }
+  button:focus-visible {
+    outline: 2px solid var(--brand-gualda);
+    outline-offset: 2px;
+  }
+  /* The whole command fits on a phone. */
+  @media (max-width: 30rem) {
+    .install {
+      padding-inline-start: 0.75rem;
+    }
+    code {
+      font-size: 0.75rem;
+    }
+  }
+</style>

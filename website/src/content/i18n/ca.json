@@ -1,0 +1,7 @@
+{
+  "search.devWarning": "La cerca només està disponible a les versions de producció.\nCompileu i previsualitzeu el lloc per provar-la localment.",
+  "i18n.untranslatedContent": "Aquesta pàgina encara no està disponible en el vostre idioma.",
+  "404.text": "No s'ha trobat la pàgina. Comproveu l'URL o feu servir la barra de cerca.",
+  "pagefind.search_suggestion": "Cap resultat per a [SEARCH_TERM]. Proveu alguna d'aquestes cerques:",
+  "heading.anchorLabel": "Secció titulada «{{title}}»"
+}

@@ -1,0 +1,12 @@
+{
+  "search.cancelLabel": "Cancelar",
+  "search.devWarning": "A busca só está dispoñible nas versións de produción.\nCompile e previsualice o sitio para probala localmente.",
+  "themeSelect.accessibleLabel": "Seleccionar o tema",
+  "themeSelect.auto": "Automático",
+  "languageSelect.accessibleLabel": "Seleccionar o idioma",
+  "i18n.untranslatedContent": "Este contido aínda non está dispoñible no seu idioma.",
+  "page.draft": "Este contido é un borrador e non se incluirá nas versións de produción.",
+  "404.text": "Non se atopou a páxina. Comprobe o URL ou use a barra de busca.",
+  "expressiveCode.copyButtonCopied": "Copiado!",
+  "pagefind.search_suggestion": "Ningún resultado para [SEARCH_TERM]. Probe algunha destas buscas:"
+}

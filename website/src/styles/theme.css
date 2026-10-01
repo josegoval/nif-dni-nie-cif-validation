@@ -1,0 +1,109 @@
+/*
+ * The brand theme. The palette, fonts and radii come from brand/tokens.css
+ * (the single source, imported, not copied). Starlight switches themes with
+ * `data-theme` (its theme picker), not with prefers-color-scheme, so the
+ * semantic mapping below is per data-theme instead of the media query that
+ * tokens.css uses. Contrast ratios (WCAG 2.x) of the text pairs are noted;
+ * brand/README.md §5 has the rest.
+ */
+@import "../../../brand/tokens.css";
+
+/* Dark theme (Starlight's default before the picker or the OS choose). */
+:root {
+  --sl-color-white: var(--brand-paper);
+  --sl-color-gray-1: var(--brand-slate-200);
+  --sl-color-gray-2: #cbd5e1; /* body text: 12.02:1 on Ink */
+  --sl-color-gray-3: var(--brand-slate-400); /* muted text: 6.96:1 on Ink */
+  --sl-color-gray-4: #64748b; /* decoration only */
+  --sl-color-gray-5: #334155;
+  --sl-color-gray-6: var(--brand-ink-800);
+  --sl-color-black: var(--brand-ink);
+
+  --sl-color-accent-low: #3b0d16;
+  --sl-color-accent: var(--brand-rojo); /* graphics: 3.03:1 on Ink */
+  --sl-color-accent-high: var(--brand-rojo-400); /* red text: 4.96:1 on Ink */
+  --sl-color-text-invert: var(--brand-ink); /* on Rojo 400: 4.96:1 */
+  /* Red text only ever sits on Ink, so the bars use Ink too. */
+  --sl-color-bg-nav: var(--brand-ink);
+  --sl-color-bg-sidebar: var(--brand-ink);
+
+  --sl-font: var(--brand-font-body);
+  --sl-font-mono: var(--brand-font-mono);
+
+  /* The site's own tokens. */
+  --site-surface: var(--brand-ink-800);
+  --site-well: var(--brand-ink);
+  --site-border: #334155;
+  --site-valid: #86efac; /* 12.71:1 on Ink */
+  --site-invalid: var(--brand-rojo-400); /* 4.96:1 on Ink */
+  --site-highlight-text: var(--brand-gualda); /* 11.44:1 on Ink */
+}
+
+:root[data-theme="light"] {
+  --sl-color-white: var(--brand-ink);
+  --sl-color-gray-1: var(--brand-ink-800);
+  --sl-color-gray-2: #334155; /* body text: 9.90:1 on Paper */
+  --sl-color-gray-3: var(--brand-slate-600); /* muted text: 7.25:1 on Paper */
+  --sl-color-gray-4: var(--brand-slate-400); /* decoration only */
+  --sl-color-gray-5: #cbd5e1;
+  --sl-color-gray-6: var(--brand-slate-200);
+  --sl-color-gray-7: #f1f5f9;
+  --sl-color-black: var(--brand-paper);
+
+  --sl-color-accent-low: #fde3e7;
+  --sl-color-accent: var(--brand-rojo); /* links: 5.63:1 on Paper */
+  --sl-color-accent-high: #9b0c24; /* 7.01:1 on accent-low */
+  --sl-color-text-accent: var(--brand-rojo);
+  --sl-color-text-invert: var(--brand-paper); /* on Rojo: 5.63:1 */
+  --sl-color-bg-nav: var(--brand-paper);
+  --sl-color-bg-sidebar: var(--brand-paper);
+
+  --site-surface: #ffffff;
+  --site-well: var(--brand-paper);
+  --site-border: var(--brand-slate-200);
+  --site-valid: #1b5e20; /* 7.87:1 on white */
+  --site-invalid: var(--brand-rojo); /* 5.63:1 on Paper */
+  --site-highlight-text: var(--brand-ink);
+}
+
+/* Headings in Space Grotesk, sentence case (brand/README.md §6). */
+h1,
+h2,
+h3,
+.sl-markdown-content :is(h1, h2, h3, h4) {
+  font-family: var(--brand-font-display);
+  font-weight: var(--brand-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+/* Code inside a link: on the page background, so the red link text keeps
+   its contrast (Rojo 400 on the code background would be 3.3:1). */
+.sl-markdown-content a > code {
+  background: transparent;
+  padding-inline: 0;
+}
+
+/* A visible focus ring on every interactive element, in both themes. */
+:focus-visible {
+  outline: 2px solid var(--sl-color-text-accent);
+  outline-offset: 2px;
+}
+
+/* The site title next to the logo mark: the exact package name, in mono. */
+.site-title {
+  color: var(--sl-color-white);
+  font-family: var(--brand-font-mono);
+  font-size: var(--sl-text-base);
+  font-weight: var(--brand-weight-regular);
+}
+/* The whole name fits next to the search button on a phone. */
+@media (max-width: 30rem) {
+  .site-title {
+    font-size: 0.8125rem;
+    gap: 0.5rem;
+  }
+}
+/* 32 px tall: every bar of the mark falls on whole pixels (§1, Grid). */
+.site-title img {
+  height: 2rem;
+}
