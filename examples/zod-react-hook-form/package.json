@@ -1,0 +1,28 @@
+{
+  "name": "example-zod-react-hook-form",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A React Hook Form form that validates a NIF with the Zod schema of nif-dni-nie-cif-validation, in Spanish.",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit && vite build"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
+    "nif-dni-nie-cif-validation": "file:../.pack/package",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-hook-form": "^7.89.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1"
+  }
+}
