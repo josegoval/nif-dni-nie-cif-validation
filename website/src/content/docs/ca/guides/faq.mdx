@@ -7,7 +7,7 @@ Respostes breus, cadascuna amb la regla de [SPEC.md](/nif-dni-nie-cif-validation
 
 ## És vàlid el DNI 00000000T?
 
-Sí. `00000000T` té la lletra de control correcta i cap llei no el prohibeix, de manera que és vàlid per defecte, com els altres números d'exemple coneguts `00000001R`, `99999999R` i `X0000000T`. Alguns registres els filtren perquè són clarament ficticis (ESNIC, el registre de dominis `.es`, ho fa). Si també els voleu rebutjar, passeu `rejectPlaceholders: true`, i `validate()` retorna el codi `PLACEHOLDER` ([POLICY-1](/nif-dni-nie-cif-validation/ca/reference/official-sources/#policy-1)).
+Sí. `00000000T` té la lletra de control correcta i cap llei no el prohibeix, de manera que és vàlid per defecte, com els altres números d'exemple coneguts `00000001R`, `99999999R` i `X0000000T`. Alguns registres, com ESNIC (el registre de dominis `.es`), els filtren perquè són valors d'exemple coneguts, però ser en aquesta llista no demostra que un número no s'hagi assignat mai. Si també els voleu rebutjar, passeu `rejectPlaceholders: true` (una política opcional), i `validate()` retorna el codi `PLACEHOLDER` ([POLICY-1](/nif-dni-nie-cif-validation/ca/reference/official-sources/#policy-1)).
 
 ```ts
 import { isValidDni, validate } from "nif-dni-nie-cif-validation";
@@ -19,7 +19,7 @@ validate("x-0000000-t", { rejectPlaceholders: true }).error?.code; // "PLACEHOLD
 
 ## Continuen sent vàlids els CIF antics?
 
-Sí. El 2008, l'Ordre EHA/451/2008 va substituir el nom «CIF» per «NIF de persona jurídica o entitat», però els números no van canviar, i mai no s'ha suprimit cap clau d'entitat ([CIF-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-2)). Amb aquesta ordre van canviar dues coses: les 7 xifres van passar a ser aleatòries, de manera que ja no codifiquen una província, i la biblioteca no comprova codis de província ([CIF-5](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-5)).
+Sí. El 2008, l'Ordre EHA/451/2008 va substituir el nom «CIF» per «NIF de persona jurídica o entitat», però els números no van canviar, i mai no s'ha suprimit cap clau d'entitat ([CIF-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-2)). El que sí que va canviar amb aquesta ordre són les 7 xifres: van passar a ser aleatòries i ja no codifiquen una província, de manera que la biblioteca no comprova codis de província ([CIF-5](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-5)).
 
 Hi ha un tipus de valor antic que no és vàlid per defecte: un CIF amb les claus C, D, F, G, J, U o V i una lletra com a caràcter de control. Consulteu [la pregunta següent](#per-què-g1234567d-no-és-vàlid).
 

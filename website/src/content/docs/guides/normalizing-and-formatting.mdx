@@ -68,7 +68,7 @@ isValidNif("12345678z", { normalize: false });      // true: lower case is still
 isValidNif("X01234567L", { normalize: false });     // true: so is the old NIE form
 ```
 
-Use it when the input must already be canonical, for example to check stored data.
+Use it to refuse separators and DNIs typed without their leading zeros. It doesn't enforce the canonical form: lower case and the old NIE form are still accepted ([NORM-1](/nif-dni-nie-cif-validation/reference/official-sources/#norm-1), [NIE-3](/nif-dni-nie-cif-validation/reference/official-sources/#nie-3)).
 
 ## VAT numbers and the ES prefix
 

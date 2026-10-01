@@ -8,7 +8,7 @@ Aquesta pàgina és [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-valid
 No totes les regles que trobareu a internet tenen una font oficial, de manera que cada regla té un nivell:
 
 - **Llei (T1)**: un text legal vigent, publicat al BOE (Butlletí Oficial de l'Estat), com els formats del DNI, el NIE, el NIF K/L/M i el CIF, i les claus d'entitat del CIF.
-- **Criteri oficial (T2)**: una pàgina de l'Administració responsable del document, el Ministeri de l'Interior o l'AEAT (l'Agència Tributària). La lletra de control del DNI (mòdul 23) només es defineix allà, no en cap llei.
+- **Criteri oficial (T2)**: una pàgina de l'Administració responsable del document, el Ministeri de l'Interior o l'AEAT (l'Agència Tributària). La lletra de control del DNI (mòdul 23) es publica allà i a la nota tècnica de l'AEAT (T3), però no en cap llei.
 - **Semioficial (T3)**: la nota tècnica interna de l'AEAT sobre el NIF. És l'única font que indica quines claus de CIF porten una xifra i quines una lletra.
 - **Convenció (T4)**: una pràctica del sector sense text oficial, identificada com a tal. Les convencions només afecten la neteja de l'entrada (minúscules, separadors), mai quins documents són vàlids, amb una excepció documentada: cap text oficial no publica l'aritmètica del control del CIF ([CIF-4](#cif-4)).
 

@@ -9,7 +9,7 @@ Un campo de formulario para un NIF necesita tres cousas: aceptar as maneiras en 
 
 Todos os esquemas:
 
-- aceptan exactamente o mesmo que `validate()`, coas mesmas opcións (`types`, `locale`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `normalize`);
+- aplican as regras e as opcións de `validate()` (`types`, `locale`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `normalize`), máis a restrición de tipo ou de prefixo de cada esquema (`zDni` só acepta DNI e NIF K/L/M; os esquemas de NIF-IVE esixen `ES`);
 - devolven o valor **normalizado**: `" 12.345.678-z "` sae como `"12345678Z"`;
 - rexeitan un valor coa mensaxe de `validate()`, no idioma que indique, xunto co código de erro e a regra de SPEC.
 
@@ -131,7 +131,7 @@ Con React Hook Form, use `yupResolver(form)` de `@hookform/resolvers/yup`.
 
 ## No servidor
 
-Volva validar no servidor: as comprobacións do navegador pódense saltar. `validate()` acepta calquera valor, así que lle pode pasar o corpo da petición tal como chega. Este manexador usa os `Request` e `Response` estándar, como os route handlers de Next.js, Hono, Deno e Bun:
+Volva validar no servidor: as comprobacións do navegador pódense saltar. `validate()` acepta calquera valor, así que lle pode pasar o corpo da petición, xa convertido desde JSON, tal como está. Este manexador usa os `Request` e `Response` estándar, como os route handlers de Next.js, Hono, Deno e Bun:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";

@@ -8,7 +8,7 @@ Orri hau [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/
 Interneten aurkituko dituzun arau guztiek ez dute iturri ofizialik; beraz, arau bakoitzak maila bat du:
 
 - **Legea (T1)**: indarrean dagoen lege-testu bat, BOEn (Estatuko Aldizkari Ofizialean) argitaratua; adibidez, NAN, AIZ, K/L/M IFZ eta IFK formatuak eta IFKaren erakunde-gakoak.
-- **Irizpide ofiziala (T2)**: dokumentuaren arduradun den administrazioaren orri bat, Barne Ministerioarena edo AEATrena (Zerga Agentziarena). NANaren kontrol-letra (23 modulua) han bakarrik zehazten da, ez inongo legetan.
+- **Irizpide ofiziala (T2)**: dokumentuaren arduradun den administrazioaren orri bat, Barne Ministerioarena edo AEATrena (Zerga Agentziarena). NANaren kontrol-letra (23 modulua) han argitaratzen da, baita AEATren ohar teknikoan ere (T3), baina ez inongo legetan.
 - **Erdi-ofiziala (T3)**: AEATren IFZari buruzko barneko ohar teknikoa. Zein IFK gakok daraman digitu bat eta zeinek letra bat adierazten duen iturri bakarra da.
 - **Konbentzioa (T4)**: testu ofizialik gabeko sektoreko praktika bat, hala identifikatua. Konbentzioek sarreraren garbiketari bakarrik eragiten diote (minuskulak, bereizleak), inoiz ez zein dokumentu diren baliozkoak, salbuespen dokumentatu batekin: testu ofizial batek ere ez du argitaratzen IFKaren kontrolaren aritmetika ([CIF-4](#cif-4)).
 

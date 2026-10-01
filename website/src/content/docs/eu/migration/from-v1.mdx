@@ -59,7 +59,7 @@ C, D, F, G, J, U eta V bakarrik aldatzen dira: A, B, E eta H gakoek beti behar i
 
 ## 2. Sarrera normalizatu egiten da
 
-Orain egiaztatzaileek sarrera garbitzen dute egiaztatu aurretik: zuriuneak eta puntuak ([NORM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-2)), marrak eta barrak ([NORM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-3)) kentzen dira, eta 8 digitu baino gutxiago dituen NAN bati hasierako zeroak gehitzen zaizkio berriro ([NORM-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-4)). Garbiketak ez du inoiz dokumentu baliogabe bat baliozko bihurtzen; beraz, `true` emaitza bat ere ez da aldatzen; `false` emaitza batzuk `true` bihurtzen dira.
+Orain egiaztatzaileek sarrera garbitzen dute egiaztatu aurretik: zuriuneak eta puntuak ([NORM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-2)), marrak eta barrak ([NORM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-3)) kentzen dira, eta 8 digitu baino gutxiago dituen NAN bati hasierako zeroak gehitzen zaizkio berriro ([NORM-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-4)). Garbiketak ez du inoiz dokumentu baliogabe bat baliozko bihurtzen; beraz, dokumentu osoa egiaztatzen duten egiaztatzaileen `true` emaitza bat ere ez da aldatzen; `false` emaitza batzuk `true` bihurtzen dira. Kontrol-karakterea bakarrik egiaztatzen duten funtzioek, `isValidDniLetter` eta `isValidCifControlCode` funtzioek, ez dute formatua egiaztatzen; beraz, bereizleak dituzten balioekin haien emaitza bi noranzkoetan alda daiteke: 1. bertsioan, `isValidCifControlCode("A 7727886")` `true` zen, zuriunea `0` gisa zenbatzen zelako (ikusi [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md#2-the-input-is-normalized-by-default), ingelesez).
 
 Lehen, 1. bertsioan:
 
@@ -110,7 +110,7 @@ Exekuzio-garaian ez da ezer aldatzen: aukera gisa pasatako zenbaki bat ez da kon
 + const { isValidNif } = require("nif-dni-nie-cif-validation");
 ```
 
-Paketeak esportatzen duen guztia paketetik bertatik dago eskuragarri. `require()` eta `import` Node.js 20 edo berriagoan eta bundler guztietan dabiltza.
+Egiaztatzaileak eta gainerako funtzioak `nif-dni-nie-cif-validation` paketetik inportatzen dira; hizkuntzak, sorgailuak eta eskemak, berriz, beren sarrera-puntuetatik (`/locales/<code>`, `/generate`, `/zod`, `/valibot`, `/yup`). `require()` eta `import` Node.js 20 edo berriagoan eta bundler guztietan dabiltza.
 
 ## 2. bertsioko berritasunak
 

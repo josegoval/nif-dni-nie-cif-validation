@@ -15,7 +15,7 @@ Your editor shows the same documentation as you type, from the type declarations
 
 - **Options.** The validators take `IsValidOptions`, `validate()` takes `ValidateOptions`, and the schemas take the options of `validate()`. Each option's default and effect are listed on the main entry point's page.
 - **Rules.** The links to rule IDs, such as `DNI-2`, open the [official sources](/nif-dni-nie-cif-validation/reference/official-sources/) page.
-- **Aliases.** `isValidCif` and `isValidLegalEntityNif` are the same function, as are `isValidCifControlCode` and `isValidLegalEntityNifControlCode`, `CIF_REGEX` and `LEGAL_ENTITY_NIF_REGEX`, and `CIF_CONTROL_LETTERS` and `LEGAL_ENTITY_CONTROL_LETTERS`.
-- **Deprecated.** `replaceNieLetter` is kept for version 1 code. It throws on bad input, unlike everything else.
+- **Aliases.** `isValidCif` and `isValidLegalEntityNif` are the same function, as are `isValidCifControlCode` and `isValidLegalEntityNifControlCode`; `CIF_REGEX` and `LEGAL_ENTITY_NIF_REGEX`, and `CIF_CONTROL_LETTERS` and `LEGAL_ENTITY_CONTROL_LETTERS`, are the same constants.
+- **Deprecated.** `replaceNieLetter` is kept for version 1 code. It throws on bad input, unlike the validators and the other helpers (the generators also throw a `RangeError`, when their options are impossible).
 
 For a task-oriented introduction, start with [Getting started](/nif-dni-nie-cif-validation/guides/getting-started/). The decisions behind the API are in [docs/api-design.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md).

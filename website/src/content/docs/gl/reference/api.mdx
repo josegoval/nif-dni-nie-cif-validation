@@ -20,7 +20,7 @@ O seu editor mostra a mesma documentación mentres escribe, a partir das declara
 
 - **Opcións.** Os validadores reciben `IsValidOptions`, `validate()` recibe `ValidateOptions` e os esquemas reciben as opcións de `validate()`. O valor predeterminado e o efecto de cada opción están na páxina do punto de entrada principal.
 - **Regras.** As ligazóns a identificadores de regras, como `DNI-2`, abren a páxina de [fontes oficiais](/nif-dni-nie-cif-validation/gl/reference/official-sources/).
-- **Alias.** `isValidCif` e `isValidLegalEntityNif` son a mesma función, como o son `isValidCifControlCode` e `isValidLegalEntityNifControlCode`, `CIF_REGEX` e `LEGAL_ENTITY_NIF_REGEX`, e `CIF_CONTROL_LETTERS` e `LEGAL_ENTITY_CONTROL_LETTERS`.
-- **Obsoleta.** `replaceNieLetter` mantense para o código da versión 1. Lanza unha excepción cunha entrada incorrecta, a diferenza de todo o demais.
+- **Alias.** `isValidCif` e `isValidLegalEntityNif` son a mesma función, como o son `isValidCifControlCode` e `isValidLegalEntityNifControlCode`; `CIF_REGEX` e `LEGAL_ENTITY_NIF_REGEX`, e `CIF_CONTROL_LETTERS` e `LEGAL_ENTITY_CONTROL_LETTERS`, son a mesma constante.
+- **Obsoleta.** `replaceNieLetter` mantense para o código da versión 1. Lanza unha excepción cunha entrada incorrecta, a diferenza dos validadores e das demais funcións (os xeradores tamén lanzan un `RangeError` cando as súas opcións son imposibles).
 
 As decisións detrás da API están en [docs/api-design.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md) (en inglés).

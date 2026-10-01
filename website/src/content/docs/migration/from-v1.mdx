@@ -59,7 +59,7 @@ Only C, D, F, G, J, U and V change: A, B, E and H always needed a digit, and N, 
 
 ## 2. The input is normalized
 
-The validators now clean up the input before checking it: white space and dots ([NORM-2](/nif-dni-nie-cif-validation/reference/official-sources/#norm-2)), hyphens and slashes ([NORM-3](/nif-dni-nie-cif-validation/reference/official-sources/#norm-3)) are removed, and a DNI with fewer than 8 digits gets its leading zeros back ([NORM-4](/nif-dni-nie-cif-validation/reference/official-sources/#norm-4)). Cleaning up never makes an invalid document valid, so no `true` result changes; some `false` results become `true`.
+The validators now clean up the input before checking it: white space and dots ([NORM-2](/nif-dni-nie-cif-validation/reference/official-sources/#norm-2)), hyphens and slashes ([NORM-3](/nif-dni-nie-cif-validation/reference/official-sources/#norm-3)) are removed, and a DNI with fewer than 8 digits gets its leading zeros back ([NORM-4](/nif-dni-nie-cif-validation/reference/official-sources/#norm-4)). Cleaning up never makes an invalid document valid, so no `true` result of the full-document validators changes; some `false` results become `true`. The control-only helpers, `isValidDniLetter` and `isValidCifControlCode`, don't check the format, so with separators their result can change in either direction: in v1, `isValidCifControlCode("A 7727886")` was `true` because the space counted as a `0` (see [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md#2-the-input-is-normalized-by-default)).
 
 Before, in v1:
 
@@ -110,7 +110,7 @@ Version 2 ships ES modules and CommonJS and declares them in an `exports` map. O
 + const { isValidNif } = require("nif-dni-nie-cif-validation");
 ```
 
-Everything the package exports is available from the package itself. `require()` and `import` both work in Node.js 20 or newer and in every bundler.
+The validators and the other helpers are imported from `nif-dni-nie-cif-validation`; the locales, the generators and the schemas from their own entry points (`/locales/<code>`, `/generate`, `/zod`, `/valibot`, `/yup`). `require()` and `import` both work in Node.js 20 or newer and in every bundler.
 
 ## New in v2
 

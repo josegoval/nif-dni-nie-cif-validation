@@ -21,7 +21,7 @@ validate("12345678A").error;
 //   message: 'The control character is not correct: for this DNI it should be "Z".' }
 ```
 
-`validate()` comprova el valor pas a pas i s'atura a la primera fallada, de manera que sempre hi ha exactament un error. `type` i `normalized` hi són tan bon punt el format és reconeixible, encara que el caràcter de control sigui incorrecte.
+`validate()` comprova el valor pas a pas i s'atura a la primera fallada, de manera que un valor no vàlid té exactament un error. `type` i `normalized` hi són tan bon punt el format és reconeixible, encara que el caràcter de control sigui incorrecte.
 
 ## Tots els codis d'error
 
@@ -30,7 +30,7 @@ validate("12345678A").error;
 | `NOT_A_STRING` | El valor no és una cadena de text (`null`, un número, un objecte). Mai no es converteix en una cadena |
 | `EMPTY` | El valor és buit, o només té espais i separadors |
 | `INVALID_LENGTH` | El valor no té el nombre de caràcters del seu tipus |
-| `INVALID_FORMAT` | Un primer caràcter incorrecte, lletres on van xifres, un caràcter de control de la classe equivocada o un prefix `ES` sense `allowVatPrefix` |
+| `INVALID_FORMAT` | Un caràcter que el format no admet: un primer caràcter incorrecte, una lletra on va una xifra (o una xifra on va la lletra de control) o un prefix `ES` sense `allowVatPrefix` |
 | `INVALID_CONTROL_CHARACTER` | El format és correcte, però la lletra o la xifra de control no; `expected` conté la correcta |
 | `UNSUPPORTED_TYPE` | Un document vàlid d'un tipus que `types` exclou |
 | `PLACEHOLDER` | Un número d'exemple (`00000000T`, `00000001R`, `99999999R`, `X0000000T`) amb `rejectPlaceholders: true` |
@@ -76,7 +76,7 @@ validate("12345678A", { locale: eu }).error?.message;
 describeCifOrganisation("B", eu); // "Erantzukizun mugatuko sozietatea"
 ```
 
-La mateixa opció `locale` funciona a `validate()`, a `describeCifOrganisation()` i a tots els esquemes (`zNif({ locale })`, `vNif({ locale })`, `yNif({ locale })`). També tradueix `meta.orgDescription`, el tipus d'entitat d'un CIF.
+El mateix objecte d'idioma serveix a tot arreu: com a opció `locale` de `validate()` i de tots els esquemes (`zNif({ locale })`, `vNif({ locale })`, `yNif({ locale })`), i com a segon argument de `describeCifOrganisation()`. També tradueix `meta.orgDescription`, el tipus d'entitat d'un CIF.
 
 Per seguir l'idioma de l'usuari, assigneu un objecte d'idioma a cada etiqueta d'idioma, amb un per defecte:
 

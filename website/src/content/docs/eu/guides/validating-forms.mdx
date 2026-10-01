@@ -9,7 +9,7 @@ IFZ baterako inprimaki-eremu batek hiru gauza behar ditu: jendeak idazteko ditue
 
 Eskema guztiek:
 
-- `validate()` funtzioak onartzen duen gauza bera onartzen dute, aukera berekin (`types`, `locale`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `normalize`);
+- `validate()` funtzioaren arauak eta aukerak aplikatzen dituzte (`types`, `locale`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `normalize`), gehi eskema bakoitzaren mota- edo aurrizki-murriztapena (`zDni` eskemak NANak eta K/L/M IFZak bakarrik onartzen ditu; IFZ-BEZerako eskemek `ES` eskatzen dute);
 - balio **normalizatua** itzultzen dute: `" 12.345.678-z "` `"12345678Z"` gisa ateratzen da;
 - balio bat baztertzen dutenean, `validate()` funtzioaren mezua ematen dute, adierazten duzun hizkuntzan, errore-kodearekin eta SPEC arauarekin batera.
 
@@ -131,7 +131,7 @@ React Hook Form-ekin, erabili `@hookform/resolvers/yup` paketeko `yupResolver(fo
 
 ## Zerbitzarian
 
-Egiaztatu berriro zerbitzarian: nabigatzaileko egiaztapenak saihets daitezke. `validate()` funtzioak edozein balio onartzen du; beraz, eskaeraren gorputza iristen den bezala pasa diezaiokezu. Kudeatzaile honek `Request` eta `Response` estandarrak erabiltzen ditu, Next.js-en route handler-ek, Hono-k, Deno-k eta Bun-ek bezala:
+Egiaztatu berriro zerbitzarian: nabigatzaileko egiaztapenak saihets daitezke. `validate()` funtzioak edozein balio onartzen du; beraz, eskaeraren gorputza, JSONetik bihurtu ondoren, dagoen bezala pasa diezaiokezu. Kudeatzaile honek `Request` eta `Response` estandarrak erabiltzen ditu, Next.js-en route handler-ek, Hono-k, Deno-k eta Bun-ek bezala:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";

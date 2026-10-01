@@ -5,7 +5,7 @@ description: Sortu Espainiako NAN, K/L/M IFZ, AIZ, IFK eta IFZ baliozkoak eta ba
 
 import { Aside } from "@astrojs/starlight/components";
 
-Probek IFZak behar dituzte, eta benetako pertsonen zenbakiek ez dute biltegi batean amaitu behar. `nif-dni-nie-cif-validation/generate` sarrera-puntuak mota guztietako zenbaki baliozkoak sortzen ditu, baita errore-kode bakoitzerako zenbaki baliogabeak ere. Hazi batekin, berdinak dira exekuzio bakoitzean, makina bakoitzean eta Node.js-en bertsio bakoitzarekin.
+Probek IFZak behar dituzte, eta benetako pertsonen zenbakiek ez dute biltegi batean amaitu behar. `nif-dni-nie-cif-validation/generate` sarrera-puntuak mota guztietako zenbaki baliozkoak sortzen ditu, baita `generateInvalid()` funtzioak onartzen dituen arrazoi bakoitzerako zenbaki baliogabeak ere. Hazi batekin, berdinak dira exekuzio bakoitzean, makina bakoitzean eta Node.js-en bertsio bakoitzarekin.
 
 <Aside type="caution">
 Sortutako zenbakiak asmatuak dira, baina baliteke kasualitatez benetako pertsona edo enpresa batenarekin bat etortzea. Erabili probetan bakarrik, inoiz ez benetako datu gisa.
@@ -56,7 +56,7 @@ gen.nie();             // "Z6697340K"
 gen.cif({ orgKey: "A" }); // sozietate anonimo baten IFK bat
 ```
 
-Hazirik gabe, sorgailuek `Math.random` erabiltzen dute, eta dei bakoitzak balio desberdin bat ematen du. Haziarekin, `Math.random` ez da inoiz irakurtzen.
+Hazirik gabe, sorgailuek `Math.random` erabiltzen dute, eta balioak ausazkoak dira; beraz, errepika daitezke. Haziarekin, `Math.random` ez da inoiz irakurtzen.
 
 ## Zure probetarako fixture-ak
 

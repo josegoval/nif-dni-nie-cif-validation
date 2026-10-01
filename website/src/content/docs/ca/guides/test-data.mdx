@@ -5,7 +5,7 @@ description: Genereu DNI, NIF K/L/M, NIE, CIF i NIF espanyols vàlids i no vàli
 
 import { Aside } from "@astrojs/starlight/components";
 
-Els tests necessiten NIF, i els números de persones reals no han d'acabar en un repositori. El punt d'entrada `nif-dni-nie-cif-validation/generate` genera números vàlids de tots els tipus, i números no vàlids per a cada codi d'error. Amb una llavor, són iguals a cada execució, a cada màquina i amb cada versió de Node.js.
+Els tests necessiten NIF, i els números de persones reals no han d'acabar en un repositori. El punt d'entrada `nif-dni-nie-cif-validation/generate` genera números vàlids de tots els tipus, i números no vàlids per a cada motiu que admet `generateInvalid()`. Amb una llavor, són iguals a cada execució, a cada màquina i amb cada versió de Node.js.
 
 <Aside type="caution">
 Els números generats són ficticis, però algun podria coincidir per casualitat amb el d'una persona o empresa real. Feu-los servir només en tests, mai com a dades reals.
@@ -56,7 +56,7 @@ gen.nie();             // "Z6697340K"
 gen.cif({ orgKey: "A" }); // un CIF d'una societat anònima
 ```
 
-Sense llavor, els generadors fan servir `Math.random`, i cada crida dona un valor diferent. Amb llavor, `Math.random` no es llegeix mai.
+Sense llavor, els generadors fan servir `Math.random`, i els valors són aleatoris, de manera que es poden repetir. Amb llavor, `Math.random` no es llegeix mai.
 
 ## Fixtures per als vostres tests
 

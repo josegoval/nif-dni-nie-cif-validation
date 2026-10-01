@@ -33,7 +33,7 @@ getNifType("T1234567A"); // null: no kind of NIF starts with T
 
 ## DNI: Spanish citizens
 
-For a Spanish citizen, the NIF is the number of their DNI (*documento nacional de identidad*): 8 digits, leading zeros included, and an upper-case check letter computed from the number ([DNI-1, DNI-2](/nif-dni-nie-cif-validation/reference/official-sources/#dni-1)). People often write it without the leading zeros, or with dots and a hyphen; the library accepts both and stores the canonical form:
+For a Spanish citizen, the NIF is the number of their DNI (*documento nacional de identidad*): 8 digits, leading zeros included, and an upper-case check letter computed from the number ([DNI-1, DNI-2](/nif-dni-nie-cif-validation/reference/official-sources/#dni-1)). People often write it without the leading zeros, or with dots and a hyphen; the library accepts both and returns the canonical form for you to store:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";

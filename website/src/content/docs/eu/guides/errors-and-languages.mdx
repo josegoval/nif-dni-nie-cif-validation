@@ -21,7 +21,7 @@ validate("12345678A").error;
 //   message: 'The control character is not correct: for this DNI it should be "Z".' }
 ```
 
-`validate()` funtzioak balioa urratsez urrats egiaztatzen du eta lehen hutsegitean gelditzen da; beraz, beti dago errore bat, ez gehiago. `type` eta `normalized` formatua ezagutu daitekeen unetik daude, kontrol-karakterea okerra izan arren.
+`validate()` funtzioak balioa urratsez urrats egiaztatzen du eta lehen hutsegitean gelditzen da; beraz, balio baliogabe batek errore bat du, ez gehiago. `type` eta `normalized` formatua ezagutu daitekeen unetik daude, kontrol-karakterea okerra izan arren.
 
 ## Errore-kode guztiak
 
@@ -30,7 +30,7 @@ validate("12345678A").error;
 | `NOT_A_STRING` | Balioa ez da testu-kate bat (`null`, zenbaki bat, objektu bat). Ez da inoiz kate bihurtzen |
 | `EMPTY` | Balioa hutsik dago, edo zuriuneak eta bereizleak bakarrik ditu |
 | `INVALID_LENGTH` | Balioak ez du bere motari dagokion karaktere kopurua |
-| `INVALID_FORMAT` | Lehen karaktere okerra, digituen lekuan letrak, mota okerreko kontrol-karakterea edo `ES` aurrizkia `allowVatPrefix` gabe |
+| `INVALID_FORMAT` | Formatuak onartzen ez duen karaktere bat: lehen karaktere okerra, digitu baten lekuan letra bat (edo kontrol-letraren lekuan digitu bat) edo `ES` aurrizkia `allowVatPrefix` gabe |
 | `INVALID_CONTROL_CHARACTER` | Formatua zuzena da, baina kontrol-letra edo kontrol-digitua ez; `expected` eremuak zuzena du |
 | `UNSUPPORTED_TYPE` | `types` aukerak kanpoan uzten duen mota bateko dokumentu baliozko bat |
 | `PLACEHOLDER` | Ordezko balio bat (`00000000T`, `00000001R`, `99999999R`, `X0000000T`), `rejectPlaceholders: true` aukerarekin |
@@ -76,7 +76,7 @@ validate("12345678A", { locale: eu }).error?.message;
 describeCifOrganisation("B", eu); // "Erantzukizun mugatuko sozietatea"
 ```
 
-`locale` aukera berak `validate()`, `describeCifOrganisation()` eta eskema guztietan funtzionatzen du (`zNif({ locale })`, `vNif({ locale })`, `yNif({ locale })`). `meta.orgDescription` ere itzultzen du, IFK baten erakunde mota.
+Hizkuntza-objektu berak balio du leku guztietan: `validate()` funtzioaren eta eskema guztien `locale` aukera gisa (`zNif({ locale })`, `vNif({ locale })`, `yNif({ locale })`), eta `describeCifOrganisation()` funtzioaren bigarren argumentu gisa. `meta.orgDescription` ere itzultzen du, IFK baten erakunde mota.
 
 Erabiltzailearen hizkuntzari jarraitzeko, esleitu hizkuntza-objektu bat hizkuntza-etiketa bakoitzari, lehenetsi batekin:
 

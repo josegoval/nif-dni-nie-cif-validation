@@ -68,7 +68,7 @@ isValidNif("12345678z", { normalize: false });      // true: les minúscules con
 isValidNif("X01234567L", { normalize: false });     // true: i també la forma antiga del NIE
 ```
 
-Feu-lo servir quan l'entrada ja hagi d'estar en forma canònica, per exemple per revisar dades desades.
+Feu-lo servir per rebutjar els separadors i els DNI escrits sense els zeros inicials. No exigeix la forma canònica: les minúscules i la forma antiga del NIE es continuen acceptant ([NORM-1](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-1), [NIE-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#nie-3)).
 
 ## NIF-IVA i el prefix ES
 

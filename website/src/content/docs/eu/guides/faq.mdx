@@ -7,7 +7,7 @@ Erantzun laburrak, bakoitza bere oinarria den [SPEC.md](/nif-dni-nie-cif-validat
 
 ## Baliozkoa da 00000000T NANa?
 
-Bai. `00000000T` zenbakiak kontrol-letra zuzena du, eta ez du inongo legek debekatzen; beraz, baliozkoa da lehenespenez, `00000001R`, `99999999R` eta `X0000000T` ordezko balio ezagunak bezala. Erregistro batzuek iragazi egiten dituzte, argi eta garbi asmatuak direlako (ESNICek, `.es` domeinuen erregistroak, hala egiten du). Zuk ere baztertu nahi badituzu, pasa `rejectPlaceholders: true`, eta `validate()` funtzioak `PLACEHOLDER` kodea itzuliko du ([POLICY-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#policy-1)).
+Bai. `00000000T` zenbakiak kontrol-letra zuzena du, eta ez du inongo legek debekatzen; beraz, baliozkoa da lehenespenez, `00000001R`, `99999999R` eta `X0000000T` ordezko balio ezagunak bezala. Erregistro batzuek, ESNICek (`.es` domeinuen erregistroak) adibidez, iragazi egiten dituzte, ordezko balio ezagunak direlako; baina zerrenda horretan egoteak ez du frogatzen zenbaki bat inoiz esleitu ez denik. Zuk ere baztertu nahi badituzu, pasa `rejectPlaceholders: true` (aukerako politika bat), eta `validate()` funtzioak `PLACEHOLDER` kodea itzuliko du ([POLICY-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#policy-1)).
 
 ```ts
 import { isValidDni, validate } from "nif-dni-nie-cif-validation";
@@ -19,7 +19,7 @@ validate("x-0000000-t", { rejectPlaceholders: true }).error?.code; // "PLACEHOLD
 
 ## IFK zaharrek balio dute oraindik?
 
-Bai. 2008an, EHA/451/2008 Aginduak «IFK» izena «pertsona juridiko edo erakunde baten IFZ» izenarekin ordezkatu zuen, baina zenbakiak ez ziren aldatu, eta ez da inoiz erakunde-gakorik kendu ([CIF-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-2)). Agindu horrekin bi gauza aldatu ziren: 7 digituak ausazkoak izatera igaro ziren, eta, beraz, jada ez dute probintziarik kodetzen; eta liburutegiak ez ditu probintzia-kodeak egiaztatzen ([CIF-5](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-5)).
+Bai. 2008an, EHA/451/2008 Aginduak «IFK» izena «pertsona juridiko edo erakunde baten IFZ» izenarekin ordezkatu zuen, baina zenbakiak ez ziren aldatu, eta ez da inoiz erakunde-gakorik kendu ([CIF-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-2)). Agindu horrekin aldatu zirenak 7 digituak dira: ausazkoak izatera igaro ziren, eta jada ez dute probintziarik kodetzen; horregatik, liburutegiak ez ditu probintzia-kodeak egiaztatzen ([CIF-5](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-5)).
 
 Balio zaharren mota bat ez da baliozkoa lehenespenez: C, D, F, G, J, U edo V gakoa eta kontrol-karaktere gisa letra bat dituen IFK bat. Ikusi [hurrengo galdera](#zergatik-ez-da-baliozkoa-g1234567d).
 

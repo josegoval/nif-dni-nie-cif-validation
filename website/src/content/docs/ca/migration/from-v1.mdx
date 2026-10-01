@@ -59,7 +59,7 @@ Només canvien C, D, F, G, J, U i V: A, B, E i H sempre han necessitat una xifra
 
 ## 2. L'entrada es normalitza
 
-Ara els validadors netegen l'entrada abans de comprovar-la: es treuen els espais en blanc i els punts ([NORM-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-2)), els guions i les barres ([NORM-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-3)), i a un DNI amb menys de 8 xifres se li tornen a afegir els zeros inicials ([NORM-4](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-4)). La neteja mai no converteix un document no vàlid en vàlid, de manera que cap resultat `true` no canvia; alguns resultats `false` passen a `true`.
+Ara els validadors netegen l'entrada abans de comprovar-la: es treuen els espais en blanc i els punts ([NORM-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-2)), els guions i les barres ([NORM-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-3)), i a un DNI amb menys de 8 xifres se li tornen a afegir els zeros inicials ([NORM-4](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-4)). La neteja mai no converteix un document no vàlid en vàlid, de manera que cap resultat `true` dels validadors de documents complets no canvia; alguns resultats `false` passen a `true`. Les funcions que només comproven el caràcter de control, `isValidDniLetter` i `isValidCifControlCode`, no comproven el format, de manera que amb separadors el seu resultat pot canviar en tots dos sentits: a la v1, `isValidCifControlCode("A 7727886")` era `true` perquè l'espai comptava com un `0` (consulteu [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md#2-the-input-is-normalized-by-default), en anglès).
 
 Abans, a la v1:
 
@@ -110,7 +110,7 @@ La versió 2 publica mòduls ES i CommonJS i els declara en un mapa `exports`. N
 + const { isValidNif } = require("nif-dni-nie-cif-validation");
 ```
 
-Tot el que exporta el paquet està disponible des del mateix paquet. `require()` i `import` funcionen a Node.js 20 o posterior i a tots els bundlers.
+Els validadors i les altres funcions s'importen des de `nif-dni-nie-cif-validation`; els idiomes, els generadors i els esquemes, des dels seus propis punts d'entrada (`/locales/<code>`, `/generate`, `/zod`, `/valibot`, `/yup`). `require()` i `import` funcionen a Node.js 20 o posterior i a tots els bundlers.
 
 ## Novetats de la v2
 

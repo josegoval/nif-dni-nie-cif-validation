@@ -5,7 +5,7 @@ description: Generate valid and invalid Spanish DNI, K/L/M NIF, NIE, CIF and NIF
 
 import { Aside } from "@astrojs/starlight/components";
 
-Tests need NIFs, and real people's numbers don't belong in a repository. The `nif-dni-nie-cif-validation/generate` entry point makes valid numbers of every type, and invalid ones for each error code. With a seed, they are the same on every run, machine and Node.js version.
+Tests need NIFs, and real people's numbers don't belong in a repository. The `nif-dni-nie-cif-validation/generate` entry point makes valid numbers of every type, and invalid ones for each reason that `generateInvalid()` supports. With a seed, they are the same on every run, machine and Node.js version.
 
 <Aside type="caution">
 Generated numbers are made up, but one may match a real person or company by chance. Use them in tests only, never as real data.
@@ -56,7 +56,7 @@ gen.nie();             // "Z6697340K"
 gen.cif({ orgKey: "A" }); // a CIF of a public limited company
 ```
 
-Without a seed, the generators use `Math.random`, and every call gives a different value. With a seed, `Math.random` is never read.
+Without a seed, the generators use `Math.random`, and the values are random, so they may repeat. With a seed, `Math.random` is never read.
 
 ## Fixtures for your tests
 

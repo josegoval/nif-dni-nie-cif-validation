@@ -8,7 +8,7 @@ Esta páxina é [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validatio
 Non todas as regras que atopará en internet teñen unha fonte oficial, así que cada regra ten un nivel:
 
 - **Lei (T1)**: un texto legal en vigor, publicado no BOE (Boletín Oficial del Estado), como os formatos do DNI, o NIE, o NIF K/L/M e o CIF, e as claves de entidade do CIF.
-- **Criterio oficial (T2)**: unha páxina da Administración responsable do documento, o Ministerio do Interior ou a AEAT (a Axencia Tributaria). A letra de control do DNI (módulo 23) só se define aí, non en ningunha lei.
+- **Criterio oficial (T2)**: unha páxina da Administración responsable do documento, o Ministerio do Interior ou a AEAT (a Axencia Tributaria). A letra de control do DNI (módulo 23) publícase aí e na nota técnica da AEAT (T3), pero en ningunha lei.
 - **Semioficial (T3)**: a nota técnica interna da AEAT sobre o NIF. É a única fonte que indica que claves de CIF levan un díxito e cales unha letra.
 - **Convención (T4)**: unha práctica do sector sen texto oficial, identificada como tal. As convencións só afectan á limpeza da entrada (minúsculas, separadores), nunca a que documentos son válidos, cunha excepción documentada: ningún texto oficial publica a aritmética do control do CIF ([CIF-4](#cif-4)).
 

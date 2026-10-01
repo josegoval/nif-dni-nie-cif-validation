@@ -23,7 +23,7 @@ validate("12345678A").error;
 //   message: 'The control character is not correct: for this DNI it should be "Z".' }
 ```
 
-`validate()` checks the value step by step and stops at the first failure, so there is always exactly one error. Its `type` and `normalized` are set as soon as the format is recognisable, even when the control character is wrong.
+`validate()` checks the value step by step and stops at the first failure, so an invalid value has exactly one error. Its `type` and `normalized` are set as soon as the format is recognisable, even when the control character is wrong.
 
 ## Every error code
 
@@ -32,7 +32,7 @@ validate("12345678A").error;
 | `NOT_A_STRING` | The value is not a string (`null`, a number, an object). It is never converted to one |
 | `EMPTY` | The value is empty, or only spaces and separators |
 | `INVALID_LENGTH` | The value has the wrong number of characters for its type |
-| `INVALID_FORMAT` | A wrong first character, letters where digits go, a control character of the wrong kind, or an `ES` prefix without `allowVatPrefix` |
+| `INVALID_FORMAT` | A character that the format doesn't allow: a wrong first character, a letter where a digit goes (or a digit where the check letter goes), or an `ES` prefix without `allowVatPrefix` |
 | `INVALID_CONTROL_CHARACTER` | The format is right, but the check letter or digit is wrong; `expected` has the right one |
 | `UNSUPPORTED_TYPE` | A valid document of a type that `types` leaves out |
 | `PLACEHOLDER` | A placeholder number (`00000000T`, `00000001R`, `99999999R`, `X0000000T`) with `rejectPlaceholders: true` |
@@ -78,7 +78,7 @@ validate("12345678A", { locale: eu }).error?.message;
 describeCifOrganisation("B", eu); // "Erantzukizun mugatuko sozietatea"
 ```
 
-The same `locale` option works in `validate()`, `describeCifOrganisation()` and every schema (`zNif({ locale })`, `vNif({ locale })`, `yNif({ locale })`). It also translates `meta.orgDescription`, the kind of organisation of a CIF.
+The same locale object works everywhere: as the `locale` option of `validate()` and of every schema (`zNif({ locale })`, `vNif({ locale })`, `yNif({ locale })`), and as the second argument of `describeCifOrganisation()`. It also translates `meta.orgDescription`, the kind of organisation of a CIF.
 
 To follow the user's language, map the language tag to a locale, with a fallback:
 

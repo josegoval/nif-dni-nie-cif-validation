@@ -7,7 +7,7 @@ Short answers, each with the rule of [SPEC.md](/nif-dni-nie-cif-validation/refer
 
 ## Is 00000000T a valid DNI?
 
-Yes. `00000000T` has the right check letter, and no law forbids it, so it is valid by default, like the other well-known placeholders `00000001R`, `99999999R` and `X0000000T`. Some registries filter them as obviously fake (ESNIC, the `.es` domain registry, does). If you want to refuse them too, pass `rejectPlaceholders: true`, and `validate()` reports the code `PLACEHOLDER` ([POLICY-1](/nif-dni-nie-cif-validation/reference/official-sources/#policy-1)).
+Yes. `00000000T` has the right check letter, and no law forbids it, so it is valid by default, like the other well-known placeholders `00000001R`, `99999999R` and `X0000000T`. Some registries, such as ESNIC (the `.es` domain registry), filter them as known placeholder values, but being on that list doesn't prove that a number was never assigned. If you want to refuse them too, pass `rejectPlaceholders: true` (an opt-in policy), and `validate()` reports the code `PLACEHOLDER` ([POLICY-1](/nif-dni-nie-cif-validation/reference/official-sources/#policy-1)).
 
 ```ts
 import { isValidDni, validate } from "nif-dni-nie-cif-validation";
@@ -19,7 +19,7 @@ validate("x-0000000-t", { rejectPlaceholders: true }).error?.code; // "PLACEHOLD
 
 ## Are old CIFs still valid?
 
-Yes. In 2008 Orden EHA/451/2008 replaced the name "CIF" with "NIF of a legal person or entity", but the numbers didn't change, and no organisation key has ever been removed ([CIF-2](/nif-dni-nie-cif-validation/reference/official-sources/#cif-2)). Two things did change with that order: the 7 digits became random, so they no longer encode a province, and the library doesn't check province codes ([CIF-5](/nif-dni-nie-cif-validation/reference/official-sources/#cif-5)).
+Yes. In 2008 Orden EHA/451/2008 replaced the name "CIF" with "NIF of a legal person or entity", but the numbers didn't change, and no organisation key has ever been removed ([CIF-2](/nif-dni-nie-cif-validation/reference/official-sources/#cif-2)). What the order did change is the 7 digits: they became random and no longer encode a province, so the library doesn't check province codes ([CIF-5](/nif-dni-nie-cif-validation/reference/official-sources/#cif-5)).
 
 One kind of old value fails by default: a CIF with the keys C, D, F, G, J, U or V and a letter as its control character. See [the next question](#why-is-g1234567d-invalid).
 

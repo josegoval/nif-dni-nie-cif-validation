@@ -11,7 +11,7 @@ A form field for a NIF needs three things: accept the ways people type it (`12.3
 
 Every schema:
 
-- accepts exactly what `validate()` accepts, with the same options (`types`, `locale`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `normalize`);
+- applies the rules and the options of `validate()` (`types`, `locale`, `cifControl`, `rejectPlaceholders`, `allowVatPrefix`, `normalize`), plus its own type or prefix restriction (`zDni` accepts DNIs and K/L/M NIFs only; the VAT schemas require `ES`);
 - outputs the **normalized** value: `" 12.345.678-z "` comes out as `"12345678Z"`;
 - refuses a value with the message of `validate()`, in the locale you pass, plus the error code and the SPEC rule.
 

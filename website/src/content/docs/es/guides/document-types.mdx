@@ -33,7 +33,7 @@ getNifType("T1234567A"); // null: ninguna clase de NIF empieza por T
 
 ## DNI: ciudadanos españoles
 
-Para un ciudadano español, el NIF es el número de su DNI (documento nacional de identidad): 8 dígitos, con los ceros a la izquierda incluidos, y una letra de control en mayúscula calculada a partir del número ([DNI-1, DNI-2](/nif-dni-nie-cif-validation/es/reference/official-sources/#dni-1)). Mucha gente lo escribe sin los ceros iniciales, o con puntos y un guion; la librería acepta ambas cosas y guarda la forma canónica:
+Para un ciudadano español, el NIF es el número de su DNI (documento nacional de identidad): 8 dígitos, con los ceros a la izquierda incluidos, y una letra de control en mayúscula calculada a partir del número ([DNI-1, DNI-2](/nif-dni-nie-cif-validation/es/reference/official-sources/#dni-1)). Mucha gente lo escribe sin los ceros iniciales, o con puntos y un guion; la librería acepta ambas cosas y devuelve la forma canónica para que la guardes:
 
 ```ts
 import { validate } from "nif-dni-nie-cif-validation";
