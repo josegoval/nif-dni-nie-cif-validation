@@ -273,6 +273,12 @@ Releases are fully automated with [semantic-release](https://semantic-release.gi
 3. semantic-release reads the commits since the last tag and works out the next version. If no commit is releasable (`fix`, `feat` or breaking), nothing is published.
 4. When a release is due, it updates `CHANGELOG.md` and `package.json`, publishes to npm, creates the GitHub release and tag, and pushes a `chore(release): x.y.z [skip ci]` commit.
 
+### Protected `master`
+
+The "Protect master" ruleset (Settings, Rules) blocks force pushes and deleting `master`, and requires `Check (Node 24)`, `Compat (Node 20)` and `PR title` to pass before anything lands on it. Repository admins can bypass it.
+
+The release commit can't carry those checks, so semantic-release pushes it with a write **deploy key** (Settings, Deploy keys, "semantic-release (release commit)"), which the ruleset lets bypass. Its private key is the `RELEASE_DEPLOY_KEY` Actions secret, used by the checkout step of the `Release` job; `.releaserc` sets an SSH `repositoryUrl` so the push goes through it. To rotate it, create a new key pair, replace the deploy key and the secret, and delete the old key. GitHub releases, tags and comments keep using `GITHUB_TOKEN`.
+
 Publishing uses [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers) (OIDC) with provenance. There is no npm token to create or rotate. The trusted publisher is configured on npmjs.com (package Settings, Trusted publishing, GitHub Actions) for the repository `josegoval/nif-dni-nie-cif-validation` and the workflow filename `release.yml`. If you rename the workflow, update that setting too.
 
 Do not run `npm publish` by hand. The `prepack` script builds `dist/` so a tarball is never empty, but only the workflow publishes with provenance.
