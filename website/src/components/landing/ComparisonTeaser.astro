@@ -1,0 +1,44 @@
+---
+// The comparison teaser of the landing page: the table and a link to the
+// benchmarks page.
+import { langOf, localePath, stringsFor } from "../../i18n";
+import ComparisonTable from "./ComparisonTable.astro";
+
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const t = stringsFor(lang).compare;
+---
+
+<section class="compare not-content" aria-labelledby="compare-heading">
+  <h2 id="compare-heading">{t.heading}</h2>
+  <p class="intro">{t.intro}</p>
+  <ComparisonTable />
+  <p class="caveat">{t.caveat}</p>
+  <p>
+    <a class="more" href={localePath(lang, "benchmarks/")}>{t.more} →</a>
+  </p>
+</section>
+
+<style>
+  .compare {
+    margin-block: 3rem;
+  }
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: var(--sl-text-h2);
+    color: var(--sl-color-white);
+  }
+  .intro {
+    margin: 0 0 1.25rem;
+    max-width: 45rem;
+    color: var(--sl-color-gray-2);
+  }
+  .caveat {
+    margin: 1rem 0 0;
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+  }
+  .more {
+    font-weight: var(--brand-weight-semibold);
+    color: var(--sl-color-text-accent);
+  }
+</style>
