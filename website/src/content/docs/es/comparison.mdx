@@ -1,0 +1,36 @@
+---
+title: Comparación con otras librerías
+description: Una comparación de funcionalidades, con fuentes, de los validadores de NIF, DNI, NIE y CIF españoles para JavaScript (spain-id, better-dni, dni-js, stdnum, validator.js, jsvat y más), incluido cuándo es mejor elegir otra.
+---
+
+import FeatureMatrix from "../../../components/docs/FeatureMatrix.astro";
+
+Varias librerías de npm validan identificadores españoles. Se diferencian en qué documentos cubren, cómo tratan lo que escriben los usuarios y qué te dicen cuando un número no es válido. Esta página compara sus funcionalidades; la de [rendimiento](/nif-dni-nie-cif-validation/es/benchmarks/) compara su velocidad, su tamaño y su concordancia con [SPEC.md](/nif-dni-nie-cif-validation/es/reference/official-sources/).
+
+## Tabla de funcionalidades
+
+<FeatureMatrix />
+
+Qué significan las columnas:
+
+- **Tipos**: los documentos que valida la librería. Los NIF K/L/M son de personas sin DNI ni NIE ([KLM-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#klm-1)).
+- **Normaliza la entrada**: si acepta lo que escriben los usuarios (minúsculas, espacios, puntos, guiones) sin un paso aparte. «Parcial» significa que acepta parte de esto.
+- **Objeto de resultado**: si puede decirte algo más que sí o no, como el tipo o el motivo.
+- **Tamaño**: un validador de cualquier tipo, minificado y comprimido con gzip, según la medición del benchmark.
+- **Fuentes**: el README y la página de npm de cada librería, con los que se ha revisado cada fila en la fecha indicada arriba.
+
+## Cuándo es mejor otra librería
+
+- **Muchos países: stdnum.** [stdnum](https://www.npmjs.com/package/stdnum), la versión en JavaScript de python-stdnum, valida identificadores de unos 90 países con una sola API, incluidos todos los tipos españoles. Si necesitas varios países, es una buena elección. Esta librería solo cubre España, y ahí profundiza más.
+- **El bundle más pequeño: spain-id o @maistik/validate-nif.** Para un solo validador, [spain-id](https://www.npmjs.com/package/spain-id) y [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) ocupan menos que esta librería: consulta los [tamaños](/nif-dni-nie-cif-validation/es/benchmarks/#tamaño-del-bundle). No aceptan los NIF K/L/M ni la forma antigua del NIE, y no dicen por qué un número no es válido, así que gastan menos bytes. Si cada byte cuenta y no necesitas nada de eso, son buenas opciones.
+- **Muchos tipos de cadenas: validator.js.** Si ya usas [validator.js](https://www.npmjs.com/package/validator) para correos y URL, sus dos funciones españolas pueden bastarte para DNI y NIE. No valida el CIF.
+
+## Qué añade esta librería
+
+- **Todos los tipos**, incluidos los NIF K/L/M y el NIE antiguo de 10 caracteres, y **las reglas de control oficiales** del CIF ([CIF-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#cif-3)).
+- **Fuentes para cada regla**: cada una tiene un identificador y una cita en SPEC.md, y cada error indica la regla que no se cumple.
+- **El motivo**, como un código de error, una regla de SPEC y un mensaje en inglés, español, catalán, euskera o gallego.
+- **Normalización** y la forma canónica que hay que guardar, **generadores de datos de prueba** y **esquemas de Zod, Valibot y Yup**.
+
+Cuando las librerías discrepan de SPEC.md, la página de [rendimiento](/nif-dni-nie-cif-validation/es/benchmarks/#concordancia-con-specmd) cuenta las discrepancias de cada una e indica cuáles se deben a una decisión que SPEC.md documenta.
+

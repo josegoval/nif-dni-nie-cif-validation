@@ -1,0 +1,82 @@
+---
+// The feature matrix of the comparison page: bench/comparison.mjs (shared
+// with the READMEs' comparison table), with the versions, sizes and links of
+// bench/results/latest.json, and the date the rows were checked.
+import { cellText } from "../../../../bench/comparison.mjs";
+import { CHECKED_ON, FEATURES, featureRows } from "../../data/bench-details";
+import { formatDate, formatNumber, langOf, stringsFor } from "../../i18n";
+import TableScroll from "./TableScroll.astro";
+
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const docs = stringsFor(lang).docs;
+const t = docs.features;
+// The size goes before the last feature (the release), as in the README.
+const featureColumns = FEATURES.slice(0, -1);
+const lastColumn = FEATURES[FEATURES.length - 1];
+if (lastColumn !== "released") throw new Error("FeatureMatrix: unexpected columns");
+const text = (cell: Parameters<typeof cellText>[0]) => cellText(cell, t.phrases);
+---
+
+<p class="chart-note">{t.checkedOn(formatDate(lang, CHECKED_ON))}</p>
+<TableScroll labelledby="features-caption">
+  <table class="features">
+    <caption id="features-caption">{t.caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{docs.library}</th>
+        {featureColumns.map((key) => <th scope="col">{t.columns[key]}</th>)}
+        <th scope="col" class="num">{t.columns.size}</th>
+        <th scope="col">{t.columns.released}</th>
+        <th scope="col">{t.columns.sources}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        featureRows.map((row) => (
+          <tr data-kind={row.library.kind}>
+            <th scope="row">
+              <span class="name">{row.library.name}</span>{" "}
+              <span class="version">{row.library.version ?? docs.thisBuild}</span>
+            </th>
+            {featureColumns.map((key) => (
+              <td>{text(row.cells[key])}</td>
+            ))}
+            <td class="num">
+              {row.anyBytes === null
+                ? docs.unsupported
+                : docs.bytes(formatNumber(lang, row.anyBytes))}
+            </td>
+            <td>{text(row.cells.released)}</td>
+            <td class="sources">
+              <a
+                href={row.library.homepage}
+                aria-label={`${row.library.name}: ${t.readme}`}
+              >
+                {t.readme}
+              </a>{" "}
+              <a
+                href={row.library.npm}
+                aria-label={`${row.library.name}: ${t.npm}`}
+              >
+                {t.npm}
+              </a>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</TableScroll>
+
+<style>
+  .features td,
+  .features th {
+    min-width: 6rem;
+  }
+  .features .sources {
+    white-space: nowrap;
+  }
+  .features .sources a + a {
+    margin-inline-start: 0.5rem;
+  }
+</style>

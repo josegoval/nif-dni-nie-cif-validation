@@ -1,0 +1,36 @@
+---
+title: Beste liburutegi batzuekiko konparazioa
+description: JavaScript-erako Espainiako IFZ, NAN, AIZ eta IFK egiaztatzaileen ezaugarrien konparazioa, iturriekin (spain-id, better-dni, dni-js, stdnum, validator.js, jsvat eta gehiago), baita beste bat aukeratzea noiz den hobea ere.
+---
+
+import FeatureMatrix from "../../../components/docs/FeatureMatrix.astro";
+
+npm-ko hainbat liburutegik egiaztatzen dituzte Espainiako identifikatzaileak. Zein dokumentu hartzen dituzten, erabiltzaileek idazten dutena nola tratatzen duten eta zenbaki bat baliozkoa ez denean zer esaten dizuten, horietan bereizten dira. Orri honek haien ezaugarriak konparatzen ditu; [errendimenduaren](/nif-dni-nie-cif-validation/eu/benchmarks/) orriak haien abiadura, tamaina eta [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) fitxategiarekiko adostasuna konparatzen ditu.
+
+## Ezaugarrien taula
+
+<FeatureMatrix />
+
+Zutabeen esanahia:
+
+- **Motak**: liburutegiak egiaztatzen dituen dokumentuak. K/L/M IFZak NANik eta AIZik ez duten pertsonenak dira ([KLM-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-1)).
+- **Sarrera normalizatzen du**: erabiltzaileek idazten dutena (minuskulak, zuriuneak, puntuak, marrak) urrats bereizirik gabe onartzen duen. «Partziala» esan nahi du horietako batzuk onartzen dituela.
+- **Emaitza-objektua**: bai edo ez baino zerbait gehiago esan diezazukeen, mota edo arrazoia adibidez.
+- **Tamaina**: edozein motatako egiaztatzaile bat, minifikatuta eta gzip bidez konprimatuta, errendimendu-probak neurtu bezala.
+- **Iturriak**: liburutegi bakoitzaren README-a eta npm orria; haiekin berrikusi da errenkada bakoitza, goian adierazitako egunean.
+
+## Noiz den hobea beste liburutegi bat
+
+- **Herrialde asko: stdnum.** [stdnum](https://www.npmjs.com/package/stdnum) liburutegiak, python-stdnum liburutegiaren JavaScript bertsioak, 90 herrialde inguruko identifikatzaileak egiaztatzen ditu API bakar batekin, Espainiako mota guztiak barne. Hainbat herrialde behar badituzu, aukera ona da. Liburutegi honek Espainia bakarrik hartzen du, eta han sakonago jotzen du.
+- **Bundle txikiena: spain-id edo @maistik/validate-nif.** Egiaztatzaile bakar baterako, [spain-id](https://www.npmjs.com/package/spain-id) eta [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) liburutegi hau baino txikiagoak dira: ikusi [tamainak](/nif-dni-nie-cif-validation/eu/benchmarks/#bundlearen-tamaina). Ez dituzte K/L/M IFZak edo AIZaren forma zaharra onartzen, eta ez dute esaten zenbaki bat zergatik ez den baliozkoa; beraz, byte gutxiago erabiltzen dituzte. Byte bakoitzak garrantzia badu eta horietako ezer behar ez baduzu, aukera onak dira.
+- **Kate mota asko: validator.js.** Dagoeneko [validator.js](https://www.npmjs.com/package/validator) erabiltzen baduzu helbide elektroniko eta URLetarako, baliteke haren Espainiako bi funtzioak nahikoak izatea NAN eta AIZetarako. Ez du IFKrik egiaztatzen.
+
+## Zer gehitzen duen liburutegi honek
+
+- **Mota guztiak**, K/L/M IFZak eta 10 karaktereko AIZ zaharra barne, eta IFKaren **kontrol-arau ofizialak** ([CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3)).
+- **Iturriak arau bakoitzerako**: bakoitzak identifikatzaile bat eta aipu bat du SPEC.md fitxategian, eta errore bakoitzak betetzen ez den araua adierazten du.
+- **Arrazoia**, errore-kode bat, SPEC arau bat eta mezu bat gisa, ingelesez, gaztelaniaz, katalanez, euskaraz edo galegoz.
+- **Normalizazioa** eta gorde behar den forma kanonikoa, **proba-datuen sorgailuak** eta **Zod, Valibot eta Yup eskemak**.
+
+Liburutegiak SPEC.md fitxategiarekin bat ez datozenean, [errendimenduaren](/nif-dni-nie-cif-validation/eu/benchmarks/#specmd-fitxategiarekiko-adostasuna) orriak bakoitzaren desadostasunak zenbatzen ditu, eta adierazten du zein datozen SPEC.md fitxategiak dokumentatzen duen erabaki batetik.
+

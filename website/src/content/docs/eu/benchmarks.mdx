@@ -1,14 +1,81 @@
 ---
 title: Errendimendua
-description: nif-dni-nie-cif-validation liburutegiaren eta Espainiako IFZ, NAN, AIZ eta IFK zenbakiak egiaztatzeko npm-ko beste liburutegien errendimendua eta bundle tamaina, argitaratutako errendimendu-proben emaitzen arabera.
-prev: false
-next: false
+description: nif-dni-nie-cif-validation liburutegiaren eta Espainiako IFZ, NAN, AIZ eta IFK zenbakiak egiaztatzeko npm-ko beste liburutegien abiadura, bundle tamaina eta SPEC.md fitxategiarekiko adostasuna, makina, metodoa eta zuk zeuk nola exekutatu barne.
 ---
 
-import ComparisonTable from "../../../components/landing/ComparisonTable.astro";
+import { Aside } from "@astrojs/starlight/components";
+import AgreementChart from "../../../components/docs/bench/AgreementChart.astro";
+import BenchRun from "../../../components/docs/bench/BenchRun.astro";
+import SizeChart from "../../../components/docs/bench/SizeChart.astro";
+import ThroughputChart from "../../../components/docs/bench/ThroughputChart.astro";
 
-Errendimenduaren eta konparazioaren orri osoa laster izango da. Bitartean, beheko taulak zenbaki nagusiak biltzen ditu: NAN multzoko errendimendua, milioi egiaztapen segundoko (**M ops/s; zenbat eta gehiago, orduan eta azkarragoa**), eta edozein motatako egiaztatzaile baten tamaina (**min+gzip; zenbat eta gutxiago, orduan eta txikiagoa**).
+Zenbateraino den azkarra eta txikia liburutegi hau, bere aurreko bertsio nagusiaren eta Espainiako identifikatzaileak egiaztatzen dituzten npm-ko beste liburutegien ondoan. Orri honetako zenbaki guztiak [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json) fitxategitik irakurtzen dira gunea sortzean: ez da ezer eskuz idazten. Liburutegi bat zerbaitetan azkarragoa edo txikiagoa bada, taulek erakutsi egiten dute.
 
-<ComparisonTable />
+<BenchRun />
 
-Zenbaki guztiak [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json) fitxategitik datoz. Emaitza osoak (AIZ eta IFK zenbakiekin, SPEC.md fitxategiarekiko adostasunarekin eta ohar guztiekin) [`bench/results/latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md) fitxategian daude, eta metodoa [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md) fitxategian (ingelesez).
+Zenbaki absolutuak makinaren araberakoak dira. Exekuzio bereko liburutegien arteko proportzioak askoz hobeto mantentzen dira makina batetik bestera; beraz, konparatu horiek.
+
+## Abiadura
+
+Milioi egiaztapen segundoko (**M ops/s; zenbat eta gehiago, orduan eta azkarragoa**), liburutegi bakoitzari bere dokumentazioak dioen bezala deituta, bere aukera lehenetsiekin, forma kanonikoko dokumentu baliozko eta baliogabe berberen gainean. «Konpilazio hau» zutabeak adierazten du zenbat aldiz den azkarragoa konpilazio hau liburutegi bakoitza baino, exekuzio berean. *ez da onartzen* esan nahi du liburutegiak ez duela mota horretarako egiaztatzailerik.
+
+### NAN
+
+<ThroughputChart set="DNI" />
+
+### AIZ
+
+<ThroughputChart set="NIE" />
+
+### IFK
+
+<ThroughputChart set="CIF" />
+
+Abiadura ez da dena, eta zenbaki hauek gauza batzuk uzten dituzte kanpoan: memoria, JITa berotu aurreko lehen deia, normalizazioa behar duen sarrera eta `validate()` funtzioaren emaitza xehatuaren kostua. Kate bat goiz baztertzen duen liburutegi bat azkarra da kate horrekin, eta horregatik neurtzen da SPEC.md fitxategiarekiko adostasuna bereiz, behean.
+
+## Bundlearen tamaina
+
+Egiaztatzaile batek bundle bati gehitzen diona, minifikatuta eta gzip bidez konprimatuta (**min+gzip; zenbat eta gutxiago, orduan eta txikiagoa**), esbuild bidez paketatuta, liburutegiaren beraren tamaina-egiaztapenak egiten duen bezala. Besteak baino askoz handiagoa den liburutegi baten barra osorik marrazten da, amaiera moztuta.
+
+<SizeChart view="chart" />
+
+Liburutegi txikiago batzuek mota gutxiago egiaztatzen dituzte. Honek sarrera normalizatzeko, CIF-3 arauko kontrol motetarako eta K/L/M IFZetarako erabiltzen ditu byteak. CommonJS gisa bakarrik argitaratutako liburutegiek ez dute *tree shaking* onartzen; beraz, haien funtzio batek liburutegi osoa kostatzen du. Herrialde askotako edo helburu orokorreko liburutegiak, stdnum eta validator.js adibidez, handiagoak dira diseinuz.
+
+<SizeChart view="table" />
+
+## SPEC.md fitxategiarekiko adostasuna
+
+Liburutegiaren proba-kasuetatik (aukera lehenetsiak) liburutegi bakoitzak [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) fitxategiak bezala epaitzen dituen kasuen ehunekoa: baliozkoak edo baliogabeak.
+
+<Aside type="caution" title="SPEC.md fitxategiarekiko adostasuna, ez zuzentasuna">
+Liburutegi honen mantentzaileek idatzi zituzten bai SPEC.md bai proba-kasuak; beraz, eraikuntzaz dator bat haiekin. Zerbait esaten duen zenbakia beste liburutegi bakoitzarena da, eta, hala ere, desadostasun bat aukera zilegi bat izan daiteke: asko SPEC.md fitxategiak dokumentatzen dituen erabakiak dira, adibidez AIZaren forma zaharra onartzea edo [CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3) arauko kontrol motak. «Sarrera kanonikoa bakarrik» zutabeak normalizazioa behar duten kasuak kanpoan uzten ditu; beraz, han ez da zigortzen normalizatzen ez duen liburutegi bat.
+</Aside>
+
+<AgreementChart view="chart" />
+
+<AgreementChart view="table" />
+
+Liburutegi batek egiaztatzen ez duen mota bat haren zenbakietatik kanpo geratzen da; beraz, irismen desberdineko liburutegien artean, konparatu zutabeak, eta ez «Kasu guztiak». Liburutegi bakoitzaren desadostasunen zerrenda, bakoitzaren adibide batekin, [`latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md) fitxategian dago (ingelesez).
+
+## Metodoa
+
+- **Sarrerak.** Hazidun sorgailu sasi-ausazko batekin sortzen dira; beraz, exekuzio eta makina guztiek kate berberak neurtzen dituzte: dokumentu baliozkoak eta dokumentu berak kontrol-karaktere okerrarekin, mota bakoitzerako.
+- **Deiak.** Liburutegi bakoitzari bere dokumentazioak dioen bezala deitzen zaio, bere aukera lehenetsiekin, prozesatu gabeko sarrera-katearen gainean. Salbuespen bakarra jsvat da, IFZ-BEZ egiaztatzaile bat: haren sarrerei `ES` aurrizkia gehitzen zaie, neurtutako begiztatik kanpo.
+- **Neurketa.** [tinybench](https://github.com/tinylibs/tinybench) tresnak zeregin bakoitza bere prozesuan exekutatzen du, berotze baten ondoren, V8k liburutegi batetik ikasten duenak hurrengoaren zenbakia alda ez dezan. Exekuzio osoa hainbat txandatan errepikatzen da, liburutegien ordena multzoen eta txanden artean aldatzen da, eta zenbaki bakoitza bere txanda medianarena da.
+- **Tamaina.** Liburutegi bakoitzak dokumentatzen duen funtzio bakarreko inportazioa, esbuild bidez paketatua eta minifikatua eta gzip bidez 9. mailan konprimatua, inportazio huts baten kostua kenduta.
+- **Adostasuna.** Liburutegi bakoitzaren «edozein mota» deia, aukera lehenetsiak probatzen dituzten kasuen gainean, kasu bakoitza baliozko edo baliogabe gisa epaituta.
+
+Metodologia osoa, haren oharrak eta emaitzen eskema [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md) fitxategian daude (ingelesez).
+
+## Exekutatu zuk zeuk
+
+Liburutegiak bertsio zehatzetan instalatzen dira; beraz, exekuzio batek `latest.json` fitxategiak jasotzen duena neurtzen du, hain zuzen. Itxi aurretik beste programak, eta konparatu proportzioak, ez zenbaki absolutuak:
+
+```sh
+git clone https://github.com/josegoval/nif-dni-nie-cif-validation.git
+cd nif-dni-nie-cif-validation
+pnpm install --frozen-lockfile
+pnpm bench:competitors   # 5 minutu inguru; bench/results/latest.json eta latest.md idazten ditu
+```
+
+`pnpm bench` komandoak, berriz, egiaztatzaile bakoitza 1. bertsioarekin konparatzen du. GitHub Actions lan-fluxu batek errendimendu-proba bera exekutatzen du eskatuta, runner partekatu batean, eta emaitzak igotzen ditu.

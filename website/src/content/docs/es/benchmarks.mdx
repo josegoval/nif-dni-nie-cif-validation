@@ -1,14 +1,81 @@
 ---
 title: Rendimiento
-description: Rendimiento y tamaño del bundle de nif-dni-nie-cif-validation y de los demás validadores de NIF, DNI, NIE y CIF españoles en npm, según los resultados publicados del benchmark.
-prev: false
-next: false
+description: Velocidad, tamaño del bundle y concordancia con SPEC.md de nif-dni-nie-cif-validation y de los demás validadores de NIF, DNI, NIE y CIF españoles en npm, con la máquina, el método y cómo ejecutarlo tú mismo.
 ---
 
-import ComparisonTable from "../../../components/landing/ComparisonTable.astro";
+import { Aside } from "@astrojs/starlight/components";
+import AgreementChart from "../../../components/docs/bench/AgreementChart.astro";
+import BenchRun from "../../../components/docs/bench/BenchRun.astro";
+import SizeChart from "../../../components/docs/bench/SizeChart.astro";
+import ThroughputChart from "../../../components/docs/bench/ThroughputChart.astro";
 
-La página completa de rendimiento y comparación está en camino. Mientras tanto, la tabla de abajo recoge las cifras principales: el rendimiento con el conjunto de DNI, en millones de validaciones por segundo (**M ops/s; cuanto mayor sea la cifra, mayor es el rendimiento**), y el tamaño de un validador de cualquier tipo (**min+gzip; cuanto menor sea la cifra, menor es el tamaño**).
+Lo rápida y lo pequeña que es esta librería, junto a su versión principal anterior y las demás librerías de npm que validan identificadores españoles. Todas las cifras de esta página se leen de [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json) al generar el sitio: no se escribe nada a mano. Si una librería es más rápida o más pequeña en algo, las tablas lo muestran.
 
-<ComparisonTable />
+<BenchRun />
 
-Todas las cifras salen de [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json). Los resultados completos, con NIE y CIF, la concordancia con SPEC.md y todas las salvedades, están en [`bench/results/latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md), y el método en [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md) (en inglés).
+Las cifras absolutas dependen de la máquina. Las proporciones entre las librerías de una misma ejecución se mantienen mucho mejor de una máquina a otra, así que compara esas.
+
+## Velocidad
+
+Millones de validaciones por segundo (**M ops/s; cuanto mayor sea la cifra, más rápida es**), con cada librería llamada como indica su documentación, con sus opciones por defecto, sobre los mismos documentos válidos y no válidos en forma canónica. «Esta versión es» indica cuántas veces más rápida que cada librería es esta versión, en la misma ejecución. *no admitido* significa que la librería no tiene validador para ese tipo.
+
+### DNI
+
+<ThroughputChart set="DNI" />
+
+### NIE
+
+<ThroughputChart set="NIE" />
+
+### CIF
+
+<ThroughputChart set="CIF" />
+
+La velocidad no lo es todo, y estas cifras dejan cosas fuera: la memoria, la primera llamada antes de que el JIT se caliente, la entrada que necesita normalización y el coste del resultado detallado de `validate()`. Una librería que rechaza pronto una cadena es rápida con ella, y por eso la concordancia con SPEC.md se mide aparte, más abajo.
+
+## Tamaño del bundle
+
+Lo que añade un validador a un bundle, minificado y comprimido con gzip (**min+gzip; cuanto menor sea la cifra, más pequeña es**), empaquetado con esbuild como hace la comprobación de tamaño de la propia librería. La barra de una librería mucho más grande que las demás se dibuja completa, con el final cortado.
+
+<SizeChart view="chart" />
+
+Algunas librerías más pequeñas validan menos tipos. Esta dedica bytes a normalizar la entrada, a los tipos de control de CIF-3 y a los NIF K/L/M. Las librerías publicadas solo como CommonJS no admiten *tree shaking*, así que una de sus funciones cuesta la librería entera. Las librerías de muchos países o de propósito general, como stdnum y validator.js, son más grandes por diseño.
+
+<SizeChart view="table" />
+
+## Concordancia con SPEC.md
+
+El porcentaje de los casos de prueba de la librería (opciones por defecto) que cada librería juzga igual que [SPEC.md](/nif-dni-nie-cif-validation/es/reference/official-sources/): válidos o no válidos.
+
+<Aside type="caution" title="Concordancia con SPEC.md, no corrección">
+Los mantenedores de esta librería escribieron tanto SPEC.md como los casos de prueba, así que coincide con ellos por construcción. La cifra que dice algo es la de cada una de las demás librerías, e incluso así, una discrepancia puede ser una elección legítima: muchas son decisiones que SPEC.md documenta, como aceptar la forma antigua del NIE o los tipos de control de [CIF-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#cif-3). «Solo entrada canónica» excluye los casos que necesitan normalización, así que ahí no se penaliza a una librería que no normaliza.
+</Aside>
+
+<AgreementChart view="chart" />
+
+<AgreementChart view="table" />
+
+Un tipo que una librería no valida se excluye de sus cifras, así que compara las columnas, y no «Todos los casos», entre librerías de distinto alcance. La lista de discrepancias de cada librería, con un ejemplo de cada una, está en [`latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md) (en inglés).
+
+## Método
+
+- **Entradas.** Se generan con un generador pseudoaleatorio con semilla, así que todas las ejecuciones y todas las máquinas miden las mismas cadenas: documentos válidos y los mismos documentos con un carácter de control incorrecto, para cada tipo.
+- **Llamadas.** Cada librería se llama exactamente como indica su documentación, con sus opciones por defecto, sobre la cadena de entrada sin procesar. La única excepción es jsvat, un validador de NIF-IVA, a cuyas entradas se les añade el prefijo `ES` fuera del bucle cronometrado.
+- **Medición.** [tinybench](https://github.com/tinylibs/tinybench) ejecuta cada tarea en su propio proceso, tras un calentamiento, para que lo que V8 aprende de una librería no cambie la cifra de la siguiente. La ejecución completa se repite en varias rondas, el orden de las librerías rota entre conjuntos y rondas, y cada cifra es su ronda mediana.
+- **Tamaño.** La importación de una sola función que documenta cada librería, empaquetada y minificada con esbuild y comprimida con gzip al nivel 9, menos el coste de una importación vacía.
+- **Concordancia.** La llamada «cualquier tipo» de cada librería sobre los casos que prueban las opciones por defecto, juzgando cada caso como válido o no válido.
+
+La metodología completa, sus salvedades y el esquema de los resultados están en [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md) (en inglés).
+
+## Ejecútalo tú mismo
+
+Las librerías se instalan en versiones exactas, así que una ejecución mide exactamente lo que recoge `latest.json`. Cierra antes los demás programas, y compara proporciones en lugar de cifras absolutas:
+
+```sh
+git clone https://github.com/josegoval/nif-dni-nie-cif-validation.git
+cd nif-dni-nie-cif-validation
+pnpm install --frozen-lockfile
+pnpm bench:competitors   # unos 5 minutos; escribe bench/results/latest.json y latest.md
+```
+
+`pnpm bench` compara en cambio cada validador con la versión 1. Un flujo de trabajo de GitHub Actions ejecuta el mismo benchmark bajo demanda, en un runner compartido, y sube los resultados.

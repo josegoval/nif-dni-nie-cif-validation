@@ -1,0 +1,36 @@
+---
+title: Comparison with other libraries
+description: A sourced feature comparison of Spanish NIF, DNI, NIE and CIF validators for JavaScript (spain-id, better-dni, dni-js, stdnum, validator.js, jsvat and more), including where the others are the better choice.
+---
+
+import FeatureMatrix from "../../components/docs/FeatureMatrix.astro";
+
+Several libraries on npm validate Spanish IDs. They differ in which documents they cover, how they treat what users type, and what they tell you when a number is wrong. This page compares their features; the [benchmarks](/nif-dni-nie-cif-validation/benchmarks/) compare their speed, size and agreement with [SPEC.md](/nif-dni-nie-cif-validation/reference/official-sources/).
+
+## Feature matrix
+
+<FeatureMatrix />
+
+What the columns mean:
+
+- **Types**: the documents the library validates. K/L/M NIFs belong to people without a DNI or an NIE ([KLM-1](/nif-dni-nie-cif-validation/reference/official-sources/#klm-1)).
+- **Normalizes input**: whether it accepts what users type (lower case, spaces, dots, hyphens) without a separate step. "Partial" means some of these.
+- **Result object**: whether it can tell you more than yes or no, such as the type or the reason.
+- **Size**: one validator of any type, minified and gzipped, as measured by the benchmark.
+- **Sources**: each library's README and npm page, which every row was checked against on the date above.
+
+## Where another library is the better choice
+
+- **Many countries: stdnum.** [stdnum](https://www.npmjs.com/package/stdnum), the JavaScript port of python-stdnum, validates the identifiers of about 90 countries with one API, every Spanish type included. If you need several countries, it is a good choice. This library does only Spain, and goes deeper there.
+- **The smallest bundle: spain-id or @maistik/validate-nif.** For one validator, [spain-id](https://www.npmjs.com/package/spain-id) and [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) are smaller than this library: see the [bundle sizes](/nif-dni-nie-cif-validation/benchmarks/#bundle-size). They don't accept K/L/M NIFs or the old NIE form, and they don't say why a number is invalid, so they spend fewer bytes. If every byte counts and you don't need those, they are fine choices.
+- **Many kinds of string: validator.js.** If you already use [validator.js](https://www.npmjs.com/package/validator) for emails and URLs, its two Spanish functions may be enough for DNIs and NIEs. It has no CIF check.
+
+## What this library adds
+
+- **Every type**, K/L/M NIFs and the old 10-character NIE included, and **the official control rules** for CIFs ([CIF-3](/nif-dni-nie-cif-validation/reference/official-sources/#cif-3)).
+- **Sources for every rule**: each one has an ID and a citation in SPEC.md, and every error names the rule that failed.
+- **The reason**, as an error code, a SPEC rule and a message in English, Spanish, Catalan, Basque or Galician.
+- **Normalization** and the canonical form to store, **test-data generators**, and **Zod, Valibot and Yup schemas**.
+
+Where libraries disagree with SPEC.md, the [benchmarks](/nif-dni-nie-cif-validation/benchmarks/#agreement-with-specmd) count the disagreements of each one, and say which follow from a decision that SPEC.md documents.
+

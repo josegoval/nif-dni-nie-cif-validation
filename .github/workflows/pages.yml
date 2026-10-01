@@ -2,7 +2,8 @@
 # Pages. See website/README.md.
 #
 # - On a pull request that touches the site or what it reads (the library,
-#   brand/, the benchmark results, SPEC.md, the llms files, the fixtures):
+#   brand/, the benchmark results and comparison, SPEC.md, the llms files,
+#   the fixtures):
 #   lint, type check, build, broken internal links, the live validator's
 #   JavaScript budget and the end-to-end tests. Nothing is deployed.
 # - On a push to master, or by hand (Actions, Pages, Run workflow): the same
@@ -23,6 +24,7 @@ on:
       - "test/**"
       - "brand/**"
       - "bench/results/**"
+      - "bench/comparison.mjs"
       - "SPEC.md"
       - "llms.txt"
       - "llms-full.txt"

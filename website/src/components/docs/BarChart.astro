@@ -1,0 +1,109 @@
+---
+// A bar chart that is a table: one row per library, the bar drawn in CSS
+// next to its value. The table is the chart's text alternative, so screen
+// readers and text browsers get every number, and the bars (aria-hidden)
+// are only drawn for sighted readers. No JavaScript, no chart library.
+//
+// `values` are the bars' numbers (null: unsupported), `max` the value of a
+// full bar (a larger value is drawn full, with a broken end), and `cells`
+// the texts of each row's columns: the first one is shown next to the bar.
+import TableScroll from "./TableScroll.astro";
+
+interface Row {
+  name: string;
+  version: string | null;
+  kind: string;
+  value: number | null;
+  cells: string[];
+}
+
+interface Props {
+  id: string;
+  caption: string;
+  library: string;
+  headers: string[];
+  rows: Row[];
+  max: number;
+  thisBuild: string;
+  unsupported: string;
+}
+
+const { id, caption, library, headers, rows, max, thisBuild, unsupported } =
+  Astro.props;
+const share = (value: number) => Math.min(Math.max(value / max, 0), 1).toFixed(4);
+---
+
+<TableScroll labelledby={`${id}-caption`}>
+  <table class="bar-chart" id={id}>
+    <caption id={`${id}-caption`}>{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{library}</th>
+        {headers.map((header) => <th scope="col" class="num">{header}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr data-kind={row.kind}>
+            <th scope="row">
+              <span class="name">{row.name}</span>{" "}
+              <span class="version">{row.version ?? thisBuild}</span>
+            </th>
+            {row.value === null ? (
+              headers.map(() => (
+                <td class="num muted">{unsupported}</td>
+              ))
+            ) : (
+              <>
+                <td class="num">
+                  <span class="bar-cell">
+                    <span
+                      class="bar"
+                      aria-hidden="true"
+                      data-capped={row.value > max ? "" : undefined}
+                      style={`--share: ${share(row.value)}`}
+                    />
+                    <span>{row.cells[0]}</span>
+                  </span>
+                </td>
+                {row.cells.slice(1).map((cell) => (
+                  <td class="num">{cell}</td>
+                ))}
+              </>
+            )}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</TableScroll>
+
+<style>
+  .bar-chart .bar-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .bar-chart .bar {
+    display: inline-block;
+    width: calc(var(--share) * 10rem);
+    min-width: 2px;
+    height: 0.625rem;
+    border-radius: 2px;
+    background: var(--sl-color-gray-4);
+  }
+  .bar-chart .bar[data-capped] {
+    mask-image: linear-gradient(to left, transparent 0.375rem, #000 0.375rem);
+  }
+  .bar-chart tr[data-kind="subject"] .bar {
+    background: var(--sl-color-accent);
+  }
+  @media (max-width: 40rem) {
+    .bar-chart .bar {
+      width: calc(var(--share) * 5rem);
+    }
+  }
+</style>

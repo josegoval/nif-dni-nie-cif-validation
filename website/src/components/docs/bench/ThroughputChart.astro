@@ -1,0 +1,56 @@
+---
+// One document type's throughput: millions of validations per second, the
+// fastest library first, with this build's speed-up over each one, and a
+// note on whether any library was faster. From bench/results/latest.json.
+import {
+  fasterThanSubject,
+  run,
+  type SetId,
+  throughputRows,
+} from "../../../data/bench-details";
+import { formatList, formatNumber, langOf, stringsFor } from "../../../i18n";
+import BarChart from "../BarChart.astro";
+
+interface Props {
+  set: SetId;
+}
+
+const { set } = Astro.props;
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const docs = stringsFor(lang).docs;
+const t = docs.bench.throughput;
+const rows = throughputRows(set);
+const max = Math.max(...rows.map((row) => row.ops ?? 0));
+const faster = fasterThanSubject(set);
+const nameOf = (l: { name: string; version: string | null }) =>
+  l.version ? `${l.name} ${l.version}` : l.name;
+---
+
+<BarChart
+  id={`throughput-${set.toLowerCase()}`}
+  caption={t.caption(set, formatNumber(lang, run.inputSets[set].count))}
+  library={docs.library}
+  headers={[t.ops, t.speedup]}
+  max={max}
+  thisBuild={docs.thisBuild}
+  unsupported={docs.unsupported}
+  rows={rows.map((row) => ({
+    name: row.library.name,
+    version: row.library.version,
+    kind: row.library.kind,
+    value: row.ops,
+    cells: [
+      formatNumber(lang, (row.ops ?? 0) / 1e6, 2),
+      row.library.kind === "subject" || row.speedup === null
+        ? "—"
+        : t.times(formatNumber(lang, row.speedup, 1)),
+    ],
+  }))}
+/>
+<p class="chart-note">
+  {
+    faster.length === 0
+      ? t.noneFaster(set)
+      : t.faster(set, formatList(lang, faster.map(nameOf)))
+  }
+</p>

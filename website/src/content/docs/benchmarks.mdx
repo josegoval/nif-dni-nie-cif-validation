@@ -1,14 +1,81 @@
 ---
 title: Benchmarks
-description: Throughput and bundle size of nif-dni-nie-cif-validation and the other Spanish NIF, DNI, NIE and CIF validators on npm, from the published benchmark results.
-prev: false
-next: false
+description: Throughput, bundle size and agreement with SPEC.md of nif-dni-nie-cif-validation and the other Spanish NIF, DNI, NIE and CIF validators on npm, with the machine, the method and how to run it yourself.
 ---
 
-import ComparisonTable from "../../components/landing/ComparisonTable.astro";
+import { Aside } from "@astrojs/starlight/components";
+import AgreementChart from "../../components/docs/bench/AgreementChart.astro";
+import BenchRun from "../../components/docs/bench/BenchRun.astro";
+import SizeChart from "../../components/docs/bench/SizeChart.astro";
+import ThroughputChart from "../../components/docs/bench/ThroughputChart.astro";
 
-The full benchmarks and comparison page is on its way. Until then, the table below has the headline figures: throughput on the DNI set, in millions of validations per second (**M ops/s, higher is faster**), and the size of one validator of any type (**min+gzip, lower is smaller**).
+How fast and how small this library is, next to its previous major version and the other libraries on npm that validate Spanish IDs. Every number on this page is read from [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json) when the site is built: nothing is typed by hand. If a library is faster or smaller at something, the tables show it.
 
-<ComparisonTable />
+<BenchRun />
 
-Every number comes from [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json). The complete results, with NIE and CIF, agreement with SPEC.md and every caveat, are in [`bench/results/latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md), and the method in [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md).
+Absolute numbers depend on the machine. The ratios between libraries of one run carry over between machines far better, so compare those.
+
+## Throughput
+
+Millions of validations per second (**M ops/s, higher is faster**), each library called the way its documentation shows, with its default options, on the same valid and invalid documents in canonical form. "This build is" gives how many times as fast as each library this build is, in the same run. *unsupported* means the library has no validator for that type.
+
+### DNI
+
+<ThroughputChart set="DNI" />
+
+### NIE
+
+<ThroughputChart set="NIE" />
+
+### CIF
+
+<ThroughputChart set="CIF" />
+
+Speed is not everything, and these figures leave things out: memory, the first call before the JIT warms up, input that needs normalization, and the cost of `validate()`'s detailed result. A library that rejects a string early is fast on it, which is why the agreement with SPEC.md is measured separately, below.
+
+## Bundle size
+
+What one validator adds to a bundle, minified and gzipped (**min+gzip, lower is smaller**), bundled with esbuild as the library's own size check does. The bar of a library much larger than the others is drawn full, with a broken end.
+
+<SizeChart view="chart" />
+
+Some smaller libraries validate fewer types. This one spends bytes on input normalization, the CIF-3 control types and K/L/M NIFs. Libraries published only as CommonJS can't be tree-shaken, so one of their functions costs the whole library. Multi-country and multi-purpose libraries, such as stdnum and validator.js, are larger by design.
+
+<SizeChart view="table" />
+
+## Agreement with SPEC.md
+
+The share of the fixtures of the library's test suite (default options) that each library judges as [SPEC.md](/nif-dni-nie-cif-validation/reference/official-sources/) does: valid or invalid.
+
+<Aside type="caution" title="Agreement with SPEC.md, not correctness">
+The maintainers of this library wrote both SPEC.md and the fixtures, so it agrees with them by construction. The figure that says something is each other library's, and even then, a disagreement can be a legitimate choice: many are decisions that SPEC.md documents, such as accepting the old NIE form or the [CIF-3](/nif-dni-nie-cif-validation/reference/official-sources/#cif-3) control types. "Canonical input only" leaves out the fixtures that need normalization, so a library that doesn't normalize isn't penalized there.
+</Aside>
+
+<AgreementChart view="chart" />
+
+<AgreementChart view="table" />
+
+A type that a library doesn't validate is left out of its figures, so compare the columns rather than "All fixtures" across libraries of a different scope. The list of disagreements of each library, with an example of each, is in [`latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md).
+
+## Method
+
+- **Inputs.** Generated from a seeded pseudo-random generator, so every run and every machine measures the same strings: valid documents and the same documents with a wrong control character, for each type.
+- **Calls.** Each library is called exactly as its documentation shows, with its default options, on the raw input string. The one exception is jsvat, a VAT validator, whose inputs get an `ES` prefix, added outside the timed loop.
+- **Timing.** [tinybench](https://github.com/tinylibs/tinybench) runs each task in its own process, after a warmup, so what V8 learns from one library can't change the next one's figure. The whole run repeats in rounds, the order of the libraries rotates between sets and rounds, and each figure is its median round.
+- **Size.** The single-function import that each library documents, bundled and minified with esbuild and gzipped at level 9, minus the cost of an empty import.
+- **Agreement.** Every library's "any type" call on the fixtures that test the default options, each fixture judged valid or invalid.
+
+The full methodology, its caveats and the schema of the results are in [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md).
+
+## Run it yourself
+
+The libraries are installed at exact versions, so a run measures exactly what `latest.json` lists. Close other programs first, and compare ratios rather than absolute numbers:
+
+```sh
+git clone https://github.com/josegoval/nif-dni-nie-cif-validation.git
+cd nif-dni-nie-cif-validation
+pnpm install --frozen-lockfile
+pnpm bench:competitors   # about 5 minutes; writes bench/results/latest.json and latest.md
+```
+
+`pnpm bench` compares every validator with version 1 instead. A GitHub Actions workflow runs the same benchmark on demand, on a shared runner, and uploads the results.

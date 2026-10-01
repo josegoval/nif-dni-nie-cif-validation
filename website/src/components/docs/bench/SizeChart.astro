@@ -1,0 +1,114 @@
+---
+// Bundle size, from bench/results/latest.json: a chart of one validator of
+// any type, smallest first (`view="chart"`), or the table of every size
+// (`view="table"`), followed by the libraries that are smaller than this
+// build and the extra measurements.
+import {
+  SIZE_KEYS,
+  sizeAlternatives,
+  sizeRows,
+  smallerThanSubject,
+} from "../../../data/bench-details";
+import { formatList, formatNumber, langOf, stringsFor } from "../../../i18n";
+import BarChart from "../BarChart.astro";
+import TableScroll from "../TableScroll.astro";
+
+interface Props {
+  view: "chart" | "table";
+}
+
+const { view } = Astro.props;
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const docs = stringsFor(lang).docs;
+const t = docs.bench.size;
+const bytes = (value: number) => docs.bytes(formatNumber(lang, value));
+const nameOf = (l: { name: string; version: string | null }) =>
+  l.version ? `${l.name} ${l.version}` : l.name;
+// The chart's scale: stdnum (a multi-country library) is about 50 times
+// larger than the others, so a linear bar is capped at the largest size of
+// the single-country libraries, and longer bars are drawn full.
+const anyValues = sizeRows
+  .map((row) => row.bytes.any)
+  .filter((v): v is number => v !== null)
+  .sort((a, b) => a - b);
+const median = anyValues[Math.floor(anyValues.length / 2)] ?? 1;
+const max = Math.max(...anyValues.filter((v) => v <= median * 10));
+// The texts describe the one extra measurement there is: a deep import.
+for (const alt of sizeAlternatives) {
+  if (!alt.label.startsWith("deep import")) {
+    throw new Error(`SizeChart: no text for the measurement "${alt.label}"`);
+  }
+}
+const smaller = smallerThanSubject.map(
+  (row) => `${nameOf(row.library)} (${bytes(row.bytes.any ?? 0)})`
+);
+---
+
+{
+  view === "chart" ? (
+    <BarChart
+      id="size-any"
+      caption={t.chartCaption}
+      library={docs.library}
+      headers={[t.columns.any]}
+      max={max}
+      thisBuild={docs.thisBuild}
+      unsupported={docs.unsupported}
+      rows={sizeRows.map((row) => ({
+        name: row.library.name,
+        version: row.library.version,
+        kind: row.library.kind,
+        value: row.bytes.any,
+        cells: [row.bytes.any === null ? "" : bytes(row.bytes.any)],
+      }))}
+    />
+  ) : (
+    <TableScroll labelledby="size-table-caption">
+      <table>
+        <caption id="size-table-caption">{t.tableCaption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{docs.library}</th>
+            {SIZE_KEYS.map((key) => (
+              <th scope="col" class="num">
+                {t.columns[key]}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sizeRows.map((row) => (
+            <tr data-kind={row.library.kind}>
+              <th scope="row">
+                <span class="name">{row.library.name}</span>{" "}
+                <span class="version">
+                  {row.library.version ?? docs.thisBuild}
+                </span>
+              </th>
+              {SIZE_KEYS.map((key) => {
+                const value = row.bytes[key];
+                return value === null ? (
+                  <td class="num muted">{docs.unsupported}</td>
+                ) : (
+                  <td class="num">{bytes(value)}</td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </TableScroll>
+  )
+}
+{
+  view === "chart" && (
+    <p class="chart-note">
+      {smaller.length > 0
+        ? t.smaller(formatList(lang, smaller))
+        : t.noneSmaller}{" "}
+      {sizeAlternatives.map((alt) =>
+        t.alternative(nameOf(alt.library), bytes(alt.bytes))
+      )}
+    </p>
+  )
+}

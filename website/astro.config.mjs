@@ -94,6 +94,10 @@ export default defineConfig({
           href: "https://github.com/josegoval/nif-dni-nie-cif-validation",
         },
       ],
+      // Long lines of code wrap instead of scrolling sideways: a scrolling
+      // block would have to be focusable for keyboard users (axe's
+      // scrollable-region-focusable), and wrapped code reads better on a phone.
+      expressiveCode: { defaultProps: { wrap: true } },
       sidebar: [
         {
           ...groups.reference,
@@ -105,7 +109,7 @@ export default defineConfig({
         },
         {
           ...groups.project,
-          items: ["benchmarks"],
+          items: ["benchmarks", "comparison"],
         },
       ],
       customCss: [
