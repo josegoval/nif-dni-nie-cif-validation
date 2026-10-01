@@ -1,12 +1,14 @@
 // Starlight route middleware: adds to the <head> of every page what
 // Starlight doesn't emit itself. The icons and the manifest (brand/), the
-// Open Graph and Twitter image (brand/og-default.png), and, on each landing
-// page, the JSON-LD that describes the package. Titles, descriptions,
+// Open Graph and Twitter image (brand/og-default.png), and the JSON-LD: on
+// each landing page, the package; on the guides and migration pages, a
+// TechArticle; on the FAQ, a FAQPage (src/jsonLd.ts). Titles, descriptions,
 // canonical URLs and the hreflang alternates (x-default = English) come from
 // Starlight and the pages' frontmatter, except on the API reference's
 // fallback pages, whose title and description are translated here.
 import { defineRouteMiddleware } from "@astrojs/starlight/route-data";
 import { langOf, stringsFor } from "./i18n";
+import { faqPage, techArticle } from "./jsonLd";
 
 const SITE_TITLE = "nif-dni-nie-cif-validation";
 const REPO = "https://github.com/josegoval/nif-dni-nie-cif-validation";
@@ -139,6 +141,28 @@ export const onRequest = defineRouteMiddleware((context) => {
         "TypeScript",
       ],
     };
+    route.head.push({
+      tag: "script",
+      attrs: { type: "application/ld+json" },
+      content: JSON.stringify(jsonLd),
+    });
+  }
+
+  // The guides and the migration pages are articles; the FAQ is a FAQPage.
+  if (/^(?:guides|migration)\//.test(path) && !route.isFallback) {
+    const page = {
+      title,
+      description,
+      url: new URL(context.url.pathname, site).href,
+      lang,
+      home: absolute(lang === "en" ? "" : `${lang}/`),
+      docsName: t.docs.jsonLd.docsName,
+      lastUpdated: route.lastUpdated,
+    };
+    const jsonLd =
+      path === "guides/faq"
+        ? faqPage(page, route.entry.body ?? "")
+        : techArticle(page);
     route.head.push({
       tag: "script",
       attrs: { type: "application/ld+json" },
