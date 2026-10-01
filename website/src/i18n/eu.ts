@@ -202,10 +202,10 @@ export const eu: SiteStrings = {
       },
       throughput: {
         caption: (set, inputs) =>
-          `${{ DNI: "NAN", NIE: "AIZ", CIF: "IFK" }[set] ?? set}: milioi egiaztapen segundoko (M ops/s; zenbat eta gehiago, orduan eta azkarragoa), forma kanonikoko ${inputs} dokumentu baliozko eta baliogaberekin, eta zenbat aldiz den azkarragoa konpilazio hau`,
+          `${{ DNI: "NAN", NIE: "AIZ", CIF: "IFK" }[set] ?? set}: segundoko egiaztapen kopurua, milioitan (M ops/s; zenbat eta gehiago, orduan eta azkarragoa), forma kanonikoko ${inputs} dokumentu baliozko eta baliogaberekin, eta konpilazio honen errendimenduaren eta liburutegi bakoitzarenaren arteko proportzioa`,
         ops: "M ops/s",
-        speedup: "Konpilazio hau",
-        times: (value) => `${value} aldiz azkarragoa`,
+        speedup: "Errendimendu erlatiboa",
+        times: (value) => `errendimenduaren ${value} halakoa`,
         noneFaster: (set) =>
           `Beste liburutegi bat ere ez zen azkarragoa izan ${{ DNI: "NAN", NIE: "AIZ", CIF: "IFK" }[set] ?? set} multzoan.`,
         faster: (set, libraries) =>

@@ -201,10 +201,10 @@ export const gl: SiteStrings = {
       },
       throughput: {
         caption: (set, inputs) =>
-          `${set}: millóns de validacións por segundo (M ops/s; canto maior sexa a cifra, máis rápida é) con ${inputs} documentos válidos e non válidos en forma canónica, e cantas veces máis rápida é esta compilación`,
+          `${set}: millóns de validacións por segundo (M ops/s; canto maior sexa a cifra, máis rápida é) con ${inputs} documentos válidos e non válidos en forma canónica, e a proporción entre o rendemento desta compilación e o de cada biblioteca`,
         ops: "M ops/s",
-        speedup: "Esta compilación é",
-        times: (value) => `${value} veces máis rápida`,
+        speedup: "Rendemento relativo",
+        times: (value) => `${value}× o rendemento`,
         noneFaster: (set) =>
           `Ningunha outra biblioteca foi máis rápida co conxunto ${set}.`,
         faster: (set, libraries) =>

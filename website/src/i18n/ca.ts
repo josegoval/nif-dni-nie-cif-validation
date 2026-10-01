@@ -197,14 +197,14 @@ export const ca: SiteStrings = {
         commit: "Commit mesurat",
         method: "Mètode",
         methodValue: (rounds, time, warmup) =>
-          `${rounds} rondes; cada tasca, ${time} ms després de ${warmup} ms d'escalfament, en el seu propi procés; la xifra és la de la ronda mitjana`,
+          `${rounds} rondes; cada tasca, ${time} ms després de ${warmup} ms d'escalfament, en el seu propi procés; la xifra correspon a la mediana dels resultats de les rondes`,
       },
       throughput: {
         caption: (set, inputs) =>
-          `${set}: milions de validacions per segon (M ops/s; com més alta és la xifra, més ràpida és) amb ${inputs} documents vàlids i no vàlids en forma canònica, i quantes vegades més ràpida és aquesta versió`,
+          `${set}: milions de validacions per segon (M ops/s; com més alta és la xifra, més ràpida és) amb ${inputs} documents vàlids i no vàlids en forma canònica, i la proporció entre el rendiment d'aquesta versió i el de cada biblioteca`,
         ops: "M ops/s",
-        speedup: "Aquesta versió és",
-        times: (value) => `${value} vegades més ràpida`,
+        speedup: "Rendiment relatiu",
+        times: (value) => `${value}× el rendiment`,
         noneFaster: (set) =>
           `Cap altra biblioteca no va ser més ràpida amb el conjunt ${set}.`,
         faster: (set, libraries) =>
@@ -231,7 +231,7 @@ export const ca: SiteStrings = {
       },
       agreement: {
         chartCaption:
-          "Concordança amb SPEC.md (no correcció absoluta): el percentatge de casos que cada biblioteca jutja igual que SPEC.md, en tots i només en l'entrada canònica",
+          "Concordança amb SPEC.md (no correcció absoluta): el percentatge de casos que cada biblioteca jutja igual que SPEC.md, en tots els casos i, per separat, només en els casos amb entrada canònica",
         tableCaption:
           "Concordança amb SPEC.md per tipus de document, i les discrepàncies degudes a decisions que SPEC.md documenta",
         all: "Tots els casos",

@@ -49,9 +49,9 @@ validate("T1234567A").error?.code; // "INVALID_FORMAT"
 validate("T1234567A").error?.rule; // "NIF-1"
 ```
 
-## 00 zifrekin hasten den IFK batek letra eraman behar du?
+## 00 digituekin hasten den IFK batek letra eraman behar du?
 
-Ez. Liburutegi batzuek kontrol-letra bat eskatzen dute IFK baten digituak `00` zifrekin hasten direnean. Arau horrek iturririk gabeko taula batean du jatorria, eta zerrenda ofizial batek ere ez du inoiz izan `00` probintzia-koderik; beraz, liburutegiak ez du aplikatzen (ikusi [Explicitly NOT implemented](/nif-dni-nie-cif-validation/eu/reference/official-sources/#explicitly-not-implemented-no-official-basis)). Kontrol mota gakoaren araberakoa da soilik:
+Ez. Liburutegi batzuek kontrol-letra bat eskatzen dute IFK baten lehen bi digituak `00` direnean. Arau horrek iturririk gabeko taula batean du jatorria, eta zerrenda ofizial batek ere ez du inoiz izan `00` probintzia-koderik; beraz, liburutegiak ez du aplikatzen (ikusi [Explicitly NOT implemented](/nif-dni-nie-cif-validation/eu/reference/official-sources/#explicitly-not-implemented-no-official-basis)). Kontrol mota gakoaren araberakoa da soilik:
 
 ```ts
 import { isValidCif } from "nif-dni-nie-cif-validation";

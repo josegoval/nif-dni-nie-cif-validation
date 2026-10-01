@@ -200,10 +200,10 @@ export const es: SiteStrings = {
       },
       throughput: {
         caption: (set, inputs) =>
-          `${set}: millones de validaciones por segundo (M ops/s; cuanto mayor sea la cifra, más rápida es) con ${inputs} documentos válidos y no válidos en forma canónica, y cuántas veces más rápida es esta versión`,
+          `${set}: millones de validaciones por segundo (M ops/s; cuanto mayor sea la cifra, más rápida es) con ${inputs} documentos válidos y no válidos en forma canónica, y la proporción entre el rendimiento de esta versión y el de cada librería`,
         ops: "M ops/s",
-        speedup: "Esta versión es",
-        times: (value) => `${value} veces más rápida`,
+        speedup: "Rendimiento relativo",
+        times: (value) => `${value}× el rendimiento`,
         noneFaster: (set) =>
           `Ninguna otra librería fue más rápida con el conjunto ${set}.`,
         faster: (set, libraries) =>

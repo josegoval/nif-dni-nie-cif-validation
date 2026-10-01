@@ -6,7 +6,7 @@ description: Espainiako IFZ, NAN, AIZ eta IFK zenbakietarako validate() funtzioa
 import { Aside } from "@astrojs/starlight/components";
 import ErrorCodesTable from "../../../../components/docs/ErrorCodesTable.astro";
 
-Balio bat baliozkoa ez denean, `validate()` funtzioak zergatik den azaltzen du `error` objektuaren lau eremuren bidez:
+Balio bat baliozkoa ez denean, `validate()` funtzioak zergatik ez den baliozkoa azaltzen du `error` objektuaren lau eremuren bidez:
 
 - `code`: errore mota, zazpi kodeetako bat, zure kodeak kasuaren arabera jardun dezan;
 - `rule`: betetzen ez den [SPEC.md arauaren](/nif-dni-nie-cif-validation/eu/reference/official-sources/) identifikatzailea, adibidez `DNI-2`;
@@ -21,7 +21,7 @@ validate("12345678A").error;
 //   message: 'The control character is not correct: for this DNI it should be "Z".' }
 ```
 
-`validate()` funtzioak balioa urratsez urrats egiaztatzen du eta lehen hutsegitean gelditzen da; beraz, balio baliogabe batek errore bat du, ez gehiago. `type` eta `normalized` formatua ezagutu daitekeen unetik daude, kontrol-karakterea okerra izan arren.
+`validate()` funtzioak balioa urratsez urrats egiaztatzen du eta lehen hutsegitean gelditzen da; beraz, balio baliogabe batek errore bat du, ez gehiago. `type` eta `normalized` formatua ezagut daitekeen unetik daude, kontrol-karakterea okerra izan arren.
 
 ## Errore-kode guztiak
 

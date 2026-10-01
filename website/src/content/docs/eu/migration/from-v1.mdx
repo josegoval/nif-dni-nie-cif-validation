@@ -5,7 +5,7 @@ description: Eguneratu nif-dni-nie-cif-validation 1. bertsiotik 2.era. Aldaketa 
 
 import { Aside, Steps } from "@astrojs/starlight/components";
 
-2. bertsioak egiaztatzaileei lehenespenez [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) jarraitzen die, hau da, Espainiako iturri ofizialei. Lau gauza aldatzen dira; gainerako guztia berdin geratzen da, esportazioen izen guztiak eta haien aliasak barne. Zerrenda osoa, xehetasun guztiekin, [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md) fitxategian dago (ingelesez).
+2. bertsioan, egiaztatzaileek lehenespenez [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) espezifikazioari jarraitzen diote, hau da, Espainiako iturri ofizialei. Lau gauza aldatzen dira; gainerako guztia berdin geratzen da, esportazioen izen guztiak eta haien aliasak barne. Zerrenda osoa, xehetasun guztiekin, [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md) fitxategian dago (ingelesez).
 
 ## Bide azkarra: 1. bertsioaren emaitzak mantentzea
 
@@ -114,7 +114,7 @@ Egiaztatzaileak eta gainerako funtzioak `nif-dni-nie-cif-validation` paketetik i
 
 ## 2. bertsioko berritasunak
 
-Hauetako bat ere ez du hausten lehendik dagoen kodea:
+Hauetako batek ere ez du hausten lehendik dagoen kodea:
 
 - [`validate()`](/nif-dni-nie-cif-validation/eu/guides/errors-and-languages/): mota, forma kanonikoa eta, balioa baliozkoa ez bada, errore-kode bat, SPEC araua eta mezu bat.
 - [`normalize()` eta `format()`](/nif-dni-nie-cif-validation/eu/guides/normalizing-and-formatting/), `getNifType()`, `computeControlCharacter()`, `describeCifOrganisation()` eta `isValidSpanishVat()`.
@@ -137,7 +137,7 @@ validate("12345678A").error?.rule; // "DNI-2"
 
 2. C, D, F, G, J, U edo V gakoetan kontrol-letra duten IFK gordeek baliozkoak izaten jarraitu behar badute, pasa `{ cifControl: "lenient" }` egiaztatzen dituzun lekuan, eta planifikatu datuen zuzenketa.
 
-3. Koderen batek bereizleak dituzten balioentzako `false` emaitzaren mende bazegoen, pasa `{ normalize: false }` edo, hobeto, gorde `normalize(value)`.
+3. Koderen bat bereizleak dituzten balioentzako `false` emaitzaren mende bazegoen, pasa `{ normalize: false }` edo, hobeto, gorde `normalize(value)`.
 
 4. TypeScript-en, ordezkatu `array.filter(isValidX)` gezi-funtzio batekin.
 

@@ -17,7 +17,7 @@ Les xifres absolutes depenen de la màquina. Les proporcions entre les biblioteq
 
 ## Velocitat
 
-Milions de validacions per segon (**M ops/s; com més alta és la xifra, més ràpida és**), amb cada biblioteca cridada com indica la seva documentació, amb les opcions per defecte, sobre els mateixos documents vàlids i no vàlids en forma canònica. «Aquesta versió és» indica quantes vegades més ràpida que cada biblioteca és aquesta versió, en la mateixa execució. *no admès* vol dir que la biblioteca no té validador per a aquest tipus.
+Milions de validacions per segon (**M ops/s; com més alta és la xifra, més ràpida és**), amb cada biblioteca cridada com indica la seva documentació, amb les opcions per defecte, sobre els mateixos documents vàlids i no vàlids en forma canònica. «Rendiment relatiu» indica la proporció entre el rendiment d'aquesta versió i el de cada biblioteca, en la mateixa execució. *no admès* vol dir que la biblioteca no té validador per a aquest tipus.
 
 ### DNI
 
@@ -61,7 +61,7 @@ Un tipus que una biblioteca no valida s'exclou de les seves xifres, de manera qu
 
 - **Entrades.** Es generen amb un generador pseudoaleatori amb llavor, de manera que totes les execucions i totes les màquines mesuren les mateixes cadenes: documents vàlids i els mateixos documents amb un caràcter de control incorrecte, per a cada tipus.
 - **Crides.** Cada biblioteca es crida exactament com indica la seva documentació, amb les opcions per defecte, sobre la cadena d'entrada sense processar. L'única excepció és jsvat, un validador de NIF-IVA, a les entrades del qual s'afegeix el prefix `ES` fora del bucle cronometrat.
-- **Mesura.** [tinybench](https://github.com/tinylibs/tinybench) executa cada tasca en el seu propi procés, després d'un escalfament, perquè el que V8 aprèn d'una biblioteca no canviï la xifra de la següent. L'execució completa es repeteix en diverses rondes, l'ordre de les biblioteques va rotant entre conjunts i rondes, i cada xifra és la de la seva ronda mitjana.
+- **Mesura.** [tinybench](https://github.com/tinylibs/tinybench) executa cada tasca en el seu propi procés, després d'un escalfament, perquè el que V8 aprèn d'una biblioteca no canviï la xifra de la següent. L'execució completa es repeteix en diverses rondes, l'ordre de les biblioteques va rotant entre conjunts i rondes, i cada xifra correspon a la mediana dels resultats de les rondes.
 - **Mida.** La importació d'una sola funció que documenta cada biblioteca, empaquetada i minificada amb esbuild i comprimida amb gzip al nivell 9, menys el cost d'una importació buida.
 - **Concordança.** La crida «qualsevol tipus» de cada biblioteca sobre els casos que proven les opcions per defecte, jutjant cada cas com a vàlid o no vàlid.
 

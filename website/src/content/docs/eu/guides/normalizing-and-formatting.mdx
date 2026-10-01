@@ -11,7 +11,7 @@ Jendeak IFZ bera modu askotara idazten du: `12345678z`, `12.345.678-Z`, `1234567
 
 `normalize()` funtzioak forma kanonikoa itzultzen du: iturri ofizialena, eta gorde behar duzuna. Hurrenkera honetan:
 
-1. Zuriuneak kentzen ditu edozein posiziotan, eta horrek muturrak ere mozten ditu, baita puntuak ([NORM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-2)), marrak eta barrak ere ([NORM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-3)).
+1. Zuriuneak kentzen ditu edozein posiziotan (eta, horrenbestez, hasierako eta amaierako zuriuneak ere kentzen ditu), baita puntuak ([NORM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-2)), marrak eta barrak ere ([NORM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-3)).
 2. Minuskulak maiuskula bihurtzen ditu ([NORM-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-1)).
 3. 10 karaktereko AIZ zaharra (`X0` + 7 digitu + letra) 9 karaktereko formara murrizten du ([NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3)).
 4. Hasierako zeroak gehitzen dizkio 8 digitu baino gutxiagorekin idatzitako NAN bati ([NORM-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-4)).
@@ -54,7 +54,7 @@ validate("12345678A").normalized;     // "12345678A": letra okerra izan arren, b
 validate("hello").normalized;         // null: ez da inongo dokumentu gisa ezagutzen
 ```
 
-`normalized` formatua ezagutu daitekeen unetik dago, kontrol-karakterea okerra izan arren; horrela, erroreen ondoan erakuts diezaiokezu erabiltzaileari.
+`normalized` formatua ezagut daitekeen unetik dago, kontrol-karakterea okerra izan arren; horrela, erroreen ondoan erakuts diezaiokezu erabiltzaileari.
 
 ## Normalizazioa desaktibatzea
 
