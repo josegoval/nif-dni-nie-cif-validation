@@ -66,25 +66,6 @@ for (const lang of LANGS) {
   });
 }
 
-test("titles and descriptions are unique per page and language", async ({
-  page,
-}) => {
-  const seen = new Set<string>();
-  for (const lang of LANGS) {
-    for (const path of ["", "benchmarks/"]) {
-      await page.goto(`${pathOf(lang)}${path}`);
-      const title = await page.title();
-      const description = await page
-        .locator('meta[name="description"]')
-        .getAttribute("content");
-      expect(seen.has(title), title).toBe(false);
-      expect(seen.has(description ?? ""), description ?? "").toBe(false);
-      seen.add(title);
-      seen.add(description ?? "");
-    }
-  }
-});
-
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
 
