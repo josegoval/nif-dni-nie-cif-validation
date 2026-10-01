@@ -180,25 +180,36 @@ euskara
 galego
 valencià
 
+# The brand colour names (brand/README.md)
+gualda
+
 # Heading anchors of SPEC.md, repeated in llms-full.txt
 getniftype
 
 # English words missing from the dictionaries
 alikes
 dotless
+frontmatter
+nums
 subpath
 subpaths
 uncited
 
 # Tools, packages and accounts
+applebot
 arethetypeswrong
+astrojs
 attw
+bingbot
 buymeacoffee
 commitlint
 darwin
 deno
 denoland
 esbuild
+fontsource
+googlebot
+grotesk
 hookform
 josegoval
 jsvat

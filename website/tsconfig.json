@@ -1,0 +1,11 @@
+{
+  // `pnpm typecheck` (astro check) uses it. TypeScript 6 here, not the 7 of
+  // the library: @astrojs/check needs the TypeScript JavaScript API.
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "node_modules", "test-results", "playwright-report"],
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": true,
+    "types": ["node"]
+  }
+}
