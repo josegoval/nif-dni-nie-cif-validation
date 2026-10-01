@@ -59,6 +59,7 @@ test/fixtures/  SPEC test values as JSON, run by src/__tests__/fixtures.test.ts
 test/smoke/     smoke tests of the packed tarball, CommonJS and ES module (plain Node, see Pull requests)
 bench/          benchmarks: against v1.0.11 and another build, and against other libraries (see Performance)
 examples/       runnable projects that use the package, their own pnpm workspace (see Examples)
+website/        the website (Astro + Starlight, GitHub Pages), its own pnpm workspace (see Website)
 scripts/        build script, CI helpers: coverage summary, SPEC rule and JSDoc checks, tree-shaking check, README and llms-full.txt generators
 .size-limit.json  bundle size budgets (see Build and package layout)
 ```
@@ -177,6 +178,15 @@ Constants and types need a summary and `@since`; give them examples too when the
 - **CI** is `.github/workflows/examples.yml`, not a job of `release.yml`, because the examples install packages from the registry, so a failure there can come from outside this repository and must not block a release. It runs on every pull request (any change to the library can break an example) and on the release branches. A `Pack` job audits the examples' dependencies (`pnpm --dir examples audit --audit-level high`, the same threshold as the library's) and packs the library once, and a matrix runs each example in its own job: it unpacks the tarball, installs only that example (`pnpm install --filter ./<name>`), checks that `examples/pnpm-lock.yaml` didn't change (`--frozen-lockfile` can't be used, see the comment in the workflow), and runs `pnpm check`. When you add an example, add it to the matrix.
 - **Deno and Bun run in CI**, with `denoland/setup-deno` and `oven-sh/setup-bun`, the official actions of the two projects, pinned to an exact release (Dependabot updates them) and only used by their own job. The package says it works there, so CI proves it: the cost is two more third-party actions, each limited to one matrix job that has no secrets (the workflow only has `contents: read`). Run them locally with `deno run main.ts` and `bun run index.ts`.
 
+### Website
+
+`website/` is the site published at <https://josegoval.github.io/nif-dni-nie-cif-validation/>: a landing page with a live validator, in English, Spanish, Catalan, Basque and Galician. How to run it, how it is built and how to move it to a custom domain: [website/README.md](website/README.md).
+
+- **Its own pnpm workspace**, like `examples/`: `website/pnpm-workspace.yaml` and its own `pnpm-lock.yaml`, with the same `minimumReleaseAge` and no install script allowed, so the root install never installs Astro. The root Biome configuration ignores `website/` (it has its own `biome.json`); `pnpm spell` checks its English files.
+- **It uses the library of the repository**, through `"nif-dni-nie-cif-validation": "link:.."`, resolved by the root `exports` into `dist/`: run `pnpm build` at the root before building the site. Every benchmark number on it comes from `bench/results/latest.json` at build time.
+- **CI** is `.github/workflows/pages.yml`: on pull requests that touch the site or what it reads, it lints, type-checks and builds the site, checks its internal links and the live validator's JavaScript budget, and runs the Playwright tests; on a push to `master` it also runs `pnpm test` and deploys, with the coverage report at `/coverage/`.
+- **Texts in other languages** are in `website/src/content/docs/<code>/`, `website/src/i18n/<code>.ts` and `website/src/content/i18n/<code>.json`; use the terms of `docs/translations.md`, and have a change reviewed in that language.
+
 ### Spelling
 
 `pnpm spell` runs [cspell](https://cspell.org/) with `cspell.config.yaml` (English, British spelling). Real words it doesn't know, such as the Spanish legal terms quoted from the sources, go in `.cspell/project-words.txt`. `README.es.md` and `scripts/readme-bench.mjs` (which writes its Spanish parts) are checked with the Spanish (Spain) dictionary too (`@cspell/dict-es-es`, a dev dependency). The string literals of the Catalan, Basque and Galician locales (and the tree-shaking markers) are not spell-checked, by an override in `cspell.config.yaml`, and docs/translations.md turns cspell off around its tables: the project has no dictionary for those languages, and the language review covers them.
@@ -244,6 +254,7 @@ Keep commits atomic: one logical change per commit, with a message that explains
   - `Check (Node 24)`: dependency audit (fails on high or critical advisories), commit lint, Biome lint, spell check (`pnpm spell`), SPEC rule ID check (`pnpm spec:check`), the README sections generated from the benchmark (`pnpm readme:bench --check`) and `llms-full.txt` (`pnpm docs:llms --check`), type check, tests with 100% coverage enforced (including the differential test against v1.0.11), coverage summary and report, the size budgets (`pnpm size`), the JSDoc of every export (`node scripts/check-jsdoc.mjs`), the ES2016 syntax check (`pnpm check:es`), then packs the tarball, checks that it tree-shakes (`scripts/check-tree-shaking.mjs`), checks it with `publint --strict` and `@arethetypeswrong/cli` (green in every resolution mode) and uploads it as the `package-tarball` artifact.
   - `Compat (Node 20)`: runs after `Check`. It installs that tarball into an empty folder on Node 20 (the minimum supported version, `engines.node` in `package.json`) and runs the smoke tests in `test/smoke/` with Node's built-in test runner: `smoke.test.cjs` loads the package with `require()` and `smoke.test.mjs` with `import`. It installs no dev dependencies, so it proves what a consumer gets. Run it locally with `pnpm pack`, then install the tarball in a temporary folder and `node --test` copies of both files from there.
   - `PR title`: checks that the pull request title is a valid Conventional Commit (see `.github/workflows/pr-title.yml`).
+  - `Pages` (`.github/workflows/pages.yml`), when the site or what it reads changes: builds and tests the site (see Website). Also a separate workflow.
   - `Examples` (`.github/workflows/examples.yml`): packs the library and runs each project of `examples/` in its own job against it (see Examples). It is a separate workflow and not part of the release gate, so a registry outage can't block a release.
 - Stacked PRs (a PR whose base is another PR's branch) are fine. Merge them bottom-up and retarget each PR to `master` after its parent merges.
 
@@ -271,4 +282,5 @@ Do not run `npm publish` by hand. The `prepack` script builds `dist/` so a tarba
 Coverage never leaves GitHub; there is no third-party service:
 
 - Every CI run on Node 24 writes a coverage table to the run's **job summary** (`scripts/coverage-summary.mjs`) and uploads the HTML report as the `coverage-report` artifact.
+- The website publishes the HTML report of `master` at <https://josegoval.github.io/nif-dni-nie-cif-validation/coverage/>, and a badge drawn from `coverage/coverage-summary.json` at `/coverage/badge.svg` (`website/integrations/`).
 - Run `pnpm test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/html/index.html`.
