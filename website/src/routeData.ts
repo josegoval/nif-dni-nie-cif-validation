@@ -3,10 +3,12 @@
 // Open Graph and Twitter image (brand/og-default.png), and, on each landing
 // page, the JSON-LD that describes the package. Titles, descriptions,
 // canonical URLs and the hreflang alternates (x-default = English) come from
-// Starlight and the pages' frontmatter.
+// Starlight and the pages' frontmatter, except on the API reference's
+// fallback pages, whose title and description are translated here.
 import { defineRouteMiddleware } from "@astrojs/starlight/route-data";
 import { langOf, stringsFor } from "./i18n";
 
+const SITE_TITLE = "nif-dni-nie-cif-validation";
 const REPO = "https://github.com/josegoval/nif-dni-nie-cif-validation";
 const NPM = "https://www.npmjs.com/package/nif-dni-nie-cif-validation";
 
@@ -15,9 +17,32 @@ export const onRequest = defineRouteMiddleware((context) => {
   const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
   const site = context.site ?? new URL(context.url.origin);
   const absolute = (path: string) => new URL(`${base}${path}`, site).href;
-  const t = stringsFor(langOf(route.lang));
+  const lang = langOf(route.lang);
+  const t = stringsFor(lang);
   const isLanding = route.entry.data.template === "splash";
-  const description = route.entry.data.description ?? "";
+  // The page's path without its language folder: "guides/faq".
+  const path = route.locale
+    ? route.id.slice(route.locale.length + 1)
+    : route.id;
+  let title = route.entry.data.title;
+  let description = route.entry.data.description ?? "";
+
+  // The API reference is English only: in the other languages, Starlight
+  // shows its pages as fallback content. Give each one a title and a
+  // description in the page's language, so that no two pages of the site
+  // share them.
+  if (route.isFallback && path.startsWith("reference/api/")) {
+    title = t.docs.apiFallback.title(route.entry.data.title);
+    description = t.docs.apiFallback.description(route.entry.data.title);
+    for (const entry of route.head) {
+      if (entry.tag === "title") entry.content = `${title} | ${SITE_TITLE}`;
+      const key = entry.attrs?.name ?? entry.attrs?.property;
+      if (entry.tag !== "meta" || !entry.attrs) continue;
+      if (key === "description" || key === "og:description")
+        entry.attrs.content = description;
+      if (key === "og:title") entry.attrs.content = title;
+    }
+  }
 
   route.head.push(
     {
@@ -70,7 +95,7 @@ export const onRequest = defineRouteMiddleware((context) => {
     },
     {
       tag: "meta",
-      attrs: { name: "twitter:title", content: route.entry.data.title },
+      attrs: { name: "twitter:title", content: title },
     },
     {
       tag: "meta",

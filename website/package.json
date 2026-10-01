@@ -36,6 +36,9 @@
     "@playwright/test": "^1.63.0",
     "@types/node": "^22.20.4",
     "starlight-links-validator": "^0.26.0",
+    "starlight-typedoc": "^0.23.1",
+    "typedoc": "^0.28.20",
+    "typedoc-plugin-markdown": "^4.13.1",
     "typescript": "^6.0.3"
   }
 }

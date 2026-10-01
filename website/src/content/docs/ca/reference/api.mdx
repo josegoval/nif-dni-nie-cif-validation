@@ -1,0 +1,26 @@
+---
+title: Referència de l'API
+description: La referència de l'API de nif-dni-nie-cif-validation, generada a partir del seu JSDoc. Totes les exportacions de cada punt d'entrada, amb signatures, opcions, valors retornats, exemples provats i les regles de SPEC que segueixen.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import EntryPointsTable from "../../../../components/docs/EntryPointsTable.astro";
+
+La referència es genera a partir del JSDoc del codi font de la biblioteca cada vegada que es construeix el lloc web, de manera que sempre coincideix amb el codi. Té una pàgina per a cada punt d'entrada del paquet, amb totes les seves exportacions: la signatura, què volen dir cada paràmetre i el valor retornat, dos exemples que executen els tests de la biblioteca, la regla de SPEC que segueix i la versió que la va afegir.
+
+<Aside type="note" title="En anglès">
+Les pàgines de la referència són en anglès, perquè el seu text és el JSDoc del codi.
+</Aside>
+
+<EntryPointsTable />
+
+El vostre editor mostra la mateixa documentació mentre escriviu, a partir de les declaracions de tipus que inclou el paquet.
+
+## Com llegir la referència
+
+- **Opcions.** Els validadors reben `IsValidOptions`, `validate()` rep `ValidateOptions` i els esquemes reben les opcions de `validate()`. El valor per defecte i l'efecte de cada opció són a la pàgina del punt d'entrada principal.
+- **Regles.** Els enllaços a identificadors de regles, com `DNI-2`, obren la pàgina de [fonts oficials](/nif-dni-nie-cif-validation/ca/reference/official-sources/).
+- **Àlies.** `isValidCif` i `isValidLegalEntityNif` són la mateixa funció, com ho són `isValidCifControlCode` i `isValidLegalEntityNifControlCode`, `CIF_REGEX` i `LEGAL_ENTITY_NIF_REGEX`, i `CIF_CONTROL_LETTERS` i `LEGAL_ENTITY_CONTROL_LETTERS`.
+- **Obsoleta.** `replaceNieLetter` es manté per al codi de la versió 1. Llança una excepció amb una entrada incorrecta, a diferència de tota la resta.
+
+Les decisions darrere de l'API són a [docs/api-design.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md) (en anglès).

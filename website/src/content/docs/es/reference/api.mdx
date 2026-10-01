@@ -1,0 +1,26 @@
+---
+title: Referencia de la API
+description: La referencia de la API de nif-dni-nie-cif-validation, generada a partir de su JSDoc. Todas las exportaciones de cada punto de entrada, con firmas, opciones, valores devueltos, ejemplos probados y las reglas de SPEC que siguen.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import EntryPointsTable from "../../../../components/docs/EntryPointsTable.astro";
+
+La referencia se genera a partir del JSDoc del código fuente de la librería cada vez que se construye el sitio, así que siempre coincide con el código. Tiene una página por cada punto de entrada del paquete, con todas sus exportaciones: su firma, qué significan cada parámetro y el valor devuelto, dos ejemplos que ejecutan los tests de la librería, la regla de SPEC que sigue y la versión que la añadió.
+
+<Aside type="note" title="En inglés">
+Las páginas de la referencia están en inglés, porque su texto es el JSDoc del código.
+</Aside>
+
+<EntryPointsTable />
+
+Tu editor muestra la misma documentación mientras escribes, a partir de las declaraciones de tipos que incluye el paquete.
+
+## Cómo leer la referencia
+
+- **Opciones.** Los validadores reciben `IsValidOptions`, `validate()` recibe `ValidateOptions` y los esquemas reciben las opciones de `validate()`. El valor por defecto y el efecto de cada opción están en la página del punto de entrada principal.
+- **Reglas.** Los enlaces a identificadores de reglas, como `DNI-2`, abren la página de [fuentes oficiales](/nif-dni-nie-cif-validation/es/reference/official-sources/).
+- **Alias.** `isValidCif` e `isValidLegalEntityNif` son la misma función, como lo son `isValidCifControlCode` e `isValidLegalEntityNifControlCode`, `CIF_REGEX` y `LEGAL_ENTITY_NIF_REGEX`, y `CIF_CONTROL_LETTERS` y `LEGAL_ENTITY_CONTROL_LETTERS`.
+- **Obsoleta.** `replaceNieLetter` se mantiene para el código de la versión 1. Lanza una excepción con una entrada incorrecta, a diferencia de todo lo demás.
+
+Las decisiones detrás de la API están en [docs/api-design.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md) (en inglés).

@@ -1,0 +1,18 @@
+---
+// The scroll container of the documentation's data tables: a region named
+// by the table's caption, which scrolls sideways when the table is wider
+// than the screen. It is focusable so that keyboard users can scroll it too
+// (WCAG 2.1.1; axe's scrollable-region-focusable).
+// cspell:ignore Noninteractive WCAG
+interface Props {
+  /** The id of the table's caption. */
+  labelledby: string;
+}
+
+const { labelledby } = Astro.props;
+---
+
+<!-- biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be reachable with the keyboard -->
+<section class="table-scroll" aria-labelledby={labelledby} tabindex="0">
+  <slot />
+</section>

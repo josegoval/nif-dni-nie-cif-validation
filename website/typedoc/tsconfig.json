@@ -1,0 +1,11 @@
+{
+  // TypeDoc (starlight-typedoc) reads the library's sources with the
+  // TypeScript 6 of this workspace: the library's TypeScript 7 has no
+  // JavaScript API. The compiler options are the library's own.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../../src"
+  },
+  "include": ["../../src/**/*.ts"],
+  "exclude": ["../../src/**/__tests__/**", "../../src/**/*.test.ts"]
+}

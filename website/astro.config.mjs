@@ -5,6 +5,7 @@ import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import { repoFiles } from "./integrations/repo-files.mjs";
+import { apiReference, typeDocSidebarGroup } from "./plugins/api-reference.mjs";
 import { officialSources } from "./plugins/official-sources.mjs";
 
 // GitHub Pages serves a project site from https://<owner>.github.io/<repo>/.
@@ -96,14 +97,22 @@ export default defineConfig({
       sidebar: [
         {
           ...groups.reference,
-          items: ["reference/official-sources"],
+          items: [
+            "reference/api",
+            typeDocSidebarGroup,
+            "reference/official-sources",
+          ],
         },
         {
           ...groups.project,
           items: ["benchmarks"],
         },
       ],
-      customCss: ["./src/styles/fonts.css", "./src/styles/theme.css"],
+      customCss: [
+        "./src/styles/fonts.css",
+        "./src/styles/theme.css",
+        "./src/styles/docs.css",
+      ],
       components: {
         Hero: "./src/components/overrides/Hero.astro",
         Footer: "./src/components/overrides/Footer.astro",
@@ -111,10 +120,14 @@ export default defineConfig({
       // Icons, Open Graph image and JSON-LD in the <head> (src/routeData.ts).
       routeMiddleware: "./src/routeData.ts",
       plugins: [
-        // A generated page: SPEC.md as /reference/official-sources/
-        // (plugins/official-sources.mjs).
+        // Generated pages: SPEC.md as /reference/official-sources/, and the
+        // API reference from the JSDoc (plugins/).
         officialSources(),
-        starlightLinksValidator(),
+        ...apiReference(groups.entryPoints),
+        // The API reference is English only: the other languages link to its
+        // pages under their own folder, where Starlight shows them as
+        // fallback content.
+        starlightLinksValidator({ errorOnFallbackPages: false }),
       ],
     }),
     repoFiles(),

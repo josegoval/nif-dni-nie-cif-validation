@@ -221,6 +221,7 @@ publint
 releaserc
 spain
 stdnum
+typedoc
 valibot
 vite
 vitest

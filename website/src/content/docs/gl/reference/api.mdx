@@ -1,0 +1,26 @@
+---
+title: Referencia da API
+description: A referencia da API de nif-dni-nie-cif-validation, xerada a partir do seu JSDoc. Todas as exportacións de cada punto de entrada, con sinaturas, opcións, valores devoltos, exemplos probados e as regras de SPEC que seguen.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import EntryPointsTable from "../../../../components/docs/EntryPointsTable.astro";
+
+A referencia xérase a partir do JSDoc do código fonte da biblioteca cada vez que se constrúe o sitio, así que sempre coincide co código. Ten unha páxina por cada punto de entrada do paquete, con todas as súas exportacións: a súa sinatura, que significan cada parámetro e o valor devolto, dous exemplos que executan as probas da biblioteca, a regra de SPEC que segue e a versión que a engadiu.
+
+<Aside type="note" title="En inglés">
+As páxinas da referencia están en inglés, porque o seu texto é o JSDoc do código.
+</Aside>
+
+<EntryPointsTable />
+
+O seu editor mostra a mesma documentación mentres escribe, a partir das declaracións de tipos que inclúe o paquete.
+
+## Como ler a referencia
+
+- **Opcións.** Os validadores reciben `IsValidOptions`, `validate()` recibe `ValidateOptions` e os esquemas reciben as opcións de `validate()`. O valor predeterminado e o efecto de cada opción están na páxina do punto de entrada principal.
+- **Regras.** As ligazóns a identificadores de regras, como `DNI-2`, abren a páxina de [fontes oficiais](/nif-dni-nie-cif-validation/gl/reference/official-sources/).
+- **Alias.** `isValidCif` e `isValidLegalEntityNif` son a mesma función, como o son `isValidCifControlCode` e `isValidLegalEntityNifControlCode`, `CIF_REGEX` e `LEGAL_ENTITY_NIF_REGEX`, e `CIF_CONTROL_LETTERS` e `LEGAL_ENTITY_CONTROL_LETTERS`.
+- **Obsoleta.** `replaceNieLetter` mantense para o código da versión 1. Lanza unha excepción cunha entrada incorrecta, a diferenza de todo o demais.
+
+As decisións detrás da API están en [docs/api-design.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md) (en inglés).

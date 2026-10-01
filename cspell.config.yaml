@@ -22,7 +22,7 @@ files:
   # The website's English text and code (its own workspace: nothing here
   # needs its dependencies). The other languages get a language review.
   - "website/*.{md,mjs,ts,json,yaml}"
-  - "website/{src,scripts,integrations,plugins,tests}/**"
+  - "website/{src,scripts,integrations,plugins,typedoc,tests}/**"
 ignorePaths:
   - node_modules/**
   - dist/**
@@ -43,7 +43,8 @@ ignorePaths:
   - website/.astro/**
   - website/src/content/docs/{es,ca,eu,gl}/**
   - website/src/intros/*/{es,ca,eu,gl}.md
-  # Generated at build time from SPEC.md (website/plugins/).
+  # Generated at build time from SPEC.md and the JSDoc (website/plugins/).
+  - website/src/content/docs/**/reference/api/**
   - website/src/content/docs/**/reference/official-sources.md
   - website/src/content/i18n/**
   - website/src/i18n/{es,ca,eu,gl}.ts

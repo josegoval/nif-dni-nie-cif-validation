@@ -1,0 +1,88 @@
+/*
+ * The tables that the documentation pages build from data (the CIF keys,
+ * the error codes, the benchmark charts, the comparison matrix): see
+ * src/components/docs/. A table sits in a focusable scroll region, so a wide
+ * one scrolls sideways on a phone and can be scrolled with the keyboard.
+ */
+/* The tables of the pages' Markdown fit the width of the screen and wrap
+   their text, code included, instead of scrolling sideways: Starlight makes
+   them scroll, and a scrolling element would have to be focusable for
+   keyboard users (axe's scrollable-region-focusable). */
+.sl-markdown-content > table:not(:where(.not-content *)) {
+  display: table;
+  width: 100%;
+  overflow: visible;
+}
+.sl-markdown-content > table :is(th, td) {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.sl-markdown-content > table :is(th, td) code {
+  word-break: break-all;
+}
+@media (max-width: 40rem) {
+  .sl-markdown-content > table {
+    font-size: var(--sl-text-sm);
+  }
+  .sl-markdown-content > table :is(th, td) {
+    padding-inline: 0.25rem;
+  }
+  .sl-markdown-content > table th {
+    overflow-wrap: anywhere;
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin-block: 1.5rem;
+}
+.table-scroll:focus-visible {
+  outline-offset: 4px;
+}
+.sl-markdown-content .table-scroll table {
+  display: table;
+  width: 100%;
+  overflow: visible;
+  font-size: var(--sl-text-sm);
+}
+.table-scroll caption {
+  caption-side: top;
+  padding-bottom: 0.75rem;
+  text-align: start;
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-sm);
+}
+.table-scroll thead th {
+  color: var(--sl-color-gray-3);
+  font-weight: var(--brand-weight-semibold);
+  vertical-align: bottom;
+}
+.table-scroll tbody th {
+  min-width: 10rem;
+  font-weight: var(--brand-weight-regular);
+  color: var(--sl-color-white);
+}
+.table-scroll .num {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.table-scroll .name {
+  font-family: var(--brand-font-mono);
+  font-size: 0.875em;
+  overflow-wrap: break-word;
+}
+.table-scroll .version,
+.table-scroll .muted {
+  color: var(--sl-color-gray-3);
+}
+.table-scroll tr[data-kind="subject"] :is(th, td) {
+  font-weight: var(--brand-weight-semibold);
+  color: var(--sl-color-white);
+}
+
+/* Under the charts: notes on the data. */
+.chart-note {
+  font-size: var(--sl-text-sm);
+  color: var(--sl-color-gray-3);
+}
