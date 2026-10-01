@@ -42,7 +42,7 @@ import type { IsValidOptions } from "./types";
  * @example
  * LEGAL_ENTITY_CONTROL_LETTERS.indexOf("B"); // 2: a control letter B stands for the digit 2
  * LEGAL_ENTITY_CONTROL_LETTERS.includes("Z"); // false: Z is never a control letter
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 1.0.0
  */
 export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
@@ -61,8 +61,8 @@ export const LEGAL_ENTITY_CONTROL_LETTERS = "JABCDEFGHI";
  * @example
  * LEGAL_ENTITY_NIF_REGEX.test("K12345674"); // false: K is not an organisation key (CIF-2)
  * LEGAL_ENTITY_NIF_REGEX.test("B1234567");  // false: the control character is missing (CIF-1)
- * @see SPEC.md#cif-1
- * @see SPEC.md#cif-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-1 SPEC.md#cif-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-2 SPEC.md#cif-2}
  * @since 1.0.0
  */
 export const LEGAL_ENTITY_NIF_REGEX = /^[ABCDEFGHJNPQRSUVW][\d]{7}[\dA-J]$/i;
@@ -258,8 +258,8 @@ function hasLooseControlCode(
  * isValidLegalEntityNifControlCode("B12345670"); // false: the control digit should be 4 (CIF-4)
  * isValidLegalEntityNifControlCode("P28079004"); // false: P takes a letter (CIF-3)
  * isValidLegalEntityNifControlCode("G1234567D"); // false: G takes a digit (CIF-3), unless lenient
- * @see SPEC.md#cif-3
- * @see SPEC.md#cif-4
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-4 SPEC.md#cif-4}
  * @since 1.0.0
  */
 export function isValidLegalEntityNifControlCode(
@@ -314,8 +314,8 @@ export function isValidLegalEntityNifControlCode(
  * isValidLegalEntityNif("B12345670"); // false: the control digit should be 4 (CIF-4)
  * isValidLegalEntityNif("G1234567D"); // false: G takes a digit, not a letter (CIF-3)
  * isValidLegalEntityNif("12345678Z"); // false: a DNI is not a NIF of a legal person
- * @see SPEC.md#cif-3
- * @see SPEC.md#norm-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-2 SPEC.md#norm-2}
  * @since 1.0.0
  */
 export function isValidLegalEntityNif(
@@ -384,8 +384,8 @@ function checkCif(value: string, opts: IsValidOptions | null): boolean {
  * isValidCif("B12345670"); // false: the control digit should be 4 (CIF-4)
  * isValidCif("G1234567D"); // false: G takes a digit, not a letter (CIF-3)
  * isValidCif("12345678Z"); // false: a DNI is not a NIF of a legal person
- * @see SPEC.md#cif-3
- * @see SPEC.md#norm-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-2 SPEC.md#norm-2}
  * @since 1.0.0
  */
 export const isValidCif: typeof isValidLegalEntityNif = isValidLegalEntityNif;
@@ -427,8 +427,8 @@ export const isValidCif: typeof isValidLegalEntityNif = isValidLegalEntityNif;
  * isValidCifControlCode("B12345670"); // false: the control digit should be 4 (CIF-4)
  * isValidCifControlCode("P28079004"); // false: P takes a letter (CIF-3)
  * isValidCifControlCode("G1234567D"); // false: G takes a digit (CIF-3), unless lenient
- * @see SPEC.md#cif-3
- * @see SPEC.md#cif-4
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-4 SPEC.md#cif-4}
  * @since 1.0.0
  */
 export const isValidCifControlCode: typeof isValidLegalEntityNifControlCode =
@@ -448,7 +448,7 @@ export const isValidCifControlCode: typeof isValidLegalEntityNifControlCode =
  * @example
  * CIF_CONTROL_LETTERS.indexOf("B"); // 2: a control letter B stands for the digit 2
  * CIF_CONTROL_LETTERS.includes("Z"); // false: Z is never a control letter
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 1.0.0
  */
 export const CIF_CONTROL_LETTERS: typeof LEGAL_ENTITY_CONTROL_LETTERS =
@@ -471,8 +471,8 @@ export const CIF_CONTROL_LETTERS: typeof LEGAL_ENTITY_CONTROL_LETTERS =
  * @example
  * CIF_REGEX.test("K12345674"); // false: K is not an organisation key (CIF-2)
  * CIF_REGEX.test("B1234567");  // false: the control character is missing (CIF-1)
- * @see SPEC.md#cif-1
- * @see SPEC.md#cif-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-1 SPEC.md#cif-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-2 SPEC.md#cif-2}
  * @since 1.0.0
  */
 export const CIF_REGEX: typeof LEGAL_ENTITY_NIF_REGEX = LEGAL_ENTITY_NIF_REGEX;

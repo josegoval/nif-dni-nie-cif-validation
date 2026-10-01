@@ -41,7 +41,7 @@ const TYPES: Record<NifType, string> = {
  *
  * describeCifOrganisation("B", gl); // "Sociedade de responsabilidade limitada"
  * gl.code; // "gl"
- * @see docs/translations.md
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/translations.md docs/translations.md}
  * @since 2.0.0
  */
 export const gl: NifLocale = {

@@ -65,7 +65,7 @@ export type {
  *
  * const input: z.input<NifSchema> = "b-1234567-4";
  * zCif().parse(input); // "B12345674"
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export type NifSchema = ZodPipe<ZodString, ZodTransform<string, string>>;
@@ -85,7 +85,7 @@ export type NifSchema = ZodPipe<ZodString, ZodTransform<string, string>>;
  *
  * const issue = zDni().safeParse("12345678A").error?.issues[0] as z.core.$ZodIssueCustom;
  * (issue.params as NifIssueParams).expected; // "Z": the right control character
- * @see SPEC.md#dni-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-2 SPEC.md#dni-2}
  * @since 2.0.0
  */
 export interface NifIssueParams {
@@ -137,7 +137,7 @@ function schema(kind: NifSchemaKind, opts?: NifSchemaOptions): NifSchema {
  * issue.message;
  * // 'The control character is not correct: for this DNI it should be "Z".'
  * issue.params; // { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z" }
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export function zNif(opts?: NifSchemaOptions): NifSchema {
@@ -157,8 +157,8 @@ export function zNif(opts?: NifSchemaOptions): NifSchema {
  * @example
  * zDni().safeParse("X1234567L").success; // false: UNSUPPORTED_TYPE, a NIE is not a DNI
  * zDni().safeParse("12345678A").success; // false: the letter should be Z (DNI-2)
- * @see SPEC.md#dni-1
- * @see SPEC.md#klm-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-1 SPEC.md#dni-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#klm-1 SPEC.md#klm-1}
  * @since 2.0.0
  */
 export function zDni(opts?: TypedNifSchemaOptions): NifSchema {
@@ -175,8 +175,8 @@ export function zDni(opts?: TypedNifSchemaOptions): NifSchema {
  * zNie().parse("x-01234567-l"); // "X1234567L"
  * @example
  * zNie().safeParse("12345678Z").success; // false: a DNI is not an NIE
- * @see SPEC.md#nie-1
- * @see SPEC.md#nie-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-1 SPEC.md#nie-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-3 SPEC.md#nie-3}
  * @since 2.0.0
  */
 export function zNie(opts?: TypedNifSchemaOptions): NifSchema {
@@ -194,7 +194,7 @@ export function zNie(opts?: TypedNifSchemaOptions): NifSchema {
  * @example
  * zCif().safeParse("G1234567D").success;                         // false (CIF-3)
  * zCif({ cifControl: "lenient" }).safeParse("G1234567D").success; // true
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export function zCif(opts?: TypedNifSchemaOptions): NifSchema {
@@ -213,7 +213,7 @@ export function zCif(opts?: TypedNifSchemaOptions): NifSchema {
  * zSpanishVat().parse("es b-1234567-4"); // "ESB12345674"
  * @example
  * zSpanishVat().safeParse("B12345674").success; // false: no ES prefix
- * @see SPEC.md#vat-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#vat-1 SPEC.md#vat-1}
  * @since 2.0.0
  */
 export function zSpanishVat(opts?: SpanishVatSchemaOptions): NifSchema {

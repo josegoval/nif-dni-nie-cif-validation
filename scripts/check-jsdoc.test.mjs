@@ -22,18 +22,19 @@ const COMPLETE = `/**
  * isThing("a"); // true
  * @example
  * isThing("b"); // false
- * @see SPEC.md#cif-3
+ * @see {@link https://example.com/o/r/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export declare function isThing(value: unknown, opts?: Options): boolean;`;
 
+const BLOB = "https://example.com/o/r/blob/master/";
 const anchors = (file) =>
   file === "SPEC.md" ? new Set(["cif-3", "norm-1"]) : null;
 
 /** The problems of the one declaration named `name` in `source`. */
 function problems(source, name = "isThing") {
   const [declaration] = parseModule(source).declarations.get(name);
-  return problemsOf(declaration, name, anchors);
+  return problemsOf(declaration, name, anchors, BLOB);
 }
 
 describe("reading declaration files", () => {
@@ -142,7 +143,7 @@ describe("what it reports", () => {
   it.each([
     ["@param", / \* @param value The value to check.\n/, "no @param value"],
     ["@returns", / \* @returns .*\n/, "no @returns"],
-    ["@see", / \* @see SPEC.md#cif-3\n/, "no @see"],
+    ["@see", / \* @see .*\n/, "no @see"],
     ["@since", / \* @since 2.0.0\n/, "no @since (2.0.0)"],
   ])("asks for %s", (_, tag, message) => {
     expect(problems(COMPLETE.replace(tag, ""))).toContain(message);
@@ -189,13 +190,29 @@ describe("what it reports", () => {
     ]);
   });
 
-  it("checks that the SPEC.md anchor of a @see exists", () => {
+  it("checks that the file and the anchor of a @see link exist", () => {
     expect(
-      problems(COMPLETE.replace("SPEC.md#cif-3", "SPEC.md#cif-9"))
+      problems(COMPLETE.replace("master/SPEC.md#cif-3", "master/SPEC.md#cif-9"))
     ).toContain("@see SPEC.md#cif-9: no such anchor");
-    expect(problems(COMPLETE.replace("SPEC.md#cif-3", "NOPE.md"))).toContain(
-      "@see NOPE.md: no such file"
-    );
+    expect(
+      problems(COMPLETE.replace("master/SPEC.md#cif-3", "master/NOPE.md"))
+    ).toContain("@see NOPE.md: no such file");
+  });
+
+  it("asks for a Markdown file to be linked with {@link}, and accepts another site", () => {
+    expect(
+      problems(COMPLETE.replace(/\{@link \S+ (.*)\}/, "SPEC.md#cif-3"))
+    ).toEqual([
+      `@see SPEC.md#cif-3: link a Markdown file as {@link ${BLOB}<file>#<anchor> <label>}`,
+    ]);
+    expect(
+      problems(
+        COMPLETE.replace(
+          /\{@link \S+ (.*)\}/,
+          "{@link https://www.boe.es/ BOE}"
+        )
+      )
+    ).toEqual([]);
   });
 
   it("asks for the reason and the replacement of @deprecated", () => {
@@ -229,7 +246,7 @@ export declare const C: number;`,
  */
 export declare const isOther: typeof isThing;`);
     const [alias] = module.declarations.get("isOther");
-    expect(problemsOf(alias, "isOther", anchors)).toEqual([
+    expect(problemsOf(alias, "isOther", anchors, BLOB)).toEqual([
       "no @param value",
       "no @param opts",
       "no @returns",
@@ -288,6 +305,7 @@ describe("a package on disk", () => {
       join(root, "package.json"),
       JSON.stringify({
         name: "pkg",
+        repository: { url: "git+https://example.com/o/r.git" },
         exports: {
           ".": {
             import: {

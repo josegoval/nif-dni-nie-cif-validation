@@ -60,7 +60,7 @@ export type {
  * import { yDni } from "nif-dni-nie-cif-validation/yup";
  *
  * object({ nif: yDni() }).isValidSync({ nif: "12345678A" }); // false
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export type NifSchema = StringSchema<string, AnyObject, undefined, "">;
@@ -78,7 +78,7 @@ export type NifSchema = StringSchema<string, AnyObject, undefined, "">;
  * }
  * params?.code; // "INVALID_CONTROL_CHARACTER"
  * params?.rule; // "DNI-2"
- * @see SPEC.md#dni-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-2 SPEC.md#dni-2}
  * @since 2.0.0
  */
 export interface NifErrorParams {
@@ -159,7 +159,7 @@ function schema(kind: NifSchemaKind, opts?: NifSchemaOptions): NifSchema {
  * // 'The control character is not correct: for this DNI it should be "Z".'
  * error?.params?.rule;     // "DNI-2"
  * error?.params?.expected; // "Z"
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export function yNif(opts?: NifSchemaOptions): NifSchema {
@@ -178,8 +178,8 @@ export function yNif(opts?: NifSchemaOptions): NifSchema {
  * yDni().validateSync("1234567-l"); // "01234567L"
  * @example
  * yDni().isValidSync("X1234567L"); // false: UNSUPPORTED_TYPE
- * @see SPEC.md#dni-1
- * @see SPEC.md#klm-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-1 SPEC.md#dni-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#klm-1 SPEC.md#klm-1}
  * @since 2.0.0
  */
 export function yDni(opts?: TypedNifSchemaOptions): NifSchema {
@@ -196,8 +196,8 @@ export function yDni(opts?: TypedNifSchemaOptions): NifSchema {
  * yNie().validateSync("x-01234567-l"); // "X1234567L"
  * @example
  * yNie().isValidSync("12345678Z"); // false: a DNI is not an NIE
- * @see SPEC.md#nie-1
- * @see SPEC.md#nie-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-1 SPEC.md#nie-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-3 SPEC.md#nie-3}
  * @since 2.0.0
  */
 export function yNie(opts?: TypedNifSchemaOptions): NifSchema {
@@ -215,7 +215,7 @@ export function yNie(opts?: TypedNifSchemaOptions): NifSchema {
  * @example
  * yCif().isValidSync("G1234567D");                         // false (CIF-3)
  * yCif({ cifControl: "lenient" }).isValidSync("G1234567D"); // true
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export function yCif(opts?: TypedNifSchemaOptions): NifSchema {
@@ -234,7 +234,7 @@ export function yCif(opts?: TypedNifSchemaOptions): NifSchema {
  * ySpanishVat().validateSync("es b-1234567-4"); // "ESB12345674"
  * @example
  * ySpanishVat().isValidSync("B12345674"); // false: no ES prefix
- * @see SPEC.md#vat-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#vat-1 SPEC.md#vat-1}
  * @since 2.0.0
  */
 export function ySpanishVat(opts?: SpanishVatSchemaOptions): NifSchema {

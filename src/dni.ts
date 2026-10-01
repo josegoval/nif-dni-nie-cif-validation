@@ -33,8 +33,8 @@ import type { IsValidOptions } from "./types";
  * @example
  * DNI_CONTROL_LETTERS.includes("U"); // false: U is never a check letter (DNI-3)
  * DNI_CONTROL_LETTERS[0];            // "T" (the check letter of 0, 23, 46, ...)
- * @see SPEC.md#dni-2
- * @see SPEC.md#dni-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-2 SPEC.md#dni-2}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-3 SPEC.md#dni-3}
  * @since 1.0.0
  */
 export const DNI_CONTROL_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
@@ -51,8 +51,8 @@ export const DNI_CONTROL_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
  * @example
  * DNI_REGEX.test("12345678A"); // true: the pattern doesn't check the letter, `isValidDni` does
  * DNI_REGEX.test("12345678");  // false: the check letter is missing (DNI-1)
- * @see SPEC.md#dni-1
- * @see SPEC.md#klm-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-1 SPEC.md#dni-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#klm-1 SPEC.md#klm-1}
  * @since 1.0.0
  */
 export const DNI_REGEX = /^([KLM][\d]{7}|[\d]{8})[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
@@ -162,8 +162,8 @@ export function isShortDni(value: string): boolean {
  * isValidDni("12345678A"); // false: the letter should be Z (DNI-2)
  * isValidDni("X1234567L"); // false: a NIE is not a DNI
  * isValidDni("1234567L", { normalize: false }); // false: v1 needs all 8 digits
- * @see SPEC.md#dni-1
- * @see SPEC.md#norm-4
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-1 SPEC.md#dni-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-4 SPEC.md#norm-4}
  * @since 1.0.0
  */
 export function isValidDni(
@@ -263,8 +263,8 @@ function parseDigitsAsDouble(value: string): number {
  * isValidDniLetter("12345678A");   // false: the letter should be Z (DNI-2)
  * isValidDniLetter("12345678");    // false: the last character is a digit
  * isValidDniLetter("ABC1234567L"); // true: only the digits and the last character count
- * @see SPEC.md#dni-2
- * @see SPEC.md#klm-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-2 SPEC.md#dni-2}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#klm-2 SPEC.md#klm-2}
  * @since 1.0.0
  */
 export function isValidDniLetter(

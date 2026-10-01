@@ -35,7 +35,7 @@ import { describe, nextInt, pad, pick, pickChar, type Random } from "./random";
  * @example
  * const kinds: DniKind[] = ["DNI", "K", "L", "M"];
  * kinds.every((kind) => isValidDni(generateDni({ kind }))); // true
- * @see SPEC.md#klm-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#klm-1 SPEC.md#klm-1}
  * @since 2.0.0
  */
 export type DniKind = "DNI" | "K" | "L" | "M";
@@ -47,7 +47,7 @@ export type DniKind = "DNI" | "K" | "L" | "M";
  * @example
  * const prefix: NiePrefix = "Y";
  * generateNie({ prefix }).startsWith("Y"); // true
- * @see SPEC.md#nie-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-1 SPEC.md#nie-1}
  * @since 2.0.0
  */
 export type NiePrefix = "X" | "Y" | "Z";
@@ -59,7 +59,7 @@ export type NiePrefix = "X" | "Y" | "Z";
  * @example
  * const control: CifControl = "digit";
  * validate(generateCif({ control })).valid; // true
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export type CifControl = "letter" | "digit";

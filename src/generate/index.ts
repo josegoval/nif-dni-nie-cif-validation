@@ -44,7 +44,7 @@ export type { CifControl, DniKind, NiePrefix };
  * generateDni({ seed: 42 }); // "60110375J": the same seed gives the same value
  * @example
  * isValidNie(generateNie()); // true: without a seed, a different value every time
- * @see SPEC.md#dni-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-1 SPEC.md#dni-1}
  * @since 2.0.0
  */
 export interface GenerateOptions {
@@ -65,7 +65,7 @@ export interface GenerateOptions {
  * generateDni({ seed: 1, format: true });  // "62707394-X"
  * @example
  * generateCif({ seed: 1, orgKey: "B", format: { separator: " " } }); // "B 6270739 3"
- * @see SPEC.md#cif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-1 SPEC.md#cif-1}
  * @since 2.0.0
  */
 export interface GenerateFormatOptions {
@@ -83,7 +83,7 @@ export interface GenerateFormatOptions {
  * generateDni({ seed: 1, kind: "K" }); // "K6270739L": K + 7 digits + letter
  * @example
  * generateDni({ seed: 1, kind: "K", format: true }); // "K-6270739-L"
- * @see SPEC.md#klm-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#klm-1 SPEC.md#klm-1}
  * @since 2.0.0
  */
 export interface GenerateDniOptions
@@ -102,7 +102,7 @@ export interface GenerateDniOptions
  * generateNie({ seed: 1, prefix: "Z" }); // "Z6270739R"
  * @example
  * generateNie({ seed: 1, prefix: "Y", format: { separator: " " } }); // "Y 6270739 X"
- * @see SPEC.md#nie-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-1 SPEC.md#nie-1}
  * @since 2.0.0
  */
 export interface GenerateNieOptions
@@ -118,7 +118,7 @@ export interface GenerateNieOptions
  * generateCif({ seed: 1, orgKey: "B" }); // "B62707393": a digit control
  * @example
  * generateCif({ seed: 1, control: "letter" }); // "R0027357C": N P Q R S or W
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export interface GenerateCifOptions
@@ -132,7 +132,7 @@ export interface GenerateCifOptions
    * picks among the keys with that type (letter: N P Q R S W; digit: the
    * other eleven), and with an `orgKey` that takes the other type it throws
    * a `RangeError`.
-   * @see SPEC.md#cif-3
+   * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
    */
   control?: CifControl | undefined;
 }
@@ -143,7 +143,7 @@ export interface GenerateCifOptions
  * generateNif({ seed: 1, types: ["DNI", "NIE"] }); // "X5274470H": a DNI or an NIE
  * @example
  * generateNif({ seed: 1, types: ["CIF"] }); // "A52744703"
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export interface GenerateNifOptions
@@ -162,7 +162,7 @@ export interface GenerateNifOptions
  * generateInvalid("CIF", { seed: 1, reason: "INVALID_LENGTH" }); // "P0027C"
  * @example
  * generateInvalid("DNI", { seed: 1 }); // "62707394A": the default, a wrong control letter
- * @see SPEC.md#dni-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-2 SPEC.md#dni-2}
  * @since 2.0.0
  */
 export interface GenerateInvalidOptions extends GenerateOptions {
@@ -204,8 +204,8 @@ function output(
  * isValidDni(generateDni()); // true
  * @example
  * generateDni({ seed: 1, kind: "K", format: true }); // "K-6270739-L"
- * @see SPEC.md#dni-1
- * @see SPEC.md#klm-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-1 SPEC.md#dni-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#klm-2 SPEC.md#klm-2}
  * @since 2.0.0
  */
 export function generateDni(opts: GenerateDniOptions = {}): string {
@@ -229,8 +229,8 @@ export function generateDni(opts: GenerateDniOptions = {}): string {
  * isValidNie(generateNie()); // true
  * @example
  * generateNie({ seed: 1, prefix: "Y", format: { separator: " " } }); // "Y 6270739 X"
- * @see SPEC.md#nie-1
- * @see SPEC.md#nie-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-1 SPEC.md#nie-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-2 SPEC.md#nie-2}
  * @since 2.0.0
  */
 export function generateNie(opts: GenerateNieOptions = {}): string {
@@ -263,8 +263,8 @@ export function generateNie(opts: GenerateNieOptions = {}): string {
  * @example
  * validate(generateCif({ control: "letter" })).valid; // true: N, P, Q, R, S or W
  * generateCif({ orgKey: "B", control: "letter" }); // throws RangeError
- * @see SPEC.md#cif-3
- * @see SPEC.md#cif-4
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-4 SPEC.md#cif-4}
  * @since 2.0.0
  */
 export function generateCif(opts: GenerateCifOptions = {}): string {
@@ -293,7 +293,7 @@ export function generateCif(opts: GenerateCifOptions = {}): string {
  * @example
  * generateNif({ seed: 1, types: ["CIF"] }); // "A52744703"
  * validate(generateNif({ types: ["CIF"] })).type; // "CIF"
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export function generateNif(opts: GenerateNifOptions = {}): string {
@@ -338,7 +338,7 @@ export function generateNif(opts: GenerateNifOptions = {}): string {
  * validate(short).error?.code; // "INVALID_LENGTH"
  * const fake = generateInvalid("DNI", { reason: "PLACEHOLDER" });
  * validate(fake, { rejectPlaceholders: true }).error?.code; // "PLACEHOLDER"
- * @see SPEC.md#dni-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-2 SPEC.md#dni-2}
  * @since 2.0.0
  */
 export function generateInvalid(
@@ -359,7 +359,7 @@ export function generateInvalid(
  * const a = createGenerator(5).cif({ orgKey: "B" });
  * const b = createGenerator(5).cif({ orgKey: "B" });
  * a === b; // true
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export interface Generator {
@@ -396,7 +396,7 @@ export interface Generator {
  * const gen = createGenerator(1);
  * gen.nie({ prefix: "Z", format: true }); // "Z-6270739-R"
  * validate(gen.invalid("CIF", { reason: "INVALID_FORMAT" })).valid; // false
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export function createGenerator(seed: number): Generator {

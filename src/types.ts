@@ -19,7 +19,7 @@
  * @example
  * const accepted: NifType[] = ["DNI", "NIE"];
  * validate("B12345674", { types: accepted }).error?.code; // "UNSUPPORTED_TYPE"
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export type NifType = "DNI" | "NIE" | "CIF" | "NIF_KLM";
@@ -46,7 +46,7 @@ export type NifType = "DNI" | "NIE" | "CIF" | "NIF_KLM";
  * const code: NifErrorCode | undefined = validate("12345678A").error?.code;
  * const hint = code === "INVALID_CONTROL_CHARACTER" ? "check the letter" : "";
  * hint; // "check the letter"
- * @see SPEC.md
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md SPEC.md}
  * @since 2.0.0
  */
 export type NifErrorCode =
@@ -86,7 +86,7 @@ export type NifFormatRule =
 /**
  * The organisation keys of the NIF of a legal person or entity (CIF): its first letter
  * (Orden EHA/451/2008 arts. 3 to 5, as amended by Orden HAP/5/2016).
- * @see SPEC.md#cif-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-2 SPEC.md#cif-2}
  * @since 2.0.0
  */
 export type CifOrganisationKey =
@@ -112,7 +112,7 @@ export type CifOrganisationKey =
  * The error messages of one locale, keyed by error code and, for the length
  * and format errors, by the SPEC.md rule that failed, so they describe the
  * right document. Every message is a full sentence.
- * @see SPEC.md
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md SPEC.md}
  * @since 2.0.0
  */
 export interface NifMessages {
@@ -148,7 +148,7 @@ export interface NifMessages {
  * import { es } from "nif-dni-nie-cif-validation/locales/es";
  *
  * describeCifOrganisation("B", es); // "Sociedad de responsabilidad limitada"
- * @see SPEC.md#cif-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-2 SPEC.md#cif-2}
  * @since 2.0.0
  */
 export interface NifLocale {
@@ -160,7 +160,7 @@ export interface NifLocale {
   messages: NifMessages;
   /**
    * What each CIF organisation key stands for, in the singular (CIF-2).
-   * @see SPEC.md#cif-2
+   * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-2 SPEC.md#cif-2}
    */
   organisations: Record<CifOrganisationKey, string>;
 }
@@ -179,7 +179,7 @@ export interface NifLocale {
  * isValidCif("G1234567D", { cifControl: "lenient" }); // true
  * @example
  * isValidCif("B1234567D", { cifControl: "lenient" }); // false: B always takes a digit
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export type CifControlMode = "official" | "lenient";
@@ -197,14 +197,14 @@ export type CifControlMode = "official" | "lenient";
  * const v1 = { normalize: false, cifControl: "lenient", allowVatPrefix: true } as const;
  * validate("ESG1234567D", v1).valid;  // true
  * validate("ES G1234567D", v1).valid; // false: normalize: false keeps the space
- * @see SPEC.md
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md SPEC.md}
  * @since 2.0.0
  */
 export interface ValidateOptions {
   /**
    * Accept only these document types. A valid document of another type
    * gives `UNSUPPORTED_TYPE` (POLICY-2). Default: every type.
-   * @see SPEC.md#policy-2
+   * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#policy-2 SPEC.md#policy-2}
    */
   types?: NifType[];
   /**
@@ -215,26 +215,26 @@ export interface ValidateOptions {
    * `false` turns NORM-2 to NORM-4 off, for v1's strict parsing. Lower case
    * (NORM-1) and the old 10-character NIE form (NIE-3) are accepted either
    * way, as in v1.
-   * @see SPEC.md#norm-2
+   * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-2 SPEC.md#norm-2}
    */
   normalize?: boolean;
   /**
    * Control characters accepted for the NIF of a legal person or entity (CIF). Default
    * `"official"`. See {@link CifControlMode}.
-   * @see SPEC.md#cif-3
+   * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
    */
   cifControl?: CifControlMode;
   /**
    * Reject the placeholder numbers `00000000T`, `00000001R`, `99999999R`
    * and `X0000000T` (default `false`). They are valid documents, so they
    * are accepted by default; ESNIC filters them as obviously fake.
-   * @see SPEC.md#policy-1
+   * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#policy-1 SPEC.md#policy-1}
    */
   rejectPlaceholders?: boolean;
   /**
    * Accept a Spanish VAT number, `ES` + NIF, as well as a bare NIF
    * (default `false`). `normalized` is always the NIF, without `ES`.
-   * @see SPEC.md#vat-1
+   * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#vat-1 SPEC.md#vat-1}
    */
   allowVatPrefix?: boolean;
   /**
@@ -259,7 +259,7 @@ export interface ValidateOptions {
  * @example
  * const v1Compatible: IsValidOptions = { normalize: false, cifControl: "lenient" };
  * isValidCif("G1234567D", v1Compatible); // true, as in v1
- * @see SPEC.md#norm-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-2 SPEC.md#norm-2}
  * @since 2.0.0
  */
 export type IsValidOptions = Pick<
@@ -274,7 +274,7 @@ export type IsValidOptions = Pick<
  * getNifType("ES12345678Z", { allowVatPrefix: true }); // "DNI"
  * @example
  * getNifType(" 12345678Z", { normalize: false }); // null: the space is kept
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export type GetNifTypeOptions = Pick<
@@ -292,7 +292,7 @@ export type GetNifTypeOptions = Pick<
  * validate("T12345678").error;
  * // { code: "INVALID_FORMAT", rule: "NIF-1",
  * //   message: "This is not a NIF, NIE or CIF: it must start with a digit or a valid letter." }
- * @see SPEC.md
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md SPEC.md}
  * @since 2.0.0
  */
 export interface NifValidationError {
@@ -319,7 +319,7 @@ export interface NifValidationError {
  * import { es } from "nif-dni-nie-cif-validation/locales/es";
  *
  * validate("P2807900B", { locale: es }).meta?.orgDescription; // "Corporación local"
- * @see SPEC.md#cif-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-2 SPEC.md#cif-2}
  * @since 2.0.0
  */
 export interface CifOrganisationMeta {
@@ -345,7 +345,7 @@ export interface CifOrganisationMeta {
  * valid; // false
  * normalized; // "12345678A"
  * error?.code; // "INVALID_CONTROL_CHARACTER"
- * @see SPEC.md
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md SPEC.md}
  * @since 2.0.0
  */
 export interface ValidationResult {
@@ -367,7 +367,7 @@ export interface ValidationResult {
   /**
    * For the NIF of a legal person or entity (CIF) only, whenever `type` is `"CIF"` (valid
    * or not): its organisation key and what it means.
-   * @see SPEC.md#cif-2
+   * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-2 SPEC.md#cif-2}
    */
   meta?: CifOrganisationMeta;
 }

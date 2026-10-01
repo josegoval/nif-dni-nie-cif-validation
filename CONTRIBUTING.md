@@ -124,7 +124,7 @@ What an IDE or an AI agent reads is `dist/*.d.mts`, so the JSDoc of every public
 
 - a **summary**: one sentence that says what the function accepts ("a DNI, a K/L/M NIF or a NIE");
 - **`@since`**: `1.0.0` for what v1.0.0 exported (the list is in the script), `2.0.0` for the rest;
-- for a **function**: a `@param` with a description for every parameter, a `@returns` that says when it returns what, **two `@example` blocks** (a valid value, and an invalid or edge case; lower case or formatted input where it applies) and a `@see` that links the SPEC.md rule (`@see SPEC.md#cif-3`: the script checks that the anchor exists);
+- for a **function**: a `@param` with a description for every parameter, a `@returns` that says when it returns what, **two `@example` blocks** (a valid value, and an invalid or edge case; lower case or formatted input where it applies) and a `@see` that links the SPEC.md rule. Write it as `@see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}`: a plain `@see SPEC.md#cif-3` is not a link in an editor (it shows "SPEC.md.cif-3"), and the script checks that the file and the anchor exist;
 - a **reason and the replacement** after `@deprecated`, when it has one.
 
 Constants and types need a summary and `@since`; give them examples too when they do something (`DNI_REGEX.test(...)`).

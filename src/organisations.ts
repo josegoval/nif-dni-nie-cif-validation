@@ -40,7 +40,7 @@ const KEYS = "ABCDEFGHJNPQRSUVW";
  *
  * describeCifOrganisation("b", es); // "Sociedad de responsabilidad limitada"
  * describeCifOrganisation("P", es); // "Corporación local"
- * @see SPEC.md#cif-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-2 SPEC.md#cif-2}
  * @since 2.0.0
  */
 export function describeCifOrganisation(

@@ -108,8 +108,8 @@ function checkNif(value: string, opts: IsValidOptions | null): number {
  * isValidNaturalPersonNif("B12345674"); // false: a NIF of a legal person is not a natural person's
  * isValidNaturalPersonNif("12345678A"); // false: the letter should be Z (DNI-2)
  * isValidNaturalPersonNif(null);        // false: not a string, and it never throws
- * @see SPEC.md#nif-1
- * @see SPEC.md#norm-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-2 SPEC.md#norm-2}
  * @since 1.0.0
  */
 export function isValidNaturalPersonNif(
@@ -176,8 +176,8 @@ function retryNaturalPersonNif(
  * isValidNif("12345678A"); // false: the letter should be Z (DNI-2)
  * isValidNif("G1234567D"); // false: G takes a digit, not a letter (CIF-3)
  * isValidNif(null);        // false: not a string, and it never throws
- * @see SPEC.md#cif-3
- * @see SPEC.md#norm-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-2 SPEC.md#norm-2}
  * @since 1.0.0
  */
 export function isValidNif(

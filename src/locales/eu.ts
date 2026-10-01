@@ -44,7 +44,7 @@ const TYPES: Record<NifType, string> = {
  *
  * describeCifOrganisation("B", eu); // "Erantzukizun mugatuko sozietatea"
  * eu.code; // "eu"
- * @see docs/translations.md
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/translations.md docs/translations.md}
  * @since 2.0.0
  */
 export const eu: NifLocale = {

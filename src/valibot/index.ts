@@ -65,7 +65,7 @@ export type {
  * const issue = safeParse(vNif(), "").issues?.[0] as NifIssue;
  * issue.code;     // "EMPTY"
  * issue.expected; // null: only a wrong control character has an expected value
- * @see SPEC.md#dni-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-2 SPEC.md#dni-2}
  * @since 2.0.0
  */
 export interface NifIssue extends BaseIssue<string> {
@@ -108,7 +108,7 @@ export interface NifAction
  *
  * const input: InferInput<NifSchema> = "b-1234567-4";
  * parse(vCif(), input); // "B12345674"
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export type NifSchema = SchemaWithPipe<
@@ -181,7 +181,7 @@ function schema(kind: NifSchemaKind, opts?: NifSchemaOptions): NifSchema {
  * result.issues?.[0]?.message;
  * // 'The control character is not correct: for this DNI it should be "Z".'
  * (result.issues?.[0] as NifIssue).rule; // "DNI-2"
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export function vNif(opts?: NifSchemaOptions): NifSchema {
@@ -204,8 +204,8 @@ export function vNif(opts?: NifSchemaOptions): NifSchema {
  * import { safeParse } from "valibot";
  *
  * safeParse(vDni(), "X1234567L").success; // false: UNSUPPORTED_TYPE
- * @see SPEC.md#dni-1
- * @see SPEC.md#klm-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-1 SPEC.md#dni-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#klm-1 SPEC.md#klm-1}
  * @since 2.0.0
  */
 export function vDni(opts?: TypedNifSchemaOptions): NifSchema {
@@ -226,8 +226,8 @@ export function vDni(opts?: TypedNifSchemaOptions): NifSchema {
  * import { safeParse } from "valibot";
  *
  * safeParse(vNie(), "12345678Z").success; // false: a DNI is not an NIE
- * @see SPEC.md#nie-1
- * @see SPEC.md#nie-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-1 SPEC.md#nie-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-3 SPEC.md#nie-3}
  * @since 2.0.0
  */
 export function vNie(opts?: TypedNifSchemaOptions): NifSchema {
@@ -249,7 +249,7 @@ export function vNie(opts?: TypedNifSchemaOptions): NifSchema {
  *
  * safeParse(vCif(), "G1234567D").success;                         // false (CIF-3)
  * safeParse(vCif({ cifControl: "lenient" }), "G1234567D").success; // true
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export function vCif(opts?: TypedNifSchemaOptions): NifSchema {
@@ -272,7 +272,7 @@ export function vCif(opts?: TypedNifSchemaOptions): NifSchema {
  * import { safeParse } from "valibot";
  *
  * safeParse(vSpanishVat(), "B12345674").success; // false: no ES prefix
- * @see SPEC.md#vat-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#vat-1 SPEC.md#vat-1}
  * @since 2.0.0
  */
 export function vSpanishVat(opts?: SpanishVatSchemaOptions): NifSchema {

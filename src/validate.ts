@@ -301,8 +301,8 @@ function withMeta(
  * validate("G1234567D", { cifControl: "lenient" }).valid; // true
  * validate("12345678Z", { types: ["CIF"] }).error?.code;  // "UNSUPPORTED_TYPE"
  * validate(null).error?.code;                             // "NOT_A_STRING"
- * @see SPEC.md#cif-3
- * @see SPEC.md#norm-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-2 SPEC.md#norm-2}
  * @since 2.0.0
  */
 export function validate(
@@ -393,7 +393,7 @@ function check(
  * getNifType("B1234567D"); // "CIF" (B needs a digit: invalid, but a CIF)
  * getNifType("T1234567A"); // null (no document starts with T, NIF-1)
  * getNifType("123456789"); // null (a DNI ends in a letter, DNI-1)
- * @see SPEC.md#nif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nif-1 SPEC.md#nif-1}
  * @since 2.0.0
  */
 export function getNifType(

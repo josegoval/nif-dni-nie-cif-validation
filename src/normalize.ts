@@ -195,9 +195,9 @@ export function canonicalize(value: string, pad: boolean): string {
  * @example
  * normalize("X01234567L"); // "X1234567L" (old NIE form, NIE-3)
  * normalize("1234567L");   // "01234567L" (leading zero restored, NORM-4)
- * @see SPEC.md#norm-1
- * @see SPEC.md#norm-4
- * @see SPEC.md#nie-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-1 SPEC.md#norm-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#norm-4 SPEC.md#norm-4}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-3 SPEC.md#nie-3}
  * @since 2.0.0
  */
 export function normalize(value: string): string {

@@ -40,8 +40,8 @@ import type { IsValidOptions } from "./types";
  * @example
  * NIE_REGEX.test("X1234567A"); // true: the pattern doesn't check the letter, `isValidNie` does
  * NIE_REGEX.test("12345678Z"); // false: a DNI is not a NIE (NIE-1)
- * @see SPEC.md#nie-1
- * @see SPEC.md#nie-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-1 SPEC.md#nie-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-3 SPEC.md#nie-3}
  * @since 1.0.0
  */
 export const NIE_REGEX = /^(?:X0?|[YZ])[\d]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/i;
@@ -104,7 +104,7 @@ export function isValidOldNie(nie: string): boolean {
  * @example
  * replaceNieLetter("12345678Z"); // throws Error
  * replaceNieLetter(null as never); // throws TypeError
- * @see SPEC.md#nie-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-2 SPEC.md#nie-2}
  * @since 1.0.0
  */
 export function replaceNieLetter(nie: string): string {
@@ -145,8 +145,8 @@ export function replaceNieLetter(nie: string): string {
  * isValidNie("X1234567A"); // false: the letter should be L (NIE-2)
  * isValidNie("12345678Z"); // false: a DNI is not a NIE
  * isValidNie("X0000000T", { rejectPlaceholders: true }); // false: a placeholder (POLICY-1)
- * @see SPEC.md#nie-1
- * @see SPEC.md#nie-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-1 SPEC.md#nie-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#nie-3 SPEC.md#nie-3}
  * @since 1.0.0
  */
 export function isValidNie(

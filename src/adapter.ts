@@ -37,7 +37,7 @@ import { validate } from "./validate";
  * @example
  * const options: NifSchemaOptions = { rejectPlaceholders: true, cifControl: "lenient" };
  * zNif(options).safeParse("00000000T").success; // false: a placeholder (POLICY-1)
- * @see SPEC.md#policy-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#policy-2 SPEC.md#policy-2}
  * @since 2.0.0
  */
 export type NifSchemaOptions = ValidateOptions;
@@ -54,7 +54,7 @@ export type NifSchemaOptions = ValidateOptions;
  * @example
  * const options: TypedNifSchemaOptions = { cifControl: "lenient" };
  * zCif(options).safeParse("G1234567D").success; // true
- * @see SPEC.md#policy-2
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#policy-2 SPEC.md#policy-2}
  * @since 2.0.0
  */
 export type TypedNifSchemaOptions = Omit<ValidateOptions, "types">;
@@ -71,7 +71,7 @@ export type TypedNifSchemaOptions = Omit<ValidateOptions, "types">;
  * @example
  * const options: SpanishVatSchemaOptions = { rejectPlaceholders: true };
  * zSpanishVat(options).safeParse("ES00000000T").success; // false: a placeholder
- * @see SPEC.md#vat-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#vat-1 SPEC.md#vat-1}
  * @since 2.0.0
  */
 export type SpanishVatSchemaOptions = Omit<ValidateOptions, "allowVatPrefix">;

@@ -21,7 +21,7 @@ import { inspect, typeOf } from "./validate";
  * format("B12345674", { separator: " " }); // "B 1234567 4"
  * @example
  * format(" b-1234567-4 ", { separator: "" }); // "B12345674" (canonical)
- * @see SPEC.md#cif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-1 SPEC.md#cif-1}
  * @since 2.0.0
  */
 export interface FormatOptions {
@@ -55,8 +55,8 @@ const NO_FORMAT_OPTIONS: FormatOptions = {};
  * @example
  * format("b12345674", { separator: " " }); // "B 1234567 4"
  * format("12345678A");                   // null (wrong letter)
- * @see SPEC.md#dni-1
- * @see SPEC.md#cif-1
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-1 SPEC.md#dni-1}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-1 SPEC.md#cif-1}
  * @since 2.0.0
  */
 export function format(
@@ -100,8 +100,8 @@ export function format(
  * computeControlCharacter("B1234567"); // "4" (B takes a digit)
  * computeControlCharacter("P2807900"); // "B" (P takes a letter)
  * computeControlCharacter("T1234567"); // null (NIF-1)
- * @see SPEC.md#dni-2
- * @see SPEC.md#cif-3
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#dni-2 SPEC.md#dni-2}
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-3 SPEC.md#cif-3}
  * @since 2.0.0
  */
 export function computeControlCharacter(partial: unknown): string | null {

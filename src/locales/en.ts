@@ -34,7 +34,7 @@ const TYPES: Record<NifType, string> = {
  *
  * describeCifOrganisation("B", en); // "Limited liability company"
  * en.code; // "en"
- * @see docs/translations.md
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/translations.md docs/translations.md}
  * @since 2.0.0
  */
 export const en: NifLocale = {

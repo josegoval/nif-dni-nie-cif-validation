@@ -20,10 +20,13 @@
 // - `@returns` with a description of when it returns what;
 // - two `@example` blocks, different from each other
 //   (src/__tests__/jsdoc-examples.test.ts runs them);
-// - at least one `@see`, whose SPEC.md anchor or file exists;
+// - at least one `@see`, and every `@see` of a file of this repository is a
+//   `{@link <URL on GitHub> label}` (a plain `SPEC.md#cif-3` is not a link in
+//   an editor) whose file and anchor exist;
 // - a description after `@deprecated`, when it has one.
 //
-// A `@see SPEC.md#cif-3` of any export must point at an anchor that exists.
+// The `@see` rule applies to every export: the anchor of a SPEC.md link
+// must exist.
 //
 // A re-export under another name (`export { isValidLegalEntityNif as
 // isValidCif }`) is an error: it would show the docs of the original, whose
@@ -382,9 +385,10 @@ const words = (text) => text.split(/\s+/).filter(Boolean).length;
 /**
  * The problems of one export's JSDoc. `declaration` is what the name
  * resolves to; `exportName` is how it is exported; `anchors(file)` returns
- * the anchors of a Markdown file, or `null` when it doesn't exist.
+ * the anchors of a Markdown file, or `null` when it doesn't exist;
+ * `blobBase` is the URL that a file of the repository is linked with.
  */
-export function problemsOf(declaration, exportName, anchors) {
+export function problemsOf(declaration, exportName, anchors, blobBase) {
   const problems = [];
   const { summary, tags } = declaration.doc
     ? parseDoc(declaration.doc)
@@ -403,14 +407,23 @@ export function problemsOf(declaration, exportName, anchors) {
       problems.push("@deprecated without a reason and the replacement");
 
   for (const tag of all("see")) {
-    const target = /^(?:\{@link\s+)?([\w./-]+\.md)(?:#([\w-]+))?/.exec(
-      tag.text
-    );
-    if (!target) continue;
-    const found = anchors(target[1]);
-    if (found === null) problems.push(`@see ${target[1]}: no such file`);
-    else if (target[2] && !found.has(target[2]))
-      problems.push(`@see ${target[1]}#${target[2]}: no such anchor`);
+    // `@see SPEC.md#cif-3` is not a link in an editor (it reads `#` as a
+    // member separator and shows "SPEC.md.cif-3"): a file of this repository
+    // is linked as `{@link <url of the file on GitHub> label}`.
+    const link = /^\{@link\s+(\S+)/.exec(tag.text);
+    if (!link) {
+      if (/\.md\b/.test(tag.text))
+        problems.push(
+          `@see ${tag.text.split("\n")[0]}: link a Markdown file as {@link ${blobBase}<file>#<anchor> <label>}`
+        );
+      continue;
+    }
+    if (!link[1].startsWith(blobBase)) continue; // another site
+    const [file, anchor] = link[1].slice(blobBase.length).split("#");
+    const found = anchors(file);
+    if (found === null) problems.push(`@see ${file}: no such file`);
+    else if (anchor && !found.has(anchor))
+      problems.push(`@see ${file}#${anchor}: no such anchor`);
   }
 
   if (declaration.kind !== "function") return problems;
@@ -520,6 +533,12 @@ export function exportNames(file, read, resolveFile) {
 
 // --- Running it on the package ---------------------------------------------
 
+/** The URL prefix of a file of the repository on GitHub, from package.json. */
+export function blobBaseOf(pkg) {
+  const url = pkg.repository?.url ?? "https://github.com/owner/repo";
+  return `${url.replace(/^git\+/, "").replace(/\.git$/, "")}/blob/master/`;
+}
+
 /**
  * Checks the entry points of one build (`types` is the condition of each
  * `exports` entry: `import` for ES modules, `require` for CommonJS).
@@ -527,6 +546,7 @@ export function exportNames(file, read, resolveFile) {
  */
 export function checkBuild(root, condition, anchorsFor, runtimeExports) {
   const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  const blobBase = blobBaseOf(pkg);
   const cache = new Map();
   const read = (file) => {
     if (!cache.has(file))
@@ -572,7 +592,8 @@ export function checkBuild(root, condition, anchorsFor, runtimeExports) {
         for (const problem of problemsOf(
           declaration,
           resolved.name ?? name,
-          anchorsFor
+          anchorsFor,
+          blobBase
         ))
           fail(name, problem);
       }
