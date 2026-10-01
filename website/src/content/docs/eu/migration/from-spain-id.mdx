@@ -1,0 +1,99 @@
+---
+title: spain-id liburutegitik migratzea
+description: Ordezkatu spain-id nif-dni-nie-cif-validation liburutegiarekin. validateSpanishId, validDNI, validNIE, validCIF eta spainIdType funtzioen baliokidetza, aurreko eta ondorengo kodea, eta desberdintasunak, CIF-3 kontrol-araua barne.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+[spain-id](https://www.npmjs.com/package/spain-id) liburutegiak NANak, AIZak eta IFKak egiaztatzen ditu, eta haien mota adierazten du. Liburutegi honek gauza bera egiten du, eta K/L/M IFZak, errore bakoitzaren arrazoia, mezu itzuliak, sorgailuak eta eskemak gehitzen ditu. spain-id txikiagoa da funtzio bakar baterako; [errendimenduaren](/nif-dni-nie-cif-validation/eu/benchmarks/#bundlearen-tamaina) orrian daude neurtutako tamainak. Orri honetako konparazioa spain-id 1.1.14 bertsioarekin egin da.
+
+## Funtzioen baliokidetza
+
+| spain-id | nif-dni-nie-cif-validation | Oharrak |
+| --- | --- | --- |
+| `validateSpanishId(x)` | `isValidNif(x)` | K/L/M IFZak ere onartzen ditu. IFKaren kontrolak CIF-3 jarraitzen du (ikus behean) |
+| `validDNI(x)` | `isValidDni(x)` | K/L/M IFZak ere onartzen ditu |
+| `validNIE(x)` | `isValidNie(x)` | 10 karaktereko forma zaharra ere onartzen du |
+| `validCIF(x)` | `isValidCif(x)` | Kontrolak CIF-3 jarraitzen du |
+| `spainIdType(x)` | `getNifType(x)` | Maiuskulaz, `"NIF_KLM"` K/L/M IFZetarako, eta `null` `undefined` ordez |
+
+## Lehen eta orain
+
+Lehen, spain-id erabilita:
+
+```js
+import { spainIdType, validateSpanishId, validCIF, validDNI, validNIE } from "spain-id";
+
+validateSpanishId("12345678Z"); // true
+validDNI("12345678Z");          // true
+validNIE("X1234567L");          // true
+validCIF("B12345674");          // true
+spainIdType("B12345674");       // "cif"
+spainIdType("hello");           // undefined
+```
+
+Orain:
+
+```ts
+import { getNifType, isValidCif, isValidDni, isValidNie, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif("12345678Z");  // true
+isValidDni("12345678Z");  // true
+isValidNie("X1234567L");  // true
+isValidCif("B12345674");  // true
+getNifType("B12345674");  // "CIF"
+getNifType("hello");      // null
+```
+
+`spainIdType` funtzioak bezala, `getNifType` funtzioak formatua bakarrik begiratzen du, eta ez du kontrol-karakterea egiaztatzen. Zenbaki bat baliozkoa den eta, ez bada, zergatik ez den jakiteko, erabili `validate()`, mota ere itzultzen baitu.
+
+## Portaera-desberdintasunak
+
+**IFKaren kontrola (CIF-3).** spain-id liburutegiak letra bat edo digitu bat onartzen du edozein IFKren kontrol-karaktere gisa. AEATren ohar teknikoak mota bakarra esleitzen dio erakunde-gako bakoitzari: digitu bat A B C D E F G H J U V gakoetan, eta letra bat N P Q R S W gakoetan ([CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3)). Horregatik, spain-id liburutegiak onartzen dituen zenbaki batzuk ez dira baliozkoak hemen, `G1234567D` adibidez. Zure gordetako datuek horrelakoak badituzte, pasa `{ cifControl: "lenient" }` garbitzen dituzun bitartean: letra bat onartzen du C, D, F, G, J, U eta V gakoetan.
+
+```js
+import { validCIF } from "spain-id";
+
+validCIF("G1234567D"); // true
+```
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                            // false: G gakoak digitua darama
+isValidCif("G1234567D", { cifControl: "lenient" }); // true
+isValidCif("G12345674");                            // true
+```
+
+**K/L/M IFZak.** spain-id liburutegiak baztertu egiten ditu, eta ez du haientzako motarik. Pertsona fisikoen IFZak dira, baliozkoak hemen ([KLM-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-1)).
+
+**AIZaren forma zaharra.** spain-id liburutegiak 10 karaktereko AIZak baztertzen ditu, `X01234567L` bezala; baliozkoak dira oraindik ([NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3)).
+
+**Bereizleak.** spain-id liburutegiak zuriuneak eta marrak kentzen ditu, baina ez puntuak. Liburutegi honek puntuak eta barrak ere kentzen ditu, eta gorde behar den forma kanonikoa itzultzen du.
+
+**Kateak ez diren balioak.** spain-id liburutegiak salbuespen bat jaurtitzen du `null` balioarekin; liburutegi honek `false` itzultzen du.
+
+```js
+import { spainIdType, validateSpanishId } from "spain-id";
+
+validateSpanishId("K1234567L");    // false
+validateSpanishId("X01234567L");   // false
+validateSpanishId("12.345.678-Z"); // false
+spainIdType("K1234567L");          // undefined
+validateSpanishId(null);           // throws TypeError
+```
+
+```ts
+import { getNifType, isValidNif, validate } from "nif-dni-nie-cif-validation";
+
+isValidNif("K1234567L");             // true
+isValidNif("X01234567L");            // true
+isValidNif("12.345.678-Z");          // true
+getNifType("K1234567L");             // "NIF_KLM"
+isValidNif(null);                    // false
+validate("12.345.678-Z").normalized; // "12345678Z"
+```
+
+<Aside type="tip">
+Bundlearen tamaina errore bakoitzaren arrazoia baino garrantzitsuagoa bada zuretzat, eta ez badituzu K/L/M IFZak edo AIZaren forma zaharra behar, spain-id aukera ona da. Horietako bat behar baduzu, edo zure erabiltzaileentzako mezuak, aldatu.
+</Aside>

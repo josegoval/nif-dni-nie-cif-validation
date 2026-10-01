@@ -1,0 +1,89 @@
+---
+title: Migrar desde validator.js
+description: Sustituye isIdentityCard(x, "ES") e isTaxID(x, "es-ES") de validator.js por nif-dni-nie-cif-validation para DNI, NIE, NIF K/L/M y CIF españoles, con una equivalencia, código antes y después y las diferencias.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+[validator.js](https://www.npmjs.com/package/validator) valida muchos tipos de cadenas, y tiene dos funciones para identificadores españoles: `isIdentityCard(x, "ES")` e `isTaxID(x, "es-ES")`. Si lo que necesitas son identificadores españoles, esta librería los comprueba de forma más completa y añade el CIF, la normalización y el motivo de cada error. También puedes mantener validator.js para todo lo demás y usar esta librería solo para los NIF. La comparación de esta página es con validator.js 13.15.35.
+
+## Equivalencia de funciones
+
+| validator.js | nif-dni-nie-cif-validation | Notas |
+| --- | --- | --- |
+| `isIdentityCard(x, "ES")` | `isValidNaturalPersonNif(x)` | validator.js acepta un DNI o un NIE; esta también acepta los NIF K/L/M y la forma antigua del NIE |
+| `isTaxID(x, "es-ES")` | `isValidNaturalPersonNif(x)` | validator.js acepta un DNI, un NIF K/L/M o un NIE; esta también acepta la forma antigua del NIE |
+| Sin validación de CIF | `isValidCif(x)`, o `isValidNif(x)` para todos los tipos | |
+
+## Antes y después
+
+Antes, con validator.js:
+
+```js
+import validator from "validator";
+
+validator.isIdentityCard("12345678Z", "ES"); // true
+validator.isIdentityCard("X1234567L", "ES"); // true
+validator.isTaxID("K1234567L", "es-ES");     // true
+validator.isTaxID("B12345674", "es-ES");     // false: no admite CIF
+```
+
+Después:
+
+```ts
+import { isValidCif, isValidNaturalPersonNif, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("12345678Z"); // true
+isValidNaturalPersonNif("X1234567L"); // true
+isValidNaturalPersonNif("K1234567L"); // true
+isValidCif("B12345674");              // true
+isValidNif("B12345674");              // true: cualquier tipo
+```
+
+Con una librería de formularios, los [esquemas](/nif-dni-nie-cif-validation/es/guides/validating-forms/) para Zod, Valibot y Yup sustituyen a un `refine` personalizado que llama a validator.js, y además dan el mensaje.
+
+## Diferencias de comportamiento
+
+**Valores que no son cadenas.** validator.js lanza un `TypeError` con cualquier cosa que no sea una cadena, como `null` o un número. Esta librería devuelve `false`, y `validate()` devuelve el código `NOT_A_STRING` ([INPUT-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#input-1)), así que puedes pasarle el valor de un formulario tal cual.
+
+```js
+import validator from "validator";
+
+validator.isIdentityCard(null, "ES"); // throws TypeError
+```
+
+```ts
+import { isValidNaturalPersonNif, validate } from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif(null);  // false
+validate(null).error?.code;     // "NOT_A_STRING"
+```
+
+**Separadores.** Las dos librerías aceptan minúsculas. validator.js rechaza espacios, puntos y guiones; esta librería los quita ([NORM-2, NORM-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-2)) y da la forma canónica que debes guardar.
+
+**La forma antigua del NIE.** validator.js rechaza los NIE de 10 caracteres, como `X01234567L`; siguen siendo válidos ([NIE-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#nie-3)).
+
+**NIF K/L/M.** `isIdentityCard(x, "ES")` los rechaza, e `isTaxID(x, "es-ES")` los acepta. Esta librería los acepta como NIF de personas físicas ([KLM-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#klm-1)).
+
+```js
+import validator from "validator";
+
+validator.isIdentityCard("12.345.678-Z", "ES"); // false
+validator.isTaxID("X01234567L", "es-ES");       // false
+validator.isIdentityCard("K1234567L", "ES");    // false
+```
+
+```ts
+import { isValidNaturalPersonNif, validate } from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("12.345.678-Z");  // true
+validate("12.345.678-Z").normalized;      // "12345678Z"
+isValidNaturalPersonNif("X01234567L");    // true
+isValidNaturalPersonNif("K1234567L");     // true
+```
+
+**Tamaño del bundle.** Una función de validator.js incluye las reglas de todos los países que admite, así que `isIdentityCard` e `isTaxID` ocupan varias veces lo que `isValidNif`. La página de [rendimiento](/nif-dni-nie-cif-validation/es/benchmarks/#tamaño-del-bundle) tiene las cifras medidas.
+
+<Aside type="note">
+validator.js valida documentos de identidad de muchos países con una sola API. Si necesitas varios países, mantenla (o echa un vistazo a [stdnum](https://www.npmjs.com/package/stdnum)) y usa esta librería para España, donde profundiza más.
+</Aside>

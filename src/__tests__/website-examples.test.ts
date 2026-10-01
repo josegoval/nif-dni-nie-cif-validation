@@ -209,8 +209,9 @@ const ALL = ENGLISH_PAGES.flatMap((page) =>
 
 describe("code samples of the website", () => {
   it("finds the pages and their samples", () => {
-    expect(ENGLISH_PAGES.length).toBeGreaterThan(10);
-    expect(ALL.length).toBeGreaterThan(40);
+    expect(ENGLISH_PAGES.length).toBeGreaterThan(15);
+    expect(ALL.length).toBeGreaterThan(60);
+    expect(ALL.filter((s) => s.mode === "v1").length).toBeGreaterThan(1);
   });
 
   it.each(
@@ -232,7 +233,7 @@ describe("code samples of the website", () => {
 
   it("type-checks every TypeScript sample", () => {
     const typed = ALL.filter((s) => s.mode === "run" && s.lang === "ts");
-    expect(typed.length).toBeGreaterThan(40);
+    expect(typed.length).toBeGreaterThan(50);
     expect(checkTypes(typed)).toBe("");
   }, 120_000);
 

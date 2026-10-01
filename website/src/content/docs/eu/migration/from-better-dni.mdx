@@ -1,0 +1,102 @@
+---
+title: better-dni liburutegitik migratzea
+description: Ordezkatu better-dni nif-dni-nie-cif-validation liburutegiarekin. Funtzioz funtzioko baliokidetza (isValid, isNIF, isNIE, ctrlChar, randomNIF, normalize), aurreko eta ondorengo kodea, eta portaera-desberdintasunak.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+[better-dni](https://www.npmjs.com/package/better-dni) liburutegiak NANak eta AIZak egiaztatzen eta sortzen ditu. Liburutegi honek gauza bera egiten du, eta IFKak eta K/L/M IFZak, normalizazioa, errore bakoitzaren arrazoia eta mezu itzuliak gehitzen ditu. Orri honetako konparazioa better-dni 4.4.2 bertsioarekin egin da.
+
+## Funtzioen baliokidetza
+
+| better-dni | nif-dni-nie-cif-validation | Oharrak |
+| --- | --- | --- |
+| `isValid(x)` | `isValidNaturalPersonNif(x)` | K/L/M IFZak eta AIZaren forma zaharra ere onartzen ditu. `isValidNif(x)` funtzioak IFK bat ere onartzen du |
+| `isNIF(x)` | `isValidDni(x)` | K/L/M IFZak ere onartzen ditu. `validate(x, { types: ["DNI"] })` NANa bakarrik onartzeko |
+| `isNIE(x)` | `isValidNie(x)` | |
+| `ctrlChar(x)` | `computeControlCharacter(x)` | Pasa zenbakia bere kontrol-karaktererik gabe |
+| `randomNIF()`, `randomNIE()` | `generateDni()`, `generateNie()` | `nif-dni-nie-cif-validation/generate` sarrera-puntukoak; `{ seed }` balio finkoetarako |
+| `randomNIFWith(letter)`, `randomNIEWith(prefix, letter)` | Baliokiderik ez | Erabili `generateNie({ prefix })`; kontrol-letra digituetatik ateratzen da |
+| `normalize(x)` | `normalize(x)` | Egiaztatzaileek normalizatzen dute dagoeneko: ez da aurretik deitu behar |
+
+## Lehen eta orain
+
+Lehen, better-dni erabilita:
+
+```js
+import { ctrlChar, isNIE, isNIF, isValid, normalize } from "better-dni";
+
+isValid("12345678Z");             // true
+isNIF("12345678Z");               // true
+isNIE("X1234567L");               // true
+ctrlChar("12345678");             // "Z"
+isValid(normalize("12345678-z")); // true: lehenik normalizatu behar da
+```
+
+Orain:
+
+```ts
+import {
+  computeControlCharacter, isValidDni, isValidNaturalPersonNif, isValidNie,
+} from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("12345678Z");  // true
+isValidDni("12345678Z");               // true
+isValidNie("X1234567L");               // true
+computeControlCharacter("12345678");   // "Z"
+isValidNaturalPersonNif("12345678-z"); // true: aurretiko normalizazio-urratsik gabe
+```
+
+Zenbakiak sortzeko, lehen:
+
+```js
+import { randomNIE, randomNIF } from "better-dni";
+
+randomNIF(); // ausazko NAN bat
+randomNIE(); // ausazko AIZ bat
+```
+
+Orain:
+
+```ts
+import { createGenerator, generateDni, generateNie } from "nif-dni-nie-cif-validation/generate";
+
+generateDni();           // ausazko NAN bat
+generateNie();           // ausazko AIZ bat
+generateDni({ seed: 1 }); // "62707394X": bera exekuzio bakoitzean
+createGenerator(42).nie(); // "Y4482905N": haziarekin sortutako balio-sekuentzia bat
+```
+
+## Portaera-desberdintasunak
+
+**K/L/M IFZak.** better-dni liburutegiak baztertu egiten ditu. Pertsona fisikoen IFZak dira (NANik gabeko espainiarrak, AIZik gabeko atzerritarrak), eta liburutegi honek `isValidDni` eta `isValidNaturalPersonNif` funtzioetan onartzen ditu ([KLM-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-1)).
+
+**AIZaren forma zaharra.** better-dni liburutegiak 10 karaktereko AIZak baztertzen ditu, `X01234567L` bezala; baliozkoak dira oraindik ([NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3)).
+
+**Bereizleak.** better-dni liburutegiak minuskulak onartzen ditu, baina zuriuneak, puntuak eta marrak baztertzen ditu, aurretik bere `normalize()` funtzioari deitzen ez badiozu. Hemen egiaztatzaile guztiek normalizatzen dute, eta `normalize()` funtzioak puntuak ere kentzen ditu eta NAN labur baten hasierako zeroak gehitzen ditu.
+
+```js
+import { isValid, normalize } from "better-dni";
+
+isValid("K1234567L");             // false
+isValid("X01234567L");            // false
+isValid(" 12345678Z");            // false
+normalize(" 12.345.678-z ");      // "12.345.678Z": puntuak mantentzen dira
+```
+
+```ts
+import { isValidNaturalPersonNif, normalize } from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("K1234567L");  // true
+isValidNaturalPersonNif("X01234567L"); // true
+isValidNaturalPersonNif(" 12345678Z"); // true
+normalize(" 12.345.678-z ");           // "12345678Z"
+```
+
+**IFKak.** better-dni liburutegiak ez du IFK egiaztatzailerik. Erabili `isValidCif()`, edo `isValidNif()` mota guztiak onartzeko.
+
+**Arrazoia.** better-dni liburutegiak bai edo ez erantzuten du. `validate()` funtzioak mota eta forma kanonikoa ere ematen ditu, eta, balioa baliozkoa ez bada, errore-kodea, SPEC araua eta bost hizkuntzatako mezu bat: ikusi [Errore-kodeak eta mezu itzuliak](/nif-dni-nie-cif-validation/eu/guides/errors-and-languages/).
+
+<Aside type="tip">
+Aldatu aurretik, exekutatu bi liburutegiak batera zure gordetako datuen gainean: bat ez datozen balioak ia beti K/L/M IFZak, AIZ zaharrak edo bereizleak dituzten balioak izaten dira.
+</Aside>

@@ -3,6 +3,7 @@ title: Comparación con otras librerías
 description: Una comparación de funcionalidades, con fuentes, de los validadores de NIF, DNI, NIE y CIF españoles para JavaScript (spain-id, better-dni, dni-js, stdnum, validator.js, jsvat y más), incluido cuándo es mejor elegir otra.
 ---
 
+import { LinkCard, CardGrid } from "@astrojs/starlight/components";
 import FeatureMatrix from "../../../components/docs/FeatureMatrix.astro";
 
 Varias librerías de npm validan identificadores españoles. Se diferencian en qué documentos cubren, cómo tratan lo que escriben los usuarios y qué te dicen cuando un número no es válido. Esta página compara sus funcionalidades; la de [rendimiento](/nif-dni-nie-cif-validation/es/benchmarks/) compara su velocidad, su tamaño y su concordancia con [SPEC.md](/nif-dni-nie-cif-validation/es/reference/official-sources/).
@@ -34,3 +35,11 @@ Qué significan las columnas:
 
 Cuando las librerías discrepan de SPEC.md, la página de [rendimiento](/nif-dni-nie-cif-validation/es/benchmarks/#concordancia-con-specmd) cuenta las discrepancias de cada una e indica cuáles se deben a una decisión que SPEC.md documenta.
 
+## Migrar
+
+<CardGrid>
+  <LinkCard title="Desde better-dni" href="/nif-dni-nie-cif-validation/es/migration/from-better-dni/" />
+  <LinkCard title="Desde validator.js" href="/nif-dni-nie-cif-validation/es/migration/from-validator/" />
+  <LinkCard title="Desde spain-id" href="/nif-dni-nie-cif-validation/es/migration/from-spain-id/" />
+  <LinkCard title="Desde la versión 1" href="/nif-dni-nie-cif-validation/es/migration/from-v1/" />
+</CardGrid>

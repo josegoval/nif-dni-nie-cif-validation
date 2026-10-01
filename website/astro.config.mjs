@@ -111,6 +111,15 @@ export default defineConfig({
             "guides/errors-and-languages",
             "guides/ai-agents",
             "guides/faq",
+            {
+              ...groups.migrating,
+              items: [
+                "migration/from-v1",
+                "migration/from-better-dni",
+                "migration/from-validator",
+                "migration/from-spain-id",
+              ],
+            },
           ],
         },
         {

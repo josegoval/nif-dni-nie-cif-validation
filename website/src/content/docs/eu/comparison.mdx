@@ -3,6 +3,7 @@ title: Beste liburutegi batzuekiko konparazioa
 description: JavaScript-erako Espainiako IFZ, NAN, AIZ eta IFK egiaztatzaileen ezaugarrien konparazioa, iturriekin (spain-id, better-dni, dni-js, stdnum, validator.js, jsvat eta gehiago), baita beste bat aukeratzea noiz den hobea ere.
 ---
 
+import { LinkCard, CardGrid } from "@astrojs/starlight/components";
 import FeatureMatrix from "../../../components/docs/FeatureMatrix.astro";
 
 npm-ko hainbat liburutegik egiaztatzen dituzte Espainiako identifikatzaileak. Zein dokumentu hartzen dituzten, erabiltzaileek idazten dutena nola tratatzen duten eta zenbaki bat baliozkoa ez denean zer esaten dizuten, horietan bereizten dira. Orri honek haien ezaugarriak konparatzen ditu; [errendimenduaren](/nif-dni-nie-cif-validation/eu/benchmarks/) orriak haien abiadura, tamaina eta [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) fitxategiarekiko adostasuna konparatzen ditu.
@@ -34,3 +35,11 @@ Zutabeen esanahia:
 
 Liburutegiak SPEC.md fitxategiarekin bat ez datozenean, [errendimenduaren](/nif-dni-nie-cif-validation/eu/benchmarks/#specmd-fitxategiarekiko-adostasuna) orriak bakoitzaren desadostasunak zenbatzen ditu, eta adierazten du zein datozen SPEC.md fitxategiak dokumentatzen duen erabaki batetik.
 
+## Migratzea
+
+<CardGrid>
+  <LinkCard title="better-dni liburutegitik" href="/nif-dni-nie-cif-validation/eu/migration/from-better-dni/" />
+  <LinkCard title="validator.js liburutegitik" href="/nif-dni-nie-cif-validation/eu/migration/from-validator/" />
+  <LinkCard title="spain-id liburutegitik" href="/nif-dni-nie-cif-validation/eu/migration/from-spain-id/" />
+  <LinkCard title="1. bertsiotik" href="/nif-dni-nie-cif-validation/eu/migration/from-v1/" />
+</CardGrid>

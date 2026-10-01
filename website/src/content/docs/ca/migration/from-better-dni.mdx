@@ -1,0 +1,102 @@
+---
+title: Migrar des de better-dni
+description: Substituïu better-dni per nif-dni-nie-cif-validation. Una equivalència funció per funció (isValid, isNIF, isNIE, ctrlChar, randomNIF, normalize), codi abans i després i les diferències de comportament.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+[better-dni](https://www.npmjs.com/package/better-dni) valida DNI i NIE, i en genera. Aquesta biblioteca cobreix el mateix i hi afegeix el CIF i els NIF K/L/M, la normalització, el motiu de cada error i missatges traduïts. La comparació d'aquesta pàgina és amb better-dni 4.4.2.
+
+## Equivalència de funcions
+
+| better-dni | nif-dni-nie-cif-validation | Notes |
+| --- | --- | --- |
+| `isValid(x)` | `isValidNaturalPersonNif(x)` | També accepta els NIF K/L/M i la forma antiga del NIE. `isValidNif(x)` accepta, a més, un CIF |
+| `isNIF(x)` | `isValidDni(x)` | També accepta els NIF K/L/M. `validate(x, { types: ["DNI"] })` per acceptar només un DNI |
+| `isNIE(x)` | `isValidNie(x)` | |
+| `ctrlChar(x)` | `computeControlCharacter(x)` | Passeu el número sense el caràcter de control |
+| `randomNIF()`, `randomNIE()` | `generateDni()`, `generateNie()` | De `nif-dni-nie-cif-validation/generate`; `{ seed }` per a valors fixos |
+| `randomNIFWith(letter)`, `randomNIEWith(prefix, letter)` | Sense equivalent | Feu servir `generateNie({ prefix })`; la lletra de control es deriva de les xifres |
+| `normalize(x)` | `normalize(x)` | Els validadors ja normalitzen: no cal cridar-la abans |
+
+## Abans i després
+
+Abans, amb better-dni:
+
+```js
+import { ctrlChar, isNIE, isNIF, isValid, normalize } from "better-dni";
+
+isValid("12345678Z");             // true
+isNIF("12345678Z");               // true
+isNIE("X1234567L");               // true
+ctrlChar("12345678");             // "Z"
+isValid(normalize("12345678-z")); // true: primer cal normalitzar
+```
+
+Després:
+
+```ts
+import {
+  computeControlCharacter, isValidDni, isValidNaturalPersonNif, isValidNie,
+} from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("12345678Z");  // true
+isValidDni("12345678Z");               // true
+isValidNie("X1234567L");               // true
+computeControlCharacter("12345678");   // "Z"
+isValidNaturalPersonNif("12345678-z"); // true: sense pas previ de normalització
+```
+
+Per generar números, abans:
+
+```js
+import { randomNIE, randomNIF } from "better-dni";
+
+randomNIF(); // un DNI aleatori
+randomNIE(); // un NIE aleatori
+```
+
+Després:
+
+```ts
+import { createGenerator, generateDni, generateNie } from "nif-dni-nie-cif-validation/generate";
+
+generateDni();           // un DNI aleatori
+generateNie();           // un NIE aleatori
+generateDni({ seed: 1 }); // "62707394X": el mateix a cada execució
+createGenerator(42).nie(); // "Y4482905N": una seqüència de valors amb llavor
+```
+
+## Diferències de comportament
+
+**NIF K/L/M.** better-dni els rebutja. Són NIF de persones físiques (espanyols sense DNI, persones estrangeres sense NIE), i aquesta biblioteca els accepta a `isValidDni` i a `isValidNaturalPersonNif` ([KLM-1](/nif-dni-nie-cif-validation/ca/reference/official-sources/#klm-1)).
+
+**La forma antiga del NIE.** better-dni rebutja els NIE de 10 caràcters, com `X01234567L`; continuen sent vàlids ([NIE-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#nie-3)).
+
+**Separadors.** better-dni accepta minúscules, però rebutja espais, punts i guions tret que abans crideu el seu `normalize()`. Aquí tots els validadors normalitzen, i `normalize()` també treu els punts i afegeix els zeros inicials d'un DNI curt.
+
+```js
+import { isValid, normalize } from "better-dni";
+
+isValid("K1234567L");             // false
+isValid("X01234567L");            // false
+isValid(" 12345678Z");            // false
+normalize(" 12.345.678-z ");      // "12.345.678Z": es mantenen els punts
+```
+
+```ts
+import { isValidNaturalPersonNif, normalize } from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("K1234567L");  // true
+isValidNaturalPersonNif("X01234567L"); // true
+isValidNaturalPersonNif(" 12345678Z"); // true
+normalize(" 12.345.678-z ");           // "12345678Z"
+```
+
+**CIF.** better-dni no té validador de CIF. Feu servir `isValidCif()`, o `isValidNif()` per acceptar tots els tipus.
+
+**El motiu.** better-dni respon sí o no. `validate()` també dona el tipus, la forma canònica i, si el valor no és vàlid, el codi d'error, la regla de SPEC i un missatge en cinc idiomes: consulteu [Codis d'error i missatges traduïts](/nif-dni-nie-cif-validation/ca/guides/errors-and-languages/).
+
+<Aside type="tip">
+Abans de canviar, executeu totes dues biblioteques en paral·lel sobre les vostres dades desades: els valors en què discrepen són gairebé sempre NIF K/L/M, NIE antics o valors amb separadors.
+</Aside>
