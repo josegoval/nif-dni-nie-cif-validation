@@ -1,0 +1,157 @@
+# Builds the website (website/, Astro + Starlight) and deploys it to GitHub
+# Pages. See website/README.md.
+#
+# - On a pull request that touches the site or what it reads (the library,
+#   brand/, the benchmark results, SPEC.md, the llms files, the fixtures):
+#   lint, type check, build, broken internal links, the live validator's
+#   JavaScript budget and the end-to-end tests. Nothing is deployed.
+# - On a push to master, or by hand (Actions, Pages, Run workflow): the same
+#   build, plus the library's tests with coverage, whose HTML report and badge
+#   the site publishes at /coverage/; then the deploy.
+#
+# One-time setup: Settings, Pages, Build and deployment, Source: GitHub
+# Actions. This is a separate workflow from release.yml, so a problem with the
+# site can't block a release, and the other way round.
+name: Pages
+
+on:
+  push:
+    branches: [master]
+    paths: &paths
+      - "website/**"
+      - "src/**"
+      - "test/**"
+      - "brand/**"
+      - "bench/results/**"
+      - "SPEC.md"
+      - "llms.txt"
+      - "llms-full.txt"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "vitest.config.mts"
+      - "tsconfig*.json"
+      - "scripts/build.mjs"
+      - ".github/workflows/pages.yml"
+  pull_request:
+    paths: *paths
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  # Cancel stale PR builds; never cancel a deploy halfway.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  HUSKY: "0" # do not install git hooks in CI
+
+jobs:
+  build:
+    name: Build the site
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Publish the coverage report, and fail the build without it, only when
+      # the site is deployed.
+      DEPLOY: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup pnpm
+        # Version comes from `packageManager` in package.json.
+        uses: pnpm/action-setup@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            website/pnpm-lock.yaml
+      - name: Install the library's dependencies
+        run: pnpm install --frozen-lockfile
+      # The site imports the library's build (`link:..` in website/package.json).
+      - name: Build the library
+        run: pnpm build
+      # The same tests and thresholds as release.yml; they write
+      # coverage/html/ and coverage/coverage-summary.json for /coverage/.
+      - name: Test the library with coverage
+        if: env.DEPLOY == 'true'
+        run: pnpm test
+      - name: Install the site's dependencies
+        run: pnpm --dir website install --frozen-lockfile
+      # The site's lockfile has its own dependency tree (Astro, Starlight,
+      # Playwright), which the audit of release.yml doesn't see. Same
+      # threshold: high and critical advisories fail, the rest only show.
+      - name: Audit the site's dependencies
+        run: pnpm --dir website audit --audit-level high
+      - name: Lint (Biome)
+        run: pnpm --dir website lint
+      - name: Type check (astro check)
+        run: pnpm --dir website typecheck
+      # Fails on a broken link in a page's Markdown (starlight-links-validator).
+      - name: Build
+        env:
+          SITE_REQUIRE_COVERAGE: ${{ env.DEPLOY == 'true' && '1' || '0' }}
+        run: pnpm --dir website build
+      # Every href and src of every built page, components included.
+      - name: Check internal links
+        run: pnpm --dir website check:links
+      - name: Check the live validator's JavaScript budget
+        run: pnpm --dir website check:size
+      # Playwright's own Chromium build, cached per Playwright version.
+      - name: Read the Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('./website/node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Cache the Playwright browser
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --dir website exec playwright install --with-deps chromium
+      - name: Install Chromium's system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --dir website exec playwright install-deps chromium
+      - name: End-to-end tests (Playwright)
+        run: pnpm --dir website test:e2e
+      - name: Upload the Playwright report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            website/playwright-report/
+            website/test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Upload the site for GitHub Pages
+        if: env.DEPLOY == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: website/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write # deploy to Pages
+      id-token: write # verify that the deployment comes from this workflow
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5
