@@ -1,0 +1,14 @@
+{
+  "name": "example-deno",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Validate Spanish NIF, DNI, NIE and CIF numbers with Deno.",
+  "scripts": {
+    "start": "deno run main.ts",
+    "check": "deno run main.ts"
+  },
+  "dependencies": {
+    "nif-dni-nie-cif-validation": "file:../.pack/package"
+  }
+}
