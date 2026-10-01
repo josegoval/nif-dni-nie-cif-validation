@@ -13,28 +13,46 @@ importers:
         version: 5.2.1
       nif-dni-nie-cif-validation:
         specifier: file:../.pack/package
-        version: file:.pack/package(zod@4.6.5)
+        version: file:.pack/package(valibot@1.5.0(typescript@7.0.2))(yup@1.7.1)(zod@4.6.5)
 
   node-cjs:
     dependencies:
       nif-dni-nie-cif-validation:
         specifier: file:../.pack/package
-        version: file:.pack/package(zod@4.6.5)
+        version: file:.pack/package(valibot@1.5.0)(yup@1.7.1)(zod@4.6.5)
 
   node-esm:
     dependencies:
       nif-dni-nie-cif-validation:
         specifier: file:../.pack/package
-        version: file:.pack/package(zod@4.6.5)
+        version: file:.pack/package(valibot@1.5.0)(yup@1.7.1)(zod@4.6.5)
+
+  valibot:
+    dependencies:
+      nif-dni-nie-cif-validation:
+        specifier: file:../.pack/package
+        version: file:.pack/package(valibot@1.5.0(typescript@7.0.2))(yup@1.7.1)(zod@4.6.5)
+      valibot:
+        specifier: ^1.5.0
+        version: 1.5.0(typescript@7.0.2)
+
+  yup:
+    dependencies:
+      nif-dni-nie-cif-validation:
+        specifier: file:../.pack/package
+        version: file:.pack/package(valibot@1.5.0)(yup@1.7.1)(zod@4.6.5)
+      yup:
+        specifier: ^1.7.1
+        version: 1.7.1
 
   zod-react-hook-form:
     dependencies:
       '@hookform/resolvers':
         specifier: ^5.9.1
-        version: 5.9.1(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(zod@4.6.5)
+        version: 5.9.1(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(valibot@1.5.0(typescript@7.0.2))(yup@1.7.1)(zod@4.6.5)
       nif-dni-nie-cif-validation:
         specifier: file:../.pack/package
-        version: file:.pack/package(zod@4.6.5)
+        version: file:.pack/package(valibot@1.5.0(typescript@7.0.2))(yup@1.7.1)(zod@4.6.5)
       react:
         specifier: ^19.3.0
         version: 19.3.0
@@ -704,6 +722,9 @@ packages:
     resolution: {integrity: sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  property-expr@2.0.6:
+    resolution: {integrity: sha512-SVtmxhRE/CGkn3eZY1T6pC8Nln6Fr/lu1mKSgRud0eC73whjGfoAogbn78LkD8aFL0zz3bAFerKSnOl7NlErBA==}
+
   proxy-addr@2.0.8:
     resolution: {integrity: sha512-5nnx0yGyVUcY6t9RnWcARWtwT9F1D8O9rt08htPvnd49W1IgZtmLkhu9WfMzQj1cFxjHIO6connUNVW5k7AVyQ==}
     engines: {node: '>= 0.10'}
@@ -789,6 +810,9 @@ packages:
     resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
     engines: {node: '>= 0.8'}
 
+  tiny-case@1.0.3:
+    resolution: {integrity: sha512-Eet/eeMhkO6TX8mnUteS9zgPbUMQa4I6Kkp5ORiBD5476/m+PIRiumP5tmh5ioJpH7k51Kehawy2UDfsnxxY8Q==}
+
   tinyglobby@0.2.17:
     resolution: {integrity: sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==}
     engines: {node: '>=12.0.0'}
@@ -796,6 +820,13 @@ packages:
   toidentifier@1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
+
+  toposort@2.0.2:
+    resolution: {integrity: sha512-0a5EOkAUp8D4moMi2W8ZF8jcga7BgZd91O/yabJCFY8az+XSzeGyTKs0Aoo897iV1Nj6guFq8orWDS96z91oGg==}
+
+  type-fest@2.19.0:
+    resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
+    engines: {node: '>=12.20'}
 
   type-is@2.1.0:
     resolution: {integrity: sha512-faYHw0anBbc/kWF3zFTEnxSFOAGUX9GFbOBthvDdLsIlEoWOFOtS0zgCiQYwIskL9iGXZL3kAXD8OoZ4GmMATA==}
@@ -809,6 +840,14 @@ packages:
   unpipe@1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
     engines: {node: '>= 0.8'}
+
+  valibot@1.5.0:
+    resolution: {integrity: sha512-nil6AkP2TChWL43Z5uJ6GTxX01CUA+g8LWUM+N/rB9NBbkUMaUsi9PUNzlUPgoKASgmx9f7eGOYpJ04/fSa6FQ==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -860,16 +899,21 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
+  yup@1.7.1:
+    resolution: {integrity: sha512-GKHFX2nXul2/4Dtfxhozv701jLQHdf6J34YDh2cEkpqoo8le5Mg6/LrdseVLrFarmFygZTlfIhHx/QKfb/QWXw==}
+
   zod@4.6.5:
     resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
 
 snapshots:
 
-  '@hookform/resolvers@5.9.1(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(zod@4.6.5)':
+  '@hookform/resolvers@5.9.1(react-hook-form@7.89.0(@types/react@19.3.0)(react@19.3.0))(valibot@1.5.0(typescript@7.0.2))(yup@1.7.1)(zod@4.6.5)':
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.89.0(@types/react@19.3.0)(react@19.3.0)
     optionalDependencies:
+      valibot: 1.5.0(typescript@7.0.2)
+      yup: 1.7.1
       zod: 4.6.5
 
   '@oxc-project/types@0.151.0': {}
@@ -1239,8 +1283,16 @@ snapshots:
     dependencies:
       content-type: 2.1.0
 
-  nif-dni-nie-cif-validation@file:.pack/package(zod@4.6.5):
+  nif-dni-nie-cif-validation@file:.pack/package(valibot@1.5.0(typescript@7.0.2))(yup@1.7.1)(zod@4.6.5):
     optionalDependencies:
+      valibot: 1.5.0(typescript@7.0.2)
+      yup: 1.7.1
+      zod: 4.6.5
+
+  nif-dni-nie-cif-validation@file:.pack/package(valibot@1.5.0)(yup@1.7.1)(zod@4.6.5):
+    optionalDependencies:
+      valibot: 1.5.0(typescript@7.0.2)
+      yup: 1.7.1
       zod: 4.6.5
 
   object-inspect@1.13.4: {}
@@ -1266,6 +1318,8 @@ snapshots:
       nanoid: 3.3.19
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  property-expr@2.0.6: {}
 
   proxy-addr@2.0.8:
     dependencies:
@@ -1393,12 +1447,18 @@ snapshots:
 
   statuses@2.0.2: {}
 
+  tiny-case@1.0.3: {}
+
   tinyglobby@0.2.17:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.7)
       picomatch: 4.0.7
 
   toidentifier@1.0.1: {}
+
+  toposort@2.0.2: {}
+
+  type-fest@2.19.0: {}
 
   type-is@2.1.0:
     dependencies:
@@ -1431,6 +1491,10 @@ snapshots:
 
   unpipe@1.0.0: {}
 
+  valibot@1.5.0(typescript@7.0.2):
+    optionalDependencies:
+      typescript: 7.0.2
+
   vary@1.1.2: {}
 
   vite@8.3.1:
@@ -1444,5 +1508,12 @@ snapshots:
       fsevents: 2.3.3
 
   wrappy@1.0.2: {}
+
+  yup@1.7.1:
+    dependencies:
+      property-expr: 2.0.6
+      tiny-case: 1.0.3
+      toposort: 2.0.2
+      type-fest: 2.19.0
 
   zod@4.6.5: {}
