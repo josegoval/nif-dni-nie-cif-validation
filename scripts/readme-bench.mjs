@@ -7,8 +7,8 @@
 //   (throughput, the speed-up against v1.0.11, bundle sizes, agreement with
 //   SPEC.md, the machine);
 // - `<!-- compare:start -->…<!-- compare:end -->`: the comparison table,
-//   with the features in COMPARISON below and the versions and sizes from the
-//   JSON.
+//   with the features of bench/comparison.mjs (shared with the website) and
+//   the versions and sizes from the JSON.
 //
 //   pnpm readme:bench           rewrite both READMEs
 //   pnpm readme:bench --check   fail if either README is out of date
@@ -18,6 +18,12 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  CHECKED_ON,
+  COMPARISON,
+  cellText,
+  FEATURES,
+} from "../bench/comparison.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const RESULTS = "bench/results/latest.json";
@@ -26,160 +32,52 @@ const TARGETS = [
   { file: "README.es.md", lang: "es" },
 ];
 
-// The date the features, the release dates and the notes of COMPARISON were
-// last checked against each library's README, package.json and npm page.
-const CHECKED_ON = "2026-10-01";
-
-const YES = { en: "yes", es: "sí" };
-const NO = { en: "no", es: "no" };
-const PARTIAL = { en: "partial", es: "parcial" };
-const ESM_CJS = "ESM + CJS";
-
 /**
- * The comparison table: one row per benchmarked library (`id` in
- * latest.json), in this order. Update CHECKED_ON when you check it again.
- * A cell is a string (the same in every language) or `{ en, es }`.
+ * The README's text of every phrase of the comparison (bench/comparison.mjs,
+ * which also has the rows and the date they were checked).
  */
-const COMPARISON = [
-  {
-    id: "current",
-    types: "DNI, NIE, CIF, K/L/M",
-    klm: YES,
-    normalizes: YES,
-    result: {
-      en: "yes: code, SPEC rule, message",
-      es: "sí: código, regla de SPEC, mensaje",
-    },
-    messages: "EN, ES, CA, EU, GL",
-    generators: YES,
-    schemas: "Zod, Valibot, Yup",
-    modules: ESM_CJS,
-    released: { en: "this release", es: "esta versión" },
+const PHRASE_TEXT = {
+  en: {
+    yes: "yes",
+    no: "no",
+    partial: "partial",
+    optIn: "opt-in",
+    separateNormalize: "separate `normalize()`",
+    resultCodeRuleMessage: "yes: code, SPEC rule, message",
+    resultTypeOnly: "no (type only)",
+    resultErrorClass: "yes: error class",
+    resultParseWithoutReason: "partial: `parse()`, without the reason",
+    resultValidityCountry: "yes: validity and country",
+    englishOnly: "English only",
+    typesStdnum: "DNI, NIE, CIF, K/L/M, and about 90 countries",
+    typesJsvat: "EU VAT numbers (ES + NIF)",
+    cjsUmdOnly: "CJS / UMD only",
+    cjsOnly: "CJS only",
+    esmDeepImportsCjs: "ESM (deep imports) + CJS",
+    thisRelease: "this release",
+    deprecatedOn: "{date}, deprecated",
   },
-  {
-    id: "spain-id",
-    types: "DNI, NIE, CIF",
-    klm: NO,
-    normalizes: PARTIAL,
-    result: { en: "no (type only)", es: "no (solo el tipo)" },
-    messages: NO,
-    generators: NO,
-    schemas: NO,
-    modules: ESM_CJS,
-    released: "2026-06-12",
+  es: {
+    yes: "sí",
+    no: "no",
+    partial: "parcial",
+    optIn: "opcional",
+    separateNormalize: "`normalize()` aparte",
+    resultCodeRuleMessage: "sí: código, regla de SPEC, mensaje",
+    resultTypeOnly: "no (solo el tipo)",
+    resultErrorClass: "sí: clase de error",
+    resultParseWithoutReason: "parcial: `parse()`, sin el motivo",
+    resultValidityCountry: "sí: validez y país",
+    englishOnly: "solo inglés",
+    typesStdnum: "DNI, NIE, CIF, K/L/M y unos 90 países",
+    typesJsvat: "NIF-IVA de la UE (ES + NIF)",
+    cjsUmdOnly: "solo CJS / UMD",
+    cjsOnly: "solo CJS",
+    esmDeepImportsCjs: "ESM (rutas internas) + CJS",
+    thisRelease: "esta versión",
+    deprecatedOn: "{date}, obsoleto",
   },
-  {
-    id: "better-dni",
-    types: "DNI, NIE",
-    klm: NO,
-    normalizes: { en: "separate `normalize()`", es: "`normalize()` aparte" },
-    result: NO,
-    messages: NO,
-    generators: YES,
-    schemas: NO,
-    modules: { en: "CJS / UMD only", es: "solo CJS / UMD" },
-    released: "2021-05-30",
-  },
-  {
-    id: "dni-js",
-    types: "DNI, NIE",
-    klm: NO,
-    normalizes: PARTIAL,
-    result: NO,
-    messages: NO,
-    generators: NO,
-    schemas: NO,
-    modules: { en: "CJS only", es: "solo CJS" },
-    released: "2026-08-08",
-  },
-  {
-    id: "stdnum",
-    types: {
-      en: "DNI, NIE, CIF, K/L/M, and about 90 countries",
-      es: "DNI, NIE, CIF, K/L/M y unos 90 países",
-    },
-    klm: YES,
-    normalizes: YES,
-    result: { en: "yes: error class", es: "sí: clase de error" },
-    messages: { en: "English only", es: "solo inglés" },
-    generators: NO,
-    schemas: NO,
-    modules: ESM_CJS,
-    released: "2026-08-01",
-  },
-  {
-    id: "validator-identity-card",
-    types: "DNI, NIE",
-    klm: NO,
-    normalizes: NO,
-    result: NO,
-    messages: NO,
-    generators: NO,
-    schemas: NO,
-    modules: {
-      en: "ESM (deep imports) + CJS",
-      es: "ESM (rutas internas) + CJS",
-    },
-    released: "2026-04-02",
-  },
-  {
-    id: "validator-tax-id",
-    types: "DNI, NIE, K/L/M",
-    klm: YES,
-    normalizes: NO,
-    result: NO,
-    messages: NO,
-    generators: NO,
-    schemas: NO,
-    modules: {
-      en: "ESM (deep imports) + CJS",
-      es: "ESM (rutas internas) + CJS",
-    },
-    released: "2026-04-02",
-  },
-  {
-    id: "maistik",
-    types: "DNI, NIE, CIF",
-    klm: NO,
-    normalizes: PARTIAL,
-    result: {
-      en: "partial: `parse()`, without the reason",
-      es: "parcial: `parse()`, sin el motivo",
-    },
-    messages: NO,
-    generators: NO,
-    schemas: NO,
-    modules: ESM_CJS,
-    released: "2026-06-14",
-  },
-  {
-    id: "kreyo",
-    types: "DNI, NIE, CIF",
-    klm: { en: "opt-in", es: "opcional" },
-    normalizes: PARTIAL,
-    result: NO,
-    messages: NO,
-    generators: NO,
-    schemas: NO,
-    modules: ESM_CJS,
-    released: "2026-04-29",
-  },
-  {
-    id: "jsvat",
-    types: {
-      en: "EU VAT numbers (ES + NIF)",
-      es: "NIF-IVA de la UE (ES + NIF)",
-    },
-    klm: YES,
-    normalizes: YES,
-    result: { en: "yes: validity and country", es: "sí: validez y país" },
-    messages: NO,
-    generators: NO,
-    schemas: NO,
-    modules: ESM_CJS,
-    released: { en: "2024-12-12, deprecated", es: "2024-12-12, obsoleto" },
-  },
-];
+};
 
 const TEXT = {
   en: {
@@ -286,8 +184,6 @@ const ALTERNATIVE_LABEL = {
     es: "con una importación directa de su módulo del NIF español (no documentada)",
   },
 };
-
-const text = (value, lang) => (typeof value === "string" ? value : value[lang]);
 
 /** "1,234 B" in English, "1234 B" and "12 345 B" in Spanish (RAE). */
 function bytes(value, lang) {
@@ -460,18 +356,13 @@ function compareSection(report, lang) {
   const rows = COMPARISON.map((row) => {
     const contender = contenderById(report, row.id);
     const size = report.sizes[row.id].any;
+    const cells = FEATURES.map((key) => cellText(row[key], PHRASE_TEXT[lang]));
+    // The size, from latest.json, goes before the last column (the release).
     return [
       libraryName(contender, report, lang),
-      text(row.types, lang),
-      text(row.klm, lang),
-      text(row.normalizes, lang),
-      text(row.result, lang),
-      text(row.messages, lang),
-      text(row.generators, lang),
-      text(row.schemas, lang),
-      text(row.modules, lang),
+      ...cells.slice(0, -1),
       size ? bytes(size.gzipBytes, lang) : t.unsupported,
-      text(row.released, lang),
+      ...cells.slice(-1),
     ];
   });
   const header = [t.library, ...t.compareHeader];
