@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for AI coding agents, and people, working **on this repository**. To use the package, read [README.md](README.md) or [llms.txt](llms.txt) instead. The details behind each point are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Guidance for AI coding agents, and people, working **on this repository**. To use the package, read [README.md](README.md), [llms.txt](llms.txt) or the website (<https://josegoval.github.io/nif-dni-nie-cif-validation/>) instead. The details behind each point are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 `nif-dni-nie-cif-validation` is a zero-dependency TypeScript library that validates Spanish NIF, DNI, K/L/M NIF, NIE and CIF numbers. Every rule it applies has an ID, a source tier and a citation in [SPEC.md](SPEC.md) (the law in the BOE, AEAT and Ministerio del Interior pages, or a labelled convention). That traceability is the point of the project.
 

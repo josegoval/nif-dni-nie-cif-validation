@@ -10,6 +10,8 @@
 
 `nif-dni-nie-cif-validation` comprueba identificadores fiscales españoles (NIF, DNI, NIF K/L/M, NIE y CIF) con las reglas oficiales, y te dice por qué un número no es válido. Cada regla que aplica tiene una fuente documentada en [SPEC.md](SPEC.md): legislación, documentación oficial, una nota técnica de la AEAT o una convención identificada como tal.
 
+En la web están las guías, la referencia de la API (en inglés), un validador en vivo y los benchmarks, en español, inglés, catalán, euskera y gallego: <https://josegoval.github.io/nif-dni-nie-cif-validation/es/>.
+
 [![npm version](https://img.shields.io/npm/v/nif-dni-nie-cif-validation)](https://www.npmjs.com/package/nif-dni-nie-cif-validation)
 [![npm downloads](https://img.shields.io/npm/dm/nif-dni-nie-cif-validation)](https://www.npmjs.com/package/nif-dni-nie-cif-validation)
 <!-- size-badge:start -->[![isValidNif: 929 B min+gzip](https://img.shields.io/badge/min%2Bgzip-isValidNif%20929%20B-blue)](#rendimiento)<!-- size-badge:end -->
