@@ -1,5 +1,6 @@
 /**
- * Test helper: runs the CLI's `main()` with a fake io.
+ * Test helper: runs the CLI's `main()` with a fake io, for cli.test.ts and
+ * cli-docs.test.ts.
  */
 import { main } from "../cli/main";
 

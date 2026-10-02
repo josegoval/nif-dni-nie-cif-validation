@@ -65,6 +65,7 @@ validate("12345678A").error?.message; // 'The control character is not correct: 
 - [Which function do I need?](#which-function-do-i-need)
 - [Features](#features)
 - [API overview](#api-overview)
+- [Command line](#command-line)
 - [Recipes](#recipes): Zod and React Hook Form, Express, test data, messages in Catalan
 - [DNI, NIE, NIF and CIF](#dni-nie-nif-and-cif)
 - [Law, official guidance and convention](#law-official-guidance-and-convention)
@@ -94,6 +95,7 @@ validate("12345678A").error?.message; // 'The control character is not correct: 
 | Show messages in Spanish, Catalan, Basque or Galician | `es`, `ca`, `eu`, `gl` (and `en`), passed as `{ locale }` | `nif-dni-nie-cif-validation/locales/<code>` |
 | Make valid fake numbers for tests | `generateDni`, `generateNie`, `generateCif`, `generateNif`, `createGenerator` | `nif-dni-nie-cif-validation/generate` |
 | Make invalid values for negative tests | `generateInvalid(type, { reason })` | `nif-dni-nie-cif-validation/generate` |
+| Validate from a terminal, a script or an agent's tool call, or check a CSV file | `npx nif-dni-nie-cif-validation validate <value...>`, `check --file <csv> --column <name>` | the command line ([below](#command-line)) |
 | Validate a form field with Zod | `zNif`, `zDni`, `zNie`, `zCif`, `zSpanishVat` | `nif-dni-nie-cif-validation/zod` |
 | … with Valibot | `vNif`, `vDni`, `vNie`, `vCif`, `vSpanishVat` | `nif-dni-nie-cif-validation/valibot` |
 | … with Yup | `yNif`, `yDni`, `yNie`, `yCif`, `ySpanishVat` | `nif-dni-nie-cif-validation/yup` |
@@ -112,6 +114,7 @@ validate("12345678A").error?.message; // 'The control character is not correct: 
 - **Error messages in 5 languages**: English (built in), Spanish, Catalan (also for Valencian), Basque and Galician. Each language is its own import, so your bundle only has the ones you use.
 - **Test-data generators** (`/generate`): valid numbers with the library's own control characters, the same for a given seed on every platform, and invalid values for each error code.
 - **Schema adapters** for Zod 4, Valibot 1 and Yup 1: they output the normalized value and give the localized message, the error code and the SPEC rule.
+- **A command line interface**: `npx nif-dni-nie-cif-validation validate 12345678Z`, with `--json` output and exit codes for scripts and agents, test data and CSV checks. It is not part of the library's bundle.
 
 ## API overview
 
@@ -289,6 +292,46 @@ await object({ cif: yCif() }).validate({ cif: "b-1234567-4" }); // { cif: "B1234
 | Yup 1 | `/yup` | `yNif`, `yDni`, `yNie`, `yCif`, `ySpanishVat` | the `ValidationError`'s `params` |
 
 Each schema takes the options of `validate()` and accepts exactly what `validate()` accepts. Install only the library you use; importing the core never loads an adapter. More in [docs/api-design.md](docs/api-design.md) (D12).
+
+## Command line
+
+The package also works from a terminal, a shell script or an AI agent's tool call, with no code to write. It needs Node.js 20 or newer:
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678Z " x-0123456-7l " 12345678A
+# 12345678Z: valid DNI 12345678Z
+# " x-0123456-7l ": valid NIE X1234567L
+# 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+npx nif-dni-nie-cif-validation generate dni --count 3 --seed 42
+# 60110375J
+# 44829056D
+# 85246578E
+```
+
+| Command | What it does |
+| --- | --- |
+| `validate <value...>` | Validates each value: its type and canonical form, or the SPEC rule, error code and message |
+| `type <value>` | Detects the type from the format only, like `getNifType()` |
+| `normalize <value>` | Prints the canonical form, like `normalize()` |
+| `generate <type>` | Prints test values: `dni`, `nie`, `cif` or `nif`, with `--count`, `--seed` and `--format` |
+| `check --file <csv> --column <name>` | Validates one column of a CSV file and reports the invalid rows by row number |
+
+`validate` and `check` take the options of `validate()` as flags: `--types DNI,NIE`, `--cif-control lenient`, `--reject-placeholders`, `--allow-vat-prefix` and `--locale es` (or `ca`, `eu`, `gl`). The exit code is 0 when everything is valid, 1 when something is invalid and 2 for a usage error, and `--json` prints one JSON document for scripts and agents (for `validate`, an array with `validate()`'s result for each value). For a CSV file such as this `customers.csv`:
+
+```csv
+id,nif,name
+1,12345678Z,Ana
+2,"B-1234567-4","Acme, S.L."
+3,12345678A,Luis
+```
+
+```sh
+npx nif-dni-nie-cif-validation check --file customers.csv --column nif
+# row 4: 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+# 3 rows checked in customers.csv, column "nif": 2 valid, 1 invalid
+```
+
+`npx nif-dni-nie-cif-validation --help` lists every command and option. The JSON shapes and the details of the CSV reader are in [docs/api-design.md](docs/api-design.md) (D13).
 
 ## Recipes
 
@@ -513,6 +556,8 @@ nif-dni-nie-cif-validation/locales/<code> and pass it as { locale }.
 For test data, use nif-dni-nie-cif-validation/generate instead of real numbers.
 Don't write your own check-letter code.
 ```
+
+An agent that runs shell commands can also call the [command line](#command-line): `npx nif-dni-nie-cif-validation validate <value> --json` prints `validate()`'s result, and the exit code says whether the value is valid.
 
 The rules and their official sources are in [SPEC.md](SPEC.md). Agents working on this repository read [AGENTS.md](AGENTS.md).
 

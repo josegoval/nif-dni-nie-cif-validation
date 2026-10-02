@@ -24,6 +24,7 @@ This file and llms-full.txt (the full reference) ship in the npm package.
 | Other languages | `nif-dni-nie-cif-validation/locales/{en,es,ca,eu,gl}` |
 | Test data | `nif-dni-nie-cif-validation/generate` |
 | Form schemas | `/zod` `zNif`, `/valibot` `vNif`, `/yup` `yNif` (also `Dni`, `Nie`, `Cif`, `SpanishVat`) |
+| Shell, agent tool call, CSV | `npx nif-dni-nie-cif-validation validate <value...> --json` (exit 1 if invalid), `type`, `normalize`, `generate`, `check --file x.csv --column nif` |
 
 ## Snippets
 

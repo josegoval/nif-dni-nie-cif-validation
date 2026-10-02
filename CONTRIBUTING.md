@@ -178,6 +178,7 @@ Constants and types need a summary and `@since`; give them examples too when the
 - Every error's `rule` must be defined in SPEC.md (tested).
 - `jsdoc-examples.test.ts` runs every `@example` of the JSDoc in `src/` (see JSDoc). `scripts/check-jsdoc.test.mjs` tests the script that checks the JSDoc.
 - `readme-examples.test.ts` runs every ```` ```ts ````, ```` ```tsx ```` and ```` ```js ```` block of README.md, README.es.md and llms.txt against `src/`, and type-checks the TypeScript ones with tsc. A top-level statement followed by a comment that starts with a value (`isValidNif("12345678Z"); // true`, or an object over several `//` lines) must evaluate to that value; prose comments are not checked. A block that can't run here (it needs a library that is not a dev dependency) gets `<!-- readme-test: skip (reason) -->` on the line before it and an entry in `SKIP_ALLOWED`. The test also checks that both READMEs have the same blocks, that they name every export of every entry point, and that llms.txt stays under about 2,000 tokens.
+- `cli.test.ts`, `cli-csv.test.ts` and `cli-bin.test.ts`: the command line interface through `main()` (every command, option, JSON shape and exit code), its CSV reader, and the built executable as a child process. `cli-docs.test.ts` runs every `npx nif-dni-nie-cif-validation` line of the ```` ```sh ```` blocks of README.md, README.es.md and docs/api-design.md: the `# ` lines after a command are its exact output, and `check` reads the ```` ```csv ```` block before it.
 
 ### Behaviour guarantee: the differential test
 
