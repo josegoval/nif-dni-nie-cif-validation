@@ -249,6 +249,8 @@ Policy (valid by default, rejected with `rejectPlaceholders`): `00000000T` · `0
 
 Live status checked on 2026-09-30 with `curl -sI -L`. Archive links should point to the closest Wayback Machine snapshot (queried through `https://archive.org/wayback/available?url=<url>`, without requesting new captures). On 2026-09-30 that API answered HTTP 429 (Too Many Requests) to every query, including after several retries with back-off, so no snapshot could be resolved yet. Until the links are filled in, each entry says "archive: check manually", and you can look a page up at `https://web.archive.org/web/*/<url>`.
 
+The T1 and T2 sources are watched for changes. `spec-sources.json`, in the repository, records for each BOE text the date of its last update (and of the articles cited here) and whether it was repealed, and for each T2 page a hash of the text of its relevant section. A monthly workflow compares them with the sources and opens an issue labelled `spec-change` when one changes (CONTRIBUTING.md, "Official sources").
+
 - RD 1065/2007: <https://www.boe.es/buscar/act.php?id=BOE-A-2007-15984> (archive: check manually)
 - Orden EHA/451/2008 (consolidated): <https://www.boe.es/buscar/act.php?id=BOE-A-2008-3580> (archive: check manually)
 - Orden HAP/5/2016: <https://www.boe.es/buscar/doc.php?id=BOE-A-2016-358> (archive: check manually)

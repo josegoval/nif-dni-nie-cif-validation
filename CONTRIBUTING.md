@@ -17,6 +17,8 @@ pnpm size                        # builds, then checks the bundle size budgets (
 pnpm check:es                    # builds, then checks that dist/ uses no syntax newer than ES2016
 pnpm spell                       # cspell: spelling of code, tests, docs and CI files
 pnpm spec:check                  # rule IDs in src/ and tests match SPEC.md
+pnpm spec:sources                # reads the official sources and reports what changed (see Official sources)
+pnpm spec:sources:update         # the same, then records the values read in spec-sources.json
 pnpm bench                       # builds, then benchmarks against v1.0.11
 pnpm bench:competitors           # builds, then benchmarks against other libraries (bench/README.md)
 pnpm readme:bench                # writes the generated parts of README.md and README.es.md from bench/results/latest.json
@@ -60,7 +62,8 @@ test/smoke/     smoke tests of the packed tarball, CommonJS and ES module (plain
 bench/          benchmarks: against v1.0.11 and another build, and against other libraries (see Performance)
 examples/       runnable projects that use the package, their own pnpm workspace (see Examples)
 website/        the website (Astro + Starlight, GitHub Pages), its own pnpm workspace (see Website)
-scripts/        build script, CI helpers: coverage summary, SPEC rule and JSDoc checks, tree-shaking check, README and llms-full.txt generators
+scripts/        build script, CI helpers: coverage summary, SPEC rule and JSDoc checks, tree-shaking check, README and llms-full.txt generators, official sources check
+spec-sources.json  the official sources SPEC.md cites and their recorded values (see Official sources)
 .size-limit.json  bundle size budgets (see Build and package layout)
 ```
 
@@ -121,6 +124,28 @@ The booleans stay this small because they never reach `normalize()` or `validate
 ### Rule IDs and SPEC.md
 
 Every validation branch in `src/` cites the rule it implements in a comment (`// CIF-3`), and every rule has a test whose name starts with its ID (`it("CIF-3: ...")`, or a case table with `rule: "CIF-3"`). `pnpm spec:check` (`scripts/check-spec-rules.mjs`, also run in CI) fails if an ID in `src/` or in a test is not defined in SPEC.md, or if a SPEC rule has no test. JSON fixtures under `test/` count as tests. Rules that can't have a test yet would be listed, with a reason, in `NOT_TESTED_YET` inside the script; it is empty since v2.
+
+### Official sources
+
+The law and the official pages change: RD 1553/2005 (DNI) was repealed in 2025, and Orden EHA/451/2008 was amended in 2016. The workflow `.github/workflows/spec-sources.yml` ("Official sources") checks them on the 1st of every month and opens an issue labelled `spec-change` when one has changed. It runs `scripts/spec-sources.mjs` (no dependencies), which compares each source with the values recorded in `spec-sources.json`:
+
+| Source | Read from | Recorded values |
+|---|---|---|
+| T1, consolidated BOE texts (`act.php`): RD 1065/2007, Orden EHA/451/2008, Orden 7/2/1997, RD 255/2025, RD 1155/2024 | The [BOE open data API](https://www.boe.es/datosabiertos/): `/legislacion-consolidada/id/<BOE id>/metadatos` and `/texto/indice` | The last update of the text (the newest date of its blocks, which is the "Última actualización" of `act.php`), the date of each article SPEC.md cites (`articles`), and the repeal, annulment and expiry flags (`N` = no) |
+| T1, texts the BOE does not consolidate (`doc.php`): Orden HAP/5/2016, Orden INT/2058/2008 | The document's XML, `https://www.boe.es/diario_boe/xml.php?id=<BOE id>` | The flags, and the later references: another text that amends, corrects or repeals it |
+| T2, the Ministerio del Interior and AEAT pages | The live page or, when it can't be read, its latest [Wayback Machine](https://web.archive.org/) snapshot | A SHA-256 and the length of the text of the section that matters, between the `from` and `to` markers of the source: no tags, scripts, comments or menus, so a new page design or "page updated" date doesn't change it |
+
+The Interior page answers HTTP 403 to automated requests, so it is read from the Wayback Machine, and only changes there once the archive has a newer snapshot (the report gives the snapshot's date). A source that can't be read at all (network error, timeout, no snapshot) is reported as **unverifiable**: the job summary lists it and the run shows a warning, but it is not a change, so the job stays green and its recorded values are kept. If a source stays unverifiable for several months, check it by hand.
+
+**When a `spec-change` issue opens:**
+
+1. Read the changed source (the issue links it and shows the old and new values). A new date of the whole text with the same dates for the cited articles usually means another article changed; check that nothing new (an article "bis", a new provision) affects the rules. A changed page hash means the text of the section changed: compare the page with its previous [Wayback Machine](https://web.archive.org/) snapshot. A section hash of `not found` means the page was restructured: fix the `from` and `to` markers in `spec-sources.json`.
+2. If a rule is affected, change SPEC.md (and its "Last verified" date), the code, the tests and the fixtures in a pull request, as in [How to propose a change](SPEC.md#how-to-propose-a-change). A change of what is accepted by default is a breaking change.
+3. Run `pnpm spec:sources:update`, which records the current values and the date in `spec-sources.json` (an unverifiable source keeps its values), review the diff, commit it (`chore(spec): record the official sources of <date>`, or in the pull request of step 2), and close the issue.
+
+The issue is not opened twice for the same changes: its body ends with a fingerprint of them, and the workflow skips the issue when an open `spec-change` issue has the same one. To check the whole path, run the workflow from the Actions tab with **simulate_change** on: it replaces one recorded value in memory and opens an issue titled `[simulated] Official source changed: …`, which you then close.
+
+To check locally, `pnpm spec:sources` prints the same report (it needs network access and writes nothing; `--report <file>` writes it to a file). `node scripts/spec-sources.mjs --simulate-change` shows a simulated change. To watch a new source, add it to `spec-sources.json` (`kind` is `boe-consolidated`, `boe-document` or `page`, with `articles` or `section` as above) and run `pnpm spec:sources:update`. `scripts/spec-sources.test.mjs` tests the script with saved answers in `scripts/fixtures/spec-sources/`, without network.
 
 ### JSDoc
 

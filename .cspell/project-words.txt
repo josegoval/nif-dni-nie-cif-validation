@@ -186,16 +186,23 @@ gualda
 # Heading anchors of SPEC.md, repeated in llms-full.txt
 getniftype
 
-# Field names of the BOE open data API, URL slugs and page markers of the
-# official sources (scripts/spec-sources.mjs, spec-sources.json)
+# Paths and field names of the BOE open data API, URL slugs, labels and page
+# markers of the official sources (scripts/spec-sources.mjs,
+# spec-sources.json, CONTRIBUTING.md)
 actualizacion
+actualización
 aeat
 anulacion
 codigo
+consolidada
 derogacion
 fisicas
 IMPRESI
+indice
 juridicas
+legislacion
+metadatos
+Última
 
 # English words missing from the dictionaries
 alikes
