@@ -1,0 +1,18 @@
+{
+  "name": "example-bundle-webpack",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A webpack production build that imports only isValidDni, and a check that its bundle holds no message or language of the package.",
+  "scripts": {
+    "build": "webpack",
+    "check": "webpack && node check-bundle.mjs"
+  },
+  "dependencies": {
+    "nif-dni-nie-cif-validation": "file:../.pack/package"
+  },
+  "devDependencies": {
+    "webpack": "^5.111.1",
+    "webpack-cli": "^7.2.3"
+  }
+}

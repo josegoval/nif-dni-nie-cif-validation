@@ -82,6 +82,7 @@ jobs:
           - yup
           - generate-test-data
           - csv-bulk-validation
+          - bundle-webpack
           - deno
           - bun
     steps:
