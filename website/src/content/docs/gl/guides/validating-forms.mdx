@@ -189,6 +189,8 @@ zNif().safeParse(data.get("nif")).data;   // "12345678Z"
 zNif().safeParse(null).error?.issues[0]?.message; // "The value must be text."
 ```
 
+Ten unha aplicación completa de Next.js cunha server action, que devolve o erro no idioma que escolla a persoa usuaria, en [examples/nextjs-server-action](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/nextjs-server-action).
+
 ## Que admite o campo
 
 | O campo é para… | Zod | Valibot | Yup |
