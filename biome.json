@@ -10,6 +10,7 @@
       "**",
       "!!**/dist",
       "!!**/coverage",
+      "!!**/.next",
       "!bench/results/*.json",
       "!scripts/fixtures/spec-sources",
       "!!website"
