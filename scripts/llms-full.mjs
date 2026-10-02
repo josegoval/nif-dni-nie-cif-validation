@@ -43,11 +43,27 @@ function absolute(target, from) {
   return `${REPOSITORY}/blob/master/${resolved}${fragment ? `#${fragment}` : ""}`;
 }
 
+/**
+ * Removes HTML comments (markers of generated sections, test markers).
+ * Repeats until nothing changes, so a comment hidden inside another one
+ * can't leave a "<!--" behind, and fails if one is still unterminated.
+ */
+function stripComments(markdown, file) {
+  let text = markdown;
+  let previous;
+  do {
+    previous = text;
+    text = text.replace(/<!--[\s\S]*?-->\n?/g, "");
+  } while (text !== previous);
+  if (text.includes("<!--")) {
+    throw new Error(`llms-full: unterminated HTML comment in ${file}`);
+  }
+  return text;
+}
+
 /** Cleans one source file: no HTML chrome, no comments, absolute links. */
 function clean(markdown, file) {
-  const out = markdown
-    // HTML comments: markers of generated sections, test markers.
-    .replace(/<!--[\s\S]*?-->\n?/g, "")
+  const out = stripComments(markdown, file)
     // The README header, and the sponsor button as a plain link.
     .replace(/^<p align="center">[\s\S]*?<\/p>\n/gm, "")
     .replace(
