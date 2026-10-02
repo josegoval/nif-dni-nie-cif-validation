@@ -99,6 +99,8 @@ export const ca: SiteStrings = {
       basic: "Bàsic",
       validate: "validate()",
       zod: "Zod",
+      valibot: "Valibot",
+      yup: "Yup",
       generators: "Generadors",
     },
     comments: {
