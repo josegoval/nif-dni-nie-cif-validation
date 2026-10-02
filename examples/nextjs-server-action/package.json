@@ -1,0 +1,26 @@
+{
+  "name": "example-nextjs-server-action",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A Next.js (App Router) server action that validates a NIF with validate() and returns the error in the language the user picks.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test",
+    "check": "pnpm build && pnpm typecheck && pnpm test"
+  },
+  "dependencies": {
+    "next": "^16.3.7",
+    "nif-dni-nie-cif-validation": "file:../.pack/package",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

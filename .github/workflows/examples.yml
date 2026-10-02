@@ -78,6 +78,7 @@ jobs:
           - node-esm
           - zod-react-hook-form
           - express-middleware
+          - nextjs-server-action
           - valibot
           - yup
           - generate-test-data

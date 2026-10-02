@@ -8,6 +8,7 @@ Runnable projects that use `nif-dni-nie-cif-validation`. Each one is small, has 
 | [node-esm](node-esm) | The same from an ES module, plus a language and the generators | `pnpm start` |
 | [zod-react-hook-form](zod-react-hook-form) | A Vite + React form with React Hook Form and the `/zod` schemas, in Spanish | `pnpm start` (`pnpm check` type-checks and builds) |
 | [express-middleware](express-middleware) | An Express middleware that answers `422` with localized errors, and a test that posts to it | `pnpm start` (`pnpm check` runs the test) |
+| [nextjs-server-action](nextjs-server-action) | A Next.js App Router form whose server action validates a NIF and returns the error in the language the user picks, with a test of the action's logic | `pnpm dev` (`pnpm check` builds, type-checks and tests) |
 | [valibot](valibot) | The `/valibot` schemas: normalized output, localized issue with code and rule | `pnpm start` |
 | [yup](yup) | The `/yup` schemas: normalized output, localized error with code and rule | `pnpm start` |
 | [generate-test-data](generate-test-data) | A Vitest fixture factory built on `createGenerator(seed)` | `pnpm start` (`pnpm check` runs the tests once) |
