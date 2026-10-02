@@ -16,7 +16,7 @@ pnpm build                       # compiles to dist/esm (ES modules) and dist/cj
 pnpm size                        # builds, then checks the bundle size budgets (size-limit)
 pnpm check:es                    # builds, then checks that dist/ uses no syntax newer than ES2016
 pnpm spell                       # cspell: spelling of code, tests, docs and CI files
-pnpm spec:check                  # rule IDs in src/ and tests match SPEC.md
+pnpm spec:check                  # rule IDs in src/ and tests match SPEC.md; every rule has a valid and an invalid fixture
 pnpm bench                       # builds, then benchmarks against v1.0.11
 pnpm bench:competitors           # builds, then benchmarks against other libraries (bench/README.md)
 pnpm readme:bench                # writes the generated parts of README.md and README.es.md from bench/results/latest.json
@@ -122,6 +122,8 @@ The booleans stay this small because they never reach `normalize()` or `validate
 
 Every validation branch in `src/` cites the rule it implements in a comment (`// CIF-3`), and every rule has a test whose name starts with its ID (`it("CIF-3: ...")`, or a case table with `rule: "CIF-3"`). `pnpm spec:check` (`scripts/check-spec-rules.mjs`, also run in CI) fails if an ID in `src/` or in a test is not defined in SPEC.md, or if a SPEC rule has no test. JSON fixtures under `test/` count as tests. Rules that can't have a test yet would be listed, with a reason, in `NOT_TESTED_YET` inside the script; it is empty since v2.
 
+It also fails unless every SPEC rule has at least one **valid** fixture (`"expected": "valid"`, the rule passing) and one **invalid** fixture (an error code, the rule that the error cites) in `test/fixtures/*.json`. A rule where one polarity can't exist is listed in `POLARITY_EXEMPTIONS` in the script, with the missing polarity and a one-line reason: input cleanup (NORM-*) never rejects, INPUT-1 and INPUT-2 only reject, and so on. The list must stay honest: the check fails if an exempted rule is no longer in SPEC.md, or if the exempted polarity now has a fixture. `scripts/check-spec-rules.test.mjs` tests this logic.
+
 ### JSDoc
 
 What an IDE or an AI agent reads is `dist/*.d.mts`, so the JSDoc of every public export is part of the API. `pnpm docs:jsdoc` (`scripts/check-jsdoc.mjs`, run in the `Check` job) reads the declarations of every entry point in `package.json`'s `exports`, from both the ES module and the CommonJS types, and fails when an export lacks:
@@ -139,7 +141,7 @@ Constants and types need a summary and `@since`; give them examples too when the
 
 ### Tests
 
-- `fixtures.test.ts` runs every entry of `test/fixtures/*.json` (`{ input, expected, type, rule, note }`) against `validate()` and the booleans, with the options of its file. Add SPEC test values there.
+- `fixtures.test.ts` runs every entry of `test/fixtures/*.json` (`{ input, expected, type, rule, note }`) against `validate()` and the booleans, with the options of its file (`FILE_OPTIONS`; `types-dni-nie.json` runs with `types`, and `not-a-string.json` holds JSON values that are not strings, for INPUT-1). Add SPEC test values there, a valid and an invalid one per rule (`pnpm spec:check`). A new file must also be classified in `bench/accuracy.test.mjs` (compared with other libraries or not).
 - `zod.test.ts`, `valibot.test.ts`, `yup.test.ts`: the adapters, run against the real libraries. Valid values normalize, every error code gives the localized message and the code and rule in the library's own place, every option is respected, a property test compares each schema with `validate()` on arbitrary strings, and `expectTypeOf` and `@ts-expect-error` check the types.
 - `generate.test.ts`: the generators. 100,000 values of each type validate (with `validate()`, stdnum and a separate copy of the algorithms), every CIF key and NIE prefix is generated, no value is a placeholder, `generateInvalid` fails with exactly the requested code (100,000 values per type and code), seeded values are golden (the same on every platform), and the mulberry32 output is compared with the published reference implementation.
 - `properties.test.ts` (fast-check, seeded): nothing throws, generated documents validate, `computeControlCharacter` completes them, single-character substitutions (documented exceptions in SPEC.md), `normalize` is idempotent, and the booleans always agree with `validate()`.
@@ -288,5 +290,6 @@ Do not run `npm publish` by hand. The `prepack` script builds `dist/` so a tarba
 Coverage never leaves GitHub; there is no third-party service:
 
 - Every CI run on Node 24 writes a coverage table to the run's **job summary** (`scripts/coverage-summary.mjs`) and uploads the HTML report as the `coverage-report` artifact.
-- The website publishes the HTML report of `master` at <https://josegoval.github.io/nif-dni-nie-cif-validation/coverage/>, and a badge drawn from `coverage/coverage-summary.json` at `/coverage/badge.svg` (`website/integrations/`).
+- The website publishes the HTML report of `master` at <https://josegoval.github.io/nif-dni-nie-cif-validation/coverage/>, and a badge made from `coverage/coverage-summary.json` (`scripts/coverage-badge.mjs`, called by `website/integrations/repo-files.mjs`): `/coverage/badge.json` in the [shields.io endpoint](https://shields.io/badges/endpoint-badge) schema, from which shields.io draws the README's badge (it only reads that file), and `/coverage/badge.svg` for embedding directly.
+- `.github/badges/coverage.svg`, a static badge, is no longer used by the docs, but the README of 2.0.0 on npmjs.com still shows it (from `master`). Delete it once a release has published the current README.
 - Run `pnpm test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/html/index.html`.

@@ -55,8 +55,9 @@ jobs:
       # Words cspell doesn't know go in .cspell/project-words.txt.
       - name: Spell check (cspell)
         run: pnpm spell
-      # Every rule ID in src/ and the tests exists in SPEC.md, and every SPEC
-      # rule has a test (scripts/check-spec-rules.mjs).
+      # Every rule ID in src/ and the tests exists in SPEC.md, every SPEC rule
+      # has a test, and a valid and an invalid fixture unless it is exempted
+      # (scripts/check-spec-rules.mjs).
       - name: Check SPEC rule IDs
         run: pnpm spec:check
       # The numbers in README.md and README.es.md are written from

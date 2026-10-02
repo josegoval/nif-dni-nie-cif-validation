@@ -13,7 +13,8 @@ import { join } from "node:path";
 /**
  * The fixture files that hold the expectations for the default options. The
  * other files test an option (lenient CIF control, no normalization,
- * rejected placeholders, VAT prefix), which no other library has.
+ * rejected placeholders, VAT prefix, accepted types), which no other library
+ * has, or hold values that are not strings (INPUT-1).
  */
 export const DEFAULT_FIXTURE_FILES = [
   "dni.json",

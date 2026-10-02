@@ -397,5 +397,26 @@
     "type": "CIF",
     "rule": "CIF-3",
     "note": "W with a letter control, official mode"
+  },
+  {
+    "input": "E11111119",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-1",
+    "note": "key + 7 digits + control digit"
+  },
+  {
+    "input": "R7654321D",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "CIF-1",
+    "note": "key + 7 digits + control letter"
+  },
+  {
+    "input": "H22222228",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "NIF-1",
+    "note": "an organisation key first selects the CIF format"
   }
 ]

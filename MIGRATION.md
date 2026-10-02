@@ -1,6 +1,6 @@
 # Migrating from v1 to v2
 
-Version 2.0.0 makes the validators follow [SPEC.md](SPEC.md), the official Spanish sources, by default. This page lists every breaking change, with code before and after, and how to get the v1 behaviour back.
+Version 2.0.0 makes the validators follow [SPEC.md](SPEC.md), the official Spanish sources, by default. This page lists every breaking change, with code before and after, and how to get the v1 behaviour back. The website has a shorter, step-by-step version in English, Spanish, Catalan, Basque and Galician: [Migrating from v1](https://josegoval.github.io/nif-dni-nie-cif-validation/migration/from-v1/).
 
 ## Quick path: keep the v1 behaviour
 
