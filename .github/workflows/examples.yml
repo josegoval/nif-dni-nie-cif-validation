@@ -83,6 +83,7 @@ jobs:
           - generate-test-data
           - csv-bulk-validation
           - bundle-webpack
+          - bundle-nextjs
           - deno
           - bun
     steps:

@@ -239,11 +239,13 @@ kreyo
 linux
 llms
 maistik
+nextjs
 npmjs
 publint
 releaserc
 spain
 stdnum
+turbopack
 typedoc
 valibot
 vite
