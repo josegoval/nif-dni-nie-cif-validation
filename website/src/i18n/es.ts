@@ -12,6 +12,16 @@ export const es: SiteStrings = {
     copy: "Copiar",
     copied: "Copiado",
   },
+  stats: {
+    label: "El proyecto en cifras",
+    stars: (count, value) =>
+      `${count} ${value === 1 ? "estrella" : "estrellas"} en GitHub`,
+    downloads: (count, value) =>
+      `${count} ${value === 1 ? "descarga" : "descargas"} en npm en la última semana`,
+    starsLink: "Estrellas en GitHub",
+    downloadsLink: "Descargas en npm",
+    asOf: (date) => `Datos del ${date}`,
+  },
   validator: {
     heading: "Pruébalo",
     intro:

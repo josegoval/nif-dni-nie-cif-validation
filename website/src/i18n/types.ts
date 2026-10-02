@@ -40,6 +40,22 @@ export interface SiteStrings {
     copy: string;
     copied: string;
   };
+  /**
+   * The project's stars on GitHub and downloads on npm, under the hero
+   * (src/data/stats.ts). `count` is the number, formatted and wrapped in
+   * <strong>; `value` is the number itself, for the plural.
+   */
+  stats: {
+    /** The accessible name of the list. */
+    label: string;
+    stars: (count: string, value: number) => string;
+    downloads: (count: string, value: number) => string;
+    /** The links when the build couldn't get a number. */
+    starsLink: string;
+    downloadsLink: string;
+    /** The day the numbers were fetched, already formatted. */
+    asOf: (date: string) => string;
+  };
   validator: {
     heading: string;
     intro: string;

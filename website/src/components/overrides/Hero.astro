@@ -1,12 +1,14 @@
 ---
 // Replaces Starlight's hero: the lockup from brand/ (light and dark), the
 // title and tagline from the page's frontmatter (`hero`), the install
-// command with a copy button, and the frontmatter's actions.
+// command with a copy button, the frontmatter's actions, and the project's
+// stars and downloads (fetched at build time).
 import { LinkButton } from "@astrojs/starlight/components";
 import lockupLight from "../../../../brand/logo-lockup-horizontal.svg";
 import lockupDark from "../../../../brand/logo-lockup-horizontal-dark.svg";
 import { langOf, stringsFor } from "../../i18n";
 import InstallCommand from "../landing/InstallCommand.astro";
+import ProjectStats from "../landing/ProjectStats.astro";
 
 const { entry, lang } = Astro.locals.starlightRoute;
 const { title = entry.data.title, tagline, actions = [] } =
@@ -53,6 +55,7 @@ const height = Math.round((width * lockupLight.height) / lockupLight.width);
       </div>
     )
   }
+  <ProjectStats />
 </div>
 
 <style>
