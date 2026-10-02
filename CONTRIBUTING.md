@@ -268,7 +268,7 @@ Use **squash merge only if the PR title is a valid Conventional Commit**, becaus
 
 Releases are fully automated with [semantic-release](https://semantic-release.gitbook.io/) and need no manual step or version bump.
 
-1. A PR is merged into `master`. Other release branches are `next`, `next-major`, `beta` (prerelease), `alpha` (prerelease) and maintenance branches such as `1.x`. See `.releaserc`.
+1. A PR is merged into `master`. Other release branches are `next`, `next-major`, `beta` (prerelease) and `alpha` (prerelease): the CI workflow's `push` trigger and the `release` environment (below) list exactly these five. `.releaserc` also knows maintenance branches such as `1.x`, but neither of those lists does, so releasing from one needs the branch added to both first.
 2. The same **CI** workflow runs `Check` and `Compat` on the pushed commit. Only if both pass does its `Release` job build and run `semantic-release`, so tests run once per push.
 3. semantic-release reads the commits since the last tag and works out the next version. If no commit is releasable (`fix`, `feat` or breaking), nothing is published.
 4. When a release is due, it updates `CHANGELOG.md` and `package.json`, publishes to npm, creates the GitHub release and tag, and pushes a `chore(release): x.y.z [skip ci]` commit.
@@ -277,7 +277,7 @@ Releases are fully automated with [semantic-release](https://semantic-release.gi
 
 The "Protect master" ruleset (Settings, Rules) blocks force pushes and deleting `master`, and requires `Check (Node 24)`, `Compat (Node 20)` and `PR title` to pass before anything lands on it. Repository admins can bypass it.
 
-The release commit can't carry those checks, so semantic-release pushes it with a write **deploy key** (Settings, Deploy keys, "semantic-release (release commit)"), which the ruleset lets bypass. Its private key is the `RELEASE_DEPLOY_KEY` Actions secret, used by the checkout step of the `Release` job; `.releaserc` sets an SSH `repositoryUrl` so the push goes through it. To rotate it, create a new key pair, replace the deploy key and the secret, and delete the old key. GitHub releases, tags and comments keep using `GITHUB_TOKEN`.
+The release commit can't carry those checks, so semantic-release pushes it with a write **deploy key** (Settings, Deploy keys, "semantic-release (release commit)"), which the ruleset lets bypass. Its private key is the `RELEASE_DEPLOY_KEY` secret of the `release` **environment** (Settings, Environments, release), not a repository secret. The environment's deployment branch policy only accepts the release branches (`master`, `next`, `next-major`, `beta` and `alpha`), so only the `Release` job of a push to one of them can read the key: a workflow run on a pull request or on any other branch can't. The checkout step of that job uses it, and `.releaserc` sets an SSH `repositoryUrl` so the push goes through it. To rotate it, create a new key pair, replace the deploy key and the environment secret, and delete the old key. GitHub releases, tags and comments keep using `GITHUB_TOKEN`.
 
 Publishing uses [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers) (OIDC) with provenance. There is no npm token to create or rotate. The trusted publisher is configured on npmjs.com (package Settings, Trusted publishing, GitHub Actions) for the repository `josegoval/nif-dni-nie-cif-validation` and the workflow filename `release.yml`. If you rename the workflow, update that setting too.
 
