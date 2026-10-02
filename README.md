@@ -410,7 +410,7 @@ By default only T1 to T3 decide what is valid. T4 conventions apply only to inpu
 ## Performance
 
 <!-- bench:start -->
-Measured with `pnpm bench:competitors` on Apple M1 (8 cores, 16 GiB, darwin 25.3.0, arm64), Node.js v24.16.0, on 2026-09-30, at commit `3177752`. Every number in this section comes from [`bench/results/latest.json`](bench/results/latest.json) and is written by `pnpm readme:bench`. How they are measured, and the caveats: [bench/README.md](bench/README.md). Full results: [bench/results/latest.md](bench/results/latest.md).
+Measured with `pnpm bench:competitors` on AMD EPYC 9V74 80-Core Processor (4 cores, 16 GiB, linux 6.17.0-1022-azure, x64), Node.js v24.21.0, on 2026-10-02, at commit `1166241`. Every number in this section comes from [`bench/results/latest.json`](bench/results/latest.json) and is written by `pnpm readme:bench`. How they are measured, and the caveats: [bench/README.md](bench/README.md). Full results: [bench/results/latest.md](bench/results/latest.md).
 
 #### Throughput
 
@@ -418,19 +418,19 @@ Millions of validations per second (**M ops/s, higher is faster**): the median o
 
 | Library | DNI | NIE | CIF |
 | --- | ---: | ---: | ---: |
-| **nif-dni-nie-cif-validation** (this build) | **60.26** | **60.32** | **43.39** |
-| [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 8.83 | 6.56 | 6.18 |
-| [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 7.53 | 4.20 | 4.53 |
-| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | 8.04 | 8.00 | *unsupported* |
-| [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | 9.53 | 5.30 | *unsupported* |
-| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | 0.48 | 0.46 | 0.44 |
-| [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 6.65 | 4.26 | *unsupported* |
-| [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 4.71 | 3.72 | *unsupported* |
-| [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | 9.69 | 7.84 | 6.79 |
-| [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 2.77 | 2.55 | 2.35 |
-| [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 2.71 | 2.15 | 2.77 |
+| **nif-dni-nie-cif-validation** (this build) | **60.12** | **57.60** | **55.06** |
+| [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 8.59 | 6.44 | 7.27 |
+| [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 6.96 | 4.01 | 4.50 |
+| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | 8.44 | 8.17 | *unsupported* |
+| [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | 8.90 | 4.49 | *unsupported* |
+| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | 0.41 | 0.39 | 0.38 |
+| [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 5.73 | 3.14 | *unsupported* |
+| [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 4.22 | 3.42 | *unsupported* |
+| [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | 9.46 | 8.39 | 7.74 |
+| [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 2.78 | 2.65 | 2.50 |
+| [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 2.10 | 1.59 | 2.37 |
 
-Against v1.0.11, this build is 6.8× (DNI), 9.2× (NIE) and 7.0× (CIF) as fast.
+Against v1.0.11, this build is 7.0× (DNI), 8.9× (NIE) and 7.6× (CIF) as fast.
 No other library was faster on any of these sets.
 
 #### Bundle size
@@ -439,7 +439,7 @@ Minified and gzipped (**min+gzip, lower is smaller**): one validator of each typ
 
 | Library | DNI | NIE | CIF | Any type | Whole library |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| **nif-dni-nie-cif-validation** (this build) | **624 B** | **586 B** | **562 B** | **929 B** | **4,653 B** |
+| **nif-dni-nie-cif-validation** (this build) | **623 B** | **586 B** | **568 B** | **929 B** | **4,679 B** |
 | [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 1,517 B | 1,517 B | 1,518 B | 1,517 B | 1,514 B |
 | [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 165 B | 237 B | 363 B | 583 B | 704 B |
 | [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | 1,135 B | 1,135 B | *unsupported* | 1,134 B | 1,132 B |
@@ -455,21 +455,21 @@ Smaller than this build for one validator of any type: [spain-id](https://www.np
 
 #### Agreement with SPEC.md
 
-The share of the 117 fixtures of `test/fixtures` (default options) that each library judges as SPEC.md does, valid or invalid. **This is agreement with SPEC.md, not correctness in the absolute**: the maintainers of this package wrote the rules and the fixtures, so it agrees with them by construction. Many disagreements are decisions that SPEC.md documents (for example CIF-3, or accepting the old NIE form); latest.md lists them per library. "Canonical input" leaves out the fixtures that need normalization.
+The share of the 125 fixtures of `test/fixtures` (default options) that each library judges as SPEC.md does, valid or invalid. **This is agreement with SPEC.md, not correctness in the absolute**: the maintainers of this package wrote the rules and the fixtures, so it agrees with them by construction. Many disagreements are decisions that SPEC.md documents (for example CIF-3, or accepting the old NIE form); latest.md lists them per library. "Canonical input" leaves out the fixtures that need normalization.
 
 | Library | DNI | NIE | CIF | K/L/M | All | Canonical input |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | **nif-dni-nie-cif-validation** (this build) | **100.0%** | **100.0%** | **100.0%** | **100.0%** | **100.0%** | **100.0%** |
-| [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 72.4% | 87.5% | 82.8% | 100.0% | 82.9% | 91.6% |
-| [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 89.7% | 75.0% | 86.2% | 44.4% | 82.9% | 86.3% |
-| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | 72.4% | 75.0% | *unsupported* | 55.6% | 72.9% | 90.0% |
-| [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | 75.9% | 75.0% | *unsupported* | 55.6% | 74.6% | 90.0% |
-| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | 89.7% | 81.3% | 62.1% | 100.0% | 75.2% | 75.8% |
-| [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 79.3% | 75.0% | *unsupported* | 55.6% | 76.3% | 90.0% |
-| [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 79.3% | 75.0% | *unsupported* | 100.0% | 83.0% | 100.0% |
-| [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | 86.2% | 75.0% | 86.2% | 55.6% | 82.9% | 87.4% |
-| [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 86.2% | 75.0% | 86.2% | 55.6% | 82.9% | 87.4% |
-| [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 89.7% | 81.3% | 81.0% | 100.0% | 85.5% | 88.4% |
+| [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 73.3% | 88.9% | 83.6% | 100.0% | 84.0% | 92.2% |
+| [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 90.0% | 77.8% | 86.9% | 36.4% | 82.4% | 85.4% |
+| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | 73.3% | 77.8% | *unsupported* | 45.5% | 71.9% | 86.7% |
+| [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | 76.7% | 77.8% | *unsupported* | 45.5% | 73.4% | 86.7% |
+| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | 90.0% | 83.3% | 63.9% | 100.0% | 76.8% | 77.7% |
+| [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 80.0% | 77.8% | *unsupported* | 45.5% | 75.0% | 86.7% |
+| [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 80.0% | 77.8% | *unsupported* | 100.0% | 84.4% | 100.0% |
+| [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | 86.7% | 77.8% | 86.9% | 45.5% | 82.4% | 86.4% |
+| [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 86.7% | 77.8% | 86.9% | 45.5% | 82.4% | 86.4% |
+| [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 90.0% | 83.3% | 82.0% | 100.0% | 86.4% | 89.3% |
 <!-- bench:end -->
 
 ## Comparison with other libraries
