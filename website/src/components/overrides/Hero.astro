@@ -1,0 +1,88 @@
+---
+// Replaces Starlight's hero: the lockup from brand/ (light and dark), the
+// title and tagline from the page's frontmatter (`hero`), the install
+// command with a copy button, and the frontmatter's actions.
+import { LinkButton } from "@astrojs/starlight/components";
+import lockupLight from "../../../../brand/logo-lockup-horizontal.svg";
+import lockupDark from "../../../../brand/logo-lockup-horizontal-dark.svg";
+import { langOf, stringsFor } from "../../i18n";
+import InstallCommand from "../landing/InstallCommand.astro";
+
+const { entry, lang } = Astro.locals.starlightRoute;
+const { title = entry.data.title, tagline, actions = [] } =
+  entry.data.hero ?? {};
+const t = stringsFor(langOf(lang));
+// The lockup is 599 × 36.4: 480 px wide keeps it above its 320 px minimum.
+const width = 480;
+const height = Math.round((width * lockupLight.height) / lockupLight.width);
+---
+
+<div class="hero not-content">
+  <img
+    class="lockup light:sl-hidden"
+    src={lockupDark.src}
+    alt={t.hero.logoAlt}
+    width={width}
+    height={height}
+    fetchpriority="high"
+  />
+  <img
+    class="lockup dark:sl-hidden"
+    src={lockupLight.src}
+    alt={t.hero.logoAlt}
+    width={width}
+    height={height}
+    fetchpriority="high"
+  />
+  <h1 id="_top" data-page-title set:html={title} />
+  {tagline && <p class="tagline" set:html={tagline} />}
+  <InstallCommand />
+  {
+    actions.length > 0 && (
+      <div class="actions">
+        {actions.map(({ attrs, icon, link, text, variant }) => (
+          <LinkButton
+            href={link}
+            variant={variant}
+            icon={icon?.name}
+            {...attrs}
+          >
+            {text}
+          </LinkButton>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    padding-block: 2.5rem 1.5rem;
+  }
+  .lockup {
+    width: min(100%, 30rem);
+    height: auto;
+  }
+  h1 {
+    margin: 0.5rem 0 0;
+    max-width: 22ch;
+    font-size: clamp(2rem, 6vw, 3.25rem);
+    line-height: 1.1;
+    color: var(--sl-color-white);
+  }
+  .tagline {
+    margin: 0;
+    max-width: 40rem;
+    font-size: var(--sl-text-xl);
+    color: var(--sl-color-gray-2);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+</style>

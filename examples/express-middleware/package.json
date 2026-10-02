@@ -1,0 +1,15 @@
+{
+  "name": "example-express-middleware",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An Express middleware that validates a NIF in a JSON body and answers with localized errors.",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --test"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "nif-dni-nie-cif-validation": "file:../.pack/package"
+  }
+}

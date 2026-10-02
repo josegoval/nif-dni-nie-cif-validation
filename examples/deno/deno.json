@@ -1,0 +1,6 @@
+{
+  "nodeModulesDir": "manual",
+  "tasks": {
+    "start": "deno run main.ts"
+  }
+}

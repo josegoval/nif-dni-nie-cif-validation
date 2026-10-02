@@ -1,0 +1,152 @@
+---
+title: Migrar des de la v1
+description: Actualitzeu nif-dni-nie-cif-validation de la versió 1 a la 2. Tots els canvis incompatibles (el control CIF-3, la normalització de l'entrada, les signatures de TypeScript, els punts d'entrada), amb codi abans i després i com mantenir el comportament de la v1.
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+La versió 2 fa que els validadors segueixin per defecte [SPEC.md](/nif-dni-nie-cif-validation/ca/reference/official-sources/), les fonts oficials espanyoles. Canvien quatre coses; tota la resta, inclosos tots els noms de les exportacions i els seus àlies, continua igual. La llista completa, amb tots els detalls, és a [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md) (en anglès).
+
+## Via ràpida: mantenir els resultats de la v1
+
+Tots els validadors accepten opcions com a segon argument. Aquestes dues donen exactament els resultats de la v1.0.11; un test compara totes dues versions amb unes 490.000 entrades:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+const V1_COMPATIBLE = { normalize: false, cifControl: "lenient" } as const;
+
+isValidNif("G1234567D");                // false
+isValidNif("G1234567D", V1_COMPATIBLE); // true, com a la v1.0.11
+```
+
+Feu-les servir com a solució provisional per a les dades desades, i després passeu als valors per defecte.
+
+## Què canvia
+
+| # | Canvi | A qui afecta | Mantenir el comportament de la v1 |
+| --- | --- | --- | --- |
+| 1 | Les claus de CIF C, D, F, G, J, U i V necessiten una xifra de control | CIF com `G1234567D` deixen de ser vàlids | `{ cifControl: "lenient" }` |
+| 2 | L'entrada es normalitza per defecte | Valors amb espais, punts, guions o barres, o un DNI sense els zeros inicials, passen a ser vàlids | `{ normalize: false }` |
+| 3 | TypeScript: els validadors tenen un segon paràmetre | `ids.filter(isValidNif)` deixa de compilar | Escriviu `ids.filter((id) => isValidNif(id))` |
+| 4 | Només es poden importar els punts d'entrada del paquet | Importacions de fitxers dins de `dist/` | Importeu des de `nif-dni-nie-cif-validation` |
+
+## 1. El control del CIF segueix CIF-3
+
+La nota tècnica de l'AEAT assigna una xifra de control a les claus A B C D E F G H J U V i una lletra a N P Q R S W ([CIF-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-3)). La versió 1 acceptava una lletra o una xifra per a C, D, F, G, J, U i V, cosa que no té base oficial. Afecta `isValidNif`, `isValidCif` (`isValidLegalEntityNif`) i `isValidCifControlCode` (`isValidLegalEntityNifControlCode`).
+
+Abans, a la v1:
+
+{/* docs-test: v1 */}
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D"); // true
+isValidCif("G12345674"); // true
+```
+
+Després, a la v2:
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                            // false: la G porta xifra
+isValidCif("G12345674");                            // true
+isValidCif("G1234567D", { cifControl: "lenient" }); // true, com a la v1
+```
+
+Només canvien C, D, F, G, J, U i V: A, B, E i H sempre han necessitat una xifra, i N, P, Q, R, S i W una lletra, a totes dues versions.
+
+## 2. L'entrada es normalitza
+
+Ara els validadors netegen l'entrada abans de comprovar-la: es treuen els espais en blanc i els punts ([NORM-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-2)), els guions i les barres ([NORM-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-3)), i a un DNI amb menys de 8 xifres se li tornen a afegir els zeros inicials ([NORM-4](/nif-dni-nie-cif-validation/ca/reference/official-sources/#norm-4)). La neteja mai no converteix un document no vàlid en vàlid, de manera que cap resultat `true` dels validadors de documents complets no canvia; alguns resultats `false` passen a `true`. Les funcions que només comproven el caràcter de control, `isValidDniLetter` i `isValidCifControlCode`, no comproven el format, de manera que amb separadors el seu resultat pot canviar en tots dos sentits: a la v1, `isValidCifControlCode("A 7727886")` era `true` perquè l'espai comptava com un `0` (consulteu [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md#2-the-input-is-normalized-by-default), en anglès).
+
+Abans, a la v1:
+
+{/* docs-test: v1 */}
+```ts
+import { isValidCif, isValidDni, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif(" 12.345.678-Z "); // false
+isValidDni("1234567L");       // false
+isValidCif("B-1234567-4");    // false
+```
+
+Després, a la v2:
+
+```ts
+import { isValidCif, isValidDni, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif(" 12.345.678-Z ");                       // true
+isValidDni("1234567L");                             // true
+isValidCif("B-1234567-4");                          // true
+isValidNif(" 12.345.678-Z ", { normalize: false }); // false, com a la v1
+```
+
+Les minúscules i el NIE antic de 10 caràcters (`X01234567L`) ja s'acceptaven a la v1, i es continuen acceptant. Si deseu el valor, deseu-ne la forma canònica: la retorna `normalize()`, nova a la v2. Consulteu [Normalitzar i formatar l'entrada](/nif-dni-nie-cif-validation/ca/guides/normalizing-and-formatting/).
+
+## 3. TypeScript: un segon paràmetre
+
+Tots els validadors són ara `(value: unknown, opts?: IsValidOptions) => boolean`. El primer paràmetre accepta més que abans, cosa que no trenca res, però el segon fa que TypeScript rebutgi un validador passat directament a un mètode d'array, el segon argument del qual és l'índex:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+const ids = ["12345678Z", "B12345675"];
+
+// @ts-expect-error: l'índex (un número) no és un objecte d'opcions
+ids.filter(isValidNif);
+ids.filter((id) => isValidNif(id)); // ["12345678Z"]
+```
+
+En temps d'execució no canvia res: un número com a opcions s'ignora, de manera que el JavaScript sense tipus continua funcionant.
+
+## 4. Importeu des del paquet, no des de dist/
+
+La versió 2 publica mòduls ES i CommonJS i els declara en un mapa `exports`. Només es poden importar el mateix paquet, les seves subrutes (`/locales/<code>`, `/generate`, `/zod`, `/valibot`, `/yup`) i `package.json`, de manera que una ruta als fitxers compilats falla amb `ERR_PACKAGE_PATH_NOT_EXPORTED`:
+
+```diff
+- const { isValidNif } = require("nif-dni-nie-cif-validation/dist/nif/nif");
++ const { isValidNif } = require("nif-dni-nie-cif-validation");
+```
+
+Els validadors i les altres funcions s'importen des de `nif-dni-nie-cif-validation`; els idiomes, els generadors i els esquemes, des dels seus propis punts d'entrada (`/locales/<code>`, `/generate`, `/zod`, `/valibot`, `/yup`). `require()` i `import` funcionen a Node.js 20 o posterior i a tots els bundlers.
+
+## Novetats de la v2
+
+Res d'això no trenca el codi existent:
+
+- [`validate()`](/nif-dni-nie-cif-validation/ca/guides/errors-and-languages/): el tipus, la forma canònica i, si el valor no és vàlid, un codi d'error, la regla de SPEC i un missatge.
+- [`normalize()` i `format()`](/nif-dni-nie-cif-validation/ca/guides/normalizing-and-formatting/), `getNifType()`, `computeControlCharacter()`, `describeCifOrganisation()` i `isValidSpanishVat()`.
+- L'opció `rejectPlaceholders` i, a `validate()`, també `types`, `allowVatPrefix` i `locale`.
+- Missatges en [castellà, català, basc i gallec](/nif-dni-nie-cif-validation/ca/guides/errors-and-languages/#triar-lidioma).
+- [Generadors de dades de prova](/nif-dni-nie-cif-validation/ca/guides/test-data/) i [esquemes de Zod, Valibot i Yup](/nif-dni-nie-cif-validation/ca/guides/validating-forms/).
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678A").error?.code; // "INVALID_CONTROL_CHARACTER"
+validate("12345678A").error?.rule; // "DNI-2"
+```
+
+## Llista de comprovació
+
+<Steps>
+
+1. Actualitzeu i executeu els vostres tests.
+
+2. Si els CIF desats amb lletra de control per a C, D, F, G, J, U o V han de continuar sent vàlids, passeu `{ cifControl: "lenient" }` on els comproveu, i planifiqueu la correcció de les dades.
+
+3. Si algun codi depenia de `false` per a valors amb separadors, passeu `{ normalize: false }` o, millor, deseu `normalize(value)`.
+
+4. A TypeScript, substituïu `array.filter(isValidX)` per una funció fletxa.
+
+5. Substituïu qualsevol importació des de `nif-dni-nie-cif-validation/dist/…` per una des de `nif-dni-nie-cif-validation`.
+
+6. Per als missatges en un altre idioma, importeu-ne l'objecte d'idioma i passeu-lo com a `locale`.
+
+</Steps>
+
+<Aside type="note">
+`replaceNieLetter` continua obsoleta i continua llançant una excepció amb una entrada incorrecta, exactament com a la v1. Les altres exportacions de la v1, incloses les expressions regulars i les taules de lletres, no canvien.
+</Aside>

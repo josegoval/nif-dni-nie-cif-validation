@@ -1,0 +1,44 @@
+{
+  "name": "nif-dni-nie-cif-validation-website",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The website of nif-dni-nie-cif-validation, published on GitHub Pages.",
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "check:links": "node scripts/check-links.mjs",
+    "check:size": "node scripts/js-size.mjs",
+    "test:e2e": "playwright test",
+    "check": "pnpm lint && pnpm typecheck && pnpm build && pnpm check:links && pnpm check:size && pnpm test:e2e"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.42.4",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "astro": "^7.3.5",
+    "nif-dni-nie-cif-validation": "link:..",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "@biomejs/biome": "2.5.14",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.20.4",
+    "starlight-links-validator": "^0.26.0",
+    "starlight-typedoc": "^0.23.1",
+    "typedoc": "^0.28.20",
+    "typedoc-plugin-markdown": "^4.13.1",
+    "typescript": "^6.0.3"
+  }
+}

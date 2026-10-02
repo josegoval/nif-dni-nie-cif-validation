@@ -1,0 +1,11 @@
+node_modules
+dist
+.astro
+test-results
+playwright-report
+.starlight-links-validator
+# Generated at build time from SPEC.md and the JSDoc (plugins/)
+src/content/docs/reference/api/
+src/content/docs/*/reference/api/
+src/content/docs/reference/official-sources.md
+src/content/docs/*/reference/official-sources.md

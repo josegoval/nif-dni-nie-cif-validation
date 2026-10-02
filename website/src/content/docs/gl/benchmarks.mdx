@@ -1,0 +1,81 @@
+---
+title: Rendemento
+description: Velocidade, tamaño do bundle e concordancia con SPEC.md de nif-dni-nie-cif-validation e dos demais validadores de NIF, DNI, NIE e CIF españois en npm, coa máquina, o método e como executalo vostede mesmo.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import AgreementChart from "../../../components/docs/bench/AgreementChart.astro";
+import BenchRun from "../../../components/docs/bench/BenchRun.astro";
+import SizeChart from "../../../components/docs/bench/SizeChart.astro";
+import ThroughputChart from "../../../components/docs/bench/ThroughputChart.astro";
+
+A velocidade e o tamaño desta biblioteca en comparación coa súa versión principal anterior e coas demais bibliotecas de npm que validan identificadores españois. Todas as cifras desta páxina lense de [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json) ao xerar o sitio: non se escribe nada a man. Se unha biblioteca é máis rápida ou máis pequena nalgunha cousa, as táboas móstrano.
+
+<BenchRun />
+
+As cifras absolutas dependen da máquina. As proporcións entre as bibliotecas dunha mesma execución mantéñense moito mellor dunha máquina a outra, así que compare esas.
+
+## Velocidade
+
+Millóns de validacións por segundo (**M ops/s; canto maior sexa a cifra, máis rápida é**), con cada biblioteca chamada como indica a súa documentación, coas súas opcións predeterminadas, sobre os mesmos documentos válidos e non válidos en forma canónica. «Rendemento relativo» indica a proporción entre o rendemento desta compilación e o de cada biblioteca, na mesma execución. *non compatible* significa que a biblioteca non ten validador para ese tipo.
+
+### DNI
+
+<ThroughputChart set="DNI" />
+
+### NIE
+
+<ThroughputChart set="NIE" />
+
+### CIF
+
+<ThroughputChart set="CIF" />
+
+A velocidade non o é todo, e estas cifras deixan cousas fóra: a memoria, a primeira chamada antes de que o JIT quente, a entrada que necesita normalización e o custo do resultado detallado de `validate()`. Unha biblioteca que rexeita axiña unha cadea é rápida con ela, e por iso a concordancia con SPEC.md mídese á parte, máis abaixo.
+
+## Tamaño do bundle
+
+O que engade un validador a un bundle, minificado e comprimido con gzip (**min+gzip; canto menor sexa a cifra, máis pequeno é**), empaquetado con esbuild como fai a comprobación de tamaño da propia biblioteca. A barra dunha biblioteca moito máis grande ca as demais debúxase completa, co final cortado.
+
+<SizeChart view="chart" />
+
+Algunhas bibliotecas máis pequenas validan menos tipos. Esta dedica bytes a normalizar a entrada, aos tipos de control de CIF-3 e aos NIF K/L/M. As bibliotecas publicadas só como CommonJS non admiten *tree shaking*, así que unha das súas funcións custa a biblioteca enteira. As bibliotecas de moitos países ou de propósito xeral, como stdnum e validator.js, son máis grandes por deseño.
+
+<SizeChart view="table" />
+
+## Concordancia con SPEC.md
+
+A porcentaxe dos casos de proba da biblioteca (opcións predeterminadas) que cada biblioteca xulga igual ca [SPEC.md](/nif-dni-nie-cif-validation/gl/reference/official-sources/): válidos ou non válidos.
+
+<Aside type="caution" title="Concordancia con SPEC.md, non corrección">
+As persoas mantedoras desta biblioteca escribiron tanto SPEC.md coma os casos de proba, así que coincide con eles por construción. A cifra que di algo é a de cada unha das demais bibliotecas, e mesmo así, unha discrepancia pode ser unha elección lexítima: moitas son decisións que SPEC.md documenta, como aceptar a forma antiga do NIE ou os tipos de control de [CIF-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-3). «Só entrada canónica» exclúe os casos que necesitan normalización, así que aí non se penaliza unha biblioteca que non normaliza.
+</Aside>
+
+<AgreementChart view="chart" />
+
+<AgreementChart view="table" />
+
+Un tipo que unha biblioteca non valida exclúese das súas cifras, así que compare as columnas, e non «Todos os casos», entre bibliotecas de distinto alcance. A lista de discrepancias de cada biblioteca, cun exemplo de cada unha, está en [`latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md) (en inglés).
+
+## Método
+
+- **Entradas.** Xéranse cun xerador pseudoaleatorio con semente, así que todas as execucións e todas as máquinas miden as mesmas cadeas: documentos válidos e os mesmos documentos cun carácter de control incorrecto, para cada tipo.
+- **Chamadas.** Cada biblioteca chámase exactamente como indica a súa documentación, coas súas opcións predeterminadas, sobre a cadea de entrada sen procesar. A única excepción é jsvat, un validador de NIF-IVE, a cuxas entradas se lles engade o prefixo `ES` fóra do bucle cronometrado.
+- **Medición.** [tinybench](https://github.com/tinylibs/tinybench) executa cada tarefa no seu propio proceso, tras un quecemento, para que o que V8 aprende dunha biblioteca non cambie a cifra da seguinte. A execución completa repítese en varias roldas, a orde das bibliotecas vai rotando entre conxuntos e roldas, e cada cifra é a da súa rolda mediana.
+- **Tamaño.** A importación dunha soa función que documenta cada biblioteca, empaquetada e minificada con esbuild e comprimida con gzip no nivel 9, menos o custo dunha importación baleira.
+- **Concordancia.** A chamada «calquera tipo» de cada biblioteca sobre os casos que proban as opcións predeterminadas, xulgando cada caso como válido ou non válido.
+
+A metodoloxía completa, as súas advertencias e o esquema dos resultados están en [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md) (en inglés).
+
+## Execúteo vostede mesmo
+
+As bibliotecas instálanse en versións exactas, así que unha execución mide exactamente o que recolle `latest.json`. Peche antes os demais programas, e compare proporcións en lugar de cifras absolutas:
+
+```sh
+git clone https://github.com/josegoval/nif-dni-nie-cif-validation.git
+cd nif-dni-nie-cif-validation
+pnpm install --frozen-lockfile
+pnpm bench:competitors   # uns 5 minutos; escribe bench/results/latest.json e latest.md
+```
+
+`pnpm bench`, en cambio, compara cada validador coa versión 1. Un fluxo de traballo de GitHub Actions executa o mesmo benchmark baixo demanda, nun runner compartido, e sobe os resultados.

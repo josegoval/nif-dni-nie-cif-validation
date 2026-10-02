@@ -1,0 +1,138 @@
+# Builds, type-checks or runs every example in examples/ against the packed
+# package (#60), so an example can't stop working without CI saying so.
+#
+# This is not part of release.yml on purpose: the examples install React,
+# Vite, Express and other packages from the registry, so a failure here can
+# come from outside this repository, and it must not block a release. It runs
+# on every pull request, because any change to the library can break an
+# example, and on pushes to the release branches. Each example runs in its own
+# job (a matrix), so one failing example doesn't hide the others.
+name: Examples
+
+on:
+  push:
+    branches: [master, next, next-major, beta, alpha]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: examples-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  HUSKY: "0" # do not install git hooks in CI
+
+jobs:
+  # Packs the library exactly as `npm publish` would: the examples install
+  # the files of this tarball, not src/ or a dist/ that npm would not ship.
+  pack:
+    name: Pack
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup pnpm
+        # Version comes from `packageManager` in package.json.
+        uses: pnpm/action-setup@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      # The examples' lockfile has its own dependency tree (React, Vite,
+      # Express...), which the audit of release.yml doesn't see. Same
+      # threshold: high and critical advisories fail, the rest only show.
+      - name: Audit the examples' dependencies
+        run: pnpm --dir examples audit --audit-level high
+      # `prepack` builds dist/. Pack into a separate folder so script output
+      # can't corrupt the filename.
+      - name: Pack
+        id: pack
+        run: |
+          mkdir -p "$RUNNER_TEMP/pack"
+          pnpm pack --pack-destination "$RUNNER_TEMP/pack" > /dev/null
+          echo "tarball=$(ls "$RUNNER_TEMP"/pack/*.tgz)" >> "$GITHUB_OUTPUT"
+      - name: Upload package tarball
+        uses: actions/upload-artifact@v7
+        with:
+          name: examples-tarball
+          path: ${{ steps.pack.outputs.tarball }}
+          if-no-files-found: error
+          retention-days: 7
+
+  example:
+    name: ${{ matrix.example }}
+    needs: pack
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        example:
+          - node-cjs
+          - node-esm
+          - zod-react-hook-form
+          - express-middleware
+          - valibot
+          - yup
+          - generate-test-data
+          - csv-bulk-validation
+          - deno
+          - bun
+    steps:
+      # Only what an example needs: its folder, the script that unpacks the
+      # tarball, and package.json (pnpm's version comes from it).
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: |
+            examples
+            scripts/pack-for-examples.mjs
+            package.json
+          sparse-checkout-cone-mode: false
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: examples/pnpm-lock.yaml
+      # The Deno and Bun examples run on their own runtime. These are the
+      # official actions of the Deno and Bun organisations, pinned to an exact
+      # release (Dependabot updates it), and they only run in their own job.
+      - name: Setup Deno
+        if: matrix.example == 'deno'
+        uses: denoland/setup-deno@v2.0.5
+        with:
+          deno-version: v2.x
+      - name: Setup Bun
+        if: matrix.example == 'bun'
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: 1.x
+      - name: Download package tarball
+        uses: actions/download-artifact@v8
+        with:
+          name: examples-tarball
+          path: ${{ runner.temp }}/pack
+      - name: Unpack the package into examples/.pack
+        run: node scripts/pack-for-examples.mjs "$RUNNER_TEMP"/pack/*.tgz
+      # Installs only this example's dependencies. `--frozen-lockfile` can't be
+      # used: pnpm calls a `file:` dependency whose package has optional peer
+      # dependencies out of date, so the next step checks the lockfile instead.
+      - name: Install the example's dependencies
+        run: pnpm --dir examples install --no-frozen-lockfile --filter "./${{ matrix.example }}"
+      # The install above may update the lockfile: fail if it did, as
+      # `--frozen-lockfile` would (run `pnpm examples:install` and commit it).
+      - name: Check that examples/pnpm-lock.yaml is up to date
+        run: git diff --exit-code -- examples/pnpm-lock.yaml
+      # Builds, type-checks or runs the example with assertions: a wrong
+      # result is a non-zero exit code.
+      - name: Check the example
+        run: pnpm --dir examples --filter "./${{ matrix.example }}" run check

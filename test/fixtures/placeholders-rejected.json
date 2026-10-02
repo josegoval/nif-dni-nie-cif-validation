@@ -1,0 +1,44 @@
+[
+  {
+    "input": "00000000T",
+    "expected": "PLACEHOLDER",
+    "type": "DNI",
+    "rule": "POLICY-1",
+    "note": "rejected with rejectPlaceholders"
+  },
+  {
+    "input": "00000001R",
+    "expected": "PLACEHOLDER",
+    "type": "DNI",
+    "rule": "POLICY-1",
+    "note": "rejected with rejectPlaceholders"
+  },
+  {
+    "input": "99999999R",
+    "expected": "PLACEHOLDER",
+    "type": "DNI",
+    "rule": "POLICY-1",
+    "note": "rejected with rejectPlaceholders"
+  },
+  {
+    "input": "X0000000T",
+    "expected": "PLACEHOLDER",
+    "type": "NIE",
+    "rule": "POLICY-1",
+    "note": "rejected with rejectPlaceholders"
+  },
+  {
+    "input": "x00000000t",
+    "expected": "PLACEHOLDER",
+    "type": "NIE",
+    "rule": "POLICY-1",
+    "note": "old NIE form of X0000000T, lower case"
+  },
+  {
+    "input": "12345678Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "POLICY-1",
+    "note": "other documents are not affected"
+  }
+]

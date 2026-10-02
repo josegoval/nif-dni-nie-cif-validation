@@ -1,0 +1,54 @@
+---
+title: Ús amb agents de programació amb IA
+description: Ajudeu els agents de programació amb IA, com Claude Code, Codex, Cursor o Copilot, a fer servir bé nif-dni-nie-cif-validation, amb els fitxers llms.txt i llms-full.txt que inclou i unes instruccions que podeu enganxar.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Els assistents de programació amb IA sovint escriuen el seu propi codi per calcular la lletra d'un DNI, o apliquen una regla desfasada a un CIF. Aquesta biblioteca inclou documentació en text pla escrita per a ells, perquè la puguin fer servir en lloc d'això, des del vostre `node_modules` o des d'aquest lloc web.
+
+## Els fitxers
+
+| Fitxer | Què conté | On és |
+| --- | --- | --- |
+| `llms.txt` | Una guia breu (uns 2.000 tokens): quina funció fer servir, fragments provats, els codis d'error i els errors habituals | [En aquest lloc web](/nif-dni-nie-cif-validation/llms.txt) i a `node_modules/nif-dni-nie-cif-validation/llms.txt` |
+| `llms-full.txt` | La referència completa en un sol fitxer: el README, el disseny de l'API, la guia de migració des de la v1 i les regles amb les seves fonts | [En aquest lloc web](/nif-dni-nie-cif-validation/llms-full.txt) i a `node_modules/nif-dni-nie-cif-validation/llms-full.txt` |
+
+Tots dos segueixen la [convenció llms.txt](https://llmstxt.org) i són en anglès. Van dins del paquet d'npm, de manera que un agent que només pugui llegir el vostre projecte també els troba. Tots els fragments de codi de `llms.txt` s'executen als tests de la biblioteca.
+
+## Instruccions per al vostre agent
+
+Enganxeu això a les instruccions del vostre agent: `AGENTS.md` (el llegeixen Codex i d'altres), `CLAUDE.md` (Claude Code), `.cursor/rules` (Cursor) o `.github/copilot-instructions.md` (GitHub Copilot). Les instruccions són en anglès:
+
+```text
+To validate Spanish NIF, DNI, NIE or CIF numbers, use the npm package
+nif-dni-nie-cif-validation. Read node_modules/nif-dni-nie-cif-validation/llms.txt
+before writing code. Use the isValid* functions for yes/no checks and validate()
+when the user needs to know why a value is invalid, and store result.normalized.
+For messages in another language, import the locale object from
+nif-dni-nie-cif-validation/locales/<code> and pass it as { locale }.
+For test data, use nif-dni-nie-cif-validation/generate instead of real numbers.
+Don't write your own check-letter code.
+```
+
+## Què solen fer malament els agents i què cal revisar
+
+Quan reviseu codi escrit per un agent, fixeu-vos en això:
+
+- **El seu propi algorisme.** Una funció escrita a mà amb el mòdul 23 o per al CIF és un senyal d'alarma: sol oblidar els NIF K/L/M, la forma antiga del NIE o [CIF-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-3). Substituïu-la per `isValidNif()` o `computeControlCharacter()`.
+- **Un idioma passat com a cadena.** `{ locale: "es" }` dona missatges en anglès; l'idioma ha de ser l'objecte importat.
+- **`ids.filter(isValidNif)`.** TypeScript ho rebutja, perquè els validadors reben les opcions com a segon argument. Escriviu `ids.filter((id) => isValidNif(id))`.
+- **Desar l'entrada tal com és.** Deseu `validate(value).normalized`.
+- **Tractar tot NIF que comença per una lletra com si fos d'una empresa.** Els NIF K/L/M són de persones; `isValidNaturalPersonNif()` els accepta i `isValidCif()` no.
+- **Números reals als tests.** Feu servir els [generadors](/nif-dni-nie-cif-validation/ca/guides/test-data/).
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+const ids = ["12345678Z", "12345678A", " x-0123456-7l "];
+ids.filter((id) => isValidNif(id)); // ["12345678Z", " x-0123456-7l "]
+```
+
+<Aside type="note" title="Contribuir amb un agent">
+L'`AGENTS.md` de l'arrel del repositori és per als agents i les persones que treballen **en** la biblioteca: la seva estructura, les seves ordres i les regles que ha de complir un canvi. Per **fer servir** el paquet, el fitxer que cal llegir és `llms.txt`.
+</Aside>

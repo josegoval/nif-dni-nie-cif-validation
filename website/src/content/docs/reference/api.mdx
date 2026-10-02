@@ -1,0 +1,21 @@
+---
+title: API reference
+description: The API reference of nif-dni-nie-cif-validation, generated from its JSDoc. Every export of every entry point, with signatures, options, return values, tested examples and the SPEC rules they follow.
+---
+
+import EntryPointsTable from "../../../components/docs/EntryPointsTable.astro";
+
+The reference is generated from the JSDoc of the library's source each time the site is built, so it always matches the code. It has one page per entry point of the package, with every export: its signature, what each parameter and the return value mean, two examples that the library's tests run, the SPEC rule it follows, and the version that added it.
+
+<EntryPointsTable />
+
+Your editor shows the same documentation as you type, from the type declarations that the package ships.
+
+## Reading the reference
+
+- **Options.** The validators take `IsValidOptions`, `validate()` takes `ValidateOptions`, and the schemas take the options of `validate()`. Each option's default and effect are listed on the main entry point's page.
+- **Rules.** The links to rule IDs, such as `DNI-2`, open the [official sources](/nif-dni-nie-cif-validation/reference/official-sources/) page.
+- **Aliases.** `isValidCif` and `isValidLegalEntityNif` are the same function, as are `isValidCifControlCode` and `isValidLegalEntityNifControlCode`; `CIF_REGEX` and `LEGAL_ENTITY_NIF_REGEX`, and `CIF_CONTROL_LETTERS` and `LEGAL_ENTITY_CONTROL_LETTERS`, are the same constants.
+- **Deprecated.** `replaceNieLetter` is kept for version 1 code. It throws on bad input, unlike the validators and the other helpers (the generators also throw a `RangeError`, when their options are impossible).
+
+For a task-oriented introduction, start with [Getting started](/nif-dni-nie-cif-validation/guides/getting-started/). The decisions behind the API are in [docs/api-design.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md).

@@ -12,8 +12,10 @@
 // A rule is defined by an anchored row in a SPEC.md table:
 // `| <a id="cif-3"></a>CIF-3 | ...`. A test references a rule when its ID
 // appears in the test file outside comments: in a test name, or in a case
-// table that builds test names (for example `rule: "CIF-3"`). A range such
-// as `NORM-2..4` counts as NORM-2, NORM-3 and NORM-4.
+// table that builds test names (for example `rule: "CIF-3"`), or in a JSON
+// fixture under test/ (`"rule": "CIF-3"`), which the table-driven test
+// turns into test names. A range such as `NORM-2..4` counts as NORM-2,
+// NORM-3 and NORM-4.
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -22,17 +24,13 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
 // Rules that no test references yet, on purpose. Keep this list short and
-// explain every entry. The next PR (#56, the validate() API with input
-// normalization and VAT numbers) removes VAT-1 and NORM-2..4.
-const NOT_TESTED_YET = new Map([
-  ["CIF-5", "nothing to implement: province codes are not validated"],
-  ["VAT-1", "ES + NIF VAT numbers are not supported yet (#56)"],
-  ["NORM-2", "spaces and dots are not ignored yet (#56)"],
-  ["NORM-3", "hyphens and slashes are not ignored yet (#56)"],
-  ["NORM-4", "short DNIs are not left-padded yet (#56)"],
-]);
+// explain every entry. Empty since the v2 API (#56): every rule is tested,
+// CIF-5 by a test proving that no province check happens.
+const NOT_TESTED_YET = new Map();
 
 const SOURCE_EXTENSIONS = /\.(?:ts|mts|cts|js|mjs|cjs)$/;
+/** JSON fixtures count as tests; JSON elsewhere is not scanned. */
+const FIXTURE_EXTENSION = /\.json$/;
 const isTestFile = (path) =>
   /(?:^|\/)__tests__\//.test(path) ||
   /\.test\.[cm]?[jt]s$/.test(path) ||
@@ -43,7 +41,10 @@ function listFiles(dir) {
   return entries.flatMap((entry) => {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) return listFiles(path);
-    return SOURCE_EXTENSIONS.test(entry.name) ? [path] : [];
+    return SOURCE_EXTENSIONS.test(entry.name) ||
+      (path.startsWith("test/") && FIXTURE_EXTENSION.test(entry.name))
+      ? [path]
+      : [];
   });
 }
 
@@ -190,7 +191,7 @@ for (const id of NOT_TESTED_YET.keys()) {
 
 const tested = [...defined.keys()].filter((id) => referencedByTests.has(id));
 console.log(
-  `SPEC.md defines ${defined.size} rules. Tests reference ${tested.length} of them (${testIds} references); ${NOT_TESTED_YET.size} are not tested yet on purpose: ${[...NOT_TESTED_YET.keys()].join(", ")}. Sources cite rule IDs ${sourceIds} times.`
+  `SPEC.md defines ${defined.size} rules. Tests reference ${tested.length} of them (${testIds} references). Not tested yet on purpose: ${NOT_TESTED_YET.size === 0 ? "none" : [...NOT_TESTED_YET.keys()].join(", ")}. Sources cite rule IDs ${sourceIds} times.`
 );
 if (errors.length > 0) {
   console.error(`\n${errors.length} problem(s):`);

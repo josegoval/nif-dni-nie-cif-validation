@@ -1,0 +1,60 @@
+---
+// Where, when and how the benchmark ran, from bench/results/latest.json.
+import { run } from "../../../data/bench-details";
+import { formatDate, formatNumber, langOf, stringsFor } from "../../../i18n";
+import TableScroll from "../TableScroll.astro";
+
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const t = stringsFor(lang).docs.bench.run;
+const n = (value: number) => formatNumber(lang, value);
+const commit = run.commit;
+const rows: { label: string; value: string; href?: string }[] = [
+  { label: t.machine, value: run.machine.cpu },
+  { label: t.cores, value: n(run.machine.cores) },
+  { label: t.memory, value: `${n(run.machine.memoryGiB)} GiB` },
+  { label: t.os, value: `${run.machine.os} (${run.machine.arch})` },
+  { label: t.node, value: run.node },
+  { label: t.date, value: formatDate(lang, run.date) },
+  {
+    label: t.commit,
+    value: commit ? commit.slice(0, 7) : "—",
+    ...(commit
+      ? {
+          href: `https://github.com/josegoval/nif-dni-nie-cif-validation/commit/${commit}`,
+        }
+      : {}),
+  },
+  {
+    label: t.method,
+    value: t.methodValue(
+      n(run.config.rounds),
+      n(run.config.timePerTaskMs),
+      n(run.config.warmupPerTaskMs)
+    ),
+  },
+];
+---
+
+<TableScroll labelledby="bench-run-caption">
+  <table class="bench-run">
+    <caption id="bench-run-caption">{t.caption}</caption>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <th scope="row">{row.label}</th>
+            <td>
+              {row.href ? (
+                <a href={row.href}>
+                  <code>{row.value}</code>
+                </a>
+              ) : (
+                row.value
+              )}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</TableScroll>

@@ -1,0 +1,26 @@
+---
+title: APIaren erreferentzia
+description: nif-dni-nie-cif-validation liburutegiaren APIaren erreferentzia, bere JSDoc-etik sortua. Sarrera-puntu bakoitzaren esportazio guztiak, sinadura, aukera, itzulitako balio, probatutako adibide eta jarraitzen dituzten SPEC arauekin.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import EntryPointsTable from "../../../../components/docs/EntryPointsTable.astro";
+
+Erreferentzia liburutegiaren iturburu-kodeko JSDoc-etik sortzen da gunea eraikitzen den bakoitzean; beraz, beti dator bat kodearekin. Paketearen sarrera-puntu bakoitzeko orri bat du, bere esportazio guztiekin: sinadura, parametro bakoitzak eta itzulitako balioak zer esan nahi duten, liburutegiaren probek exekutatzen dituzten bi adibide, jarraitzen duen SPEC araua eta gehitu zuen bertsioa.
+
+<Aside type="note" title="Ingelesez">
+Erreferentziaren orriak ingelesez daude, haien testua kodeko JSDoc-a baita. Gidak, berriz, euskaraz daude: hasi [Lehen urratsak](/nif-dni-nie-cif-validation/eu/guides/getting-started/) orritik sarrera bat behar baduzu.
+</Aside>
+
+<EntryPointsTable />
+
+Zure editoreak dokumentazio bera erakusten du idatzi ahala, paketeak dakartzan mota-deklarazioetatik abiatuta.
+
+## Nola irakurri erreferentzia
+
+- **Aukerak.** Egiaztatzaileek `IsValidOptions` jasotzen dute, `validate()` funtzioak `ValidateOptions`, eta eskemek `validate()` funtzioaren aukerak. Aukera bakoitzaren balio lehenetsia eta eragina sarrera-puntu nagusiaren orrian daude.
+- **Arauak.** Arau-identifikatzaileetarako estekek, `DNI-2` adibidez, [iturri ofizialen](/nif-dni-nie-cif-validation/eu/reference/official-sources/) orria irekitzen dute.
+- **Aliasak.** `isValidCif` eta `isValidLegalEntityNif` funtzio bera dira, baita `isValidCifControlCode` eta `isValidLegalEntityNifControlCode` ere; `CIF_REGEX` eta `LEGAL_ENTITY_NIF_REGEX`, eta `CIF_CONTROL_LETTERS` eta `LEGAL_ENTITY_CONTROL_LETTERS`, konstante bera dira.
+- **Zaharkitua.** `replaceNieLetter` 1. bertsioko kodearentzat mantentzen da. Salbuespen bat jaurtitzen du sarrera oker batekin, egiaztatzaileek eta gainerako funtzioek ez bezala (sorgailuek ere `RangeError` bat jaurtitzen dute, aukerak ezinezkoak direnean).
+
+APIaren atzeko erabakiak [docs/api-design.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md) fitxategian daude (ingelesez).

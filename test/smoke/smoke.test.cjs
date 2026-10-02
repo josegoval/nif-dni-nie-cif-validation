@@ -1,9 +1,10 @@
 "use strict";
-// Smoke test for the packed tarball, run on the oldest supported Node with the
-// built-in test runner. No dependencies on purpose: CI installs the tarball
-// into an empty folder and runs this file from there, so `require` below
-// resolves the package exactly as a consumer would. See the `compat` job in
-// .github/workflows/release.yml.
+// Smoke test for the packed tarball as CommonJS, run on the oldest supported
+// Node with the built-in test runner. No dependencies on purpose: CI installs
+// the tarball into an empty folder and runs this file from there, so `require`
+// below resolves the package exactly as a consumer would (through the
+// "require" condition of its `exports`). smoke.test.mjs does the same for ES
+// modules. See the `compat` job in .github/workflows/release.yml.
 const assert = require("node:assert/strict");
 const { describe, it } = require("node:test");
 
@@ -20,6 +21,14 @@ const FUNCTIONS = [
   "isValidCifControlCode",
   "isValidLegalEntityNif",
   "isValidCif",
+  // v2
+  "validate",
+  "getNifType",
+  "normalize",
+  "format",
+  "computeControlCharacter",
+  "describeCifOrganisation",
+  "isValidSpanishVat",
 ];
 const STRINGS = [
   "DNI_CONTROL_LETTERS",
@@ -103,5 +112,161 @@ describe("specific validators", () => {
     assert.equal(lib.isValidCif("A58818501"), true);
     assert.equal(lib.isValidCif("P2807900B"), true);
     assert.equal(lib.isValidCif("12345678Z"), false);
+  });
+});
+
+describe("v2 API", () => {
+  it("validate explains a wrong control character", () => {
+    const result = lib.validate("12345678A");
+    assert.equal(result.valid, false);
+    assert.equal(result.type, "DNI");
+    assert.equal(result.error.code, "INVALID_CONTROL_CHARACTER");
+    assert.equal(result.error.rule, "DNI-2");
+    assert.equal(result.error.expected, "Z");
+  });
+  it("validate normalizes and describes a CIF, in Spanish", () => {
+    const { es } = require("nif-dni-nie-cif-validation/locales/es");
+    const result = lib.validate(" b-1234567-4 ", { locale: es });
+    assert.equal(result.valid, true);
+    assert.equal(result.normalized, "B12345674");
+    assert.equal(
+      result.meta.orgDescription,
+      "Sociedad de responsabilidad limitada"
+    );
+  });
+  it("a language code string is ignored: English", () => {
+    const result = lib.validate("12345678A", { locale: "es" });
+    assert.match(result.error.message, /^The control character/);
+    assert.equal(
+      lib.describeCifOrganisation("B", "es"),
+      "Limited liability company"
+    );
+  });
+  it("the booleans follow CIF-3 by default and restore v1 on request", () => {
+    assert.equal(lib.isValidCif("G1234567D"), false);
+    const v1 = { normalize: false, cifControl: "lenient" };
+    assert.equal(lib.isValidCif("G1234567D", v1), true);
+    assert.equal(lib.isValidNif(" 12.345.678-Z "), true);
+    assert.equal(lib.isValidNif(" 12.345.678-Z ", v1), false);
+  });
+  it("normalize, format, computeControlCharacter and isValidSpanishVat", () => {
+    assert.equal(lib.normalize(" x-0123456-7l "), "X1234567L");
+    assert.equal(lib.format("12345678z"), "12345678-Z");
+    assert.equal(lib.computeControlCharacter("B1234567"), "4");
+    assert.equal(lib.isValidSpanishVat("ES12345678Z"), true);
+  });
+});
+
+// Every locale subpath (`exports`), required as CommonJS.
+const LOCALES = ["en", "es", "ca", "eu", "gl"];
+
+describe("locales", () => {
+  for (const code of LOCALES) {
+    it(`locales/${code} loads the CommonJS build, and validate uses it`, () => {
+      const path = `nif-dni-nie-cif-validation/locales/${code}`;
+      assert.match(
+        require.resolve(path),
+        new RegExp(`dist[\\\\/]cjs[\\\\/]locales[\\\\/]${code}\\.cjs$`)
+      );
+      const module = require(path);
+      const locale = module[code];
+      assert.equal(locale.code, code);
+      assert.equal(module.default, locale);
+      assert.equal(
+        lib.validate("12345678A", { locale }).error.message,
+        locale.messages.INVALID_CONTROL_CHARACTER("DNI", "Z")
+      );
+      assert.equal(
+        lib.describeCifOrganisation("B", locale),
+        locale.organisations.B
+      );
+    });
+  }
+});
+
+// The opt-in test-data generators (`nif-dni-nie-cif-validation/generate`).
+describe("generate", () => {
+  const generate = require("nif-dni-nie-cif-validation/generate");
+
+  it("loads the CommonJS build", () => {
+    assert.match(
+      require.resolve("nif-dni-nie-cif-validation/generate"),
+      /dist[\\/]cjs[\\/]generate[\\/]index\.cjs$/
+    );
+    for (const name of [
+      "generateDni",
+      "generateNie",
+      "generateCif",
+      "generateNif",
+      "generateInvalid",
+      "createGenerator",
+    ]) {
+      assert.equal(typeof generate[name], "function", name);
+    }
+  });
+  it("the core does not export the generators", () => {
+    assert.equal(lib.generateDni, undefined);
+  });
+  it("gives valid values, the same for the same seed on every platform", () => {
+    assert.equal(generate.generateDni({ seed: 1 }), "62707394X");
+    assert.equal(generate.generateNie({ seed: 1 }), "Y0027357R");
+    assert.equal(generate.generateCif({ seed: 1 }), "P0027357C");
+    assert.equal(generate.generateNif({ seed: 1 }), "X5274470H");
+    for (let i = 0; i < 50; i++) {
+      assert.equal(lib.isValidNif(generate.generateNif()), true);
+      assert.equal(lib.isValidNif(generate.generateNif({ seed: i })), true);
+    }
+  });
+  it("generateInvalid gives the requested error code", () => {
+    assert.equal(
+      lib.validate(generate.generateInvalid("DNI", { seed: 1 })).error.code,
+      "INVALID_CONTROL_CHARACTER"
+    );
+    assert.equal(
+      lib.validate(
+        generate.generateInvalid("CIF", { seed: 1, reason: "INVALID_LENGTH" })
+      ).error.code,
+      "INVALID_LENGTH"
+    );
+  });
+  it("createGenerator makes a stream of different values", () => {
+    const gen = generate.createGenerator(1);
+    assert.equal(gen.dni(), "62707394X");
+    assert.equal(gen.dni(), "00273574N");
+  });
+  it("a bad option throws a RangeError", () => {
+    assert.throws(
+      () => generate.generateCif({ orgKey: "B", control: "letter" }),
+      {
+        name: "RangeError",
+      }
+    );
+  });
+});
+
+describe("package entry points", () => {
+  it("require() loads the CommonJS build", () => {
+    assert.match(
+      require.resolve("nif-dni-nie-cif-validation"),
+      /dist[\\/]cjs[\\/]index\.cjs$/
+    );
+  });
+  it("package.json can be required", () => {
+    const pkg = require("nif-dni-nie-cif-validation/package.json");
+    assert.equal(pkg.name, "nif-dni-nie-cif-validation");
+  });
+  it("only the documented entry points can be required", () => {
+    assert.throws(
+      () => require("nif-dni-nie-cif-validation/dist/cjs/index.cjs"),
+      { code: "ERR_PACKAGE_PATH_NOT_EXPORTED" }
+    );
+    assert.throws(() => require("nif-dni-nie-cif-validation/dist/index.js"), {
+      code: "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    });
+  });
+  it("import() from CommonJS loads the ES module build", async () => {
+    const esm = await import("nif-dni-nie-cif-validation");
+    assert.equal(typeof esm.validate, "function");
+    assert.equal(esm.validate("12345678Z").valid, true);
   });
 });

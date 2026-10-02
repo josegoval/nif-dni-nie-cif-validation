@@ -1,0 +1,123 @@
+---
+title: Nola funtzionatzen duen kontrol-karaktereak
+description: Nola kalkulatzen diren, urratsez urrats, Espainiako NANaren, K/L/M IFZaren eta AIZaren kontrol-letra (23 modulua) eta IFKaren kontrol-karakterea, arau bakoitzaren iturri ofizialarekin eta mailarekin.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+IFZ ororen azken karakterea **kontrol-karaktere** bat da, zenbakiaren gainerako zatitik kalkulatua, idazketa-akatsak antzemateko. Orri honek azaltzen du nola kalkulatzen den bakoitza eta nondik datorren arau bakoitza. Urrats guztiek ez dute iturri mota bera: batzuk legea dira, beste batzuk irizpide ofiziala besterik ez, eta bat konbentzio bat da. Mailak [iturri ofizialen](/nif-dni-nie-cif-validation/eu/reference/official-sources/#source-tiers) orrian azaltzen dira.
+
+<Aside>
+Ez duzu hau programatu behar: `computeControlCharacter()` funtzioak azken karaktererik gabeko zenbaki baten kontrol-karakterea itzultzen du, eta egiaztatzaile guztiek egiaztatzen dute.
+</Aside>
+
+## NAN: zenbakia 23 moduluan
+
+NAN baten kontrol-letra 8 digituko zenbakia 23rekin zatitzean geratzen den hondarra da, taula honetan bilatuta ([DNI-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#dni-2)):
+
+| Hondarra | Letra | Hondarra | Letra | Hondarra | Letra |
+| ---: | --- | ---: | --- | ---: | --- |
+| 0 | T | 8 | P | 16 | Q |
+| 1 | R | 9 | D | 17 | V |
+| 2 | W | 10 | X | 18 | H |
+| 3 | A | 11 | B | 19 | L |
+| 4 | G | 12 | N | 20 | C |
+| 5 | M | 13 | J | 21 | K |
+| 6 | Y | 14 | Z | 22 | E |
+| 7 | F | 15 | S | | |
+
+`12345678` zenbakian: 12345678 = 23 × 536768 + 14, eta 14ri dagokion letra **Z** da; beraz, NANa `12345678Z` da.
+
+```ts
+import { computeControlCharacter } from "nif-dni-nie-cif-validation";
+
+const LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+12345678 % 23;                       // 14
+LETTERS[12345678 % 23];              // "Z"
+computeControlCharacter("12345678"); // "Z"
+```
+
+I, Ñ, O eta U letrak ez daude taulan; beraz, NAN bat ez da inoiz haietako batekin amaitzen ([DNI-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#dni-3)). Erabiltzaile batek horietako bat idazten badu, `validate()` funtzioak adierazten du zein arau ez den betetzen eta zein letra espero zen:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678I").error?.rule;     // "DNI-3"
+validate("12345678I").error?.expected; // "Z"
+```
+
+**Iturria.** NANaren formatua legea da: 1065/2007 Errege Dekretua, 19. artikulua (T1 maila). 23 moduluaren algoritmoa ez dago inongo legetan: Barne Ministerioak argitaratzen du, baita AEATren IFZari buruzko ohar teknikoak ere (T2 eta T3 mailak).
+
+## K/L/M IFZ: 7 digituak bakarrik
+
+K, L edo M IFZ batek taula bera erabiltzen du, bere 7 digituen gainean. Hasierako letra ez da digitu bihurtzen; beraz, digitu berak dituzten K, L eta M IFZek kontrol-letra bera dute ([KLM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-2)):
+
+```ts
+import { computeControlCharacter } from "nif-dni-nie-cif-validation";
+
+computeControlCharacter("K1234567"); // "L": 1234567 % 23 eragiketak 19 ematen du
+computeControlCharacter("M1234567"); // "L"
+```
+
+**Iturria.** AEATren IFZari buruzko ohar teknikoa (T3). Legeak dio 7 karaktereak «alfanumerikoak» direla, baina algoritmoak digituekin bakarrik funtzionatzen du; beraz, liburutegiak oharrari jarraitzen dio eta digituak eskatzen ditu ([KLM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-3), iturrien arteko [gatazka ezagun](/nif-dni-nie-cif-validation/eu/reference/official-sources/#known-conflicts-between-sources) bat).
+
+## AIZ: aurrizkia ordezkatu eta 23 modulua aplikatu
+
+AIZ batean, aurrizkia digitu bihurtzen da (X → 0, Y → 1, Z → 2), eta ateratzen den 8 digituko zenbakia NANaren taulatik pasatzen da ([NIE-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-2)). Horrela, `Y1234567` 11234567 bihurtzen da; haren hondarra 10 da, eta letra, **X**:
+
+```ts
+import { computeControlCharacter, isValidNie } from "nif-dni-nie-cif-validation";
+
+11234567 % 23;                       // 10
+computeControlCharacter("Y1234567"); // "X"
+computeControlCharacter("X1234567"); // "L": 01234567 NANaren berdina
+isValidNie("Y1234567L");             // false: aurrizkiak letra aldatzen du
+```
+
+10 karaktereko AIZ zaharrak (`X0` + 7 digitu + letra) 9 karaktereko formaren letra bera du, hasierako zeroak ez baitu zenbakia aldatzen ([NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3)).
+
+**Iturria.** Barne Ministerioaren orria eta AEATren ohar teknikoa (T2 eta T3); X, Y eta Z sailak INT/2058/2008 Aginduan daude (T1).
+
+## IFK: digitu bat edo letra bat, erakunde-gakoaren arabera
+
+IFK baten kontrol-karakterea digitu bat edo letra bat da, eta erakunde-gakoak erabakitzen du zein ([CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3)):
+
+- **digitu** bat A, B, C, D, E, F, G, H, J, U eta V gakoetan (Espainiako sozietateak eta beste erakunde batzuk);
+- **letra** bat N, P, Q, R, S eta W gakoetan (atzerriko erakundeak, toki korporazioak, erakunde publikoak, erakunde erlijiosoak, Estatuko organoak eta establezimendu iraunkorrak).
+
+Balioa 7 digituetatik kalkulatzen da ([CIF-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-4)):
+
+1. Batu posizio bikoitietako digituak (2.a, 4.a eta 6.a).
+2. Bikoiztu posizio bakoitietako digitu bakoitza (1.a, 3.a, 5.a eta 7.a), eta batu emaitza bakoitzaren digituak (14 1 + 4 gisa zenbatzen da).
+3. Batu bi kopuruak. Kontrol-digitua 10 ken guztizkoaren azken digitua da, edo 0, azken digitua 0 bada.
+4. Gakoak letra badarama, digitua letra bihurtzen da: 0 → J, 1 → A, 2 → B, … 9 → I (`JABCDEFGHI`).
+
+`B1234567` zenbakian: posizio bikoitiek 2 + 4 + 6 = 12 ematen dute; bakoitiek, 2 + 6 + (1 + 0) + (1 + 4) = 14; guztira 26 da; beraz, kontrol-digitua 10 − 6 = **4** da, eta IFKa `B12345674` da. Letra daraman gako batek D izango luke, `JABCDEFGHI` sekuentziako bosgarren letra.
+
+```ts
+import { computeControlCharacter, isValidCif } from "nif-dni-nie-cif-validation";
+
+computeControlCharacter("B1234567"); // "4"
+computeControlCharacter("N1234567"); // "D": N gakoak letra darama
+computeControlCharacter("P2807900"); // "B": Madrilgo Udala, P2807900B
+isValidCif("B1234567D");             // false: B gakoak digitua darama
+```
+
+**Iturria.** Erakunde-gakoak legea dira: EHA/451/2008 Agindua (T1). Zein gakok daraman digitua eta zeinek letra AEATren barneko ohar teknikoan bakarrik ageri da (T3). Aritmetika ez dago aurkitu dugun inongo testu ofizialetan argitaratuta: konbentzio bat da (T4), inplementazio guztiek jarraitzen diotena eta erakunde publikoen benetako IFZekin egiaztatua, hala nola P2807900B (Madrilgo Udala) eta Q2826000H (AEAT bera).
+
+<Aside type="note" title="C, D, F, G, J, U eta V">
+Liburutegi askok, baita honen 1. bertsioak ere, digitu bat edo letra bat onartzen dute C, D, F, G, J, U eta V gakoetan. AEATren oharrak digitu bat esleitzen die; beraz, 2. bertsioak letra baztertzen du lehenespenez. Datu zaharretarako, `{ cifControl: "lenient" }` aukerak biak onartzen ditu: ikusi [ohiko galderak](/nif-dni-nie-cif-validation/eu/guides/faq/#zergatik-ez-da-baliozkoa-g1234567d).
+</Aside>
+
+## Iturrien laburpena
+
+| Urratsa | Araua | Maila |
+| --- | --- | --- |
+| NANaren formatua: 8 digitu eta letra bat | [DNI-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#dni-1) | T1 legea, T2 orri ofiziala |
+| NANaren letra: 23 modulua | [DNI-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#dni-2) | T2 orri ofiziala, T3 AEATren oharra |
+| K/L/M letra: 7 digituak | [KLM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-2) | T3 AEATren oharra |
+| AIZaren aurrizkia: X → 0, Y → 1, Z → 2 | [NIE-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-2) | T2 orri ofiziala, T3 AEATren oharra |
+| IFKaren erakunde-gakoak | [CIF-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-2) | T1 legea |
+| IFKaren kontrola: digitua edo letra gakoaren arabera | [CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3) | T3 AEATren oharra |
+| IFKaren kontrolaren aritmetika | [CIF-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-4) | T4 konbentzioa |

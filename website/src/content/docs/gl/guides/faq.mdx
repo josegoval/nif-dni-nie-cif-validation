@@ -1,0 +1,90 @@
+---
+title: Preguntas frecuentes
+description: Respostas sobre a validación de NIF, DNI, NIE e CIF españois, con fontes. É válido o DNI 00000000T? Seguen sendo válidos os CIF antigos? Existe un NIE que comece por T? E VIES e a regra do 00 no CIF?
+---
+
+Respostas breves, cada unha coa regra de [SPEC.md](/nif-dni-nie-cif-validation/gl/reference/official-sources/) que a respalda.
+
+## É válido o DNI 00000000T?
+
+Si. `00000000T` ten a letra de control correcta e ningunha lei o prohibe, así que é válido de forma predeterminada, como os demais números de exemplo coñecidos `00000001R`, `99999999R` e `X0000000T`. Algúns rexistros, como ESNIC (o rexistro de dominios `.es`), fíltranos por seren valores de exemplo coñecidos, pero estar nesa lista non demostra que un número non se asignase nunca. Se tamén os quere rexeitar, pase `rejectPlaceholders: true` (unha política opcional), e `validate()` devolve o código `PLACEHOLDER` ([POLICY-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#policy-1)).
+
+```ts
+import { isValidDni, validate } from "nif-dni-nie-cif-validation";
+
+isValidDni("00000000T");                                   // true
+isValidDni("00000000T", { rejectPlaceholders: true });     // false
+validate("x-0000000-t", { rejectPlaceholders: true }).error?.code; // "PLACEHOLDER"
+```
+
+## Seguen sendo válidos os CIF antigos?
+
+Si. En 2008, a Orde EHA/451/2008 substituíu o nome «CIF» por «NIF de persoa xurídica ou entidade», pero os números non cambiaron, e nunca se suprimiu ningunha clave de entidade ([CIF-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-2)). O que si cambiou con esa orde son os 7 díxitos: pasaron a ser aleatorios e xa non codifican unha provincia, así que a biblioteca non comproba códigos de provincia ([CIF-5](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-5)).
+
+Hai un tipo de valor antigo que non é válido de forma predeterminada: un CIF coas claves C, D, F, G, J, U ou V e unha letra como carácter de control. Consulte [a pregunta seguinte](#por-que-g1234567d-non-é-válido).
+
+## Por que G1234567D non é válido?
+
+Porque a clave G leva un díxito. A nota técnica da AEAT sobre o NIF asígnalles un díxito ás claves A B C D E F G H J U V e unha letra a N P Q R S W ([CIF-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-3)). Moitas bibliotecas, e a versión 1 desta, aceptaban calquera dos dous para C, D, F, G, J, U e V, algo que non ten base oficial. O díxito co mesmo valor si é válido:
+
+```ts
+import { isValidCif, validate } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                            // false
+validate("G1234567D").error?.expected;              // "4"
+isValidCif("G12345674");                            // true
+isValidCif("G1234567D", { cifControl: "lenient" }); // true: o comportamento da versión 1
+```
+
+Se os seus datos gardados teñen números así, pase `{ cifControl: "lenient" }` mentres os limpa. Só afecta ás claves C, D, F, G, J, U e V: A, B, E e H sempre levan díxito, e N, P, Q, R, S e W, letra.
+
+## Existe un NIE que comece por T?
+
+Non. Ningunha fonte oficial define un NIF nin un NIE que comece por `T`. Os NIE comezan por X, Y ou Z ([NIE-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nie-1)), e un valor que comeza por un carácter que non usa ningunha clase de NIF rexéitase coa regra [NIF-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nif-1):
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("T1234567A").error?.code; // "INVALID_FORMAT"
+validate("T1234567A").error?.rule; // "NIF-1"
+```
+
+## Un CIF que comeza por 00 ten que levar letra?
+
+Non. Algunhas bibliotecas esixen unha letra de control cando os díxitos dun CIF comezan por `00`. Esa regra procede dunha táboa sen fonte, e ningunha lista oficial tivo nunca un código de provincia `00`, así que a biblioteca non a aplica (consulte [Explicitly NOT implemented](/nif-dni-nie-cif-validation/gl/reference/official-sources/#explicitly-not-implemented-no-official-basis)). A clase de control depende só da clave:
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("B00123455"); // true: a B leva díxito, sexan cales sexan os díxitos
+```
+
+## Un NIF-IVE válido significa que está dado de alta en VIES?
+
+Non. `isValidSpanishVat()` comproba o formato: `ES` seguido dun NIF válido ([VAT-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#vat-1)). Se o número está dado de alta para operacións intracomunitarias é un dato que só coñece a Administración tributaria: para iso, consulte o servizo VIES da Comisión Europea. Do mesmo xeito, un NIF válido é un número ben formado, non a proba de que se lle asignase a alguén: a AEAT ten o seu propio servizo para comprobar o NIF dun terceiro.
+
+```ts
+import { isValidSpanishVat } from "nif-dni-nie-cif-validation";
+
+isValidSpanishVat("ES12345678Z"); // true: o formato é correcto
+isValidSpanishVat("12345678Z");   // false: o prefixo ES é obrigatorio
+```
+
+## Segue sendo válido o NIE antigo de 10 caracteres?
+
+Si. Os NIE emitidos antes de 2008 teñen unha X, 8 díxitos e unha letra, como `X01234567L`. Seguen sendo válidos, e a súa forma canónica elimina o cero que segue á X: `X1234567L` ([NIE-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nie-3)). `validate()` devolve esa forma en `normalized`.
+
+## Por que isValidDni acepta K, L e M?
+
+Porque os NIF K, L e M se lles asignan a persoas que non teñen DNI, e usan a letra de control do DNI ([KLM-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#klm-1), [KLM-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#klm-2)). `isValidDni()` acéptaos desde a versión 1. Para aceptar só un DNI, use `validate(value, { types: ["DNI"] })`:
+
+```ts
+import { isValidDni, validate } from "nif-dni-nie-cif-validation";
+
+isValidDni("K1234567L");                                 // true
+validate("K1234567L", { types: ["DNI"] }).error?.code;   // "UNSUPPORTED_TYPE"
+```
+
+## De onde sae o algoritmo da letra do DNI?
+
+Do Ministerio do Interior, que o publica, e da nota técnica da AEAT sobre o NIF. Non está en ningunha lei: a lei só di que un DNI remata nunha letra de control. [Como funciona o carácter de control](/nif-dni-nie-cif-validation/gl/guides/control-character/) explícao paso a paso, coa fonte de cada regra.

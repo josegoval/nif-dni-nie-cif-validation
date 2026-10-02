@@ -1,0 +1,31 @@
+# The examples are their own pnpm workspace, apart from the library's: the
+# root `pnpm install` never sees them (the root pnpm-workspace.yaml has no
+# `packages`, so it only has the root package), and `pnpm install` in this
+# folder never touches the library's dependencies. One lockfile
+# (examples/pnpm-lock.yaml) covers every example, and a CI job installs only
+# its own with `--filter`. See README.md in this folder.
+packages:
+  - "*"
+  # The unpacked package (scripts/pack-for-examples.mjs) is a dependency, not
+  # an example.
+  - "!.pack"
+
+# The same supply-chain policy as the root pnpm-workspace.yaml: only install
+# versions that have been on the registry for at least 3 days (in minutes).
+minimumReleaseAge: 4320
+
+# Dependency install scripts are blocked unless listed here, and the install
+# fails if a new dependency ships an unreviewed script. esbuild (Vite's and
+# Vitest's bundler) is reviewed and denied, as in the root: its postinstall
+# only swaps the JavaScript launcher for the native binary, and it works from
+# the platform package that pnpm installs as an optional dependency.
+allowBuilds:
+  esbuild: false
+
+# `pnpm run` must not install first. By default pnpm checks that the
+# dependencies are installed before it runs a script, and in CI it does that
+# check with `--frozen-lockfile`, which fails here: pnpm calls a `file:`
+# dependency whose package has optional peer dependencies (this package) out
+# of date. The install step of CI and `pnpm examples:install` have installed
+# the dependencies by then.
+verifyDepsBeforeRun: false

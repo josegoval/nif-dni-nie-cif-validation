@@ -1,0 +1,114 @@
+---
+title: Generar datos de prueba
+description: Genera DNI, NIF K/L/M, NIE, CIF y NIF españoles válidos y no válidos para tests y fixtures, con semilla para que sean iguales en cada ejecución, con nif-dni-nie-cif-validation/generate.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Los tests necesitan NIF, y los números de personas reales no deben acabar en un repositorio. El punto de entrada `nif-dni-nie-cif-validation/generate` genera números válidos de todos los tipos, y valores de prueba negativos para cada motivo que admite `generateInvalid()`. Con una semilla, son iguales en cada ejecución, en cada máquina y con cada versión de Node.js.
+
+<Aside type="caution">
+Los números generados son ficticios, pero alguno podría coincidir por casualidad con el de una persona o empresa real. Úsalos solo en tests, nunca como datos reales.
+</Aside>
+
+## Números válidos
+
+```ts
+import { generateCif, generateDni, generateNie, generateNif } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1 });               // "62707394X"
+generateDni({ seed: 1, kind: "K" });    // "K6270739L": un NIF K/L/M
+generateNie({ seed: 1, prefix: "Z" });  // "Z6270739R"
+generateCif({ seed: 1, orgKey: "B" });  // "B62707393"
+generateCif({ seed: 1, control: "letter" }); // "R0027357C": una clave que lleva letra
+generateNif({ seed: 1, types: ["DNI", "NIE"] }); // "X5274470H": cualquiera de estos tipos
+```
+
+| Función | Genera | Opciones |
+| --- | --- | --- |
+| `generateDni(opts)` | Un DNI, o un NIF K/L/M | `kind`: `"DNI"` (por defecto), `"K"`, `"L"` o `"M"` |
+| `generateNie(opts)` | Un NIE, siempre en la forma de 9 caracteres | `prefix`: `"X"`, `"Y"` o `"Z"` |
+| `generateCif(opts)` | Un CIF | `orgKey`: una de las 17 claves; `control`: `"digit"` o `"letter"` |
+| `generateNif(opts)` | Cualquiera de los anteriores | `types`: los tipos entre los que elegir |
+
+Todos los generadores aceptan también `seed` y `format`. Los valores cumplen [SPEC.md](/nif-dni-nie-cif-validation/es/reference/official-sources/): el carácter de control lo calcula la propia `computeControlCharacter()` de la librería, un CIF no lleva código de provincia y ningún valor es un número de ejemplo como `00000000T` ([POLICY-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#policy-1)).
+
+`format: true` da la forma de presentación de [`format()`](/nif-dni-nie-cif-validation/es/guides/normalizing-and-formatting/#mostrar-un-número-format), y `format: { separator: " " }` otro separador:
+
+```ts
+import { generateCif, generateDni } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1, format: true });                           // "62707394-X"
+generateCif({ seed: 1, orgKey: "P", format: { separator: " " } }); // "P 6270739 C"
+```
+
+## Semillas y secuencias
+
+Una llamada con `seed` devuelve siempre el mismo valor, así que `generateDni({ seed: 1 })` es el mismo DNI cada vez. Para obtener muchos valores distintos que aun así sean iguales en cada ejecución, crea un generador: cada llamada toma los siguientes valores de su semilla.
+
+```ts
+import { createGenerator } from "nif-dni-nie-cif-validation/generate";
+
+const gen = createGenerator(42);
+gen.dni();             // "60110375J"
+gen.dni();             // "44829056D": el siguiente valor, no el mismo
+gen.nie();             // "Z6697340K"
+gen.cif({ orgKey: "A" }); // un CIF de una sociedad anónima
+```
+
+Sin semilla, los generadores usan `Math.random`, y los valores son aleatorios, así que pueden repetirse. Con semilla, `Math.random` no se lee nunca.
+
+## Fixtures para tus tests
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { createGenerator } from "nif-dni-nie-cif-validation/generate";
+
+const gen = createGenerator(2024);
+const customers = Array.from({ length: 5 }, (_, id) => ({ id, nif: gen.nif() }));
+
+customers.length;                                            // 5
+customers.every((customer) => validate(customer.nif).valid); // true
+```
+
+Tienes un proyecto completo de Vitest con fixtures generadas en [examples/generate-test-data](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/generate-test-data).
+
+## Números no válidos
+
+`generateInvalid(type, { reason })` parte de un número válido del tipo y estropea una sola cosa, de modo que el valor parece lo que representa. `validate()` lo rechaza exactamente con ese código de error; con `UNSUPPORTED_TYPE` y `PLACEHOLDER`, solo si pasas la opción `types` o `rejectPlaceholders` correspondiente, porque esos valores son válidos por defecto. El motivo por defecto es un carácter de control incorrecto, el caso negativo más habitual:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { generateInvalid } from "nif-dni-nie-cif-validation/generate";
+
+generateInvalid("DNI", { seed: 1 });                            // "62707394A"
+generateInvalid("DNI", { seed: 1, reason: "INVALID_LENGTH" });  // "652707394X"
+validate(generateInvalid("CIF", { seed: 3, reason: "INVALID_FORMAT" })).error?.code; // "INVALID_FORMAT"
+validate(generateInvalid("NIE", { seed: 7 })).error?.code;      // "INVALID_CONTROL_CHARACTER"
+```
+
+| `reason` | El valor | Lo rechaza `validate()` con las opciones por defecto |
+| --- | --- | --- |
+| `INVALID_CONTROL_CHARACTER` (por defecto) | Solo el carácter de control es incorrecto | Sí |
+| `INVALID_LENGTH` | Sobran o faltan dígitos | Sí |
+| `INVALID_FORMAT` | Una letra en lugar de un dígito, o un carácter de control de la clase equivocada | Sí |
+| `EMPTY` | Una cadena vacía, o solo separadores | Sí |
+| `UNSUPPORTED_TYPE` | Un número válido | Solo si `types` excluye su tipo |
+| `PLACEHOLDER` | Un número de ejemplo (solo DNI y NIE) | Solo con `rejectPlaceholders: true` |
+
+## Las opciones imposibles lanzan una excepción
+
+A diferencia de los validadores, que nunca lanzan excepciones con lo que escribe el usuario, los generadores lanzan un `RangeError` cuando no pueden cumplir sus opciones: son errores de programación, y un valor equivocado sin avisar sería peor.
+
+```ts
+import { generateCif, generateDni } from "nif-dni-nie-cif-validation/generate";
+
+generateCif({ orgKey: "B", control: "letter" }); // throws RangeError
+generateDni({ seed: 1.5 });                      // throws RangeError
+```
+
+La `B` lleva dígito ([CIF-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#cif-3)), así que no se puede generar un CIF `B` con letra, y la semilla tiene que ser un número entero.
+
+## Tamaño del bundle
+
+El punto de entrada principal nunca importa los generadores, así que `import { isValidNif }` no añade código de los generadores a tu bundle. Importa `nif-dni-nie-cif-validation/generate` solo desde tus tests.

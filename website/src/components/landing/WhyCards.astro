@@ -1,0 +1,141 @@
+---
+// "Why" cards. Every number is read at build time: the benchmark figures
+// from bench/results/latest.json, the rule count from SPEC.md.
+import { bench } from "../../data/bench";
+import { officialSourcesUrl, ruleCount } from "../../data/spec";
+import {
+  formatDate,
+  formatList,
+  formatNumber,
+  langOf,
+  stringsFor,
+} from "../../i18n";
+
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const t = stringsFor(lang).why;
+const n = (value: number, digits = 0, mode?: "round" | "floor") =>
+  formatNumber(lang, value, digits, mode);
+
+const speedup = n(bench.minSpeedupOverCompetitors, 1, "floor");
+const mops = n(bench.opsPerSecond.DNI / 1e6, 1);
+const [v1Low, v1High] = bench.speedupOverV1.map((v) => n(v, 1, "floor"));
+const smaller = formatList(
+  lang,
+  bench.smallerLibraries.map((l) => `${l.name} ${n(l.bytes)} B`)
+);
+
+const cards = [
+  { id: "correct", title: t.correct.title, body: t.correct.body(n(ruleCount)) },
+  {
+    id: "fast",
+    title: t.fast.title,
+    headline: t.fast.headline(speedup),
+    body: t.fast.body(mops, v1Low ?? "", v1High ?? ""),
+  },
+  {
+    id: "small",
+    title: t.small.title,
+    body: t.small.body(n(bench.size.any), n(bench.size.full / 1000, 1)),
+    footnote: bench.smallerLibraries.length > 0 ? t.small.note(smaller) : undefined,
+  },
+  { id: "deps", ...t.deps },
+  { id: "typed", ...t.typed },
+  { id: "safe", ...t.safe },
+  { id: "languages", ...t.languages },
+  { id: "tools", ...t.tools },
+];
+---
+
+<section class="why not-content" aria-labelledby="why-heading">
+  <h2 id="why-heading">{t.heading}</h2>
+  <ul class="cards">
+    {
+      cards.map((card) => (
+        <li class="card" data-card={card.id}>
+          <h3>
+            {card.id === "correct" ? (
+              <a href={officialSourcesUrl(lang)}>{card.title}</a>
+            ) : (
+              card.title
+            )}
+          </h3>
+          {"headline" in card && <p class="headline">{card.headline}</p>}
+          <p>{card.body}</p>
+          {"footnote" in card && card.footnote && (
+            <p class="footnote">{card.footnote}</p>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+  <p class="measured">{t.measured(bench.machine, bench.node, formatDate(lang, bench.measuredOn))}</p>
+</section>
+
+<style>
+  .why {
+    margin-block: 3rem;
+  }
+  h2 {
+    margin: 0 0 1.25rem;
+    font-size: var(--sl-text-h2);
+    color: var(--sl-color-white);
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    grid-auto-flow: dense;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--site-border);
+    border-radius: var(--brand-radius-lg);
+    background: var(--site-surface);
+  }
+  h3 {
+    margin: 0;
+    font-size: var(--sl-text-lg);
+    color: var(--sl-color-white);
+  }
+  h3 a {
+    color: inherit;
+    text-decoration-color: var(--sl-color-accent);
+    text-underline-offset: 0.2em;
+  }
+  .card p {
+    margin: 0;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+  .card .headline {
+    font-family: var(--brand-font-display);
+    font-size: var(--sl-text-xl);
+    font-weight: var(--brand-weight-bold);
+    line-height: 1.25;
+    color: var(--sl-color-white);
+  }
+  .card[data-card="fast"],
+  .card[data-card="small"] {
+    grid-column: span 2;
+  }
+  .card .footnote,
+  .measured {
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+  }
+  .measured {
+    margin: 1rem 0 0;
+  }
+  @media (max-width: 40rem) {
+    .card[data-card="fast"],
+    .card[data-card="small"] {
+      grid-column: auto;
+    }
+  }
+</style>

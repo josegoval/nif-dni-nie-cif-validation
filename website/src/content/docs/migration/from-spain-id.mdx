@@ -1,0 +1,99 @@
+---
+title: Migrating from spain-id
+description: Replace spain-id with nif-dni-nie-cif-validation. A mapping of validateSpanishId, validDNI, validNIE, validCIF and spainIdType, code before and after, and the differences, including the CIF-3 control rule.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+[spain-id](https://www.npmjs.com/package/spain-id) validates DNIs, NIEs and CIFs, and tells their type. This library covers the same ground, and adds K/L/M NIFs, the reason for each error, localized messages, generators and schemas. spain-id is smaller for a single function; the [benchmarks](/nif-dni-nie-cif-validation/benchmarks/#bundle-size) have the measured sizes. The comparison on this page is with spain-id 1.1.14.
+
+## Function mapping
+
+| spain-id | nif-dni-nie-cif-validation | Notes |
+| --- | --- | --- |
+| `validateSpanishId(x)` | `isValidNif(x)` | Also accepts K/L/M NIFs. The CIF control follows CIF-3 (see below) |
+| `validDNI(x)` | `isValidDni(x)` | Also accepts K/L/M NIFs |
+| `validNIE(x)` | `isValidNie(x)` | Also accepts the old 10-character form |
+| `validCIF(x)` | `isValidCif(x)` | The control follows CIF-3 |
+| `spainIdType(x)` | `getNifType(x)` | Upper case, `"NIF_KLM"` for K/L/M, and `null` instead of `undefined` |
+
+## Before and after
+
+Before, with spain-id:
+
+```js
+import { spainIdType, validateSpanishId, validCIF, validDNI, validNIE } from "spain-id";
+
+validateSpanishId("12345678Z"); // true
+validDNI("12345678Z");          // true
+validNIE("X1234567L");          // true
+validCIF("B12345674");          // true
+spainIdType("B12345674");       // "cif"
+spainIdType("hello");           // undefined
+```
+
+After:
+
+```ts
+import { getNifType, isValidCif, isValidDni, isValidNie, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif("12345678Z");  // true
+isValidDni("12345678Z");  // true
+isValidNie("X1234567L");  // true
+isValidCif("B12345674");  // true
+getNifType("B12345674");  // "CIF"
+getNifType("hello");      // null
+```
+
+Like `spainIdType`, `getNifType` reads the format only, and doesn't check the control character. To know whether a number is valid and why not, use `validate()`, which returns the type too.
+
+## Differences in behaviour
+
+**The CIF control (CIF-3).** spain-id accepts either a letter or a digit as the control character of every CIF. The AEAT's technical note gives each organisation key one kind: a digit for A B C D E F G H J U V and a letter for N P Q R S W ([CIF-3](/nif-dni-nie-cif-validation/reference/official-sources/#cif-3)). So some numbers that spain-id accepts are invalid here, such as `G1234567D`. If your stored data has them, pass `{ cifControl: "lenient" }` while you clean it up: it accepts a letter for C, D, F, G, J, U and V.
+
+```js
+import { validCIF } from "spain-id";
+
+validCIF("G1234567D"); // true
+```
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                            // false: G takes a digit
+isValidCif("G1234567D", { cifControl: "lenient" }); // true
+isValidCif("G12345674");                            // true
+```
+
+**K/L/M NIFs.** spain-id rejects them and has no type for them. They are NIFs of natural persons, valid here ([KLM-1](/nif-dni-nie-cif-validation/reference/official-sources/#klm-1)).
+
+**The old NIE form.** spain-id rejects 10-character NIEs such as `X01234567L`; they are still valid ([NIE-3](/nif-dni-nie-cif-validation/reference/official-sources/#nie-3)).
+
+**Separators.** spain-id removes spaces and hyphens, but not dots. This library also removes dots and slashes, and returns the canonical form to store.
+
+**Values that are not strings.** spain-id throws on `null`; this library returns `false`.
+
+```js
+import { spainIdType, validateSpanishId } from "spain-id";
+
+validateSpanishId("K1234567L");    // false
+validateSpanishId("X01234567L");   // false
+validateSpanishId("12.345.678-Z"); // false
+spainIdType("K1234567L");          // undefined
+validateSpanishId(null);           // throws TypeError
+```
+
+```ts
+import { getNifType, isValidNif, validate } from "nif-dni-nie-cif-validation";
+
+isValidNif("K1234567L");             // true
+isValidNif("X01234567L");            // true
+isValidNif("12.345.678-Z");          // true
+getNifType("K1234567L");             // "NIF_KLM"
+isValidNif(null);                    // false
+validate("12.345.678-Z").normalized; // "12345678Z"
+```
+
+<Aside type="tip">
+If bundle size matters more than the reason for each error, and you don't need K/L/M NIFs or the old NIE form, spain-id is a fine choice. If you need either, or messages for your users, switch.
+</Aside>

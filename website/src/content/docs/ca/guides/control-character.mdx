@@ -1,0 +1,123 @@
+---
+title: Com funciona el caràcter de control
+description: Com es calculen, pas a pas, la lletra de control del DNI, del NIF K/L/M i del NIE espanyols (mòdul 23) i el caràcter de control del CIF, amb la font oficial i el nivell de cada regla.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+L'últim caràcter de tot NIF és un **caràcter de control**, calculat a partir de la resta del número, per detectar els errors tipogràfics. Aquesta pàgina explica com es calcula cadascun i d'on surt cada regla. No tots els passos tenen el mateix tipus de font: alguns són llei, d'altres només criteri oficial i un és una convenció. Els nivells s'expliquen a la pàgina de [fonts oficials](/nif-dni-nie-cif-validation/ca/reference/official-sources/#source-tiers).
+
+<Aside>
+No cal que programeu res d'això: `computeControlCharacter()` retorna el caràcter de control d'un número sense el seu últim caràcter, i tots els validadors el comproven.
+</Aside>
+
+## DNI: el número mòdul 23
+
+La lletra de control d'un DNI és el residu de dividir el seu número de 8 xifres entre 23, cercat en aquesta taula ([DNI-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#dni-2)):
+
+| Residu | Lletra | Residu | Lletra | Residu | Lletra |
+| ---: | --- | ---: | --- | ---: | --- |
+| 0 | T | 8 | P | 16 | Q |
+| 1 | R | 9 | D | 17 | V |
+| 2 | W | 10 | X | 18 | H |
+| 3 | A | 11 | B | 19 | L |
+| 4 | G | 12 | N | 20 | C |
+| 5 | M | 13 | J | 21 | K |
+| 6 | Y | 14 | Z | 22 | E |
+| 7 | F | 15 | S | | |
+
+Per a `12345678`: 12345678 = 23 × 536768 + 14, i la lletra del 14 és la **Z**, de manera que el DNI és `12345678Z`.
+
+```ts
+import { computeControlCharacter } from "nif-dni-nie-cif-validation";
+
+const LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+12345678 % 23;                       // 14
+LETTERS[12345678 % 23];              // "Z"
+computeControlCharacter("12345678"); // "Z"
+```
+
+Les lletres I, Ñ, O i U no són a la taula, de manera que un DNI mai no acaba en cap d'elles ([DNI-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#dni-3)). Si un usuari n'escriu una, `validate()` indica quina regla no es compleix i quina lletra s'esperava:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678I").error?.rule;     // "DNI-3"
+validate("12345678I").error?.expected; // "Z"
+```
+
+**Font.** El format del DNI és llei: Reial decret 1065/2007, art. 19 (nivell T1). L'algorisme del mòdul 23 no figura en cap llei: el publica el Ministeri de l'Interior, i també la nota tècnica de l'AEAT sobre el NIF (nivells T2 i T3).
+
+## NIF K/L/M: només les 7 xifres
+
+Un NIF K, L o M fa servir la mateixa taula, sobre les seves 7 xifres. La lletra inicial no es converteix en una xifra, de manera que K, L i M amb les mateixes xifres tenen la mateixa lletra de control ([KLM-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#klm-2)):
+
+```ts
+import { computeControlCharacter } from "nif-dni-nie-cif-validation";
+
+computeControlCharacter("K1234567"); // "L": 1234567 % 23 és 19
+computeControlCharacter("M1234567"); // "L"
+```
+
+**Font.** La nota tècnica de l'AEAT sobre el NIF (T3). La llei diu que els 7 caràcters són «alfanumèrics», però l'algorisme només funciona amb xifres, de manera que la biblioteca segueix la nota i exigeix xifres ([KLM-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#klm-3), un [conflicte conegut](/nif-dni-nie-cif-validation/ca/reference/official-sources/#known-conflicts-between-sources) entre fonts).
+
+## NIE: se substitueix el prefix i s'aplica el mòdul 23
+
+En un NIE, el prefix es converteix en una xifra (X → 0, Y → 1, Z → 2), i el número de 8 xifres resultant passa per la taula del DNI ([NIE-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#nie-2)). Així, `Y1234567` es converteix en 11234567, el residu del qual és 10, lletra **X**:
+
+```ts
+import { computeControlCharacter, isValidNie } from "nif-dni-nie-cif-validation";
+
+11234567 % 23;                       // 10
+computeControlCharacter("Y1234567"); // "X"
+computeControlCharacter("X1234567"); // "L": igual que el DNI 01234567
+isValidNie("Y1234567L");             // false: el prefix canvia la lletra
+```
+
+El NIE antic de 10 caràcters (`X0` + 7 xifres + lletra) té la mateixa lletra que la seva forma de 9 caràcters, perquè el zero inicial no canvia el número ([NIE-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#nie-3)).
+
+**Font.** La pàgina del Ministeri de l'Interior i la nota tècnica de l'AEAT (T2 i T3); les sèries X, Y i Z són a l'Ordre INT/2058/2008 (T1).
+
+## CIF: una xifra o una lletra, segons la clau d'entitat
+
+El caràcter de control d'un CIF és una xifra o una lletra, i la clau d'entitat decideix quina ([CIF-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-3)):
+
+- una **xifra** per a A, B, C, D, E, F, G, H, J, U i V (societats i altres entitats espanyoles);
+- una **lletra** per a N, P, Q, R, S i W (entitats estrangeres, corporacions locals, organismes públics, institucions religioses, òrgans de l'Estat i establiments permanents).
+
+El valor es calcula a partir de les 7 xifres ([CIF-4](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-4)):
+
+1. Se sumen les xifres de les posicions parelles (la 2a, la 4a i la 6a).
+2. Es multiplica per dos cada xifra de les posicions senars (la 1a, la 3a, la 5a i la 7a) i se sumen les xifres de cada resultat (14 compta com a 1 + 4).
+3. Se sumen totes dues quantitats. La xifra de control és 10 menys l'última xifra del total, o 0 si l'última xifra és 0.
+4. Si la clau porta lletra, la xifra es converteix en lletra: 0 → J, 1 → A, 2 → B, … 9 → I (`JABCDEFGHI`).
+
+Per a `B1234567`: les posicions parelles donen 2 + 4 + 6 = 12; les senars, 2 + 6 + (1 + 0) + (1 + 4) = 14; el total és 26, de manera que la xifra de control és 10 − 6 = **4**, i el CIF és `B12345674`. Una clau que portés lletra tindria la D, la cinquena lletra de `JABCDEFGHI`.
+
+```ts
+import { computeControlCharacter, isValidCif } from "nif-dni-nie-cif-validation";
+
+computeControlCharacter("B1234567"); // "4"
+computeControlCharacter("N1234567"); // "D": N porta lletra
+computeControlCharacter("P2807900"); // "B": Ajuntament de Madrid, P2807900B
+isValidCif("B1234567D");             // false: B porta xifra
+```
+
+**Font.** Les claus d'entitat són llei: Ordre EHA/451/2008 (T1). Quines claus porten xifra i quines lletra només figura a la nota tècnica interna de l'AEAT (T3). L'aritmètica no està publicada en cap text oficial que hàgim trobat: és una convenció (T4), que segueixen totes les implementacions i que s'ha comprovat amb NIF reals d'organismes públics, com P2807900B (Ajuntament de Madrid) i Q2826000H (la mateixa AEAT).
+
+<Aside type="note" title="C, D, F, G, J, U i V">
+Moltes biblioteques, i la versió 1 d'aquesta, accepten una xifra o una lletra per a les claus C, D, F, G, J, U i V. La nota de l'AEAT els assigna una xifra, de manera que la versió 2 rebutja la lletra per defecte. Per a dades antigues, `{ cifControl: "lenient" }` accepta totes dues: consulteu les [preguntes freqüents](/nif-dni-nie-cif-validation/ca/guides/faq/#per-què-g1234567d-no-és-vàlid).
+</Aside>
+
+## Resum de les fonts
+
+| Pas | Regla | Nivell |
+| --- | --- | --- |
+| Format del DNI: 8 xifres i una lletra | [DNI-1](/nif-dni-nie-cif-validation/ca/reference/official-sources/#dni-1) | T1 llei, T2 pàgina oficial |
+| Lletra del DNI: mòdul 23 | [DNI-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#dni-2) | T2 pàgina oficial, T3 nota de l'AEAT |
+| Lletra K/L/M: les 7 xifres | [KLM-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#klm-2) | T3 nota de l'AEAT |
+| Prefix del NIE: X → 0, Y → 1, Z → 2 | [NIE-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#nie-2) | T2 pàgina oficial, T3 nota de l'AEAT |
+| Claus d'entitat del CIF | [CIF-2](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-2) | T1 llei |
+| Control del CIF: xifra o lletra segons la clau | [CIF-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-3) | T3 nota de l'AEAT |
+| Aritmètica del control del CIF | [CIF-4](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-4) | T4 convenció |

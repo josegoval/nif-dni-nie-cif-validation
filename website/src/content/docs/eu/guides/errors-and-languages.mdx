@@ -1,0 +1,132 @@
+---
+title: Errore-kodeak eta mezu itzuliak
+description: Espainiako IFZ, NAN, AIZ eta IFK zenbakietarako validate() funtzioaren errore-kode guztiak, bakoitzak aipatzen dituen SPEC arauak, haren mezua ingelesez, gaztelaniaz, katalanez, euskaraz eta galegoz, eta hizkuntza nola aukeratu.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import ErrorCodesTable from "../../../../components/docs/ErrorCodesTable.astro";
+
+Balio bat baliozkoa ez denean, `validate()` funtzioak zergatik ez den baliozkoa azaltzen du `error` objektuaren lau eremuren bidez:
+
+- `code`: errore mota, zazpi kodeetako bat, zure kodeak kasuaren arabera jardun dezan;
+- `rule`: betetzen ez den [SPEC.md arauaren](/nif-dni-nie-cif-validation/eu/reference/official-sources/) identifikatzailea, adibidez `DNI-2`;
+- `message`: erabiltzailearentzako esaldi bat, adierazten duzun hizkuntzan;
+- `expected`: kontrol-karakterea okerra denean bakarrik, zuzena, «hau esan nahi zenuen?» iradokitzeko.
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678A").error;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+//   message: 'The control character is not correct: for this DNI it should be "Z".' }
+```
+
+`validate()` funtzioak balioa urratsez urrats egiaztatzen du eta lehen hutsegitean gelditzen da; beraz, balio baliogabe batek errore bat du, ez gehiago. `type` eta `normalized` formatua ezagut daitekeen unetik daude, kontrol-karakterea okerra izan arren.
+
+## Errore-kode guztiak
+
+| `error.code` | Noiz |
+| --- | --- |
+| `NOT_A_STRING` | Balioa ez da testu-kate bat (`null`, zenbaki bat, objektu bat). Ez da inoiz kate bihurtzen |
+| `EMPTY` | Balioa hutsik dago, edo zuriuneak eta bereizleak bakarrik ditu |
+| `INVALID_LENGTH` | Balioak ez du bere motari dagokion karaktere kopurua |
+| `INVALID_FORMAT` | Formatuak onartzen ez duen karaktere bat: lehen karaktere okerra, digitu baten lekuan letra bat (edo kontrol-letraren lekuan digitu bat) edo `ES` aurrizkia `allowVatPrefix` gabe |
+| `INVALID_CONTROL_CHARACTER` | Formatua zuzena da, baina kontrol-letra edo kontrol-digitua ez; `expected` eremuak zuzena du |
+| `UNSUPPORTED_TYPE` | `types` aukerak kanpoan uzten duen mota bateko dokumentu baliozko bat |
+| `PLACEHOLDER` | Ordezko balio bat (`00000000T`, `00000001R`, `99999999R`, `X0000000T`), `rejectPlaceholders: true` aukerarekin |
+
+Azken biak aukera batekin bakarrik gertatzen dira: aukera lehenetsiekin, dokumentu baliozko bat baliozkoa da beti.
+
+## Arau guztiak eta haien mezuak
+
+Beheko taulak, kode bakoitzerako, aipa ditzakeen SPEC arau guztiak eta haiekin batera doan mezua biltzen ditu, orri honen hizkuntzan. Mezuak liburutegitik bertatik datoz; beraz, zure erabiltzaileek ikusiko dituztenak dira, hain zuzen.
+
+<ErrorCodesTable />
+
+Arauak kode bera duten kasuak bereizten ditu. Adibidez, `INVALID_CONTROL_CHARACTER` kodeak `DNI-3` aipatzen du letra inoiz agertzen ez den horietako bat denean (I, Ñ, O, U), `CIF-3` IFK baten kontrola letra bat denean eta gakoak digitua daramanean (edo alderantziz), eta `CIF-4` mota zuzenekoa izan arren balio okerra duenean:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678I").error?.rule; // "DNI-3"
+validate("B1234567A").error?.rule; // "CIF-3": B gakoak digitua darama
+validate("B12345675").error?.rule; // "CIF-4": digitu bat, baina ez zuzena
+validate("T1234567A").error?.rule; // "NIF-1": IFZ bat ere ez da T letraz hasten
+validate("X11234567L").error?.rule; // "NIE-3": 10 karaktere, baina ez da AIZaren forma zaharra
+```
+
+## Hizkuntza aukeratzea
+
+Ingelesa barne dago. Gainerako hizkuntza bakoitza sarrera-puntu bereizi bat da; beraz, bundle batek inportatzen dituen hizkuntzak bakarrik ditu. Inportatu hizkuntzaren objektua eta pasa ezazu `locale` gisa:
+
+| Hizkuntza | Inportazioa |
+| --- | --- |
+| Ingelesa (lehenetsia) | `import { en } from "nif-dni-nie-cif-validation/locales/en"` |
+| Gaztelania (español) | `import { es } from "nif-dni-nie-cif-validation/locales/es"` |
+| Katalana (català), valentzierarako ere bai | `import { ca } from "nif-dni-nie-cif-validation/locales/ca"` |
+| Euskara | `import { eu } from "nif-dni-nie-cif-validation/locales/eu"` |
+| Galegoa (galego) | `import { gl } from "nif-dni-nie-cif-validation/locales/gl"` |
+
+```ts
+import { describeCifOrganisation, validate } from "nif-dni-nie-cif-validation";
+import { eu } from "nif-dni-nie-cif-validation/locales/eu";
+
+validate("12345678A", { locale: eu }).error?.message;
+// "Kontrol-karakterea ez da zuzena: NAN honetan «Z» izan beharko luke."
+describeCifOrganisation("B", eu); // "Erantzukizun mugatuko sozietatea"
+```
+
+Hizkuntza-objektu berak balio du leku guztietan: `validate()` funtzioaren eta eskema guztien `locale` aukera gisa (`zNif({ locale })`, `vNif({ locale })`, `yNif({ locale })`), eta `describeCifOrganisation()` funtzioaren bigarren argumentu gisa. `meta.orgDescription` ere itzultzen du, IFK baten erakunde mota.
+
+Erabiltzailearen hizkuntzari jarraitzeko, esleitu hizkuntza-objektu bat hizkuntza-etiketa bakoitzari, lehenetsi batekin:
+
+```ts
+import { type NifLocale, validate } from "nif-dni-nie-cif-validation";
+import { ca } from "nif-dni-nie-cif-validation/locales/ca";
+import { en } from "nif-dni-nie-cif-validation/locales/en";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+
+const LOCALES: Record<string, NifLocale> = { ca, en, es };
+const localeFor = (language: string) => LOCALES[language.slice(0, 2)] ?? en;
+const locale = localeFor("ca-ES"); // adibidez, navigator.language
+
+validate("12345678A", { locale }).error?.message;
+// "El caràcter de control no és correcte: per a aquest DNI hauria de ser «Z»."
+validate("B12345674", { locale }).meta?.orgDescription; // "Societat de responsabilitat limitada"
+```
+
+Katalanak valentzierarako ere balio du: AEATk erakunde-izen berak ematen ditu bietan, eta mezuek ez dute bi estandarren artean desberdina den formarik erabiltzen.
+
+<Aside type="caution" title="Pasa objektua, ez haren kodea">
+`{ locale: "es" }` TypeScript errore bat da, eta, exekuzio-garaian, kate bat ez da kontuan hartzen: mezuak ingelesez geratzen dira. Ez da salbuespenik jaurtitzen; beraz, inprimakiak funtzionatzen jarraitzen du, baina hizkuntza okerrean. Inportatu objektua.
+</Aside>
+
+## Zure mezuak
+
+`code` eta `rule` egonkorrak dira; beraz, zure testuekin lot ditzakezu, eta liburutegiaren mezua ordezko gisa erabili:
+
+```ts
+import { type NifErrorCode, validate } from "nif-dni-nie-cif-validation";
+
+const MESSAGES: Partial<Record<NifErrorCode, string>> = {
+  EMPTY: "Please enter your tax ID.",
+  UNSUPPORTED_TYPE: "Please enter a personal tax ID, not a company's.",
+};
+
+const error = validate("B12345674", { types: ["DNI", "NIE"] }).error;
+error && (MESSAGES[error.code] ?? error.message); // "Please enter a personal tax ID, not a company's."
+```
+
+Hizkuntza bat objektu arrunt bat da (`NifLocale`); beraz, beste hizkuntza baterako ere idatz dezakezu bat. Hizkuntza-objektu bati testu bat falta bazaio, ingelesa erabiltzen da testu horretarako. Itzulitako erakunde-izen bakoitzaren terminologia eta iturriak [docs/translations.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/translations.md) fitxategian daude (ingelesez).
+
+## Eskemetan
+
+Zod, Valibot eta Yup eskemek mezu bera ematen dute, eta kodea eta araua liburutegi bakoitzak uzten duen lekuan jartzen dituzte:
+
+| Liburutegia | Mezua | Kodea eta araua |
+| --- | --- | --- |
+| Zod | issue-aren `message` | issue-aren `params`: `{ code, rule, expected? }` |
+| Valibot | issue-aren `message` | issue-a bera: `issue.code`, `issue.rule`, `issue.expected` |
+| Yup | `ValidationError` objektuaren `message` | errorearen `params`: `{ code, rule, expected? }` |
+
+Ikusi [Inprimakiak egiaztatzea](/nif-dni-nie-cif-validation/eu/guides/validating-forms/) adibideak ikusteko.

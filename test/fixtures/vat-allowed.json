@@ -1,0 +1,44 @@
+[
+  {
+    "input": "ES12345678Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "VAT-1",
+    "note": "ES + DNI"
+  },
+  {
+    "input": "es b-1234567-4",
+    "expected": "valid",
+    "type": "CIF",
+    "rule": "VAT-1",
+    "note": "ES + CIF, normalized"
+  },
+  {
+    "input": "ESX01234567L",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "VAT-1",
+    "note": "ES + old NIE form"
+  },
+  {
+    "input": "12345678Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "VAT-1",
+    "note": "a bare NIF stays valid"
+  },
+  {
+    "input": "ES",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "VAT-1",
+    "note": "ES with nothing after it"
+  },
+  {
+    "input": "ES12345678A",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "DNI",
+    "rule": "DNI-2",
+    "note": "ES + an invalid NIF"
+  }
+]

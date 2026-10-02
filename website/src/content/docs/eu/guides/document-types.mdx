@@ -1,0 +1,114 @@
+---
+title: NAN, AIZ, IFZ eta IFK
+description: Zer diren Espainiako IFZ (NIF), NAN (DNI), AIZ (NIE), K/L/M IFZ eta IFK (CIF), nori ematen zaion bakoitza, haien formatuak, 10 karaktereko AIZ zaharra eta zergatik den orain IFK bat IFZ, egiazta ditzakezun adibideekin.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import CifKeysTable from "../../../../components/docs/CifKeysTable.astro";
+
+Espainiako identifikatzaile fiskalek hainbat izen dituzte, eta izen horien esanahiak gainjarri egiten dira. Laburbilduz: **liburutegi honek egiaztatzen duen zenbaki oro IFZ bat da**, eta NANa, AIZa, K/L/M IFZa eta IFKa IFZ motak dira. Gaztelaniazko izenak ere ohikoak dira: NIF (IFZ), DNI (NAN), NIE (AIZ) eta CIF (IFK).
+
+## IFZ: guztiak biltzen dituena
+
+IFZak (identifikazio fiskaleko zenbakiak) pertsona eta erakunde bakoitza identifikatzen du Espainiako Zerga Administrazioaren aurrean. 1065/2007 Errege Dekretuak (19.-22. artikuluak) zehazten du nork jasotzen duen mota bakoitza. Zenbakiaren lehen karaktereak bereizten ditu motak, eta ez dira inoiz gainjartzen ([NIF-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nif-1)):
+
+| Mota | Nori ematen zaion | Formatua | Adibidea | `type` `validate()` funtzioan |
+| --- | --- | --- | --- | --- |
+| NAN (DNI) | Espainiako herritarrei | 8 digitu eta kontrol-letra bat | `12345678Z` | `"DNI"` |
+| K/L/M IFZ | NANik eta AIZik ez dutenei (ikus behean) | K, L edo M, 7 digitu eta kontrol-letra bat | `K1234567L` | `"NIF_KLM"` |
+| AIZ (NIE) | Atzerritarrei | X, Y edo Z, 7 digitu eta kontrol-letra bat | `X1234567L` | `"NIE"` |
+| IFK (CIF) | Enpresei eta beste erakunde batzuei | Erakunde-gako bat, 7 digitu eta kontrol-karaktere bat (digitu bat edo letra bat) | `B12345674` | `"CIF"` |
+
+```ts
+import { getNifType } from "nif-dni-nie-cif-validation";
+
+getNifType("12345678Z"); // "DNI"
+getNifType("K1234567L"); // "NIF_KLM"
+getNifType("X1234567L"); // "NIE"
+getNifType("B12345674"); // "CIF"
+getNifType("T1234567A"); // null: IFZ motetako bat ere ez da T letraz hasten
+```
+
+`getNifType()` funtzioak formatua bakarrik begiratzen du: `getNifType("12345678A")` `"DNI"` da, letra okerra izan arren. Zenbaki bat baliozkoa den jakiteko, erabili `validate()` edo `isValid…` funtzio bat.
+
+## NAN: Espainiako herritarrak
+
+Espainiako herritar baten IFZa bere NANaren (nortasun agiri nazionalaren) zenbakia da: 8 digitu, ezkerreko zeroak barne, eta zenbakitik kalkulatutako kontrol-letra maiuskula bat ([DNI-1, DNI-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#dni-1)). Jende askok hasierako zerorik gabe idazten du, edo puntuekin eta marra batekin; liburutegiak biak onartzen ditu, eta forma kanonikoa itzultzen du, zuk gorde dezazun:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("1234567L").normalized;      // "01234567L": hasierako zeroa berriro gehitzen da
+validate("12.345.678-z").normalized; // "12345678Z"
+```
+
+## AIZ: atzerritarrak
+
+Atzerritarrek AIZ bat (atzerritarraren identifikazio-zenbakia) jasotzen dute: X, Y edo Z, 7 digitu eta kontrol-letra bat ([NIE-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-1)). Lehenik X saila erabili zen; agortu zenean, Y etorri zen, eta gero Z.
+
+2008ra arte, AIZek 10 karaktere zituzten: X bat, 8 digitu eta letra bat. Zenbaki horiek baliozkoak dira oraindik, eta haien forma kanonikoak X-aren ondoko zeroa kentzen du ([NIE-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#nie-3)):
+
+```ts
+import { isValidNie, validate } from "nif-dni-nie-cif-validation";
+
+isValidNie("X01234567L");             // true: 10 karaktereko forma zaharra
+validate("X01234567L").normalized;    // "X1234567L"
+isValidNie("X11234567L");             // false: hasierako 0 bat bakarrik ken daiteke
+```
+
+## K/L/M IFZ: NANik eta AIZik ez duten pertsonak
+
+Pertsona fisiko batzuek IFZ bat behar dute, baina ez dute ez NANik ez AIZik. Letra batez hasten den IFZ bat jasotzen dute ([KLM-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#klm-1)):
+
+- **K**: Espainian bizi diren eta NANik ez duten 14 urtetik beherako espainiarrak.
+- **L**: atzerrian bizi diren eta NANik ez duten espainiarrak.
+- **M**: AIZik ez duten atzerritarrak (adibidez, AIZa izapidetzen den bitartean; M IFZ bat aldi baterakoa izan daiteke).
+
+Pertsonak dira, ez enpresak. `isValidDni()` eta `isValidNaturalPersonNif()` funtzioek onartzen dituzte, eta `validate()` funtzioak `"NIF_KLM"` gisa identifikatzen ditu:
+
+```ts
+import { isValidCif, isValidDni, validate } from "nif-dni-nie-cif-validation";
+
+isValidDni("K1234567L");      // true
+isValidCif("K1234567L");      // false: K ez da erakunde-gako bat
+validate("M1234567L").type;   // "NIF_KLM"
+```
+
+## IFK: enpresak eta beste erakunde batzuk
+
+Enpresek, elkarteek, erakunde publikoek eta gainerako erakundeek **erakunde-gako** batez hasten den IFZ bat dute; gakoa letra bat da, eta erakunde mota adierazten du. Ondoren, 7 digitu eta kontrol-karaktere bat datoz ([CIF-1, CIF-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-1)).
+
+2008ra arte, zenbaki horri IFK (identifikazio fiskaleko kodea) deitzen zitzaion. EHA/451/2008 Aginduak izena aldatu zion: ofizialki, orain «pertsona juridiko edo erakunde baten IFZ» da. Jendeak «CIF» bilatzen jarraitzen du, eta horregatik liburutegiak izena mantentzen du (`isValidCif`, `type: "CIF"`), `isValidLegalEntityNif` aliasarekin.
+
+```ts
+import { describeCifOrganisation, validate } from "nif-dni-nie-cif-validation";
+
+validate("B12345674").meta;   // { orgKey: "B", orgDescription: "Limited liability company" }
+describeCifOrganisation("G"); // "Association"
+```
+
+Hauek dira 17 erakunde-gakoak, liburutegiak bakoitzari orri honen hizkuntzan ematen dion izenarekin eta gako bakoitzak daraman kontrol-karaktere motarekin ([CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3)):
+
+<CifKeysTable />
+
+2008az geroztik, 7 digituak ausazkoak dira: ez dute ezer esaten probintziari buruz; beraz, liburutegiak ez ditu probintzia-kodeak egiaztatzen ([CIF-5](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-5)).
+
+## IFZ-BEZ
+
+Espainiako IFZ-BEZ bat, Europar Batasuneko barne-eragiketetan erabiltzen dena, `ES` eta ondoren IFZa da ([VAT-1](/nif-dni-nie-cif-validation/eu/reference/official-sources/#vat-1)). `isValidSpanishVat()` funtzioak formatu hori egiaztatzen du; `validate()` funtzioak aurrizkia eskatzen duzunean bakarrik onartzen du:
+
+```ts
+import { isValidSpanishVat, validate } from "nif-dni-nie-cif-validation";
+
+isValidSpanishVat("ES12345678Z");                               // true
+validate("ES12345678Z").error?.code;                            // "INVALID_FORMAT"
+validate("ES12345678Z", { allowVatPrefix: true }).normalized;   // "12345678Z"
+```
+
+<Aside type="caution">
+Formatua baliozkoa izateak ez du esan nahi zenbakia Europar Batasuneko barne-eragiketetarako alta emanda dagoenik. Hori egiaztatzeko, kontsultatu Europako Batzordearen VIES zerbitzua.
+</Aside>
+
+## IFZ ez dena
+
+Interneten aurkituko dituzun arau batzuek ez dute iturri ofizialik, eta liburutegiak ez ditu aplikatzen. `T` letraz hasten den zenbaki bat ez da IFZ bat, `00` digituekin hasten den IFK batek ez du letrarik behar, eta IFKaren digituek ez dute probintzia-koderik. [Ohiko galderek](/nif-dni-nie-cif-validation/eu/guides/faq/) kasu bakoitza azaltzen dute, eta [iturri ofizialek](/nif-dni-nie-cif-validation/eu/reference/official-sources/#explicitly-not-implemented-no-official-basis) zerrendatzen dituzte.

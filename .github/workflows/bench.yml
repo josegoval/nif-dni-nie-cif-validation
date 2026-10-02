@@ -1,0 +1,87 @@
+# Runs the competitor benchmark (bench/README.md) on demand and uploads
+# bench/results/latest.json and latest.md as an artifact, so the numbers that
+# the README and the site show can be reproduced on a known runner type.
+#
+# It never commits. A maintainer downloads the artifact of a run they choose
+# and commits the two files to bench/results/.
+#
+# There is deliberately no `release: published` trigger: releases are created
+# by semantic-release with the GITHUB_TOKEN of release.yml, and events caused
+# by that token do not start other workflows. Run it from the Actions tab
+# after a release instead.
+#
+# The runner is a shared virtual machine, so absolute numbers are noisy; the
+# ratios between libraries of one run are what carries over (see "Noise on
+# shared machines" in bench/README.md).
+name: Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      time_ms:
+        description: Milliseconds of measurement per task
+        type: number
+        default: 2000
+      warmup_ms:
+        description: Milliseconds of warmup per task
+        type: number
+        default: 500
+      rounds:
+        description: Times the whole run repeats (the figure is the median)
+        type: number
+        default: 3
+
+permissions:
+  contents: read
+
+# Two benchmarks at once would only make each other's numbers noisier.
+concurrency:
+  group: benchmark
+  cancel-in-progress: false
+
+env:
+  HUSKY: "0" # do not install git hooks in CI
+
+jobs:
+  benchmark:
+    name: Competitor benchmark (Node 24, ubuntu-latest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Setup pnpm
+        # Version comes from `packageManager` in package.json.
+        uses: pnpm/action-setup@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      # Builds dist/, then times every library, checks the agreement with the
+      # SPEC fixtures and measures the bundle sizes.
+      - name: Run the benchmark
+        env:
+          BENCH_TIME_MS: ${{ inputs.time_ms }}
+          BENCH_WARMUP_MS: ${{ inputs.warmup_ms }}
+          BENCH_ROUNDS: ${{ inputs.rounds }}
+        run: pnpm bench:competitors
+      # The JSON must follow its schema, and the markdown must be what is
+      # rendered from it.
+      - name: Check the results
+        run: pnpm exec vitest run bench/results.test.mjs --coverage.enabled=false
+      - name: Summary
+        run: cat bench/results/latest.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload the results
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-results
+          path: |
+            bench/results/latest.json
+            bench/results/latest.md
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,132 @@
+---
+title: Getting started
+description: Install nif-dni-nie-cif-validation and validate your first Spanish NIF, DNI, NIE or CIF number in JavaScript or TypeScript, then learn why a number is invalid and what to store.
+---
+
+import { LinkCard, CardGrid, Tabs, TabItem } from "@astrojs/starlight/components";
+
+`nif-dni-nie-cif-validation` checks Spanish tax IDs (NIF, DNI, K/L/M NIF, NIE and CIF) against the official rules, and tells you why a number is wrong. It has no dependencies, ships its own TypeScript types, and works with `import` and `require` in Node.js 20 or newer, in every current browser, and in Deno and Bun.
+
+## Install
+
+<Tabs syncKey="package-manager">
+<TabItem label="npm">
+
+```sh
+npm install nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="yarn">
+
+```sh
+yarn add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="bun">
+
+```sh
+bun add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="deno">
+
+```sh
+deno add npm:nif-dni-nie-cif-validation
+```
+
+</TabItem>
+</Tabs>
+
+## Check a number
+
+The `isValid…` functions answer yes or no. They accept any value and never throw, so you can pass them what a user typed:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif("12345678Z");      // true: a DNI
+isValidNif("X1234567L");      // true: an NIE
+isValidNif("B12345674");      // true: a CIF
+isValidNif(" 12.345.678-z "); // true: spaces, dots, hyphens and lower case are fine
+isValidNif("12345678A");      // false: wrong check letter
+isValidNif(null);             // false: never throws
+```
+
+With CommonJS, `require` works the same way:
+
+```js
+const { isValidNif } = require("nif-dni-nie-cif-validation");
+
+isValidNif("12345678Z"); // true
+```
+
+## Pick the right function
+
+`isValidNif` accepts every type. When a field only takes some types, use the narrower function:
+
+| The field takes… | Use |
+| --- | --- |
+| Any NIF: DNI, K/L/M NIF, NIE or CIF | `isValidNif(value)` |
+| People only: DNI, K/L/M NIF or NIE | `isValidNaturalPersonNif(value)` |
+| A DNI (or a K/L/M NIF) | `isValidDni(value)` |
+| An NIE | `isValidNie(value)` |
+| Companies and other entities (CIF) | `isValidCif(value)` |
+| A Spanish VAT number (`ES` + NIF, the format only) | `isValidSpanishVat(value)` |
+
+```ts
+import { isValidCif, isValidNaturalPersonNif } from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("X1234567L"); // true
+isValidNaturalPersonNif("B12345674"); // false: a CIF is not a person
+isValidCif("P2807900B");              // true: Ayuntamiento de Madrid
+```
+
+Not sure which document is which? See [DNI, NIE, NIF and CIF](/nif-dni-nie-cif-validation/guides/document-types/).
+
+## Know why, and store the canonical form
+
+`validate()` returns the type, the canonical form to store and, for an invalid value, an error with a code, the [SPEC.md rule](/nif-dni-nie-cif-validation/reference/official-sources/) that failed, a message and the expected control character:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate(" 12.345.678-z ");
+// { valid: true, type: "DNI", normalized: "12345678Z" }
+
+validate("12345678A").error;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+//   message: 'The control character is not correct: for this DNI it should be "Z".' }
+```
+
+Store `normalized`, not what the user typed: it is upper case, without separators, and the same for every way of writing the same document.
+
+## Show the message in your user's language
+
+The messages are in English by default. Spanish, Catalan, Basque and Galician are separate imports, so your bundle only has the languages you use:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+
+validate("12345678A", { locale: es }).error?.message;
+// "El carácter de control no es correcto: para este DNI debería ser «Z»."
+```
+
+## Next steps
+
+<CardGrid>
+  <LinkCard title="Validating forms" description="Zod, Valibot, Yup, React Hook Form and server-side handlers." href="/nif-dni-nie-cif-validation/guides/validating-forms/" />
+  <LinkCard title="Error codes and messages" description="Every error code, the rule it cites, and how to pick a language." href="/nif-dni-nie-cif-validation/guides/errors-and-languages/" />
+  <LinkCard title="Generating test data" description="Valid and invalid numbers for your tests, the same on every run." href="/nif-dni-nie-cif-validation/guides/test-data/" />
+  <LinkCard title="API reference" description="Every export, with its options and examples." href="/nif-dni-nie-cif-validation/reference/api/" />
+</CardGrid>

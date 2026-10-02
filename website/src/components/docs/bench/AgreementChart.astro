@@ -1,0 +1,125 @@
+---
+// Agreement with SPEC.md, from bench/results/latest.json: a chart of the
+// share of all the fixtures and of the canonical-input fixtures that each
+// library judges as SPEC.md does (`view="chart"`), or the table per document
+// type, with the disagreements on decisions that SPEC.md documents
+// (`view="table"`). This is agreement with SPEC.md, not correctness in the
+// absolute: the page says so next to it.
+import { agreementRows, BUCKETS } from "../../../data/bench-details";
+import { formatNumber, langOf, stringsFor } from "../../../i18n";
+import TableScroll from "../TableScroll.astro";
+
+interface Props {
+  view: "chart" | "table";
+}
+
+const { view } = Astro.props;
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const docs = stringsFor(lang).docs;
+const t = docs.bench.agreement;
+const percent = (value: number) =>
+  new Intl.NumberFormat(lang === "en" ? "en-GB" : lang, {
+    style: "percent",
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(value / 100);
+const id = view === "chart" ? "agreement-chart" : "agreement-table";
+---
+
+<TableScroll labelledby={`${id}-caption`}>
+  <table class="bar-chart agreement">
+    <caption id={`${id}-caption`}>
+      {view === "chart" ? t.chartCaption : t.tableCaption}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">{docs.library}</th>
+        {
+          view === "chart" ? (
+            <>
+              <th scope="col" class="num">{t.all}</th>
+              <th scope="col" class="num">{t.canonical}</th>
+            </>
+          ) : (
+            <>
+              {BUCKETS.map((bucket) => (
+                <th scope="col" class="num">{t.buckets[bucket]}</th>
+              ))}
+              <th scope="col" class="num">{t.disagreements}</th>
+              <th scope="col" class="num">{t.documented}</th>
+            </>
+          )
+        }
+      </tr>
+    </thead>
+    <tbody>
+      {
+        agreementRows.map((row) => (
+          <tr data-kind={row.library.kind}>
+            <th scope="row">
+              <span class="name">{row.library.name}</span>{" "}
+              <span class="version">{row.library.version ?? docs.thisBuild}</span>
+            </th>
+            {view === "chart" ? (
+              [row.all, row.canonical].map((value) =>
+                value === null ? (
+                  <td class="num muted">{docs.unsupported}</td>
+                ) : (
+                  <td class="num">
+                    <span class="bar-cell">
+                      <span
+                        class="bar"
+                        aria-hidden="true"
+                        style={`--share: ${(value / 100).toFixed(4)}`}
+                      />
+                      <span>{percent(value)}</span>
+                    </span>
+                  </td>
+                )
+              )
+            ) : (
+              <>
+                {BUCKETS.map((bucket) => {
+                  const value = row.buckets[bucket];
+                  return value === null ? (
+                    <td class="num muted">{docs.unsupported}</td>
+                  ) : (
+                    <td class="num">{percent(value)}</td>
+                  );
+                })}
+                <td class="num">{formatNumber(lang, row.disagreements)}</td>
+                <td class="num">{formatNumber(lang, row.onDocumentedDecisions)}</td>
+              </>
+            )}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</TableScroll>
+
+<style>
+  .agreement .bar-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .agreement .bar {
+    display: inline-block;
+    width: calc(var(--share) * 6rem);
+    min-width: 2px;
+    height: 0.625rem;
+    border-radius: 2px;
+    background: var(--sl-color-gray-4);
+  }
+  .agreement tr[data-kind="subject"] .bar {
+    background: var(--sl-color-accent);
+  }
+  @media (max-width: 40rem) {
+    .agreement .bar {
+      width: calc(var(--share) * 3rem);
+    }
+  }
+</style>

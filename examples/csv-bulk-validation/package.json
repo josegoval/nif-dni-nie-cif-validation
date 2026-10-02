@@ -1,0 +1,15 @@
+{
+  "name": "example-csv-bulk-validation",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Streams a CSV with Node streams, validates the NIF column and reports the invalid rows with their error codes and rules.",
+  "scripts": {
+    "start": "node validate-csv.mjs sample.csv",
+    "sample": "node generate-sample.mjs",
+    "check": "node generate-sample.mjs --check && node validate-csv.mjs sample.csv --expect-rows 1000 --expect-invalid 62"
+  },
+  "dependencies": {
+    "nif-dni-nie-cif-validation": "file:../.pack/package"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "search.devWarning": "La búsqueda solo está disponible en las versiones de producción.\nPrueba a generar el sitio y abrir la vista previa para comprobar la búsqueda en local.",
+  "sidebarNav.accessibleLabel": "Principal",
+  "tableOfContents.overview": "Resumen"
+}

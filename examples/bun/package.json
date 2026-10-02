@@ -1,0 +1,14 @@
+{
+  "name": "example-bun",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Validate Spanish NIF, DNI, NIE and CIF numbers with Bun.",
+  "scripts": {
+    "start": "bun run index.ts",
+    "check": "bun run index.ts"
+  },
+  "dependencies": {
+    "nif-dni-nie-cif-validation": "file:../.pack/package"
+  }
+}

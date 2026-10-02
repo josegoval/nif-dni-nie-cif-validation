@@ -1,6 +1,6 @@
 /**
  * Entry point of `nif-dni-nie-cif-validation`: validators for Spanish NIF,
- * DNI, K/L/M, NIE and legal entity NIF (CIF) numbers.
+ * DNI, K/L/M, NIE and CIF (NIF of a legal person or entity) numbers.
  *
  * The export names are the public API: keep them stable. Every rule the
  * validators apply has an ID in SPEC.md, cited in the modules below:
@@ -8,7 +8,17 @@
  * - nif.ts: any NIF (isValidNif) and natural persons (isValidNaturalPersonNif).
  * - dni.ts: DNI and K/L/M NIF.
  * - nie.ts: NIE.
- * - cif.ts: legal entity NIF (formerly CIF).
+ * - cif.ts: NIF of a legal person or entity (formerly CIF).
+ * - normalize.ts: input cleanup (NORM-1 to NORM-4, NIE-3).
+ * - policy.ts: opt-in policies (POLICY-1, placeholders).
+ * - validate.ts: validate() and getNifType(), the detailed API.
+ * - organisations.ts: describeCifOrganisation(), the CIF organisation keys.
+ * - localize.ts, locales/: the texts of validate() and
+ *   describeCifOrganisation(). English is built in; every other language is
+ *   its own entry point (`nif-dni-nie-cif-validation/locales/es`), so it is
+ *   not exported here.
+ * - vat.ts: isValidSpanishVat() (VAT-1).
+ * - format.ts: format() and computeControlCharacter().
  */
 export { isValidNif, isValidNaturalPersonNif } from "./nif";
 export {
@@ -19,13 +29,34 @@ export {
 } from "./dni";
 export { isValidNie, NIE_REGEX, replaceNieLetter } from "./nie";
 export {
-  isValidLegalEntityNifControlCode,
-  isValidLegalEntityNifControlCode as isValidCifControlCode,
+  CIF_CONTROL_LETTERS,
+  CIF_REGEX,
+  isValidCif,
+  isValidCifControlCode,
   isValidLegalEntityNif,
-  isValidLegalEntityNif as isValidCif,
+  isValidLegalEntityNifControlCode,
   LEGAL_ENTITY_CONTROL_LETTERS,
-  LEGAL_ENTITY_CONTROL_LETTERS as CIF_CONTROL_LETTERS,
   LEGAL_ENTITY_NIF_REGEX,
-  LEGAL_ENTITY_NIF_REGEX as CIF_REGEX,
 } from "./cif";
-export type { NifType } from "./types";
+export { normalize } from "./normalize";
+export { describeCifOrganisation } from "./organisations";
+export { getNifType, validate } from "./validate";
+export { isValidSpanishVat } from "./vat";
+export { computeControlCharacter, format } from "./format";
+export type { FormatOptions } from "./format";
+export type {
+  CifControlMode,
+  CifOrganisationKey,
+  CifOrganisationMeta,
+  GetNifTypeOptions,
+  IsValidOptions,
+  NifErrorCode,
+  NifFormatRule,
+  NifLengthRule,
+  NifLocale,
+  NifMessages,
+  NifType,
+  NifValidationError,
+  ValidateOptions,
+  ValidationResult,
+} from "./types";

@@ -1,0 +1,151 @@
+---
+// Every error code of validate(), every SPEC rule it can cite, an input that
+// gives it, and the message, in the page's language. Each row is computed by
+// the package at build time: the build fails if an example stops giving its
+// code and rule, or if the package gains a length or format rule that the
+// table doesn't list, so the table can't drift from the library.
+import {
+  type NifErrorCode,
+  type ValidateOptions,
+  validate,
+} from "nif-dni-nie-cif-validation";
+import { en } from "nif-dni-nie-cif-validation/locales/en";
+import { localeFor } from "../../data/locales";
+import { ruleUrl } from "../../data/spec";
+import { langOf, stringsFor } from "../../i18n";
+import TableScroll from "./TableScroll.astro";
+
+const lang = langOf(Astro.locals.starlightRoute.lang);
+const t = stringsFor(lang).docs.errors;
+const locale = localeFor(lang);
+
+interface Example {
+  code: NifErrorCode;
+  rule: string;
+  input: unknown;
+  options?: Omit<ValidateOptions, "locale">;
+  /** How the call is shown, when the input alone is not enough. */
+  shown?: string;
+}
+
+const EXAMPLES: Example[] = [
+  { code: "NOT_A_STRING", rule: "INPUT-1", input: null },
+  { code: "EMPTY", rule: "INPUT-2", input: " - " },
+  { code: "INVALID_LENGTH", rule: "DNI-1", input: "1234567890" },
+  { code: "INVALID_LENGTH", rule: "KLM-1", input: "K123456" },
+  { code: "INVALID_LENGTH", rule: "NIE-1", input: "X123456" },
+  { code: "INVALID_LENGTH", rule: "NIE-3", input: "X11234567L" },
+  { code: "INVALID_LENGTH", rule: "CIF-1", input: "B123456" },
+  {
+    code: "INVALID_LENGTH",
+    rule: "VAT-1",
+    input: "ES",
+    options: { allowVatPrefix: true },
+    shown: '"ES", { allowVatPrefix: true }',
+  },
+  { code: "INVALID_FORMAT", rule: "NIF-1", input: "T1234567A" },
+  { code: "INVALID_FORMAT", rule: "VAT-1", input: "ES12345678Z" },
+  { code: "INVALID_FORMAT", rule: "DNI-1", input: "123456789" },
+  { code: "INVALID_FORMAT", rule: "KLM-1", input: "K12345678" },
+  { code: "INVALID_FORMAT", rule: "KLM-3", input: "K12345A7L" },
+  { code: "INVALID_FORMAT", rule: "NIE-1", input: "X12345678" },
+  { code: "INVALID_FORMAT", rule: "CIF-1", input: "B12A45674" },
+  { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", input: "12345678A" },
+  { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-3", input: "12345678I" },
+  { code: "INVALID_CONTROL_CHARACTER", rule: "KLM-2", input: "K1234567A" },
+  { code: "INVALID_CONTROL_CHARACTER", rule: "NIE-2", input: "Y1234567L" },
+  { code: "INVALID_CONTROL_CHARACTER", rule: "CIF-3", input: "G1234567D" },
+  { code: "INVALID_CONTROL_CHARACTER", rule: "CIF-4", input: "B12345675" },
+  {
+    code: "UNSUPPORTED_TYPE",
+    rule: "POLICY-2",
+    input: "B12345674",
+    options: { types: ["DNI", "NIE"] },
+    shown: '"B12345674", { types: ["DNI", "NIE"] }',
+  },
+  {
+    code: "PLACEHOLDER",
+    rule: "POLICY-1",
+    input: "00000000T",
+    options: { rejectPlaceholders: true },
+    shown: '"00000000T", { rejectPlaceholders: true }',
+  },
+];
+
+// Every length and format rule of the package has a row.
+for (const code of ["INVALID_LENGTH", "INVALID_FORMAT"] as const) {
+  const listed = EXAMPLES.filter((e) => e.code === code).map((e) => e.rule);
+  const rules = Object.keys(en.messages[code]);
+  if (listed.sort().join() !== rules.sort().join()) {
+    throw new Error(`ErrorCodesTable: ${code} lists ${listed}, not ${rules}`);
+  }
+}
+
+const rows = EXAMPLES.map((example) => {
+  const { error } = validate(example.input, {
+    ...example.options,
+    locale,
+  });
+  if (error?.code !== example.code || error.rule !== example.rule) {
+    throw new Error(
+      `ErrorCodesTable: ${JSON.stringify(example.input)} gives ${error?.code} ${error?.rule}, not ${example.code} ${example.rule}`
+    );
+  }
+  return {
+    ...example,
+    shown: example.shown ?? JSON.stringify(example.input),
+    message: error.message,
+  };
+});
+// One group of rows per code, in the order of EXAMPLES.
+const groups = [...new Set(rows.map((row) => row.code))].map((code) => ({
+  code,
+  rows: rows.filter((row) => row.code === code),
+}));
+---
+
+<TableScroll labelledby="error-codes-caption">
+  <table class="error-codes">
+    <caption id="error-codes-caption">{t.caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{t.rule}</th>
+        <th scope="col">{t.example}</th>
+        <th scope="col">{t.message}</th>
+      </tr>
+    </thead>
+    {
+      groups.map((group) => (
+        <tbody>
+          <tr>
+            <th scope="rowgroup" colspan="3">
+              <span class="sr-only">{t.code}: </span>
+              <code>{group.code}</code>
+            </th>
+          </tr>
+          {group.rows.map((row) => (
+            <tr>
+              <td>
+                <a href={ruleUrl(lang, row.rule)}>{row.rule}</a>
+              </td>
+              <td>
+                <code>{row.shown}</code>
+              </td>
+              <td>{row.message}</td>
+            </tr>
+          ))}
+        </tbody>
+      ))
+    }
+  </table>
+</TableScroll>
+
+<style>
+  .error-codes th[scope="rowgroup"] {
+    min-width: 0;
+    padding-top: 1rem;
+  }
+  .error-codes td:first-child {
+    white-space: nowrap;
+  }
+</style>

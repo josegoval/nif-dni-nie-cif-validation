@@ -1,0 +1,54 @@
+---
+title: AA bidezko programazio-agenteekin erabiltzea
+description: Lagundu AA bidezko programazio-agenteei (Claude Code, Codex, Cursor edo Copilot, adibidez) nif-dni-nie-cif-validation ondo erabiltzen, berekin dakartzan llms.txt eta llms-full.txt fitxategiekin eta itsats ditzakezun jarraibide batzuekin.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+AA bidezko programazio-laguntzaileek askotan beren kodea idazten dute NAN baten letra kalkulatzeko, edo arau zaharkitu bat aplikatzen diote IFK bati. Liburutegi honek haientzat idatzitako testu soileko dokumentazioa dakar, horren ordez erabil dezaten, zure `node_modules` karpetatik edo gune honetatik.
+
+## Fitxategiak
+
+| Fitxategia | Zer duen | Non dagoen |
+| --- | --- | --- |
+| `llms.txt` | Gida labur bat (2.000 token inguru): zein funtzio erabili, probatutako zatiak, errore-kodeak eta ohiko akatsak | [Gune honetan](/nif-dni-nie-cif-validation/llms.txt) eta `node_modules/nif-dni-nie-cif-validation/llms.txt` fitxategian |
+| `llms-full.txt` | Erreferentzia osoa fitxategi bakarrean: README-a, APIaren diseinua, 1. bertsiotik migratzeko gida eta arauak beren iturriekin | [Gune honetan](/nif-dni-nie-cif-validation/llms-full.txt) eta `node_modules/nif-dni-nie-cif-validation/llms-full.txt` fitxategian |
+
+Biek [llms.txt konbentzioari](https://llmstxt.org) jarraitzen diote, eta ingelesez daude. npm paketearen barruan daude; beraz, zure proiektua bakarrik irakur dezakeen agente batek ere aurkitzen ditu. `llms.txt` fitxategiko kode-zati guztiak liburutegiaren probetan exekutatzen dira.
+
+## Jarraibideak zure agentearentzat
+
+Itsatsi hau zure agentearen jarraibideetan: `AGENTS.md` (Codex-ek eta beste batzuek irakurtzen dute), `CLAUDE.md` (Claude Code), `.cursor/rules` (Cursor) edo `.github/copilot-instructions.md` (GitHub Copilot). Jarraibideak ingelesez daude:
+
+```text
+To validate Spanish NIF, DNI, NIE or CIF numbers, use the npm package
+nif-dni-nie-cif-validation. Read node_modules/nif-dni-nie-cif-validation/llms.txt
+before writing code. Use the isValid* functions for yes/no checks and validate()
+when the user needs to know why a value is invalid, and store result.normalized.
+For messages in another language, import the locale object from
+nif-dni-nie-cif-validation/locales/<code> and pass it as { locale }.
+For test data, use nif-dni-nie-cif-validation/generate instead of real numbers.
+Don't write your own check-letter code.
+```
+
+## Zer egiten duten gaizki agenteek, eta zer berrikusi
+
+Agente batek idatzitako kodea berrikustean, begiratu hauei:
+
+- **Bere algoritmoa.** Eskuz idatzitako 23 moduluko funtzio bat edo IFKrako funtzio bat alarma-seinale bat da: K/L/M IFZak, AIZaren forma zaharra edo [CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3) ahazten ditu sarri. Ordezkatu `isValidNif()` edo `computeControlCharacter()` funtzioarekin.
+- **Kate gisa pasatako hizkuntza bat.** `{ locale: "es" }` aukerak ingelesezko mezuak ematen ditu; hizkuntzak inportatutako objektua izan behar du.
+- **`ids.filter(isValidNif)`.** TypeScript-ek baztertu egiten du, egiaztatzaileek aukerak bigarren argumentu gisa jasotzen baitituzte. Idatzi `ids.filter((id) => isValidNif(id))`.
+- **Sarrera dagoen bezala gordetzea.** Gorde `validate(value).normalized`.
+- **Letra batez hasten den IFZ oro enpresa batena balitz bezala tratatzea.** K/L/M IFZak pertsonenak dira; `isValidNaturalPersonNif()` funtzioak onartzen ditu, eta `isValidCif()` funtzioak ez.
+- **Benetako zenbakiak probetan.** Erabili [sorgailuak](/nif-dni-nie-cif-validation/eu/guides/test-data/).
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+const ids = ["12345678Z", "12345678A", " x-0123456-7l "];
+ids.filter((id) => isValidNif(id)); // ["12345678Z", " x-0123456-7l "]
+```
+
+<Aside type="note" title="Agente batekin laguntzea">
+Biltegiaren erroko `AGENTS.md` fitxategia liburutegiaren **gainean** lan egiten duten agente eta pertsonentzat da: haren egitura, haren komandoak eta aldaketa batek bete behar dituen arauak. Paketea **erabiltzeko**, irakurri beharreko fitxategia `llms.txt` da.
+</Aside>

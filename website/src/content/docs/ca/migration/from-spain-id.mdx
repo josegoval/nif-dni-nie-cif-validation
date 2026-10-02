@@ -1,0 +1,99 @@
+---
+title: Migrar des de spain-id
+description: Substituïu spain-id per nif-dni-nie-cif-validation. Una equivalència de validateSpanishId, validDNI, validNIE, validCIF i spainIdType, codi abans i després i les diferències, inclosa la regla de control CIF-3.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+[spain-id](https://www.npmjs.com/package/spain-id) valida DNI, NIE i CIF, i n'indica el tipus. Aquesta biblioteca cobreix el mateix i hi afegeix els NIF K/L/M, el motiu de cada error, missatges traduïts, generadors i esquemes. spain-id ocupa menys per a una sola funció; la pàgina de [rendiment](/nif-dni-nie-cif-validation/ca/benchmarks/#mida-del-bundle) té les mides mesurades. La comparació d'aquesta pàgina és amb spain-id 1.1.14.
+
+## Equivalència de funcions
+
+| spain-id | nif-dni-nie-cif-validation | Notes |
+| --- | --- | --- |
+| `validateSpanishId(x)` | `isValidNif(x)` | També accepta els NIF K/L/M. El control del CIF segueix CIF-3 (vegeu més avall) |
+| `validDNI(x)` | `isValidDni(x)` | També accepta els NIF K/L/M |
+| `validNIE(x)` | `isValidNie(x)` | També accepta la forma antiga de 10 caràcters |
+| `validCIF(x)` | `isValidCif(x)` | El control segueix CIF-3 |
+| `spainIdType(x)` | `getNifType(x)` | En majúscules, `"NIF_KLM"` per als K/L/M, i `null` en lloc d'`undefined` |
+
+## Abans i després
+
+Abans, amb spain-id:
+
+```js
+import { spainIdType, validateSpanishId, validCIF, validDNI, validNIE } from "spain-id";
+
+validateSpanishId("12345678Z"); // true
+validDNI("12345678Z");          // true
+validNIE("X1234567L");          // true
+validCIF("B12345674");          // true
+spainIdType("B12345674");       // "cif"
+spainIdType("hello");           // undefined
+```
+
+Després:
+
+```ts
+import { getNifType, isValidCif, isValidDni, isValidNie, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif("12345678Z");  // true
+isValidDni("12345678Z");  // true
+isValidNie("X1234567L");  // true
+isValidCif("B12345674");  // true
+getNifType("B12345674");  // "CIF"
+getNifType("hello");      // null
+```
+
+Com `spainIdType`, `getNifType` només mira el format i no comprova el caràcter de control. Per saber si un número és vàlid i, si no ho és, per què, feu servir `validate()`, que també retorna el tipus.
+
+## Diferències de comportament
+
+**El control del CIF (CIF-3).** spain-id accepta una lletra o una xifra com a caràcter de control de qualsevol CIF. La nota tècnica de l'AEAT assigna a cada clau d'entitat una sola classe: una xifra per a A B C D E F G H J U V i una lletra per a N P Q R S W ([CIF-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-3)). Per això, alguns números que spain-id accepta no són vàlids aquí, com `G1234567D`. Si les vostres dades desades en tenen, passeu `{ cifControl: "lenient" }` mentre les netegeu: accepta una lletra per a C, D, F, G, J, U i V.
+
+```js
+import { validCIF } from "spain-id";
+
+validCIF("G1234567D"); // true
+```
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                            // false: la G porta xifra
+isValidCif("G1234567D", { cifControl: "lenient" }); // true
+isValidCif("G12345674");                            // true
+```
+
+**NIF K/L/M.** spain-id els rebutja i no té cap tipus per a ells. Són NIF de persones físiques, vàlids aquí ([KLM-1](/nif-dni-nie-cif-validation/ca/reference/official-sources/#klm-1)).
+
+**La forma antiga del NIE.** spain-id rebutja els NIE de 10 caràcters, com `X01234567L`; continuen sent vàlids ([NIE-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#nie-3)).
+
+**Separadors.** spain-id treu espais i guions, però no punts. Aquesta biblioteca també treu punts i barres, i retorna la forma canònica que heu de desar.
+
+**Valors que no són cadenes.** spain-id llança una excepció amb `null`; aquesta biblioteca retorna `false`.
+
+```js
+import { spainIdType, validateSpanishId } from "spain-id";
+
+validateSpanishId("K1234567L");    // false
+validateSpanishId("X01234567L");   // false
+validateSpanishId("12.345.678-Z"); // false
+spainIdType("K1234567L");          // undefined
+validateSpanishId(null);           // throws TypeError
+```
+
+```ts
+import { getNifType, isValidNif, validate } from "nif-dni-nie-cif-validation";
+
+isValidNif("K1234567L");             // true
+isValidNif("X01234567L");            // true
+isValidNif("12.345.678-Z");          // true
+getNifType("K1234567L");             // "NIF_KLM"
+isValidNif(null);                    // false
+validate("12.345.678-Z").normalized; // "12345678Z"
+```
+
+<Aside type="tip">
+Si la mida del bundle us importa més que el motiu de cada error, i no necessiteu els NIF K/L/M ni la forma antiga del NIE, spain-id és una bona opció. Si necessiteu qualsevol d'aquestes coses, o missatges per als vostres usuaris, canvieu.
+</Aside>

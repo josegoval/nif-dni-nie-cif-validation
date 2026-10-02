@@ -1,0 +1,132 @@
+---
+title: Lehen urratsak
+description: Instalatu nif-dni-nie-cif-validation eta egiaztatu zure lehen IFZ, NAN, AIZ edo IFK zenbakia JavaScript-en edo TypeScript-en; ondoren, jakin zergatik ez den zenbaki bat baliozkoa eta zer balio gorde behar duzun.
+---
+
+import { LinkCard, CardGrid, Tabs, TabItem } from "@astrojs/starlight/components";
+
+`nif-dni-nie-cif-validation` liburutegiak Espainiako identifikatzaile fiskalak (IFZ, NAN, K/L/M IFZ, AIZ eta IFK) egiaztatzen ditu arau ofizialen arabera, eta zenbaki bat zergatik ez den baliozkoa esaten dizu. Ez du mendekotasunik, bere TypeScript motak ditu, eta `import` zein `require` erabilita funtzionatzen du Node.js 20 edo berriagoan, egungo nabigatzaile guztietan, Deno-n eta Bun-en.
+
+## Instalazioa
+
+<Tabs syncKey="package-manager">
+<TabItem label="npm">
+
+```sh
+npm install nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="yarn">
+
+```sh
+yarn add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="bun">
+
+```sh
+bun add nif-dni-nie-cif-validation
+```
+
+</TabItem>
+<TabItem label="deno">
+
+```sh
+deno add npm:nif-dni-nie-cif-validation
+```
+
+</TabItem>
+</Tabs>
+
+## Egiaztatu zenbaki bat
+
+`isValid…` funtzioek bai edo ez erantzuten dute. Edozein balio onartzen dute eta ez dute inoiz salbuespenik jaurtitzen; beraz, erabiltzaileak idatzitakoa pasa diezaiekezu:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif("12345678Z");      // true: NAN bat
+isValidNif("X1234567L");      // true: AIZ bat
+isValidNif("B12345674");      // true: IFK bat
+isValidNif(" 12.345.678-z "); // true: zuriuneak, puntuak, marrak eta minuskulak onartzen dira
+isValidNif("12345678A");      // false: kontrol-letra ez da zuzena
+isValidNif(null);             // false: ez du inoiz salbuespenik jaurtitzen
+```
+
+CommonJS-ekin, `require` berdin dabil:
+
+```js
+const { isValidNif } = require("nif-dni-nie-cif-validation");
+
+isValidNif("12345678Z"); // true
+```
+
+## Aukeratu funtzio egokia
+
+`isValidNif` funtzioak mota guztiak onartzen ditu. Eremu batek mota batzuk bakarrik onartzen baditu, erabili funtzio zehatzagoa:
+
+| Eremuak onartzen du… | Erabili |
+| --- | --- |
+| Edozein IFZ: NAN, K/L/M IFZ, AIZ edo IFK | `isValidNif(value)` |
+| Pertsona fisikoak bakarrik: NAN, K/L/M IFZ edo AIZ | `isValidNaturalPersonNif(value)` |
+| NAN bat (edo K/L/M IFZ bat) | `isValidDni(value)` |
+| AIZ bat | `isValidNie(value)` |
+| Enpresak eta beste erakunde batzuk (IFK) | `isValidCif(value)` |
+| Espainiako IFZ-BEZ bat (`ES` + IFZ, formatua bakarrik) | `isValidSpanishVat(value)` |
+
+```ts
+import { isValidCif, isValidNaturalPersonNif } from "nif-dni-nie-cif-validation";
+
+isValidNaturalPersonNif("X1234567L"); // true
+isValidNaturalPersonNif("B12345674"); // false: IFK bat ez da pertsona fisiko bat
+isValidCif("P2807900B");              // true: Madrilgo Udala
+```
+
+Ez dakizu ziur zer den dokumentu bakoitza? Ikusi [NAN, AIZ, IFZ eta IFK](/nif-dni-nie-cif-validation/eu/guides/document-types/).
+
+## Jakin zergatik, eta gorde forma kanonikoa
+
+`validate()` funtzioak mota, gorde behar den forma kanonikoa eta, balioa baliozkoa ez bada, errore bat itzultzen du: kode bat, betetzen ez den [SPEC.md araua](/nif-dni-nie-cif-validation/eu/reference/official-sources/), mezu bat eta espero zen kontrol-karakterea:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate(" 12.345.678-z ");
+// { valid: true, type: "DNI", normalized: "12345678Z" }
+
+validate("12345678A").error;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+//   message: 'The control character is not correct: for this DNI it should be "Z".' }
+```
+
+Gorde `normalized`, ez erabiltzaileak idatzitakoa: maiuskulaz dago, bereizlerik gabe, eta berdina da dokumentu bera idazteko modu guztietarako.
+
+## Erakutsi mezua erabiltzailearen hizkuntzan
+
+Mezuak ingelesez daude lehenespenez. Gaztelania, katalana, euskara eta galegoa bereiz inportatzen dira; beraz, zure bundleak erabiltzen dituzun hizkuntzak bakarrik ditu:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+
+validate("12345678A", { locale: es }).error?.message;
+// "El carácter de control no es correcto: para este DNI debería ser «Z»."
+```
+
+## Hurrengo urratsak
+
+<CardGrid>
+  <LinkCard title="Inprimakiak egiaztatzea" description="Zod, Valibot, Yup, React Hook Form eta zerbitzariko egiaztapena." href="/nif-dni-nie-cif-validation/eu/guides/validating-forms/" />
+  <LinkCard title="Errore-kodeak eta mezuak" description="Errore-kode guztiak, bakoitzak aipatzen duen araua eta hizkuntza nola aukeratu." href="/nif-dni-nie-cif-validation/eu/guides/errors-and-languages/" />
+  <LinkCard title="Proba-datuak sortzea" description="Zenbaki baliozkoak eta baliogabeak zure probetarako, berdinak exekuzio bakoitzean." href="/nif-dni-nie-cif-validation/eu/guides/test-data/" />
+  <LinkCard title="APIaren erreferentzia" description="Esportazio guztiak, beren aukera eta adibideekin." href="/nif-dni-nie-cif-validation/eu/reference/api/" />
+</CardGrid>

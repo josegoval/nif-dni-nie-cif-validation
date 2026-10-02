@@ -1,0 +1,121 @@
+---
+title: Normalizar y formatear la entrada
+description: Cómo limpia nif-dni-nie-cif-validation lo que se escribe en un NIF, DNI, NIE o CIF español (mayúsculas, espacios, puntos, guiones, ceros que faltan, el NIE antiguo), qué guardar y cómo mostrar un número agrupado.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+La gente escribe el mismo NIF de muchas formas: `12345678z`, `12.345.678-Z`, `1234567L` sin el cero inicial, o un NIE antiguo de 10 caracteres. La librería las acepta todas, comprueba el documento que representan y te da una única forma canónica para guardar. La limpieza nunca convierte un documento no válido en válido: solo admite más formas de escribir uno válido.
+
+## Qué hace la normalización
+
+`normalize()` devuelve la forma canónica: la de las fuentes oficiales, y la que debes guardar. Por orden:
+
+1. Quita los espacios en blanco en cualquier posición, lo que también recorta los extremos, y los puntos ([NORM-2](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-2)), los guiones y las barras ([NORM-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-3)).
+2. Convierte las minúsculas en mayúsculas ([NORM-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-1)).
+3. Reduce el NIE antiguo de 10 caracteres, `X0` + 7 dígitos + letra, a su forma de 9 caracteres ([NIE-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#nie-3)).
+4. Añade los ceros iniciales a un DNI escrito con menos de 8 dígitos ([NORM-4](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-4)).
+
+```ts
+import { normalize } from "nif-dni-nie-cif-validation";
+
+normalize(" 12.345.678-z ");  // "12345678Z"
+normalize("b/1234567/4");     // "B12345674"
+normalize("x-0123456-7l");    // "X1234567L": la forma antigua del NIE, reducida
+normalize("1234567L");        // "01234567L": se vuelve a añadir el cero inicial
+normalize("12345678\tZ");     // "12345678Z": también tabuladores y otros espacios en blanco
+```
+
+`normalize()` no valida: devuelve la cadena limpia aunque el documento no sea válido. El resto de signos de puntuación se mantienen a propósito (un guion bajo, una coma, una semirraya `–`), de modo que ese valor sigue sin ser válido, igual que los caracteres de otros alfabetos que se parecen a los latinos:
+
+```ts
+import { isValidNif, normalize } from "nif-dni-nie-cif-validation";
+
+normalize("12_345_678Z");  // "12_345_678Z": los guiones bajos no son separadores
+isValidNif("12_345_678Z"); // false
+```
+
+Todos los validadores, `validate()` y todos los esquemas normalizan primero la entrada, con las mismas reglas, así que `isValidNif(x)` y `validate(x).valid` siempre coinciden.
+
+<Aside type="tip">
+Guarda `validate(value).normalized` (o `normalize(value)` tras una comprobación correcta), nunca la entrada tal cual. Así, dos usuarios que escriben el mismo documento de formas distintas obtienen el mismo valor guardado, y las búsquedas y las restricciones de unicidad funcionan.
+</Aside>
+
+## Validar y normalizar en una sola llamada
+
+`validate()` devuelve la forma canónica en `normalized`, junto con el resultado:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate(" b-1234567-4 ").normalized; // "B12345674"
+validate("x01234567l").normalized;    // "X1234567L"
+validate("12345678A").normalized;     // "12345678A": existe aunque la letra sea incorrecta
+validate("hello").normalized;         // null: no se reconoce como ningún documento
+```
+
+`normalized` está presente en cuanto el formato es reconocible, aunque el carácter de control sea incorrecto, para que puedas mostrárselo al usuario junto al error.
+
+## Desactivar la normalización
+
+`{ normalize: false }` desactiva la eliminación de separadores y el relleno con ceros. Las minúsculas y la forma antigua del NIE se siguen aceptando, como en la versión 1:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif(" 12.345.678-Z ", { normalize: false }); // false: se rechazan los separadores
+isValidNif("12345678z", { normalize: false });      // true: las minúsculas siguen valiendo
+isValidNif("X01234567L", { normalize: false });     // true: y también la forma antigua del NIE
+```
+
+Úsalo para rechazar los separadores y los DNI escritos sin sus ceros iniciales. No exige la forma canónica: las minúsculas y la forma antigua del NIE se siguen aceptando ([NORM-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-1), [NIE-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#nie-3)).
+
+## NIF-IVA y el prefijo ES
+
+Un prefijo `ES` no es limpieza: `ES` seguido de un NIF es un NIF-IVA, un identificador distinto ([VAT-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#vat-1)). `normalize()` lo conserva, y `validate()` lo rechaza salvo que pases `allowVatPrefix`:
+
+```ts
+import { normalize, validate } from "nif-dni-nie-cif-validation";
+
+normalize("es-12345678-z");                                   // "ES12345678Z"
+validate("ES12345678Z").error?.code;                          // "INVALID_FORMAT"
+validate("es 12345678 z", { allowVatPrefix: true }).normalized; // "12345678Z"
+```
+
+`normalized` nunca conserva el prefijo. Para guardar un NIF-IVA, añádele `ES`, o usa `zSpanishVat()` y los demás esquemas de NIF-IVA, cuya salida lo mantiene.
+
+## Mostrar un número: format()
+
+Ninguna fuente oficial define cómo agrupar un NIF para mostrarlo. `format()` divide la forma canónica en las partes que definen las reglas, unidas por un guion, un espacio o nada:
+
+| Tipo | Partes | Ejemplo |
+| --- | --- | --- |
+| DNI | 8 dígitos · letra | `12345678-Z` |
+| NIE | prefijo · 7 dígitos · letra | `X-1234567-L` |
+| NIF K/L/M | prefijo · 7 dígitos · letra | `K-1234567-L` |
+| CIF | clave de entidad · 7 dígitos · control | `B-1234567-4` |
+
+```ts
+import { format } from "nif-dni-nie-cif-validation";
+
+format("12345678z");                     // "12345678-Z"
+format("x01234567l");                    // "X-1234567-L"
+format(" b-1234567-4 ");                 // "B-1234567-4"
+format("B12345674", { separator: " " }); // "B 1234567 4"
+format("B12345674", { separator: "" });  // "B12345674"
+format("12345678A");                     // null: solo se formatean documentos válidos
+```
+
+`format()` valida con las opciones por defecto y devuelve `null` para cualquier valor no válido, así que puedes llamarla con la entrada sin procesar. Nunca añade el prefijo `ES`.
+
+## Separadores que acepta la librería
+
+| Entrada | ¿Se acepta? | Regla |
+| --- | --- | --- |
+| Minúsculas (`12345678z`) | Sí, incluso con `normalize: false` | [NORM-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-1) |
+| Espacios, tabuladores, saltos de línea, puntos | Sí | [NORM-2](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-2) |
+| Guiones (`-`) y barras (`/`) | Sí | [NORM-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-3) |
+| Un DNI sin sus ceros iniciales (`1234567L`) | Sí | [NORM-4](/nif-dni-nie-cif-validation/es/reference/official-sources/#norm-4) |
+| La forma antigua del NIE (`X01234567L`) | Sí, incluso con `normalize: false` | [NIE-3](/nif-dni-nie-cif-validation/es/reference/official-sources/#nie-3) |
+| Guiones bajos, comas, semirrayas (`–`) y otros signos | No | — |
+| Prefijo `ES` | Solo con `allowVatPrefix`, o en las funciones de NIF-IVA | [VAT-1](/nif-dni-nie-cif-validation/es/reference/official-sources/#vat-1) |

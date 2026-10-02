@@ -1,0 +1,123 @@
+---
+title: Como funciona o carácter de control
+description: Como se calculan, paso a paso, a letra de control do DNI, do NIF K/L/M e do NIE españois (módulo 23) e o carácter de control do CIF, coa fonte oficial e o nivel de cada regra.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+O último carácter de todo NIF é un **carácter de control**, calculado a partir do resto do número, para detectar as gralladas. Esta páxina explica como se calcula cada un e de onde sae cada regra. Non todos os pasos teñen o mesmo tipo de fonte: algúns son lei, outros só criterio oficial e un é unha convención. Os niveis explícanse na páxina de [fontes oficiais](/nif-dni-nie-cif-validation/gl/reference/official-sources/#source-tiers).
+
+<Aside>
+Non precisa programar nada disto: `computeControlCharacter()` devolve o carácter de control dun número sen o seu último carácter, e todos os validadores o comproban.
+</Aside>
+
+## DNI: o número módulo 23
+
+A letra de control dun DNI é o resto de dividir o seu número de 8 díxitos entre 23, buscado nesta táboa ([DNI-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#dni-2)):
+
+| Resto | Letra | Resto | Letra | Resto | Letra |
+| ---: | --- | ---: | --- | ---: | --- |
+| 0 | T | 8 | P | 16 | Q |
+| 1 | R | 9 | D | 17 | V |
+| 2 | W | 10 | X | 18 | H |
+| 3 | A | 11 | B | 19 | L |
+| 4 | G | 12 | N | 20 | C |
+| 5 | M | 13 | J | 21 | K |
+| 6 | Y | 14 | Z | 22 | E |
+| 7 | F | 15 | S | | |
+
+Para `12345678`: 12345678 = 23 × 536768 + 14, e a letra do 14 é a **Z**, así que o DNI é `12345678Z`.
+
+```ts
+import { computeControlCharacter } from "nif-dni-nie-cif-validation";
+
+const LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+12345678 % 23;                       // 14
+LETTERS[12345678 % 23];              // "Z"
+computeControlCharacter("12345678"); // "Z"
+```
+
+As letras I, Ñ, O e U non están na táboa, así que un DNI nunca remata nelas ([DNI-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#dni-3)). Se unha persoa usuaria escribe unha delas, `validate()` indica que regra non se cumpre e que letra se esperaba:
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678I").error?.rule;     // "DNI-3"
+validate("12345678I").error?.expected; // "Z"
+```
+
+**Fonte.** O formato do DNI é lei: Real decreto 1065/2007, art. 19 (nivel T1). O algoritmo do módulo 23 non figura en ningunha lei: publícao o Ministerio do Interior, e tamén a nota técnica da AEAT sobre o NIF (niveis T2 e T3).
+
+## NIF K/L/M: só os 7 díxitos
+
+Un NIF K, L ou M usa a mesma táboa, sobre os seus 7 díxitos. A letra inicial non se converte nun díxito, así que K, L e M cos mesmos díxitos teñen a mesma letra de control ([KLM-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#klm-2)):
+
+```ts
+import { computeControlCharacter } from "nif-dni-nie-cif-validation";
+
+computeControlCharacter("K1234567"); // "L": 1234567 % 23 é 19
+computeControlCharacter("M1234567"); // "L"
+```
+
+**Fonte.** A nota técnica da AEAT sobre o NIF (T3). A lei di que os 7 caracteres son «alfanuméricos», pero o algoritmo só funciona con díxitos, así que a biblioteca segue a nota e esixe díxitos ([KLM-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#klm-3), un [conflito coñecido](/nif-dni-nie-cif-validation/gl/reference/official-sources/#known-conflicts-between-sources) entre fontes).
+
+## NIE: substitúese o prefixo e aplícase o módulo 23
+
+Nun NIE, o prefixo convértese nun díxito (X → 0, Y → 1, Z → 2), e o número de 8 díxitos resultante pasa pola táboa do DNI ([NIE-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nie-2)). Así, `Y1234567` convértese en 11234567, cuxo resto é 10, letra **X**:
+
+```ts
+import { computeControlCharacter, isValidNie } from "nif-dni-nie-cif-validation";
+
+11234567 % 23;                       // 10
+computeControlCharacter("Y1234567"); // "X"
+computeControlCharacter("X1234567"); // "L": igual que o DNI 01234567
+isValidNie("Y1234567L");             // false: o prefixo cambia a letra
+```
+
+O NIE antigo de 10 caracteres (`X0` + 7 díxitos + letra) ten a mesma letra que a súa forma de 9 caracteres, porque o cero inicial non cambia o número ([NIE-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nie-3)).
+
+**Fonte.** A páxina do Ministerio do Interior e a nota técnica da AEAT (T2 e T3); as series X, Y e Z están na Orde INT/2058/2008 (T1).
+
+## CIF: un díxito ou unha letra, segundo a clave de entidade
+
+O carácter de control dun CIF é un díxito ou unha letra, e a clave de entidade decide cal ([CIF-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-3)):
+
+- un **díxito** para A, B, C, D, E, F, G, H, J, U e V (sociedades e outras entidades españolas);
+- unha **letra** para N, P, Q, R, S e W (entidades estranxeiras, corporacións locais, organismos públicos, institucións relixiosas, órganos do Estado e establecementos permanentes).
+
+O valor calcúlase a partir dos 7 díxitos ([CIF-4](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-4)):
+
+1. Súmanse os díxitos das posicións pares (a 2.ª, a 4.ª e a 6.ª).
+2. Multiplícase por dous cada díxito das posicións impares (a 1.ª, a 3.ª, a 5.ª e a 7.ª) e súmanse as cifras de cada resultado (14 conta como 1 + 4).
+3. Súmanse as dúas cantidades. O díxito de control é 10 menos a última cifra do total, ou 0 se a última cifra é 0.
+4. Se a clave leva letra, o díxito convértese en letra: 0 → J, 1 → A, 2 → B, … 9 → I (`JABCDEFGHI`).
+
+Para `B1234567`: as posicións pares dan 2 + 4 + 6 = 12; as impares, 2 + 6 + (1 + 0) + (1 + 4) = 14; o total é 26, así que o díxito de control é 10 − 6 = **4**, e o CIF é `B12345674`. Unha clave que levase letra tería a D, a quinta letra de `JABCDEFGHI`.
+
+```ts
+import { computeControlCharacter, isValidCif } from "nif-dni-nie-cif-validation";
+
+computeControlCharacter("B1234567"); // "4"
+computeControlCharacter("N1234567"); // "D": N leva letra
+computeControlCharacter("P2807900"); // "B": Concello de Madrid, P2807900B
+isValidCif("B1234567D");             // false: B leva díxito
+```
+
+**Fonte.** As claves de entidade son lei: Orde EHA/451/2008 (T1). Que claves levan díxito e cales letra só figura na nota técnica interna da AEAT (T3). A aritmética non está publicada en ningún texto oficial que atopásemos: é unha convención (T4), que seguen todas as implementacións e que se comprobou con NIF reais de organismos públicos, como P2807900B (Concello de Madrid) e Q2826000H (a propia AEAT).
+
+<Aside type="note" title="C, D, F, G, J, U e V">
+Moitas bibliotecas, e a versión 1 desta, aceptan un díxito ou unha letra para as claves C, D, F, G, J, U e V. A nota da AEAT asígnalles un díxito, así que a versión 2 rexeita a letra de forma predeterminada. Para datos antigos, `{ cifControl: "lenient" }` acepta os dous: consulte as [preguntas frecuentes](/nif-dni-nie-cif-validation/gl/guides/faq/#por-que-g1234567d-non-é-válido).
+</Aside>
+
+## Resumo das fontes
+
+| Paso | Regra | Nivel |
+| --- | --- | --- |
+| Formato do DNI: 8 díxitos e unha letra | [DNI-1](/nif-dni-nie-cif-validation/gl/reference/official-sources/#dni-1) | T1 lei, T2 páxina oficial |
+| Letra do DNI: módulo 23 | [DNI-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#dni-2) | T2 páxina oficial, T3 nota da AEAT |
+| Letra K/L/M: os 7 díxitos | [KLM-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#klm-2) | T3 nota da AEAT |
+| Prefixo do NIE: X → 0, Y → 1, Z → 2 | [NIE-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#nie-2) | T2 páxina oficial, T3 nota da AEAT |
+| Claves de entidade do CIF | [CIF-2](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-2) | T1 lei |
+| Control do CIF: díxito ou letra segundo a clave | [CIF-3](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-3) | T3 nota da AEAT |
+| Aritmética do control do CIF | [CIF-4](/nif-dni-nie-cif-validation/gl/reference/official-sources/#cif-4) | T4 convención |

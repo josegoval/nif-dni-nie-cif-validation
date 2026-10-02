@@ -1,0 +1,81 @@
+---
+title: Rendiment
+description: Velocitat, mida del bundle i concordança amb SPEC.md de nif-dni-nie-cif-validation i dels altres validadors de NIF, DNI, NIE i CIF espanyols a npm, amb la màquina, el mètode i com executar-lo vosaltres mateixos.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import AgreementChart from "../../../components/docs/bench/AgreementChart.astro";
+import BenchRun from "../../../components/docs/bench/BenchRun.astro";
+import SizeChart from "../../../components/docs/bench/SizeChart.astro";
+import ThroughputChart from "../../../components/docs/bench/ThroughputChart.astro";
+
+Com és de ràpida i de petita aquesta biblioteca, al costat de la seva versió principal anterior i de les altres biblioteques d'npm que validen identificadors espanyols. Totes les xifres d'aquesta pàgina es llegeixen de [`bench/results/latest.json`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.json) en generar el lloc web: no s'escriu res a mà. Si una biblioteca és més ràpida o més petita en alguna cosa, les taules ho mostren.
+
+<BenchRun />
+
+Les xifres absolutes depenen de la màquina. Les proporcions entre les biblioteques d'una mateixa execució es mantenen molt millor d'una màquina a una altra, de manera que compareu aquestes.
+
+## Velocitat
+
+Milions de validacions per segon (**M ops/s; com més alta és la xifra, més ràpida és**), amb cada biblioteca cridada com indica la seva documentació, amb les opcions per defecte, sobre els mateixos documents vàlids i no vàlids en forma canònica. «Rendiment relatiu» indica la proporció entre el rendiment d'aquesta versió i el de cada biblioteca, en la mateixa execució. *no admès* vol dir que la biblioteca no té validador per a aquest tipus.
+
+### DNI
+
+<ThroughputChart set="DNI" />
+
+### NIE
+
+<ThroughputChart set="NIE" />
+
+### CIF
+
+<ThroughputChart set="CIF" />
+
+La velocitat no ho és tot, i aquestes xifres deixen coses fora: la memòria, la primera crida abans que el JIT s'escalfi, l'entrada que necessita normalització i el cost del resultat detallat de `validate()`. Una biblioteca que rebutja aviat una cadena és ràpida amb aquesta cadena, i per això la concordança amb SPEC.md es mesura a part, més avall.
+
+## Mida del bundle
+
+El que afegeix un validador a un bundle, minificat i comprimit amb gzip (**min+gzip; com més baixa és la xifra, més petita és**), empaquetat amb esbuild com fa la comprovació de mida de la mateixa biblioteca. La barra d'una biblioteca molt més gran que les altres es dibuixa sencera, amb el final tallat.
+
+<SizeChart view="chart" />
+
+Algunes biblioteques més petites validen menys tipus. Aquesta dedica bytes a normalitzar l'entrada, als tipus de control de CIF-3 i als NIF K/L/M. Les biblioteques publicades només com a CommonJS no admeten *tree shaking*, de manera que una de les seves funcions costa la biblioteca sencera. Les biblioteques de molts països o de propòsit general, com stdnum i validator.js, són més grans per disseny.
+
+<SizeChart view="table" />
+
+## Concordança amb SPEC.md
+
+El percentatge dels casos de prova de la biblioteca (opcions per defecte) que cada biblioteca jutja igual que [SPEC.md](/nif-dni-nie-cif-validation/ca/reference/official-sources/): vàlids o no vàlids.
+
+<Aside type="caution" title="Concordança amb SPEC.md, no correcció">
+Els mantenidors d'aquesta biblioteca van escriure tant SPEC.md com els casos de prova, de manera que hi coincideix per construcció. La xifra que diu alguna cosa és la de cadascuna de les altres biblioteques, i fins i tot així, una discrepància pot ser una elecció legítima: moltes són decisions que SPEC.md documenta, com acceptar la forma antiga del NIE o els tipus de control de [CIF-3](/nif-dni-nie-cif-validation/ca/reference/official-sources/#cif-3). «Només entrada canònica» exclou els casos que necessiten normalització, de manera que no s'hi penalitza una biblioteca que no normalitza.
+</Aside>
+
+<AgreementChart view="chart" />
+
+<AgreementChart view="table" />
+
+Un tipus que una biblioteca no valida s'exclou de les seves xifres, de manera que compareu les columnes, i no «Tots els casos», entre biblioteques d'abast diferent. La llista de discrepàncies de cada biblioteca, amb un exemple de cadascuna, és a [`latest.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/results/latest.md) (en anglès).
+
+## Mètode
+
+- **Entrades.** Es generen amb un generador pseudoaleatori amb llavor, de manera que totes les execucions i totes les màquines mesuren les mateixes cadenes: documents vàlids i els mateixos documents amb un caràcter de control incorrecte, per a cada tipus.
+- **Crides.** Cada biblioteca es crida exactament com indica la seva documentació, amb les opcions per defecte, sobre la cadena d'entrada sense processar. L'única excepció és jsvat, un validador de NIF-IVA, a les entrades del qual s'afegeix el prefix `ES` fora del bucle cronometrat.
+- **Mesura.** [tinybench](https://github.com/tinylibs/tinybench) executa cada tasca en el seu propi procés, després d'un escalfament, perquè el que V8 aprèn d'una biblioteca no canviï la xifra de la següent. L'execució completa es repeteix en diverses rondes, l'ordre de les biblioteques va rotant entre conjunts i rondes, i cada xifra correspon a la mediana dels resultats de les rondes.
+- **Mida.** La importació d'una sola funció que documenta cada biblioteca, empaquetada i minificada amb esbuild i comprimida amb gzip al nivell 9, menys el cost d'una importació buida.
+- **Concordança.** La crida «qualsevol tipus» de cada biblioteca sobre els casos que proven les opcions per defecte, jutjant cada cas com a vàlid o no vàlid.
+
+La metodologia completa, les seves advertències i l'esquema dels resultats són a [`bench/README.md`](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/bench/README.md) (en anglès).
+
+## Executeu-lo vosaltres mateixos
+
+Les biblioteques s'instal·len en versions exactes, de manera que una execució mesura exactament el que recull `latest.json`. Tanqueu abans els altres programes, i compareu proporcions en lloc de xifres absolutes:
+
+```sh
+git clone https://github.com/josegoval/nif-dni-nie-cif-validation.git
+cd nif-dni-nie-cif-validation
+pnpm install --frozen-lockfile
+pnpm bench:competitors   # uns 5 minuts; escriu bench/results/latest.json i latest.md
+```
+
+`pnpm bench`, en canvi, compara cada validador amb la versió 1. Un flux de treball de GitHub Actions executa el mateix benchmark a demanda, en un runner compartit, i en penja els resultats.

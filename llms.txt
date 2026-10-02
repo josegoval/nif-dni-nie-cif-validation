@@ -1,0 +1,125 @@
+# nif-dni-nie-cif-validation
+
+> Zero-dependency TypeScript library that validates Spanish tax IDs: NIF, DNI, K/L/M NIF, NIE and CIF. Every rule has an ID and an official source (BOE, AEAT) in SPEC.md. It normalizes input, never throws on user input, and explains failures with an error code, the SPEC rule and a message in English, Spanish, Catalan, Basque or Galician. ESM and CommonJS, with opt-in test-data generators and Zod, Valibot and Yup schemas.
+
+This file and llms-full.txt (the full reference) ship in the npm package.
+
+## Install
+
+`npm install nif-dni-nie-cif-validation` (or `pnpm add`, `yarn add`, `bun add`, `deno add npm:nif-dni-nie-cif-validation`)
+
+## Which function
+
+| Need | Use |
+| --- | --- |
+| Any NIF | `isValidNif(value, opts?)` |
+| People only (DNI, K/L/M, NIE) | `isValidNaturalPersonNif` |
+| DNI or K/L/M / NIE / CIF | `isValidDni` / `isValidNie` / `isValidCif` |
+| `ES` + NIF (format, no VIES lookup) | `isValidSpanishVat` |
+| Why it fails, type, value to store | `validate(value, opts?)` |
+| Canonical / display form | `normalize` / `format` |
+| Type from the format only | `getNifType` |
+| Control character of a partial number | `computeControlCharacter` |
+| Kind of organisation of a CIF key | `describeCifOrganisation(key, locale?)` |
+| Other languages | `nif-dni-nie-cif-validation/locales/{en,es,ca,eu,gl}` |
+| Test data | `nif-dni-nie-cif-validation/generate` |
+| Form schemas | `/zod` `zNif`, `/valibot` `vNif`, `/yup` `yNif` (also `Dni`, `Nie`, `Cif`, `SpanishVat`) |
+
+## Snippets
+
+```ts
+import { isValidCif, isValidDni, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif(" 12.345.678-z "); // true: input is normalized
+isValidDni("K1234567L");      // true: DNI and K/L/M
+isValidCif("B12345674");      // true
+isValidNif(null);             // false: never throws
+```
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678A").error;
+// { code: "INVALID_CONTROL_CHARACTER", rule: "DNI-2", expected: "Z",
+//   message: 'The control character is not correct: for this DNI it should be "Z".' }
+```
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate(" b-1234567-4 ").normalized;                          // "B12345674": store this
+validate("B12345674", { types: ["DNI", "NIE"] }).error?.code; // "UNSUPPORTED_TYPE"
+```
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+import { es } from "nif-dni-nie-cif-validation/locales/es";
+
+validate("12345678A", { locale: es }).error?.message;
+// "El carácter de control no es correcto: para este DNI debería ser «Z»."
+```
+
+```ts
+import { computeControlCharacter, format, normalize } from "nif-dni-nie-cif-validation";
+
+normalize(" x-0123456-7l ");         // "X1234567L"
+format("12345678z");                 // "12345678-Z"
+computeControlCharacter("B1234567"); // "4"
+```
+
+```ts
+import { describeCifOrganisation, getNifType } from "nif-dni-nie-cif-validation";
+
+getNifType("12345678A");      // "DNI": the letter is not checked
+describeCifOrganisation("B"); // "Limited liability company"
+```
+
+```js
+const { isValidNie } = require("nif-dni-nie-cif-validation");
+
+isValidNie("X01234567L"); // true: the old 10-character form
+```
+
+```ts
+import { createGenerator, generateDni, generateInvalid } from "nif-dni-nie-cif-validation/generate";
+
+generateDni({ seed: 1 });                            // "62707394X": the same on every platform
+createGenerator(42).cif();                           // a seeded stream of values
+generateInvalid("NIE", { reason: "INVALID_LENGTH" }); // validate() gives INVALID_LENGTH
+```
+
+```ts
+import { z } from "zod";
+import { zNif } from "nif-dni-nie-cif-validation/zod";
+
+z.object({ nif: zNif() }).parse({ nif: "12.345.678-z" }); // { nif: "12345678Z" }
+```
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                                           // false (CIF-3)
+isValidCif("G1234567D", { normalize: false, cifControl: "lenient" }); // true: exactly v1
+```
+
+## Error codes
+
+`NOT_A_STRING`, `EMPTY`, `INVALID_LENGTH`, `INVALID_FORMAT`, `INVALID_CONTROL_CHARACTER` (with `expected`), `UNSUPPORTED_TYPE` (not in `types`), `PLACEHOLDER` (with `rejectPlaceholders`). `error.rule` is a SPEC.md rule ID.
+
+## Gotchas
+
+- "CIF" is the pre-2008 name: officially it is the NIF of a legal person or entity. The package keeps `isValidCif` and `type: "CIF"`.
+- K/L/M NIFs belong to natural persons (Spanish minors, Spaniards abroad, foreigners without an NIE), not companies. `validate()` reports `type: "NIF_KLM"`.
+- CIF control is strict CIF-3 by default: keys C D F G J U V take a digit. `{ cifControl: "lenient" }` also accepts a letter; `{ normalize: false, cifControl: "lenient" }` gives exactly the v1 results.
+- Pass the locale object, not `"es"` (a string gives English).
+- TypeScript rejects `ids.filter(isValidNif)`: use `(id) => isValidNif(id)`.
+- `getNifType` and `isValidSpanishVat` check the format only.
+- Generators throw `RangeError` on impossible options, and their numbers are synthetic: tests only.
+
+## Docs
+
+- [README](https://github.com/josegoval/nif-dni-nie-cif-validation#readme)
+- [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md): rules and sources
+- [API design](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/api-design.md)
+- [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md): v1 to v2
+- [llms-full.txt](https://raw.githubusercontent.com/josegoval/nif-dni-nie-cif-validation/master/llms-full.txt): full reference

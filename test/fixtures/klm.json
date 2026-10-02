@@ -1,0 +1,65 @@
+[
+  {
+    "input": "K1234567L",
+    "expected": "valid",
+    "type": "NIF_KLM",
+    "rule": "KLM-2",
+    "note": "K: Spaniard under 14 without DNI"
+  },
+  {
+    "input": "L1234567L",
+    "expected": "valid",
+    "type": "NIF_KLM",
+    "rule": "KLM-2",
+    "note": "L: Spaniard resident abroad without DNI"
+  },
+  {
+    "input": "M1234567L",
+    "expected": "valid",
+    "type": "NIF_KLM",
+    "rule": "KLM-2",
+    "note": "M: foreigner without NIE"
+  },
+  {
+    "input": "K0867756N",
+    "expected": "valid",
+    "type": "NIF_KLM",
+    "rule": "KLM-1",
+    "note": "v1 test value"
+  },
+  {
+    "input": "K1234567A",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "NIF_KLM",
+    "rule": "KLM-2",
+    "note": "wrong letter, L expected"
+  },
+  {
+    "input": "K123456AL",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "KLM-3",
+    "note": "the 7 characters are digits"
+  },
+  {
+    "input": "K12345678",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "KLM-1",
+    "note": "the check character is a letter"
+  },
+  {
+    "input": "K12345678L",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "KLM-1",
+    "note": "8 digits"
+  },
+  {
+    "input": "J1234567L",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "CIF",
+    "rule": "CIF-3",
+    "note": "J is an organisation key, not K/L/M: J takes a digit"
+  }
+]

@@ -1,0 +1,90 @@
+---
+title: FAQ
+description: Answers about Spanish NIF, DNI, NIE and CIF validation, with sources. Is 00000000T a valid DNI? Are old CIFs still valid? Is there an NIE starting with T? What about VIES and the 00 CIF rule?
+---
+
+Short answers, each with the rule of [SPEC.md](/nif-dni-nie-cif-validation/reference/official-sources/) that backs it.
+
+## Is 00000000T a valid DNI?
+
+Yes. `00000000T` has the right check letter, and no law forbids it, so it is valid by default, like the other well-known placeholders `00000001R`, `99999999R` and `X0000000T`. Some registries, such as ESNIC (the `.es` domain registry), filter them as known placeholder values, but being on that list doesn't prove that a number was never assigned. If you want to refuse them too, pass `rejectPlaceholders: true` (an opt-in policy), and `validate()` reports the code `PLACEHOLDER` ([POLICY-1](/nif-dni-nie-cif-validation/reference/official-sources/#policy-1)).
+
+```ts
+import { isValidDni, validate } from "nif-dni-nie-cif-validation";
+
+isValidDni("00000000T");                                   // true
+isValidDni("00000000T", { rejectPlaceholders: true });     // false
+validate("x-0000000-t", { rejectPlaceholders: true }).error?.code; // "PLACEHOLDER"
+```
+
+## Are old CIFs still valid?
+
+Yes. In 2008 Orden EHA/451/2008 replaced the name "CIF" with "NIF of a legal person or entity", but the numbers didn't change, and no organisation key has ever been removed ([CIF-2](/nif-dni-nie-cif-validation/reference/official-sources/#cif-2)). What the order did change is the 7 digits: they became random and no longer encode a province, so the library doesn't check province codes ([CIF-5](/nif-dni-nie-cif-validation/reference/official-sources/#cif-5)).
+
+One kind of old value fails by default: a CIF with the keys C, D, F, G, J, U or V and a letter as its control character. See [the next question](#why-is-g1234567d-invalid).
+
+## Why is G1234567D invalid?
+
+Because the key G takes a digit. The AEAT's technical note on the NIF gives a digit to the keys A B C D E F G H J U V and a letter to N P Q R S W ([CIF-3](/nif-dni-nie-cif-validation/reference/official-sources/#cif-3)). Many libraries, and version 1 of this one, accepted either for C, D, F, G, J, U and V, which has no official basis. The digit with the same value is valid:
+
+```ts
+import { isValidCif, validate } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                            // false
+validate("G1234567D").error?.expected;              // "4"
+isValidCif("G12345674");                            // true
+isValidCif("G1234567D", { cifControl: "lenient" }); // true: the version 1 behaviour
+```
+
+If your stored data has such numbers, pass `{ cifControl: "lenient" }` while you clean it up. It only changes the keys C, D, F, G, J, U and V: A, B, E and H always take a digit, and N, P, Q, R, S and W a letter.
+
+## Is there an NIE that starts with T?
+
+No. No official source defines a NIF or an NIE starting with `T`. NIEs start with X, Y or Z ([NIE-1](/nif-dni-nie-cif-validation/reference/official-sources/#nie-1)), and a value that starts with any character that no kind of NIF uses is rejected with the rule [NIF-1](/nif-dni-nie-cif-validation/reference/official-sources/#nif-1):
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("T1234567A").error?.code; // "INVALID_FORMAT"
+validate("T1234567A").error?.rule; // "NIF-1"
+```
+
+## Must a CIF starting with 00 have a letter?
+
+No. Some libraries require a letter control when the digits of a CIF start with `00`. That rule traces back to an uncited table, and no official list has ever had a province code `00`, so the library doesn't apply it (see [Explicitly NOT implemented](/nif-dni-nie-cif-validation/reference/official-sources/#explicitly-not-implemented-no-official-basis)). The control type depends on the key only:
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("B00123455"); // true: B takes a digit, whatever the digits
+```
+
+## Does a valid VAT number mean it is registered in VIES?
+
+No. `isValidSpanishVat()` checks the format: `ES` followed by a valid NIF ([VAT-1](/nif-dni-nie-cif-validation/reference/official-sources/#vat-1)). Whether the number is registered for intra-EU trade is a fact only the tax administration knows: query the European Commission's VIES service for that. Likewise, a valid NIF is a well-formed number, not proof that it was ever issued to anyone: the AEAT has its own service to check the NIF of a third party.
+
+```ts
+import { isValidSpanishVat } from "nif-dni-nie-cif-validation";
+
+isValidSpanishVat("ES12345678Z"); // true: the format is right
+isValidSpanishVat("12345678Z");   // false: the ES prefix is required
+```
+
+## Is the old 10-character NIE still valid?
+
+Yes. NIEs issued before 2008 have an X, 8 digits and a letter, such as `X01234567L`. They stay valid, and their canonical form drops the zero after the X: `X1234567L` ([NIE-3](/nif-dni-nie-cif-validation/reference/official-sources/#nie-3)). `validate()` returns that form in `normalized`.
+
+## Why does isValidDni accept K, L and M?
+
+Because K, L and M NIFs are issued to people who have no DNI, and they use the DNI's check letter ([KLM-1](/nif-dni-nie-cif-validation/reference/official-sources/#klm-1), [KLM-2](/nif-dni-nie-cif-validation/reference/official-sources/#klm-2)). `isValidDni()` has accepted them since version 1. To accept a DNI only, use `validate(value, { types: ["DNI"] })`:
+
+```ts
+import { isValidDni, validate } from "nif-dni-nie-cif-validation";
+
+isValidDni("K1234567L");                                 // true
+validate("K1234567L", { types: ["DNI"] }).error?.code;   // "UNSUPPORTED_TYPE"
+```
+
+## Where does the DNI letter algorithm come from?
+
+From the Ministerio del Interior, which publishes it, and the AEAT's technical note on the NIF. It is not in any law: the law only says that a DNI ends with a check letter. [How the control character works](/nif-dni-nie-cif-validation/guides/control-character/) explains it step by step, with the source of every rule.

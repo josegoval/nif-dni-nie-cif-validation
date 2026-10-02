@@ -1,0 +1,115 @@
+/**
+ * Basque (euskara):
+ * `import { eu } from "nif-dni-nie-cif-validation/locales/eu"`.
+ *
+ * Terminology: the Basque names of the documents, as the AEAT's Basque
+ * pages and the Basque administrations use them: "IFZ" for NIF
+ * ("identifikazio fiskaleko zenbakia"); "NAN" for DNI; "AIZ" for NIE;
+ * "IFK" for the old CIF; "IFZ-BEZ" for the VAT number.
+ * Also "kontrol-karakterea" and "digitu". Instructions use the bare
+ * imperative ("Sartu"), as Basque software does.
+ *
+ * Organisation names (CIF-2): official. Bizkaia's Decreto Foral 205/2008,
+ * art. 32, repeats the organisation keys of Orden EHA/451/2008 arts. 3 to 5
+ * (as amended by Orden HAP/5/2016) in its official Basque text; the names
+ * below are its wording in the singular. No Basque version of the Order
+ * itself was found.
+ * Source: https://www.bizkaia.eus/documents/880307/15187815/eu_205_2008_2024.pdf
+ * See docs/translations.md.
+ */
+import type { NifLocale, NifType } from "../types";
+
+const TYPES: Record<NifType, string> = {
+  DNI: "NAN",
+  NIF_KLM: "K/L/M IFZ",
+  NIE: "AIZ",
+  CIF: "pertsona juridiko edo erakunde baten IFZ (IFK)",
+};
+
+/**
+ * Basque (euskara):
+ * a locale for `validate()` and `describeCifOrganisation()`, with the error
+ * messages, the names of the document types and the names of the CIF
+ * organisation keys. Import it from `nif-dni-nie-cif-validation/locales/eu` and
+ * pass it as `locale`.
+ * @example
+ * import { validate } from "nif-dni-nie-cif-validation";
+ * import { eu } from "nif-dni-nie-cif-validation/locales/eu";
+ *
+ * validate("12345678A", { locale: eu }).error?.message;
+ * // 'Kontrol-karakterea ez da zuzena: NAN honetan «Z» izan beharko luke.'
+ * @example
+ * import { describeCifOrganisation } from "nif-dni-nie-cif-validation";
+ * import { eu } from "nif-dni-nie-cif-validation/locales/eu";
+ *
+ * describeCifOrganisation("B", eu); // "Erantzukizun mugatuko sozietatea"
+ * eu.code; // "eu"
+ * @see {@link https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/docs/translations.md docs/translations.md}
+ * @since 2.0.0
+ */
+export const eu: NifLocale = {
+  code: "eu",
+  types: TYPES,
+  messages: {
+    NOT_A_STRING: "Balioak testua izan behar du.",
+    EMPTY: "Sartu IFZ, AIZ edo IFK bat.",
+    INVALID_LENGTH: {
+      "DNI-1": "NAN batek 9 karaktere ditu: 8 digitu eta letra bat.",
+      "KLM-1":
+        "K/L/M IFZ batek 9 karaktere ditu: K, L edo M, 7 digitu eta letra bat.",
+      "NIE-1":
+        "AIZ batek 9 karaktere ditu: X, Y edo Z, 7 digitu eta letra bat.",
+      "NIE-3":
+        "AIZ zaharrek bakarrik dituzte 10 karaktere: X, 0 bat, 7 digitu eta letra bat.",
+      "CIF-1":
+        "Pertsona juridiko edo erakunde baten IFZ (IFK) batek 9 karaktere ditu: letra bat, 7 digitu eta kontrol-karaktere bat.",
+      "VAT-1":
+        "Espainiako IFZ-BEZ batek ES aurrizkia eta, ondoren, 9 karaktereko IFZ bat ditu.",
+    },
+    INVALID_FORMAT: {
+      "NIF-1":
+        "Hau ez da IFZ, AIZ edo IFK bat: digitu batekin edo letra baliodun batekin hasi behar du.",
+      "VAT-1": "Sartu IFZa ES aurrizkirik gabe.",
+      "DNI-1": "NAN baten formatua hau da: 8 digitu eta, ondoren, letra bat.",
+      "KLM-1":
+        "K/L/M IFZ baten formatua hau da: K, L edo M hasieran, ondoren 7 digitu eta amaieran letra bat.",
+      "KLM-3":
+        "K, L edo M letraren ondorengo 7 karaktereek digituak izan behar dute.",
+      "NIE-1":
+        "AIZ baten formatua hau da: X, Y edo Z hasieran, ondoren 7 digitu eta amaieran letra bat.",
+      "CIF-1":
+        "Pertsona juridiko edo erakunde baten IFZ (IFK) batek osaera hau du: letra bat, 7 digitu eta kontrol-karaktere bat (digitu bat edo letra bat), hurrenkera horretan.",
+    },
+    INVALID_CONTROL_CHARACTER: (type, expected) =>
+      `Kontrol-karakterea ez da zuzena: ${TYPES[type]} honetan «${expected}» izan beharko luke.`,
+    UNSUPPORTED_TYPE: (type) =>
+      `Hemen ez da onartzen dokumentu mota hau: ${TYPES[type]}.`,
+    PLACEHOLDER:
+      "Zenbaki hau ordezko balio ezagunen zerrendan dago, eta hemen ez da onartzen.",
+  },
+  // Official: Bizkaia's Decreto Foral 205/2008, art. 32 (source above), in
+  // the singular.
+  organisations: {
+    A: "Sozietate anonimoa",
+    B: "Erantzukizun mugatuko sozietatea",
+    C: "Sozietate kolektiboa",
+    D: "Sozietate komanditarioa",
+    E: "Ondasun-erkidegoa, jaraunspen jasogabea edo bestelako gakoetan berariaz jasota ez dagoen nortasun juridikorik gabeko beste erakunde bat",
+    F: "Sozietate kooperatiboa",
+    G: "Elkartea",
+    H: "Jabetza horizontalaren araubideko jabeen erkidegoa",
+    J: "Sozietate zibila",
+    // Art. 32.2 says the letter N marks the entity as foreign.
+    N: "Atzerriko erakundea",
+    P: "Toki korporazioa",
+    Q: "Erakunde publikoa",
+    R: "Kongregazio edo erakunde erlijiosoa",
+    S: "Estatuaren Administrazioko edo autonomia-erkidego bateko organoa",
+    U: "Aldi baterako enpresa-elkartea",
+    V: "Beste gakoetan definitu ez den mota",
+    // Art. 32.3.
+    W: "Espainiako lurraldeko egoiliar ez den erakunde baten establezimendu iraunkorra",
+  },
+};
+
+export default eu;

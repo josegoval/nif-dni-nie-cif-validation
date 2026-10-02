@@ -10,16 +10,24 @@ Last verified: 2026-09-30
 - [How to propose a change](#how-to-propose-a-change)
 - [Source tiers](#source-tiers)
 - [Rules](#rules)
+  - [Every NIF](#every-nif)
   - [Natural persons: DNI](#natural-persons-dni)
   - [Natural persons: K / L / M NIF](#natural-persons-k--l--m-nif)
   - [Natural persons: NIE](#natural-persons-nie)
-  - [Legal entities: NIF (formerly CIF)](#legal-entities-nif-formerly-cif)
+  - [Legal persons and entities: NIF (formerly CIF)](#legal-persons-and-entities-nif-formerly-cif)
   - [VAT (intra-EU)](#vat-intra-eu)
   - [Input cleanup](#input-cleanup-never-changes-validity-only-parsing)
+  - [Input contract](#input-contract-library-behaviour-no-official-content)
+  - [Opt-in policies](#opt-in-policies-off-by-default)
 - [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis)
 - [Decisions](#decisions)
+  - [How input cleanup works](#how-input-cleanup-works-settled-by-the-v2-api-2026-09-30)
+  - [Type detection is format-based](#type-detection-is-format-based-getniftype-settled-2026-09-30)
+  - [Display format](#display-format-format-settled-2026-09-30)
+  - [Single-character substitutions](#single-character-substitutions-checked-by-the-property-tests)
 - [Known conflicts between sources](#known-conflicts-between-sources)
 - [Open questions](#open-questions)
+- [Differences from other libraries](#differences-from-other-libraries)
 - [Test values](#test-values-all-computed-and-checked)
 - [Source URLs](#source-urls)
 
@@ -46,6 +54,12 @@ Last verified: 2026-09-30
 | **T4: Convention** | Industry practice with no official text | Documented. Never on by default unless it only affects input cleanup. |
 
 ## Rules
+
+### Every NIF
+
+| ID | Rule | Tier | Source |
+|---|---|---|---|
+| <a id="nif-1"></a>NIF-1 | The first character selects exactly one format: a digit (DNI-1), K L M (KLM-1), X Y Z (NIE-1) or an organisation key (CIF-2). These sets never overlap. Any other first character (for example `T`, see [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis)) is not a NIF | follows from DNI-1, KLM-1, NIE-1 and CIF-2 | RD 1065/2007 arts. 19–22 |
 
 ### Natural persons: DNI
 
@@ -75,7 +89,7 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 | <a id="nie-2"></a>NIE-2 | For the check, X→0, Y→1, Z→2, then apply DNI-2 | T2 + T3 | Interior: "se sustituye: X → 0 Y → 1 Z → 2 y se aplica el mismo algoritmo que para el NIF"; AEAT D.I.T. note |
 | <a id="nie-3"></a>NIE-3 | **Old 10-character NIEs** (X + 8 digits + letter) stay valid. The canonical form drops the zero right after the X: `X0nnnnnnnL` → `XnnnnnnnL` | T1 + T2 | Orden INT/2058/2008, transitional provision ("seguirán teniendo validez"); AEAT Sede ("omitiendo el primer cero que figuraba después de la X") |
 
-### Legal entities: NIF (formerly CIF)
+### Legal persons and entities: NIF (formerly CIF)
 
 | ID | Rule | Tier | Source |
 |---|---|---|---|
@@ -100,15 +114,33 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 | <a id="norm-3"></a>NORM-3 | Hyphens and slashes are ignored | T4 | — |
 | <a id="norm-4"></a>NORM-4 | A DNI entered with fewer than 8 digits is left-padded with zeros to its canonical form | T2 (canonical) / T4 (padding input) | AEAT Sede: "los primeros pueden ser ceros" |
 
+### Input contract (library behaviour, no official content)
+
+These rules don't decide which documents are valid. They say how the library treats input that is not a document at all, so that every error can cite a rule.
+
+| ID | Rule | Tier | Source |
+|---|---|---|---|
+| <a id="input-1"></a>INPUT-1 | Only strings are validated. Any other value (`null`, numbers, objects) is rejected without being converted to a string, and no validator throws | Library contract | #40 |
+| <a id="input-2"></a>INPUT-2 | A value that is empty, or only separators (NORM-2, NORM-3), is reported as empty | Library contract | #56 |
+
+### Opt-in policies (off by default)
+
+These rules are not in any official source. They never apply unless the caller asks for them, so the default result always follows the official rules above.
+
+| ID | Rule | Tier | Source |
+|---|---|---|---|
+| <a id="policy-1"></a>POLICY-1 | Placeholder numbers `00000000T`, `00000001R`, `99999999R` and `X0000000T` are valid documents by default. With `rejectPlaceholders: true` they are rejected (error `PLACEHOLDER`), in any accepted form (lower case, old NIE form `X00000000T`, with separators) | T4 | ESNIC (.es registry) filters them as obviously fake; no law forbids them. See [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis) |
+| <a id="policy-2"></a>POLICY-2 | The caller may accept only some document types (option `types`). A document of another type is rejected (error `UNSUPPORTED_TYPE`), even when it is valid | Library option | #56 |
+
 ## Explicitly NOT implemented (no official basis)
 
 | Folklore rule | Finding | Decision |
 |---|---|---|
 | "A CIF number starting with `00` must have a letter control" | No official list has ever had province code 00. It traces back to an uncited Wikipedia table | **Do not implement.** Remove the dead code; don't turn it on |
 | "C D F G J U V accept either letter or digit" | Contradicts CIF-3 (T3) | Off by default. Opt-in `cifControl: "lenient"` for legacy data (**decision approved 2026-09-30**; breaking change in v2) |
-| NIE / NIF with a `T` prefix | No official source | **Not supported** |
+| NIE / NIF with a `T` prefix | No official source | **Not supported** (rejected as [NIF-1](#nif-1)) |
 | Province-code validation for CIFs | Repealed; random since 2008 | **Not implemented** |
-| Rejecting 00000000T, 00000001R, 99999999R, X0000000T | No law forbids them; ESNIC (.es registry) filters them as obviously fake | Valid by default. Opt-in `rejectPlaceholders: true` |
+| Rejecting 00000000T, 00000001R, 99999999R, X0000000T | No law forbids them; ESNIC (.es registry) filters them as obviously fake | Valid by default. Opt-in `rejectPlaceholders: true` ([POLICY-1](#policy-1)) |
 
 ## Decisions
 
@@ -116,8 +148,45 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 
 - From v2, organisation keys C, D, F, G, J, U and V require a **digit** control, as CIF-3 states. This is a breaking change.
 - An opt-in option `cifControl: "lenient"` keeps the legacy behaviour (either a letter or a digit) for these keys, for old data.
-- Until v2, v1.x keeps accepting either a letter or a digit for C, D, F, G, J, U and V, so existing users are not broken. The v1 code marks this with a TODO that references CIF-3.
+- v1.x kept accepting either a letter or a digit for C, D, F, G, J, U and V, so existing users were not broken. 2.0.0 implements the decision: `cifControl` defaults to `"official"`, and `{ cifControl: "lenient" }` restores the v1 behaviour (see MIGRATION.md).
 - The keys A, B, E and H (digit) and N, P, Q, R, S and W (letter) already follow CIF-3 in v1.
+
+### How input cleanup works (settled by the v2 API, 2026-09-30)
+
+NORM-1 to NORM-4 say what is ignored; the implementation (`normalize()`) settles the details:
+
+- **White space** is exactly JavaScript's `\s` (spaces, tabs, line breaks, no-break spaces, the BOM…), removed anywhere, which also trims. Dots, hyphen-minus (`-`) and slashes are removed anywhere. Other punctuation (`_`, `,`, the en dash `–`) is kept, so the value stays invalid.
+- **Case**: only ASCII letters and `ñ` are upper-cased. Non-ASCII look-alikes that `toUpperCase()` maps to ASCII letters (`ı` → `I`, `ſ` → `S`) are kept, so they never become valid.
+- **Order**: separators and case, then NIE-3 (`X0nnnnnnnL` → `XnnnnnnnL`), then NORM-4 (1 to 7 digits and a letter are left-padded to 8 digits).
+- **`normalize: false`** turns off NORM-2 to NORM-4. Lower case (NORM-1) and the old NIE form (NIE-3) are still accepted, as in v1.
+- **`ES` is not cleanup**: an `ES` prefix makes a VAT number (VAT-1), accepted only with `allowVatPrefix` or by `isValidSpanishVat`.
+
+### Type detection is format-based (`getNifType()`, settled 2026-09-30)
+
+`getNifType()` returns the type that `validate()` reports: the one selected by the first character (NIF-1), once the length, the digits and the class of the control character (a letter for DNI, K/L/M and NIE; a letter or a digit for CIF) match that type's format. It does **not** check the control character: `12345678A` is a `"DNI"` and `B1234567D` is a `"CIF"`, although both are invalid. So a non-null type never means "valid".
+
+### Display format (`format()`, settled 2026-09-30)
+
+No official source defines a display grouping. `format()` splits the canonical form into the parts the rules define, joined by a separator (`-` by default, a space, or nothing):
+
+| Type | Parts | Rules | Example |
+|---|---|---|---|
+| DNI | 8 digits · letter | DNI-1 | `12345678-Z` |
+| NIE | prefix · 7 digits · letter | NIE-1 | `X-1234567-L` |
+| K/L/M NIF | prefix · 7 digits · letter | KLM-1 | `K-1234567-L` |
+| NIF of a legal person or entity | key · 7 digits · control | CIF-1 | `B-1234567-4` |
+
+Only valid documents are formatted (default options); `format()` returns `null` otherwise and never adds an `ES` prefix.
+
+### Single-character substitutions (checked by the property tests)
+
+Replacing one character of a valid document (positions 2 to 9) always gives an invalid one: DNI-2 changes with every digit (10^k mod 23 is never 0), CIF-4 too (doubling a digit and adding the digits of the result is a permutation), a letter in the number breaks the format, and another control character is wrong. Replacing the **first** character can give another valid document, because the prefix counts for little or nothing in the control:
+
+- K, L and M are interchangeable (KLM-2 ignores the prefix);
+- organisation keys with the same control class are interchangeable (CIF-4 ignores the key);
+- across types: a DNI starting with 0, 1 or 2 has the same letter as the NIE X, Y or Z (NIE-2) and, for 0, the K/L/M NIF with the same digits; other swaps can hit a control that happens to match.
+
+With `cifControl: "lenient"`, the digit and the letter of the same control value are both valid for C D F G J U V.
 
 ## Known conflicts between sources
 
@@ -137,6 +206,21 @@ An M NIF can be temporary (AEAT: "válido por tres meses" while the NIE is pendi
 
 - **A 1975 circular we could not find.** A circular of the Subsecretaría de Hacienda from 1975 might mention a historical use of "00". We could not find it. Until it is found, the "CIF starting with `00` needs a letter" rule stays in [Explicitly NOT implemented](#explicitly-not-implemented-no-official-basis): no official list we checked has ever had province code 00.
 - **A written question to AEAT.** Option: ask the AEAT in writing to confirm (a) the control type per organisation key (CIF-3) and (b) the control arithmetic (CIF-4), since both come only from an internal technical note and from convention. Not done yet.
+
+## Differences from other libraries
+
+`src/__tests__/stdnum.test.ts` compares `validate()` (default options) with [stdnum](https://www.npmjs.com/package/stdnum) (the JavaScript port of python-stdnum, `stdnum.ES.nif`) on about 50,000 generated inputs. Every difference must be one of these decisions; any other difference fails the test.
+
+| Difference | stdnum | This library | Rule |
+|---|---|---|---|
+| Control of C D F G J U V (and every other key) | Accepts a letter or a digit for every organisation key | Digit for A B C D E F G H J U V, letter for N P Q R S W; `cifControl: "lenient"` accepts either for C D F G J U V only | [CIF-3](#cif-3) |
+| Old NIE form `X0nnnnnnnL` | Rejected | Valid, canonical `XnnnnnnnL` | [NIE-3](#nie-3) |
+| DNI with fewer than 8 digits (`1234567L`) | Rejected | Left-padded to `01234567L` | [NORM-4](#norm-4) |
+| White space other than a space (tab, no-break space, …) | Kept, so the value is invalid | Removed, like spaces | [NORM-2](#norm-2) |
+| Non-ASCII look-alikes (`０`, `ſ`, `ı`, …) | Folded to ASCII | Kept, so the value is invalid: the canonical form is ASCII upper case | [NORM-1](#norm-1) |
+| `ES` prefix | Always stripped | Only with `allowVatPrefix`, or `isValidSpanishVat` | [VAT-1](#vat-1) |
+| K/L/M NIF with non-digits after the prefix | Not checked (the number is read with `parseInt`) | Invalid | [KLM-3](#klm-3) |
+| Placeholders (`00000000T`, …) | Valid | Valid by default; rejected with `rejectPlaceholders` | [POLICY-1](#policy-1) |
 
 ## Test values (all computed and checked)
 
@@ -175,7 +259,7 @@ Live status checked on 2026-09-30 with `curl -sI -L`. Archive links should point
 - Decreto 2423/1975 (repealed): <https://www.boe.es/buscar/doc.php?id=BOE-A-1975-21698> (archive: check manually)
 - Interior, check-letter calculation: <https://www.interior.gob.es/opencms/es/servicios-al-ciudadano/tramites-y-gestiones/dni/calculo-del-digito-de-control-del-nif-nie/> (live: HTTP 403 to automated requests, probably bot blocking; archive: check manually)
 - AEAT, NIF of natural persons: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-fisicas.html> (archive: check manually)
-- AEAT, NIF of legal entities: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html> (archive: check manually)
+- AEAT, NIF of legal persons and entities: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html> (archive: check manually)
 - AEAT D.I.T. note (CAIB copy): <https://www.caib.es/sites/civitasmanualsisuport/f/41519> (archive: check manually)
 - AEAT, checking the NIF of third parties (census check, not format): <https://sede.agenciatributaria.gob.es/Sede/ayuda/consultas-informaticas/presentacion-declaraciones-ayuda-tecnica/modelo-030/comprobacion-nif-terceros-efectos-censales.html> (archive: check manually)
 - ESNIC placeholder examples (secondary): <https://www.openprovider.com/es/blog/comunicado-esnic> (archive: check manually)

@@ -1,0 +1,93 @@
+[
+  {
+    "input": "12345678Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "DNI-2",
+    "note": "Ministerio del Interior's own example"
+  },
+  {
+    "input": "01234567L",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "DNI-1",
+    "note": "leading zero"
+  },
+  {
+    "input": "00000008P",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "DNI-1",
+    "note": "leading zeros"
+  },
+  {
+    "input": "36698729K",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "DNI-2",
+    "note": "v1 test value"
+  },
+  {
+    "input": "12345678A",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "DNI",
+    "rule": "DNI-2",
+    "note": "wrong letter, Z expected"
+  },
+  {
+    "input": "12345678I",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "DNI",
+    "rule": "DNI-3",
+    "note": "I is never a check letter"
+  },
+  {
+    "input": "12345678O",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "DNI",
+    "rule": "DNI-3",
+    "note": "O is never a check letter"
+  },
+  {
+    "input": "12345678U",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "DNI",
+    "rule": "DNI-3",
+    "note": "U is never a check letter"
+  },
+  {
+    "input": "12345678Ñ",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "DNI",
+    "rule": "DNI-3",
+    "note": "Ñ is never a check letter"
+  },
+  {
+    "input": "123456789",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "DNI-1",
+    "note": "the check character must be a letter"
+  },
+  {
+    "input": "1234567AZ",
+    "expected": "INVALID_FORMAT",
+    "type": null,
+    "rule": "DNI-1",
+    "note": "8 digits before the letter"
+  },
+  {
+    "input": "123456789Z",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "DNI-1",
+    "note": "9 digits"
+  },
+  {
+    "input": "12345678",
+    "expected": "INVALID_LENGTH",
+    "type": null,
+    "rule": "DNI-1",
+    "note": "no check letter"
+  }
+]

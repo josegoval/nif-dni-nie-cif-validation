@@ -1,0 +1,14 @@
+{
+  "name": "example-node-esm",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Validate Spanish NIF, DNI, NIE and CIF numbers from an ES module Node.js script.",
+  "scripts": {
+    "start": "node index.mjs",
+    "check": "node index.mjs"
+  },
+  "dependencies": {
+    "nif-dni-nie-cif-validation": "file:../.pack/package"
+  }
+}

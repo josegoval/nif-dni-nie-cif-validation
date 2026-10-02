@@ -203,9 +203,17 @@ describe("SPEC test values: invalid", () => {
   });
 });
 
-describe("SPEC test values: v1 differences, pending v2 (#38)", () => {
-  // TODO(v2, #38): C D F G J U V are digit-only per CIF-3, so G1234567D
-  // becomes invalid (valid only with cifControl: "lenient").
-  it("CIF-3: G1234567D is still valid in v1 (lenient until v2)", () =>
-    expect(isValidCif("G1234567D")).toBe(true));
+describe("SPEC test values: lenient mode (#38)", () => {
+  it("CIF-3: G1234567D is invalid (G needs a digit)", () => {
+    expect(isValidCif("G1234567D")).toBe(false);
+    expect(isValidNif("G1234567D")).toBe(false);
+  });
+
+  it("CIF-3: G1234567D is valid with cifControl: 'lenient'", () => {
+    expect(isValidCif("G1234567D", { cifControl: "lenient" })).toBe(true);
+    expect(isValidNif("G1234567D", { cifControl: "lenient" })).toBe(true);
+  });
+
+  it("CIF-3: B1234567D stays invalid in lenient mode (B always needs a digit)", () =>
+    expect(isValidCif("B1234567D", { cifControl: "lenient" })).toBe(false));
 });

@@ -1,0 +1,176 @@
+// The website: Astro + Starlight, published on GitHub Pages by
+// .github/workflows/pages.yml. See README.md in this folder, which also
+// explains how to move it to a custom domain (`site`, `base` and a CNAME).
+import starlight from "@astrojs/starlight";
+import { defineConfig } from "astro/config";
+import starlightLinksValidator from "starlight-links-validator";
+import { repoFiles } from "./integrations/repo-files.mjs";
+import { apiReference, typeDocSidebarGroup } from "./plugins/api-reference.mjs";
+import { officialSources } from "./plugins/official-sources.mjs";
+
+// GitHub Pages serves a project site from https://<owner>.github.io/<repo>/.
+// For a custom domain, set `site` to it and `base` to "/" (README.md).
+const site = "https://josegoval.github.io";
+const base = "/nif-dni-nie-cif-validation/";
+
+// The labels of the sidebar's groups. The pages' own labels are their titles,
+// in each language (src/content/docs/<lang>/).
+// cspell:disable
+const groups = {
+  guides: {
+    label: "Guides",
+    translations: { es: "Guías", ca: "Guies", eu: "Gidak", gl: "Guías" },
+  },
+  migrating: {
+    label: "Migrating",
+    translations: {
+      es: "Migración",
+      ca: "Migració",
+      eu: "Migrazioa",
+      gl: "Migración",
+    },
+  },
+  reference: {
+    label: "Reference",
+    translations: {
+      es: "Referencia",
+      ca: "Referència",
+      eu: "Erreferentzia",
+      gl: "Referencia",
+    },
+  },
+  entryPoints: {
+    label: "Entry points",
+    translations: {
+      es: "Puntos de entrada",
+      ca: "Punts d'entrada",
+      eu: "Sarrera-puntuak",
+      gl: "Puntos de entrada",
+    },
+  },
+  project: {
+    label: "Project",
+    translations: {
+      es: "Proyecto",
+      ca: "Projecte",
+      eu: "Proiektua",
+      gl: "Proxecto",
+    },
+  },
+};
+// cspell:enable
+
+export default defineConfig({
+  site,
+  base,
+  trailingSlash: "always",
+  integrations: [
+    starlight({
+      title: "nif-dni-nie-cif-validation",
+      description:
+        "Validates Spanish NIF, DNI, K/L/M, NIE and CIF numbers against the official rules. 0 dependencies, typed, errors in 5 languages.",
+      // English is the default, at the root (`/`); every other language has
+      // the same files under its own folder (`/es/`, `/ca/`, `/eu/`, `/gl/`).
+      defaultLocale: "root",
+      locales: {
+        root: { label: "English", lang: "en" },
+        es: { label: "Español", lang: "es" },
+        ca: { label: "Català", lang: "ca" },
+        eu: { label: "Euskara", lang: "eu" },
+        gl: { label: "Galego", lang: "gl" },
+      },
+      // brand/ is the single source of the logo: these are imported from it
+      // at build time, not copied.
+      logo: {
+        light: "../brand/logo-mark.svg",
+        dark: "../brand/logo-mark-dark.svg",
+        alt: "",
+      },
+      favicon: "/favicon.svg",
+      social: [
+        {
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/josegoval/nif-dni-nie-cif-validation",
+        },
+      ],
+      // "Edit page" links to the page's file on GitHub, and the date of the
+      // page's last commit (the generated pages set their own, or none).
+      editLink: {
+        baseUrl:
+          "https://github.com/josegoval/nif-dni-nie-cif-validation/edit/master/website/",
+      },
+      lastUpdated: true,
+      // Long lines of code wrap instead of scrolling sideways: a scrolling
+      // block would have to be focusable for keyboard users (axe's
+      // scrollable-region-focusable), and wrapped code reads better on a phone.
+      expressiveCode: { defaultProps: { wrap: true } },
+      sidebar: [
+        {
+          ...groups.guides,
+          items: [
+            "guides/getting-started",
+            "guides/document-types",
+            "guides/control-character",
+            "guides/validating-forms",
+            "guides/normalizing-and-formatting",
+            "guides/test-data",
+            "guides/errors-and-languages",
+            "guides/ai-agents",
+            "guides/faq",
+            {
+              ...groups.migrating,
+              items: [
+                "migration/from-v1",
+                "migration/from-better-dni",
+                "migration/from-validator",
+                "migration/from-spain-id",
+              ],
+            },
+          ],
+        },
+        {
+          ...groups.reference,
+          items: [
+            "reference/api",
+            typeDocSidebarGroup,
+            "reference/official-sources",
+          ],
+        },
+        {
+          ...groups.project,
+          items: ["benchmarks", "comparison"],
+        },
+      ],
+      customCss: [
+        "./src/styles/fonts.css",
+        "./src/styles/theme.css",
+        "./src/styles/docs.css",
+      ],
+      components: {
+        Hero: "./src/components/overrides/Hero.astro",
+        Footer: "./src/components/overrides/Footer.astro",
+      },
+      // Icons, Open Graph image and JSON-LD in the <head> (src/routeData.ts).
+      routeMiddleware: "./src/routeData.ts",
+      plugins: [
+        // Generated pages: SPEC.md as /reference/official-sources/, and the
+        // API reference from the JSDoc (plugins/).
+        officialSources(),
+        ...apiReference(groups.entryPoints),
+        // The API reference is English only: the other languages link to its
+        // pages under their own folder, where Starlight shows them as
+        // fallback content.
+        starlightLinksValidator({ errorOnFallbackPages: false }),
+      ],
+    }),
+    repoFiles(),
+  ],
+  vite: {
+    server: {
+      // The library is linked from the repository root (`link:..`), and
+      // brand/, bench/, SPEC.md and the llms files are read from there.
+      fs: { allow: [".."] },
+    },
+  },
+});

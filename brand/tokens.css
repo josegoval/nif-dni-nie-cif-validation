@@ -1,0 +1,63 @@
+/* Design tokens for nif-dni-nie-cif-validation. Source of truth: tokens.json */
+:root {
+  /* palette */
+  --brand-ink: #0f172a;
+  --brand-ink-800: #1e293b;
+  --brand-rojo: #c8102e;
+  --brand-rojo-400: #f2475e; /* red text on Ink only */
+  --brand-gualda: #ffc72c; /* accent on Ink only; never text on light */
+  --brand-paper: #fafaf7;
+  --brand-slate-600: #475569;
+  --brand-slate-400: #94a3b8;
+  --brand-slate-200: #e2e8f0;
+
+  /* semantic, light theme (default) */
+  --brand-bg: var(--brand-paper);
+  --brand-surface: #ffffff;
+  --brand-text: var(--brand-ink);
+  --brand-text-muted: var(--brand-slate-600);
+  --brand-accent: var(--brand-rojo);
+  --brand-border: var(--brand-slate-200);
+  --brand-tile: var(--brand-rojo);
+  --brand-on-tile: var(--brand-paper);
+  --brand-highlight: var(--brand-gualda);
+
+  /* type */
+  --brand-font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --brand-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --brand-font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --brand-weight-regular: 400;
+  --brand-weight-medium: 500;
+  --brand-weight-semibold: 600;
+  --brand-weight-bold: 700;
+
+  /* radii: tiles are always 25 % of their side */
+  --brand-radius-tile: 25%;
+  --brand-radius-sm: 4px;
+  --brand-radius-md: 6px;
+  --brand-radius-lg: 12px;
+  --brand-radius-pill: 9999px;
+
+  /* spacing: 4 px base, 24 px module */
+  --brand-space-1: 4px;
+  --brand-space-2: 8px;
+  --brand-space-3: 12px;
+  --brand-space-4: 16px;
+  --brand-space-6: 24px;
+  --brand-space-8: 32px;
+  --brand-space-12: 48px;
+  --brand-space-16: 64px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-bg: var(--brand-ink);
+    --brand-surface: var(--brand-ink-800);
+    --brand-text: var(--brand-paper);
+    --brand-text-muted: var(--brand-slate-400);
+    --brand-accent: var(--brand-rojo-400);
+    --brand-border: var(--brand-ink-800);
+    /* the tile keeps Rojo in both themes: it is a graphic (3.03:1 on Ink, WCAG 1.4.11) */
+  }
+}

@@ -1,0 +1,152 @@
+---
+title: 1. bertsiotik migratzea
+description: Eguneratu nif-dni-nie-cif-validation 1. bertsiotik 2.era. Aldaketa bateraezin guztiak (CIF-3 kontrola, sarreraren normalizazioa, TypeScript sinadurak, sarrera-puntuak), aurreko eta ondorengo kodearekin, eta 1. bertsioaren portaera nola mantendu.
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+2. bertsioan, egiaztatzaileek lehenespenez [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) espezifikazioari jarraitzen diote, hau da, Espainiako iturri ofizialei. Lau gauza aldatzen dira; gainerako guztia berdin geratzen da, esportazioen izen guztiak eta haien aliasak barne. Zerrenda osoa, xehetasun guztiekin, [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md) fitxategian dago (ingelesez).
+
+## Bide azkarra: 1. bertsioaren emaitzak mantentzea
+
+Egiaztatzaile guztiek aukerak onartzen dituzte bigarren argumentu gisa. Bi aukera hauek v1.0.11 bertsioaren emaitza berak ematen dituzte; proba batek bi bertsioak konparatzen ditu 490.000 sarrera ingururekin:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+const V1_COMPATIBLE = { normalize: false, cifControl: "lenient" } as const;
+
+isValidNif("G1234567D");                // false
+isValidNif("G1234567D", V1_COMPATIBLE); // true, v1.0.11 bertsioan bezala
+```
+
+Erabili behin-behineko irtenbide gisa gordetako datuetarako, eta gero pasa balio lehenetsietara.
+
+## Zer aldatzen den
+
+| # | Aldaketa | Nori eragiten dion | 1. bertsioaren portaera mantentzea |
+| --- | --- | --- | --- |
+| 1 | C, D, F, G, J, U eta V IFK gakoek kontrol-digitu bat behar dute | `G1234567D` bezalako IFKak baliogabe bihurtzen dira | `{ cifControl: "lenient" }` |
+| 2 | Sarrera lehenespenez normalizatzen da | Zuriuneak, puntuak, marrak edo barrak dituzten balioak, edo hasierako zerorik gabeko NAN bat, baliozko bihurtzen dira | `{ normalize: false }` |
+| 3 | TypeScript: egiaztatzaileek bigarren parametro bat dute | `ids.filter(isValidNif)` ez da konpilatzen | Idatzi `ids.filter((id) => isValidNif(id))` |
+| 4 | Paketearen sarrera-puntuak bakarrik inporta daitezke | `dist/` barruko fitxategien inportazioak | Inportatu `nif-dni-nie-cif-validation` paketetik |
+
+## 1. IFKaren kontrolak CIF-3 jarraitzen du
+
+AEATren ohar teknikoak kontrol-digitu bat esleitzen die A B C D E F G H J U V gakoei, eta letra bat N P Q R S W gakoei ([CIF-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#cif-3)). 1. bertsioak letra bat edo digitu bat onartzen zuen C, D, F, G, J, U eta V gakoetan, eta horrek ez du oinarri ofizialik. `isValidNif`, `isValidCif` (`isValidLegalEntityNif`) eta `isValidCifControlCode` (`isValidLegalEntityNifControlCode`) funtzioei eragiten die.
+
+Lehen, 1. bertsioan:
+
+{/* docs-test: v1 */}
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D"); // true
+isValidCif("G12345674"); // true
+```
+
+Orain, 2. bertsioan:
+
+```ts
+import { isValidCif } from "nif-dni-nie-cif-validation";
+
+isValidCif("G1234567D");                            // false: G gakoak digitua darama
+isValidCif("G12345674");                            // true
+isValidCif("G1234567D", { cifControl: "lenient" }); // true, 1. bertsioan bezala
+```
+
+C, D, F, G, J, U eta V bakarrik aldatzen dira: A, B, E eta H gakoek beti behar izan dute digitu bat, eta N, P, Q, R, S eta W gakoek letra bat, bi bertsioetan.
+
+## 2. Sarrera normalizatu egiten da
+
+Orain egiaztatzaileek sarrera garbitzen dute egiaztatu aurretik: zuriuneak eta puntuak ([NORM-2](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-2)), marrak eta barrak ([NORM-3](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-3)) kentzen dira, eta 8 digitu baino gutxiago dituen NAN bati hasierako zeroak gehitzen zaizkio berriro ([NORM-4](/nif-dni-nie-cif-validation/eu/reference/official-sources/#norm-4)). Garbiketak ez du inoiz dokumentu baliogabe bat baliozko bihurtzen; beraz, dokumentu osoa egiaztatzen duten egiaztatzaileen `true` emaitza bat ere ez da aldatzen; `false` emaitza batzuk `true` bihurtzen dira. Kontrol-karakterea bakarrik egiaztatzen duten funtzioek, `isValidDniLetter` eta `isValidCifControlCode` funtzioek, ez dute formatua egiaztatzen; beraz, bereizleak dituzten balioekin haien emaitza bi noranzkoetan alda daiteke: 1. bertsioan, `isValidCifControlCode("A 7727886")` `true` zen, zuriunea `0` gisa zenbatzen zelako (ikusi [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md#2-the-input-is-normalized-by-default), ingelesez).
+
+Lehen, 1. bertsioan:
+
+{/* docs-test: v1 */}
+```ts
+import { isValidCif, isValidDni, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif(" 12.345.678-Z "); // false
+isValidDni("1234567L");       // false
+isValidCif("B-1234567-4");    // false
+```
+
+Orain, 2. bertsioan:
+
+```ts
+import { isValidCif, isValidDni, isValidNif } from "nif-dni-nie-cif-validation";
+
+isValidNif(" 12.345.678-Z ");                       // true
+isValidDni("1234567L");                             // true
+isValidCif("B-1234567-4");                          // true
+isValidNif(" 12.345.678-Z ", { normalize: false }); // false, 1. bertsioan bezala
+```
+
+Minuskulak eta 10 karaktereko AIZ zaharra (`X01234567L`) 1. bertsioan ere onartzen ziren, eta orain ere bai. Balioa gordetzen baduzu, gorde haren forma kanonikoa: `normalize()` funtzioak itzultzen du, 2. bertsioan berria. Ikusi [Sarrera normalizatzea eta formatua ematea](/nif-dni-nie-cif-validation/eu/guides/normalizing-and-formatting/).
+
+## 3. TypeScript: bigarren parametro bat
+
+Egiaztatzaile guztiak `(value: unknown, opts?: IsValidOptions) => boolean` dira orain. Lehen parametroak lehen baino gehiago onartzen du, eta horrek ez du ezer hausten; baina bigarrenaren ondorioz, TypeScript-ek baztertu egiten du array-metodo bati zuzenean pasatako egiaztatzaile bat, metodo horren bigarren argumentua indizea baita:
+
+```ts
+import { isValidNif } from "nif-dni-nie-cif-validation";
+
+const ids = ["12345678Z", "B12345675"];
+
+// @ts-expect-error: indizea (zenbaki bat) ez da aukera-objektu bat
+ids.filter(isValidNif);
+ids.filter((id) => isValidNif(id)); // ["12345678Z"]
+```
+
+Exekuzio-garaian ez da ezer aldatzen: aukera gisa pasatako zenbaki bat ez da kontuan hartzen; beraz, motarik gabeko JavaScript kodeak funtzionatzen jarraitzen du.
+
+## 4. Inportatu paketetik, ez dist/ karpetatik
+
+2. bertsioak ES moduluak eta CommonJS argitaratzen ditu, eta `exports` mapa batean adierazten ditu. Paketea bera, haren azpibideak (`/locales/<code>`, `/generate`, `/zod`, `/valibot`, `/yup`) eta `package.json` bakarrik inporta daitezke; beraz, konpilatutako fitxategietarako bide batek `ERR_PACKAGE_PATH_NOT_EXPORTED` errorearekin huts egiten du:
+
+```diff
+- const { isValidNif } = require("nif-dni-nie-cif-validation/dist/nif/nif");
++ const { isValidNif } = require("nif-dni-nie-cif-validation");
+```
+
+Egiaztatzaileak eta gainerako funtzioak `nif-dni-nie-cif-validation` paketetik inportatzen dira; hizkuntzak, sorgailuak eta eskemak, berriz, beren sarrera-puntuetatik (`/locales/<code>`, `/generate`, `/zod`, `/valibot`, `/yup`). `require()` eta `import` Node.js 20 edo berriagoan eta bundler guztietan dabiltza.
+
+## 2. bertsioko berritasunak
+
+Hauetako batek ere ez du hausten lehendik dagoen kodea:
+
+- [`validate()`](/nif-dni-nie-cif-validation/eu/guides/errors-and-languages/): mota, forma kanonikoa eta, balioa baliozkoa ez bada, errore-kode bat, SPEC araua eta mezu bat.
+- [`normalize()` eta `format()`](/nif-dni-nie-cif-validation/eu/guides/normalizing-and-formatting/), `getNifType()`, `computeControlCharacter()`, `describeCifOrganisation()` eta `isValidSpanishVat()`.
+- `rejectPlaceholders` aukera, eta `validate()` funtzioan `types`, `allowVatPrefix` eta `locale` ere bai.
+- Mezuak [gaztelaniaz, katalanez, euskaraz eta galegoz](/nif-dni-nie-cif-validation/eu/guides/errors-and-languages/#hizkuntza-aukeratzea).
+- [Proba-datuen sorgailuak](/nif-dni-nie-cif-validation/eu/guides/test-data/) eta [Zod, Valibot eta Yup eskemak](/nif-dni-nie-cif-validation/eu/guides/validating-forms/).
+
+```ts
+import { validate } from "nif-dni-nie-cif-validation";
+
+validate("12345678A").error?.code; // "INVALID_CONTROL_CHARACTER"
+validate("12345678A").error?.rule; // "DNI-2"
+```
+
+## Egiaztapen-zerrenda
+
+<Steps>
+
+1. Eguneratu, eta exekutatu zure probak.
+
+2. C, D, F, G, J, U edo V gakoetan kontrol-letra duten IFK gordeek baliozkoak izaten jarraitu behar badute, pasa `{ cifControl: "lenient" }` egiaztatzen dituzun lekuan, eta planifikatu datuen zuzenketa.
+
+3. Koderen bat bereizleak dituzten balioentzako `false` emaitzaren mende bazegoen, pasa `{ normalize: false }` edo, hobeto, gorde `normalize(value)`.
+
+4. TypeScript-en, ordezkatu `array.filter(isValidX)` gezi-funtzio batekin.
+
+5. Ordezkatu `nif-dni-nie-cif-validation/dist/…` bideko inportazio oro `nif-dni-nie-cif-validation` paketeko inportazio batekin.
+
+6. Beste hizkuntza bateko mezuetarako, inportatu haren hizkuntza-objektua eta pasa ezazu `locale` gisa.
+
+</Steps>
+
+<Aside type="note">
+`replaceNieLetter` zaharkituta dago oraindik, eta sarrera oker batekin salbuespen bat jaurtitzen jarraitzen du, 1. bertsioan bezala. 1. bertsioko gainerako esportazioak, adierazpen erregularrak eta letra-taulak barne, ez dira aldatzen.
+</Aside>

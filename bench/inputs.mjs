@@ -2,9 +2,14 @@
 // PRNG, so every run (and every machine) measures exactly the same strings.
 //
 // It mixes what a validator sees in practice: valid DNI, K/L/M, NIE (new and
-// old form) and legal entity NIFs (CIF) of every organisation key, their
+// old form) and NIFs of legal persons and entities (CIF) of every organisation key, their
 // lower-case forms, the same documents with a wrong control character, and
 // junk (wrong lengths, random characters, the empty string).
+//
+// Two more sets for the v2 API: CANONICAL_INPUTS (9-character upper-case
+// documents, the fast path) and TYPED_INPUTS (documents as a person types
+// them, so every one is normalized). They are generated after INPUTS, which
+// stays the same as before.
 
 const DNI_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE";
 const CIF_LETTERS = "JABCDEFGHI";
@@ -112,3 +117,68 @@ export const INPUT_MIX = {
   wrongControl: Math.ceil(valid.length / 2),
   junk: 151,
 };
+
+// v2 input sets (#56), generated after INPUTS so INPUTS stays the same.
+
+/**
+ * Canonical input: 9-character upper-case documents without separators,
+ * the fast path of the boolean validators. Valid ones and the same with a
+ * wrong control character.
+ */
+const canonical = valid.filter((value) => value.length === 9);
+export const CANONICAL_INPUTS = [
+  ...canonical,
+  ...canonical.filter((_, i) => i % 2 === 0).map(withWrongControl),
+];
+
+const SEPARATORS = [" ", " ", "-", ".", "/"];
+
+/** How a person types a document: lower case, separators, padding. */
+function typed(value) {
+  let out = random() < 0.5 ? value.toLowerCase() : value;
+  const count = 1 + randomInt(3);
+  for (let i = 0; i < count; i++) {
+    const at = randomInt(out.length + 1);
+    out = out.slice(0, at) + pick(SEPARATORS) + out.slice(at);
+  }
+  return random() < 0.3 ? ` ${out} ` : out;
+}
+
+/**
+ * Normalized-input case: the valid documents as typed by a person, so every
+ * one goes through normalization (NORM-1 to NORM-3).
+ */
+export const TYPED_INPUTS = valid.map(typed);
+
+// Per-type sets of the competitor benchmark (#49). Each one holds valid
+// documents of a single type (the slices of `valid` above: 150 DNI, 50 K/L/M,
+// 100 NIE, 20 old-form NIE, 180 CIF) in canonical form (9 upper-case
+// characters), plus the same documents with a wrong control character for
+// every second one. Every library can read these without normalizing, so the
+// throughput of a type compares the validation itself. Generated after every
+// set above, so none of them changes.
+
+const VALID_SLICES = { DNI: [0, 150], NIE: [200, 300], CIF: [320, 500] };
+
+function typeSet(documents) {
+  return [
+    ...documents,
+    ...documents.filter((_, i) => i % 2 === 0).map(withWrongControl),
+  ];
+}
+
+/** Sets of a single document type, in canonical form. */
+export const TYPE_INPUTS = Object.fromEntries(
+  Object.entries(VALID_SLICES).map(([type, [from, to]]) => [
+    type,
+    typeSet(valid.slice(from, to)),
+  ])
+);
+
+/** How each per-type set is made up, for the report. */
+export const TYPE_INPUT_MIX = Object.fromEntries(
+  Object.entries(VALID_SLICES).map(([type, [from, to]]) => [
+    type,
+    { valid: to - from, wrongControl: Math.ceil((to - from) / 2) },
+  ])
+);

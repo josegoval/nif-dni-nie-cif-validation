@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import {
   isValidCif,
   isValidCifControlCode,
@@ -15,7 +15,7 @@ import {
 // #40: every isValid* function is total. Any input returns a boolean and
 // nothing throws.
 
-type Validator = (value: string) => boolean;
+type Validator = (value: unknown) => boolean;
 
 const validators: Record<string, Validator> = {
   isValidNif,
@@ -123,7 +123,7 @@ describe("#40: validators never throw and always return a boolean", () => {
       nonStrings.forEach((value) => {
         let result: unknown;
         expect(() => {
-          result = validate(value as string);
+          result = validate(value);
         }).not.toThrow();
         expect(result).toBe(false);
       });
@@ -134,6 +134,20 @@ describe("#40: validators never throw and always return a boolean", () => {
         expect(validate(value)).toBe(false);
       });
     });
+  });
+});
+
+describe("#40: validators take `unknown`, so untrusted input needs no cast", () => {
+  it("every isValid* function has an `unknown` first parameter", () => {
+    expectTypeOf(isValidNif).parameter(0).toEqualTypeOf<unknown>();
+    expectTypeOf(isValidNaturalPersonNif).parameter(0).toEqualTypeOf<unknown>();
+    expectTypeOf(isValidDni).parameter(0).toEqualTypeOf<unknown>();
+    expectTypeOf(isValidDniLetter).parameter(0).toEqualTypeOf<unknown>();
+    expectTypeOf(isValidNie).parameter(0).toEqualTypeOf<unknown>();
+    expectTypeOf(isValidLegalEntityNif).parameter(0).toEqualTypeOf<unknown>();
+    expectTypeOf(isValidLegalEntityNifControlCode)
+      .parameter(0)
+      .toEqualTypeOf<unknown>();
   });
 });
 

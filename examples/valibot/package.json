@@ -1,0 +1,15 @@
+{
+  "name": "example-valibot",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Valibot schemas for Spanish NIF, DNI, NIE and CIF numbers, with localized messages.",
+  "scripts": {
+    "start": "node index.mjs",
+    "check": "node index.mjs"
+  },
+  "dependencies": {
+    "nif-dni-nie-cif-validation": "file:../.pack/package",
+    "valibot": "^1.5.0"
+  }
+}

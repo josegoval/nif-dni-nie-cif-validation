@@ -1,0 +1,105 @@
+[
+  {
+    "name": "import { isValidNif }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidNif }",
+    "gzip": true,
+    "limit": "960 B"
+  },
+  {
+    "name": "import { isValidDni }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidDni }",
+    "gzip": true,
+    "limit": "645 B"
+  },
+  {
+    "name": "import { isValidNie }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidNie }",
+    "gzip": true,
+    "limit": "605 B"
+  },
+  {
+    "name": "import { isValidCif }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidCif }",
+    "gzip": true,
+    "limit": "580 B"
+  },
+  {
+    "name": "import { isValidSpanishVat }",
+    "path": "dist/esm/index.mjs",
+    "import": "{ isValidSpanishVat }",
+    "gzip": true,
+    "limit": "995 B"
+  },
+  {
+    "name": "import { validate } (English built in)",
+    "path": "dist/esm/index.mjs",
+    "import": "{ validate }",
+    "gzip": true,
+    "limit": "2795 B"
+  },
+  {
+    "name": "import { validate } + locales/es",
+    "import": {
+      "dist/esm/index.mjs": "{ validate }",
+      "dist/esm/locales/es.mjs": "{ es }"
+    },
+    "gzip": true,
+    "limit": "3635 B"
+  },
+  {
+    "name": "import * (the whole ES module build)",
+    "path": "dist/esm/index.mjs",
+    "import": "*",
+    "gzip": true,
+    "limit": "4790 B"
+  },
+  {
+    "name": "import { generateDni } from /generate",
+    "path": "dist/esm/generate/index.mjs",
+    "import": "{ generateDni }",
+    "gzip": true,
+    "limit": "1955 B"
+  },
+  {
+    "name": "import { generateInvalid } from /generate",
+    "path": "dist/esm/generate/index.mjs",
+    "import": "{ generateInvalid }",
+    "gzip": true,
+    "limit": "2100 B"
+  },
+  {
+    "name": "import * from /generate (every generator)",
+    "path": "dist/esm/generate/index.mjs",
+    "import": "*",
+    "gzip": true,
+    "limit": "3225 B"
+  },
+  {
+    "name": "import { zNif } from /zod (without Zod)",
+    "path": "dist/esm/zod/index.mjs",
+    "import": "{ zNif }",
+    "ignore": ["zod"],
+    "gzip": true,
+    "limit": "3160 B"
+  },
+  {
+    "name": "import { vNif } from /valibot (without Valibot)",
+    "path": "dist/esm/valibot/index.mjs",
+    "import": "{ vNif }",
+    "ignore": ["valibot"],
+    "gzip": true,
+    "limit": "3255 B"
+  },
+  {
+    "name": "import { yNif } from /yup (without Yup)",
+    "path": "dist/esm/yup/index.mjs",
+    "import": "{ yNif }",
+    "ignore": ["yup"],
+    "gzip": true,
+    "limit": "3205 B"
+  }
+]
