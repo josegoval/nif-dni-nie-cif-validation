@@ -64,14 +64,13 @@ function stripComments(markdown, file) {
 /** Cleans one source file: no HTML chrome, no comments, absolute links. */
 function clean(markdown, file) {
   const out = stripComments(markdown, file)
-    // The README header, and the sponsor button as a plain link.
-    .replace(/^<p align="center">[\s\S]*?<\/p>\n/gm, "")
+    // HTML paragraphs: the README header, its language links and its
+    // badges; and the sponsor button as a plain link.
+    .replace(/^<p(?: [^>]*)?>[\s\S]*?<\/p>\n/gm, "")
     .replace(
       /^<a href="(https:\/\/www\.buymeacoffee\.com[^"]*)"[^\n]*\n/gm,
       "[Buy Me a Coffee]($1)\n"
     )
-    // Badges: lines made only of linked images.
-    .replace(/^\[!\[[^\n]*\]\([^\n]*\)\]\([^\n]*\)\n/gm, "")
     // The install tabs: keep the commands, drop the HTML around them.
     .replace(/^<\/?details>\n/gm, "")
     .replace(/^<summary>(.*)<\/summary>\n/gm, "$1:\n")

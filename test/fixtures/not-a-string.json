@@ -1,0 +1,37 @@
+[
+  {
+    "input": null,
+    "expected": "NOT_A_STRING",
+    "type": null,
+    "rule": "INPUT-1",
+    "note": "null"
+  },
+  {
+    "input": 12345678,
+    "expected": "NOT_A_STRING",
+    "type": null,
+    "rule": "INPUT-1",
+    "note": "a number is not converted to a string"
+  },
+  {
+    "input": true,
+    "expected": "NOT_A_STRING",
+    "type": null,
+    "rule": "INPUT-1",
+    "note": "a boolean"
+  },
+  {
+    "input": ["12345678Z"],
+    "expected": "NOT_A_STRING",
+    "type": null,
+    "rule": "INPUT-1",
+    "note": "an array that holds a valid DNI"
+  },
+  {
+    "input": { "nif": "12345678Z" },
+    "expected": "NOT_A_STRING",
+    "type": null,
+    "rule": "INPUT-1",
+    "note": "an object that holds a valid DNI"
+  }
+]

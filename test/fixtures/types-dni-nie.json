@@ -1,0 +1,37 @@
+[
+  {
+    "input": "12345678Z",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "POLICY-2",
+    "note": "a DNI, an accepted type"
+  },
+  {
+    "input": "X1234567L",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "POLICY-2",
+    "note": "a NIE, an accepted type"
+  },
+  {
+    "input": "K1234567L",
+    "expected": "UNSUPPORTED_TYPE",
+    "type": "NIF_KLM",
+    "rule": "POLICY-2",
+    "note": "a valid K/L/M NIF is not a DNI"
+  },
+  {
+    "input": "B12345674",
+    "expected": "UNSUPPORTED_TYPE",
+    "type": "CIF",
+    "rule": "POLICY-2",
+    "note": "a valid CIF, a type not accepted"
+  },
+  {
+    "input": "12345678A",
+    "expected": "INVALID_CONTROL_CHARACTER",
+    "type": "DNI",
+    "rule": "DNI-2",
+    "note": "an accepted type still needs the right check letter"
+  }
+]

@@ -23,7 +23,8 @@ import { SPEC_RULES, SPEC_TEST_VALUES } from "./specRules";
 // below. Test names start with the fixture's SPEC.md rule ID.
 
 interface Fixture {
-  input: string;
+  /** A string, or another JSON value for INPUT-1 (not-a-string.json). */
+  input: unknown;
   /** "valid", or the expected error code. */
   expected: "valid" | NifErrorCode;
   /** The type validate() reports, or null. */
@@ -45,6 +46,8 @@ const FILE_OPTIONS: Record<string, ValidateOptions> = {
   "normalization-off.json": { normalize: false },
   "vat-default.json": {},
   "vat-allowed.json": { allowVatPrefix: true },
+  "not-a-string.json": {},
+  "types-dni-nie.json": { types: ["DNI", "NIE"] },
 };
 
 // Vitest runs from the repository root.
@@ -75,12 +78,10 @@ describe("fixtures", () => {
     for (const value of SPEC_TEST_VALUES) expect(inputs).toContain(value);
   });
 
-  it("every SPEC.md rule has a fixture, except INPUT-1 and POLICY-2", () => {
+  it("every SPEC.md rule has a fixture", () => {
+    // Both polarities (valid and invalid) are checked by `pnpm spec:check`.
     const rules = new Set(fixtures.map(({ rule }) => rule));
-    const missing = [...SPEC_RULES].filter((rule) => !rules.has(rule));
-    // INPUT-1 needs a non-string, and POLICY-2 the `types` option: both are
-    // covered in validate.test.ts.
-    expect(missing.sort()).toEqual(["INPUT-1", "POLICY-2"]);
+    expect([...SPEC_RULES].filter((rule) => !rules.has(rule))).toEqual([]);
   });
 });
 
@@ -94,7 +95,9 @@ describe("error.rule", () => {
   ];
   const inputs: unknown[] = [null, 42, {}, "", " ", "ES", "T", "ñ"];
   for (const { input } of fixtures)
-    inputs.push(input, input.slice(1), input.slice(0, -1), `${input}0`);
+    if (typeof input === "string")
+      inputs.push(input, input.slice(1), input.slice(0, -1), `${input}0`);
+    else inputs.push(input);
 
   it("INPUT-1 / POLICY-2: every error cites a rule defined in SPEC.md", () => {
     const rules = new Set<string>();
@@ -141,13 +144,22 @@ describe.each(files)("fixtures: %s", (file) => {
       const valid = expected === "valid";
       if (opts.allowVatPrefix) {
         // The booleans don't take ES; isValidSpanishVat requires it.
-        const hasPrefix = normalize(input).startsWith("ES");
+        const hasPrefix =
+          typeof input === "string" && normalize(input).startsWith("ES");
         expect(isValidSpanishVat(input, booleanOptions(opts))).toBe(
           valid && hasPrefix
         );
         return;
       }
       const o = booleanOptions(opts);
+      if (opts.types) {
+        // The booleans have no `types` option, and POLICY-2 rejects valid
+        // documents only (types-dni-nie.json has no other kind).
+        expect(isValidNif(input, o)).toBe(
+          valid || expected === "UNSUPPORTED_TYPE"
+        );
+        return;
+      }
       expect(isValidNif(input, o)).toBe(valid);
       expect(isValidDni(input, o)).toBe(
         valid && (type === "DNI" || type === "NIF_KLM")
