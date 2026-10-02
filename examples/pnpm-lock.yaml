@@ -1325,6 +1325,7 @@ packages:
   nif-dni-nie-cif-validation@file:.pack/package:
     resolution: {directory: .pack/package, type: directory}
     engines: {node: '>=20'}
+    hasBin: true
     peerDependencies:
       valibot: ^1.0.0
       yup: ^1.0.0

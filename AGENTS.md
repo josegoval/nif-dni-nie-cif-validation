@@ -15,6 +15,7 @@ src/format.ts, vat.ts, organisations.ts, policy.ts, types.ts, localize.ts
 src/locales/        one locale object per language (en built in; es, ca, eu, gl)
 src/generate/       /generate entry point: seeded test-data generators
 src/adapter.ts, src/{zod,valibot,yup}/  schema adapters (optional peers)
+src/cli/            the command line interface, `bin` of package.json (no `exports` entry)
 src/__tests__/      Vitest suites (fixtures, properties, differential, stdnum, docs samples)
 test/fixtures/      SPEC test values as JSON; test/smoke/: tarball smoke tests
 bench/              benchmarks; bench/results/latest.json is the source of every number

@@ -1,6 +1,8 @@
 {
   // Builds the CommonJS half of the package (`dist/cjs`): the same sources
-  // and settings as `tsconfig.build.json`, emitted as CommonJS.
+  // and settings as `tsconfig.build.json`, emitted as CommonJS. The command
+  // line interface (src/cli/) is left out: its executable is an ES module,
+  // and nothing imports it.
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "module": "commonjs",
@@ -9,5 +11,6 @@
     // check and the ESM build run with it.
     "verbatimModuleSyntax": false,
     "outDir": "./dist/cjs"
-  }
+  },
+  "exclude": ["src/**/__tests__/**", "src/**/*.test.ts", "src/cli/**"]
 }

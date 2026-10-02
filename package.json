@@ -6,6 +6,9 @@
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.mjs",
   "types": "./dist/cjs/index.d.cts",
+  "bin": {
+    "nif-dni-nie-cif-validation": "dist/esm/cli/bin.mjs"
+  },
   "exports": {
     ".": {
       "import": {

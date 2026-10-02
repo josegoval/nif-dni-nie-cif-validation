@@ -54,6 +54,7 @@ src/
   generate/     opt-in test-data generators, the `/generate` entry point: index.ts (public API), core.ts (valid values), invalid.ts (generateInvalid), random.ts (mulberry32)
   adapter.ts    the core of the schema adapters: validate() mapped to a normalized value or an error
   zod/ valibot/ yup/  the opt-in schema adapters (`/zod`, `/valibot`, `/yup`), one index.ts each
+  cli/          the command line interface (`npx nif-dni-nie-cif-validation`): main.ts (commands), csv.ts (CSV reader), io.ts, bin.ts (the executable)
   shared.ts     internal helpers
   types.ts      public types
   __tests__/    Vitest tests, one file per module plus cross-cutting suites
@@ -84,7 +85,8 @@ The sources import each other without file extensions (`from "./nif"`) and the t
 
 - `"type": "module"`: `.js` files in the repository are ES modules. The published files all have explicit `.mjs` or `.cjs` extensions.
 - `exports`: `"."` and one `"./locales/<code>"` per language, `"./generate"` and one entry point per schema adapter (`"./zod"`, `"./valibot"`, `"./yup"`), each with an `import` and a `require` condition with its own `types`, plus `"./package.json"`. Nothing else is importable, so a file moved inside `dist/` is not a breaking change. `main`, `module` and `types` are fallbacks for tools that ignore `exports`; `typesVersions` does the same for the locale, generate and adapter entry points, so TypeScript's old `node10` resolution finds their types.
-- `"sideEffects": false`: every module only declares things, so a bundler may drop a module whose exports are unused. Don't add top-level code that does work when the module loads, not even filling a lookup table (see Size budgets).
+- `bin`: `nif-dni-nie-cif-validation` runs `dist/esm/cli/bin.mjs`, so `npx nif-dni-nie-cif-validation validate 12345678Z` works. The command line interface (`src/cli/`) is built only as ES modules, without declarations, and has no entry point in `exports`: nothing can import it, no size budget includes it, and the JSDoc check and the API reference don't list it. It calls only the public API, so it can't drift from the library. `scripts/build.mjs` fails if `bin.mjs` loses its `#!/usr/bin/env node` line. Its only package name is the package's own: don't add a shorter alias, which could be mistaken for another package on npm.
+- `"sideEffects": false`: every module only declares things, so a bundler may drop a module whose exports are unused. Don't add top-level code that does work when the module loads, not even filling a lookup table (see Size budgets). The one exception is the executable, `dist/esm/cli/bin.mjs`, which no entry point reaches.
 - `files`: `dist` plus the standard files (README, LICENSE, CHANGELOG) and the files for AI assistants (`llms.txt`, `llms-full.txt`, `AGENTS.md`), so an agent that only sees `node_modules` finds them.
 
 The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it runs in every current browser without transpiling. ES2018 would emit the same code, because the sources use nothing that TypeScript rewrites between the two. `pnpm check:es` runs `es-check` on both builds: no syntax and no built-in newer than ES2016 (ES2016 is a real floor: `Array.prototype.includes` is in `policy.ts`). Raise the `target` and that check together, and never to something your browser support doesn't cover.
