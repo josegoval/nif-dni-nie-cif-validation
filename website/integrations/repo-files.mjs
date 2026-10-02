@@ -5,7 +5,9 @@
 //   the real package through `link:..` and its `exports` point to `dist/`.
 // - After the build, it publishes the test coverage report: the HTML report
 //   that `pnpm test` writes to `../coverage/html` goes to `/coverage/`, and
-//   `/coverage/badge.svg` is drawn from `../coverage/coverage-summary.json`.
+//   the badge, `/coverage/badge.json` (for shields.io, which draws the
+//   README's badge) and `/coverage/badge.svg`, is made from
+//   `../coverage/coverage-summary.json` by `../scripts/coverage-badge.mjs`.
 //   No third-party service is involved. With `SITE_REQUIRE_COVERAGE=1` (the
 //   deploy job of pages.yml) a missing report fails the build; otherwise it
 //   is skipped with a notice.
@@ -13,7 +15,11 @@
 // The brand files and llms.txt are served by src/pages/[file].ts instead.
 import { cpSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { coverageBadge, coveragePercent } from "./coverage-badge.mjs";
+import {
+  coverageBadge,
+  coverageBadgeJson,
+  coveragePercent,
+} from "../../scripts/coverage-badge.mjs";
 
 const repo = new URL("../../", import.meta.url);
 
@@ -56,6 +62,10 @@ export function repoFiles() {
         const totals = JSON.parse(readFileSync(summary, "utf8")).total;
         const percent = coveragePercent(totals);
         writeFileSync(new URL("badge.svg", target), coverageBadge(percent));
+        writeFileSync(
+          new URL("badge.json", target),
+          coverageBadgeJson(percent)
+        );
         logger.info(
           `Published the coverage report (${percent}%) at /coverage/`
         );

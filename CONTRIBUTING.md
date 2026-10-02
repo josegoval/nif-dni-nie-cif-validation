@@ -288,5 +288,5 @@ Do not run `npm publish` by hand. The `prepack` script builds `dist/` so a tarba
 Coverage never leaves GitHub; there is no third-party service:
 
 - Every CI run on Node 24 writes a coverage table to the run's **job summary** (`scripts/coverage-summary.mjs`) and uploads the HTML report as the `coverage-report` artifact.
-- The website publishes the HTML report of `master` at <https://josegoval.github.io/nif-dni-nie-cif-validation/coverage/>, and a badge drawn from `coverage/coverage-summary.json` at `/coverage/badge.svg` (`website/integrations/`).
+- The website publishes the HTML report of `master` at <https://josegoval.github.io/nif-dni-nie-cif-validation/coverage/>, and a badge made from `coverage/coverage-summary.json` (`scripts/coverage-badge.mjs`, called by `website/integrations/repo-files.mjs`): `/coverage/badge.json` in the [shields.io endpoint](https://shields.io/badges/endpoint-badge) schema, which the README's badge reads, and `/coverage/badge.svg` for embedding directly.
 - Run `pnpm test` and then `node scripts/coverage-summary.mjs` to see the same table locally. The HTML report is in `coverage/html/index.html`.
