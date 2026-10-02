@@ -1,0 +1,148 @@
+---
+title: Komando-lerroa
+description: Balioztatu Espainiako IFZ, NAN, AIZ eta IFK zenbakiak terminal batetik, shell script batetik edo AA agente batetik npx nif-dni-nie-cif-validation erabilita, JSON irteerarekin, irteera-kodeekin, proba-datuekin eta CSV fitxategien egiaztapenarekin.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Paketeak komando-lerroko interfaze bat du shell scriptetarako, datu-fluxuetarako, CI lanetarako eta AA agenteen tresna-deietarako. Liburutegiaren arau berak aplikatzen ditu, arau-identifikatzaile berberekin, eta ez du mendekotasunik. Exekutatu `npx` erabilita, lehen aldian paketea deskargatzen baitu, edo instalatu paketea eta exekutatu `nif-dni-nie-cif-validation` zure proiektuaren scriptetatik. Node.js 20 edo berriagoa behar du.
+
+```sh
+npx nif-dni-nie-cif-validation --help
+npx nif-dni-nie-cif-validation validate --help
+```
+
+| Komandoa | Zer egiten du |
+| --- | --- |
+| `validate <value...>` | Balio bakoitza balioztatzen du, `validate()` bezala |
+| `type <value>` | Mota formatuaren arabera bakarrik detektatzen du, `getNifType()` bezala |
+| `normalize <value>` | Forma kanonikoa erakusten du, `normalize()` bezala |
+| `generate <type>` | Proba-balioak sortzen ditu: `dni`, `nie`, `cif` edo `nif` |
+| `check --file <csv> --column <name>` | CSV fitxategi baten zutabe bat balioztatzen du |
+
+## Balioak balioztatzea
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678Z " x-0123456-7l " b-1234567-4 12345678A
+# 12345678Z: valid DNI 12345678Z
+# " x-0123456-7l ": valid NIE X1234567L
+# b-1234567-4: valid CIF B12345674 (Limited liability company)
+# 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+```
+
+Balio bakoitzak lerro bat du: `valid`, bere motarekin eta gorde beharreko forma kanonikoarekin, edo `invalid`, huts egin duen [SPEC.md](/nif-dni-nie-cif-validation/eu/reference/official-sources/) araua, errore-kodea eta mezua adierazita. Zuriuneak dituen balio bat komatxo artean erakusten da. Hemen irteera-kodea 1 da, balio bat baliogabea delako.
+
+`validate()` funtzioaren aukerak `validate` eta `check` komandoen flag-ak dira. Horiek gabe, komandoak SPEC.md betetzen du, liburutegiak bezala:
+
+| Flag-a | Zer egiten du | `validate()` funtzioaren aukera |
+| --- | --- | --- |
+| `--types DNI,NIE` | Mota hauek bakarrik onartzen ditu, komaz bereizita: `DNI`, `NIF_KLM`, `NIE`, `CIF`. Beste mota batek `UNSUPPORTED_TYPE` ematen du | `types` |
+| `--cif-control lenient` | C D F G J U V gakoek letra bat ere onartzen dute kontrol-karaktere gisa, v1-ek bezala. Ez du oinarri ofizialik: erabili datu zaharretan bakarrik | `cifControl` |
+| `--reject-placeholders` | `00000000T`, `00000001R`, `99999999R` eta `X0000000T` ordezko balio ezagunak baztertzen ditu | `rejectPlaceholders` |
+| `--allow-vat-prefix` | Espainiako IFZ-BEZ bat ere onartzen du: `ES` eta IFZ bat | `allowVatPrefix` |
+| `--locale eu` | Mezuen eta erakundeen izenen hizkuntza: `en` (lehenetsia), `es`, `ca`, `eu` edo `gl` | `locale` |
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678A B12345674 --locale eu
+# 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] Kontrol-karakterea ez da zuzena: NAN honetan «Z» izan beharko luke.
+# B12345674: valid CIF B12345674 (Erantzukizun mugatuko sozietatea)
+npx nif-dni-nie-cif-validation validate B12345674 --types DNI,NIE
+# B12345674: invalid [POLICY-2 UNSUPPORTED_TYPE] This NIF of a legal person or entity (CIF) is not accepted here.
+```
+
+Errore-kodeak eta hizkuntzak [Errore-kodeak eta mezu itzuliak](/nif-dni-nie-cif-validation/eu/guides/errors-and-languages/) orrian azaltzen dira.
+
+## JSON scriptetarako eta agenteetarako
+
+`--json` aukerak JSON dokumentu bakar bat inprimatzen du irteera estandarrean. `validate` komandoan array bat da, balio bakoitzeko objektu batekin, ordenan: emandako balioa (`input`) eta `validate()` funtzioaren emaitza. Balio bakarrarekin ere array bat da, script batek dei guztiak modu berean irakur ditzan.
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678A --json
+# [
+#   {
+#     "input": "12345678A",
+#     "valid": false,
+#     "type": "DNI",
+#     "normalized": "12345678A",
+#     "error": {
+#       "code": "INVALID_CONTROL_CHARACTER",
+#       "message": "The control character is not correct: for this DNI it should be \"Z\".",
+#       "rule": "DNI-2",
+#       "expected": "Z"
+#     }
+#   }
+# ]
+```
+
+| Komandoa | JSON dokumentua |
+| --- | --- |
+| `validate` | `[{ input, valid, type, normalized, error?, meta? }]`: balioa eta haren emaitza, balio bakoitzeko |
+| `type` | `{ input, type }`, non `type` `null` den formatua ezagutzen ez denean |
+| `normalize` | `{ input, normalized }` |
+| `generate` | `{ seed, values }` |
+| `check` | `{ file, column, rows, valid, invalid, errors }`, non `errors` zerrendak `{ row, input, ...result }` duen errenkada baliogabe bakoitzeko |
+
+Etorkizuneko bertsioek eremuak gehi ditzakete, baina ez dute inoiz eremurik kenduko edo izenez aldatuko.
+
+## Irteera-kodeak
+
+| Irteera-kodea | Noiz |
+| --- | --- |
+| `0` | Dena baliozkoa da. `normalize`, `generate`, `--help` eta `--version` ere 0rekin amaitzen dira |
+| `1` | Zerbait baliogabea da: balio bat, CSV fitxategiko errenkada bat edo `type` komandoak ezagutzen ez duen formatu bat |
+| `2` | Komandoa ez da zuzena: komando edo aukera ezezagun bat, aukera baten balio okerra, irakurri ezin den fitxategi bat edo existitzen ez den zutabe bat. Mezua errore-irteerara doa, eta irteera estandarrera ezer ez |
+
+Horrela, script batek balio bat egiaztatu dezake irteera irakurri gabe:
+
+```sh
+if npx nif-dni-nie-cif-validation validate "$NIF" > /dev/null; then echo "valid"; fi
+```
+
+## Mota eta forma kanonikoa
+
+```sh
+npx nif-dni-nie-cif-validation type 12345678A
+# DNI
+npx nif-dni-nie-cif-validation normalize " x-0123456-7l "
+# X1234567L
+```
+
+`type` komandoak formatuak erakusten duen mota ematen du: `DNI`, `NIF_KLM`, `NIE` edo `CIF`. Ez du kontrol-karakterea egiaztatzen; beraz, hemen `12345678A` NAN bat da, eta `validate` komandoarentzat NAN baliogabea. Formatua horietako bat ez denean, 1ekin amaitzen da. `normalize` komandoak zuriuneak, puntuak, marratxoak eta barrak kentzen ditu eta letra larriko forma ematen du, baina ez du balioztatzen: balio bat gordetzeko, balioztatu eta gorde haren forma kanonikoa. Ikusi [Sarrera normalizatzea eta formatua ematea](/nif-dni-nie-cif-validation/eu/guides/normalizing-and-formatting/).
+
+## Proba-datuak
+
+```sh
+npx nif-dni-nie-cif-validation generate dni --count 3 --seed 42
+# 60110375J
+# 44829056D
+# 85246578E
+npx nif-dni-nie-cif-validation generate cif --seed 1 --format
+# P-0027357-C
+```
+
+`generate` komandoak mota bateko balio baliozkoak inprimatzen ditu: `dni`, `nie`, `cif`, edo `nif` horietako edozeinetarako. `--count` aukerak zenbat adierazten du (1.000.000 arte). `--seed` aukerarekin, balioak berdinak dira exekuzio eta makina guztietan; hura gabe, hazia ausazkoa da eta `--json` aukerak erakusten du, balio berak berriro sortu ahal izateko. `--format` aukerak aurkezpen-forma ematen du, marratxoekin.
+
+<Aside type="caution">
+Sortutako zenbakiak asmatuak dira, baina baliteke kasualitatez benetako pertsona edo enpresa batenarekin bat etortzea. Erabili probetan bakarrik, inoiz ez benetako datu gisa. Informazio gehiago: [Proba-datuak sortzea](/nif-dni-nie-cif-validation/eu/guides/test-data/).
+</Aside>
+
+## CSV fitxategi bat egiaztatzea
+
+Lehen errenkadan zutabeen izenak dituen `customers.csv` fitxategi baterako:
+
+```csv
+id,nif,name
+1,12345678Z,Ana
+2,"B-1234567-4","Acme, S.L."
+3,12345678A,Luis
+```
+
+```sh
+npx nif-dni-nie-cif-validation check --file customers.csv --column nif
+# row 4: 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+# 3 rows checked in customers.csv, column "nif": 2 valid, 1 invalid
+```
+
+`check` komandoak `--column` aukerak adierazten duen zutabea balioztatzen du, eta lerro bat inprimatzen du errenkada baliogabe bakoitzeko eta, amaieran, laburpen bat. Errenkadak kalkulu-orri batean bezala zenbakitzen dira: izenen ondoko lehen errenkada 2. errenkada da. Lerro hutsak saltatu egiten dira, eta gelaxka huts bat baliogabea da (`EMPTY`). `validate` komandoaren flag berak onartzen ditu, eta `--json` aukerak zenbaketak eta errenkada baliogabe bakoitzaren emaitza ematen ditu.
+
+Fitxategia UTF-8 CSV gisa irakurtzen da ([RFC 4180](https://www.rfc-editor.org/rfc/rfc4180)): komatxo bikoitzen arteko eremu batek komak, lerro-jauziak eta komatxo bikoiztuak izan ditzake, lerro-jauziak CRLF edo LF izan daitezke, eta byte-ordenaren marka (BOM) ez da kontuan hartzen. Gaztelaniazko kalkulu-orriek askotan puntu eta komaz gordetzen dituzte CSV fitxategiak: irakurri `--delimiter ";"` erabilita. Fitxategi osoa memorian irakurtzen da; fitxategi oso handietarako, erabili liburutegia stream batekin, [CSV adibidean](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/csv-bulk-validation) bezala.

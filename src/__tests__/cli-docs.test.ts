@@ -1,21 +1,32 @@
 /**
- * Runs the command lines of the docs (#61), as readme-examples.test.ts runs
- * their code: every ```sh block of the READMEs and docs/api-design.md.
+ * Runs the command lines of the docs (#61), as readme-examples.test.ts and
+ * website-examples.test.ts run their code: every ```sh block of the
+ * READMEs, docs/api-design.md and the website's command line page.
  *
  * - A line that starts with `npx nif-dni-nie-cif-validation ` is a command,
  *   run with `main()` (cliRun.ts). The `# ` lines right after it are what
  *   it prints, exactly (stdout, then stderr). A command without them must
  *   not be a usage error.
  * - `check` reads the CSV of the last ```csv block before it.
- * - README.es.md has the same commands as README.md, except the value of
- *   `--locale`, so a translation can't show a command nobody runs.
+ * - README.es.md has the same commands as README.md, and every language of
+ *   the website the same commands as the English page, except the value of
+ *   `--locale`, so a translated page can't show a command nobody runs.
  */
 import { describe, expect, it } from "vitest";
 import { BIN } from "../cli/main";
 import { run } from "./cliRun";
 import { read } from "./snippets";
 
-const DOCS = ["README.md", "README.es.md", "docs/api-design.md"];
+const SITE_PAGE = "guides/command-line.mdx";
+const SITE = "website/src/content/docs";
+const LOCALES = ["es", "ca", "eu", "gl"];
+const DOCS = [
+  "README.md",
+  "README.es.md",
+  "docs/api-design.md",
+  `${SITE}/${SITE_PAGE}`,
+  ...LOCALES.map((locale) => `${SITE}/${locale}/${SITE_PAGE}`),
+];
 
 interface Command {
   doc: string;
@@ -102,4 +113,13 @@ describe("command lines of the docs", () => {
   it("README.es.md has the commands of README.md", () => {
     expect(shape("README.es.md")).toEqual(shape("README.md"));
   });
+
+  it.each(LOCALES)(
+    "the %s command line page has the commands of the English one",
+    (locale) => {
+      expect(shape(`${SITE}/${locale}/${SITE_PAGE}`)).toEqual(
+        shape(`${SITE}/${SITE_PAGE}`)
+      );
+    }
+  );
 });

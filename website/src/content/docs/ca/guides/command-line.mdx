@@ -1,0 +1,148 @@
+---
+title: Línia d'ordres
+description: Valideu NIF, DNI, NIE i CIF espanyols des d'un terminal, un script de shell o un agent d'IA amb npx nif-dni-nie-cif-validation, amb sortida JSON, codis de sortida, dades de prova i revisió de fitxers CSV.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+El paquet té una interfície de línia d'ordres per a scripts de shell, fluxos de dades, tasques de CI i crides a eines d'agents d'IA. Aplica les mateixes regles que la biblioteca, amb els mateixos identificadors de regla, i no té dependències. Executeu-la amb `npx`, que descarrega el paquet la primera vegada, o instal·leu el paquet i executeu `nif-dni-nie-cif-validation` des dels scripts del vostre projecte. Necessita Node.js 20 o posterior.
+
+```sh
+npx nif-dni-nie-cif-validation --help
+npx nif-dni-nie-cif-validation validate --help
+```
+
+| Ordre | Què fa |
+| --- | --- |
+| `validate <value...>` | Valida cada valor, com `validate()` |
+| `type <value>` | Detecta el tipus només pel format, com `getNifType()` |
+| `normalize <value>` | Mostra la forma canònica, com `normalize()` |
+| `generate <type>` | Genera valors de prova: `dni`, `nie`, `cif` o `nif` |
+| `check --file <csv> --column <name>` | Valida una columna d'un fitxer CSV |
+
+## Validar valors
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678Z " x-0123456-7l " b-1234567-4 12345678A
+# 12345678Z: valid DNI 12345678Z
+# " x-0123456-7l ": valid NIE X1234567L
+# b-1234567-4: valid CIF B12345674 (Limited liability company)
+# 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+```
+
+Cada valor ocupa una línia: `valid`, amb el seu tipus i la forma canònica que cal desar, o `invalid`, amb la regla de [SPEC.md](/nif-dni-nie-cif-validation/ca/reference/official-sources/) que ha fallat, el codi d'error i el missatge. Un valor amb espais es mostra entre cometes. Aquí el codi de sortida és 1, perquè un valor no és vàlid.
+
+Les opcions de `validate()` són flags de `validate` i `check`. Sense aquests flags, l'ordre segueix SPEC.md, igual que la biblioteca:
+
+| Flag | Què fa | Opció de `validate()` |
+| --- | --- | --- |
+| `--types DNI,NIE` | Només accepta aquests tipus, separats per comes: `DNI`, `NIF_KLM`, `NIE`, `CIF`. Un altre tipus dona `UNSUPPORTED_TYPE` | `types` |
+| `--cif-control lenient` | C D F G J U V també admeten una lletra com a caràcter de control, com a la v1. No té base oficial: feu-lo servir només amb dades heretades | `cifControl` |
+| `--reject-placeholders` | Rebutja els números d'exemple `00000000T`, `00000001R`, `99999999R` i `X0000000T` | `rejectPlaceholders` |
+| `--allow-vat-prefix` | També accepta un NIF-IVA espanyol: `ES` i un NIF | `allowVatPrefix` |
+| `--locale ca` | La llengua dels missatges i dels noms de les organitzacions: `en` (per defecte), `es`, `ca`, `eu` o `gl` | `locale` |
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678A B12345674 --locale ca
+# 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] El caràcter de control no és correcte: per a aquest DNI hauria de ser «Z».
+# B12345674: valid CIF B12345674 (Societat de responsabilitat limitada)
+npx nif-dni-nie-cif-validation validate B12345674 --types DNI,NIE
+# B12345674: invalid [POLICY-2 UNSUPPORTED_TYPE] This NIF of a legal person or entity (CIF) is not accepted here.
+```
+
+Els codis d'error i les llengües s'expliquen a [Codis d'error i missatges traduïts](/nif-dni-nie-cif-validation/ca/guides/errors-and-languages/).
+
+## JSON per a scripts i agents
+
+`--json` imprimeix un únic document JSON a la sortida estàndard. A `validate` és un array amb un objecte per valor, en ordre: el valor tal com s'ha passat (`input`) i el resultat de `validate()`. És un array fins i tot amb un sol valor, de manera que un script llegeix totes les crides de la mateixa manera.
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678A --json
+# [
+#   {
+#     "input": "12345678A",
+#     "valid": false,
+#     "type": "DNI",
+#     "normalized": "12345678A",
+#     "error": {
+#       "code": "INVALID_CONTROL_CHARACTER",
+#       "message": "The control character is not correct: for this DNI it should be \"Z\".",
+#       "rule": "DNI-2",
+#       "expected": "Z"
+#     }
+#   }
+# ]
+```
+
+| Ordre | Document JSON |
+| --- | --- |
+| `validate` | `[{ input, valid, type, normalized, error?, meta? }]`: el valor i el seu resultat, per a cada valor |
+| `type` | `{ input, type }`, on `type` és `null` si no es reconeix el format |
+| `normalize` | `{ input, normalized }` |
+| `generate` | `{ seed, values }` |
+| `check` | `{ file, column, rows, valid, invalid, errors }`, on `errors` té `{ row, input, ...result }` per a cada fila no vàlida |
+
+Les versions futures poden afegir camps, però mai no en trauran cap ni en canviaran el nom.
+
+## Codis de sortida
+
+| Codi de sortida | Quan |
+| --- | --- |
+| `0` | Tot és vàlid. `normalize`, `generate`, `--help` i `--version` també acaben amb 0 |
+| `1` | Alguna cosa no és vàlida: un valor, una fila del fitxer CSV o un format que `type` no reconeix |
+| `2` | L'ordre és incorrecta: una ordre o una opció desconegudes, un valor d'opció incorrecte, un fitxer que no es pot llegir o una columna que no existeix. El missatge va a la sortida d'error estàndard, i res a la sortida estàndard |
+
+Així, un script pot comprovar un valor sense llegir la sortida:
+
+```sh
+if npx nif-dni-nie-cif-validation validate "$NIF" > /dev/null; then echo "valid"; fi
+```
+
+## Tipus i forma canònica
+
+```sh
+npx nif-dni-nie-cif-validation type 12345678A
+# DNI
+npx nif-dni-nie-cif-validation normalize " x-0123456-7l "
+# X1234567L
+```
+
+`type` dona el tipus que mostra el format: `DNI`, `NIF_KLM`, `NIE` o `CIF`. No comprova el caràcter de control, de manera que aquí `12345678A` és un DNI, i un DNI no vàlid per a `validate`. Si el format no és cap d'aquests, acaba amb 1. `normalize` treu espais, punts, guions i barres i dona la forma en majúscules, però no valida: per desar un valor, valideu-lo i quedeu-vos amb la seva forma canònica. Vegeu [Normalitzar i formatar l'entrada](/nif-dni-nie-cif-validation/ca/guides/normalizing-and-formatting/).
+
+## Dades de prova
+
+```sh
+npx nif-dni-nie-cif-validation generate dni --count 3 --seed 42
+# 60110375J
+# 44829056D
+# 85246578E
+npx nif-dni-nie-cif-validation generate cif --seed 1 --format
+# P-0027357-C
+```
+
+`generate` imprimeix valors vàlids d'un tipus: `dni`, `nie`, `cif`, o `nif` per a qualsevol d'aquests. `--count` indica quants (fins a 1.000.000). Amb `--seed`, els valors són els mateixos a cada execució i a cada màquina; sense aquest flag, la llavor és aleatòria i `--json` la mostra, de manera que podeu tornar a generar els mateixos valors. `--format` dona la forma de presentació, amb guions.
+
+<Aside type="caution">
+Els números generats són ficticis, però algun podria coincidir per casualitat amb el d'una persona o empresa real. Feu-los servir només en tests, mai com a dades reals. Més informació a [Generar dades de prova](/nif-dni-nie-cif-validation/ca/guides/test-data/).
+</Aside>
+
+## Revisar un fitxer CSV
+
+Per a un fitxer `customers.csv` amb els noms de les columnes a la primera fila:
+
+```csv
+id,nif,name
+1,12345678Z,Ana
+2,"B-1234567-4","Acme, S.L."
+3,12345678A,Luis
+```
+
+```sh
+npx nif-dni-nie-cif-validation check --file customers.csv --column nif
+# row 4: 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+# 3 rows checked in customers.csv, column "nif": 2 valid, 1 invalid
+```
+
+`check` valida la columna que indica `--column` i imprimeix una línia per cada fila no vàlida i, al final, un resum. Les files es numeren com en un full de càlcul: la primera fila després dels noms és la fila 2. Les línies en blanc s'ometen, i una cel·la buida no és vàlida (`EMPTY`). Accepta els mateixos flags que `validate`, i `--json` dona els recomptes i el resultat de cada fila no vàlida.
+
+El fitxer es llegeix com a CSV en UTF-8 ([RFC 4180](https://www.rfc-editor.org/rfc/rfc4180)): un camp entre cometes dobles pot contenir comes, salts de línia i cometes duplicades, els salts de línia poden ser CRLF o LF, i s'ignora la marca d'ordre de bytes (BOM). Els fulls de càlcul en castellà sovint desen els fitxers CSV amb punt i coma: llegiu-los amb `--delimiter ";"`. El fitxer es llegeix sencer a la memòria; per a fitxers molt grans, feu servir la biblioteca amb un stream, com a l'[exemple de CSV](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/csv-bulk-validation).

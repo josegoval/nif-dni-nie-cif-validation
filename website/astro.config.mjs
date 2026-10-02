@@ -115,6 +115,7 @@ export default defineConfig({
             "guides/validating-forms",
             "guides/normalizing-and-formatting",
             "guides/test-data",
+            "guides/command-line",
             "guides/errors-and-languages",
             "guides/ai-agents",
             "guides/faq",
