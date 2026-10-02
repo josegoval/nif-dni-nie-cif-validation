@@ -16,9 +16,10 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "check:links": "node scripts/check-links.mjs",
+    "check:source-links": "node scripts/check-source-links.mjs",
     "check:size": "node scripts/js-size.mjs",
     "test:e2e": "playwright test",
-    "check": "pnpm lint && pnpm typecheck && pnpm build && pnpm check:links && pnpm check:size && pnpm test:e2e"
+    "check": "pnpm lint && pnpm typecheck && pnpm build && pnpm check:links && pnpm check:source-links && pnpm check:size && pnpm test:e2e"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.4",
