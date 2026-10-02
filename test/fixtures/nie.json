@@ -75,5 +75,19 @@
     "type": null,
     "rule": "NIF-1",
     "note": "no official T prefix"
+  },
+  {
+    "input": "X7654321J",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIE-1",
+    "note": "X + 7 digits + check letter"
+  },
+  {
+    "input": "Z1111111D",
+    "expected": "valid",
+    "type": "NIE",
+    "rule": "NIF-1",
+    "note": "X, Y or Z first selects the NIE format"
   }
 ]

@@ -26,7 +26,7 @@ const latest = JSON.parse(
     new URL("../../bench/results/latest.json", import.meta.url),
     "utf8"
   )
-) as { contenders: unknown[] };
+) as { contenders: unknown[]; machine: { cpu: string } };
 
 /** A few pages of each section, as smoke tests in every language. */
 const PAGES = [
@@ -204,7 +204,8 @@ test("the benchmark charts show every library of latest.json", async ({
   for (const caption of await page.locator("table caption").all()) {
     expect((await caption.textContent())?.length).toBeGreaterThan(20);
   }
-  await expect(page.locator("text=Apple M1").first()).toBeVisible();
+  // The machine the numbers come from is named.
+  await expect(page.getByText(latest.machine.cpu).first()).toBeVisible();
 });
 
 test("the comparison matrix links each library's sources", async ({ page }) => {
