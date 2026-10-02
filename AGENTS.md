@@ -17,7 +17,7 @@ src/generate/       /generate entry point: seeded test-data generators
 src/adapter.ts, src/{zod,valibot,yup}/  schema adapters (optional peers)
 src/cli/            the command line interface, `bin` of package.json (no `exports` entry)
 src/__tests__/      Vitest suites (fixtures, properties, differential, stdnum, docs samples)
-test/fixtures/      SPEC test values as JSON; test/smoke/: tarball smoke tests
+test/fixtures/      SPEC test values as JSON; test/smoke/: tarball smoke tests (with npx for the CLI)
 bench/              benchmarks; bench/results/latest.json is the source of every number
 examples/           runnable projects (own pnpm workspace); they install the packed package
 website/            the site on GitHub Pages (Astro + Starlight, own pnpm workspace); website/README.md
@@ -38,6 +38,7 @@ pnpm spell         # cspell (British English; README.es.md also in Spanish)
 pnpm spec:check    # rule IDs in src/ and tests match SPEC.md; a valid and an invalid fixture per rule
 pnpm docs:jsdoc    # every export has a summary, @param, @returns, two @example, @see, @since
 pnpm examples:install && pnpm examples:check   # pack the package, install and check examples/ (CI: examples.yml)
+pnpm smoke         # pack, install the tarball in a temporary folder, run test/smoke/ (CI: the Compat job)
 pnpm build && pnpm --dir website install && pnpm --dir website check   # the website (CI: pages.yml)
 pnpm size          # bundle size budgets (.size-limit.json)
 pnpm check:es      # dist/ uses nothing newer than ES2016

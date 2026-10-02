@@ -135,7 +135,9 @@ jobs:
   # `engines.node` floor in package.json). Consumers never run our dev
   # tooling, so this job installs no dev dependencies and no pnpm: it installs
   # the tarball that `check` packed into an empty folder and runs a plain
-  # `node:test` file against it, once with `require()` and once with `import`.
+  # `node:test` file against it, once with `require()` and once with `import`,
+  # and runs the command line interface through `npx` (cli.test.mjs).
+  # `pnpm smoke` does the same locally.
   compat:
     name: Compat (Node 20)
     needs: check
@@ -164,8 +166,9 @@ jobs:
           npm install --no-audit --no-fund "$RUNNER_TEMP"/pack/*.tgz
           cp "$GITHUB_WORKSPACE/test/smoke/smoke.test.cjs" .
           cp "$GITHUB_WORKSPACE/test/smoke/smoke.test.mjs" .
+          cp "$GITHUB_WORKSPACE/test/smoke/cli.test.mjs" .
           node --version
-          node --test smoke.test.cjs smoke.test.mjs
+          node --test smoke.test.cjs smoke.test.mjs cli.test.mjs
 
   release:
     name: Release

@@ -197,6 +197,7 @@
     "readme:bench": "node scripts/readme-bench.mjs",
     "docs:llms": "node scripts/llms-full.mjs",
     "docs:jsdoc": "pnpm build && node scripts/check-jsdoc.mjs",
+    "smoke": "node scripts/smoke.mjs",
     "examples:pack": "node scripts/pack-for-examples.mjs",
     "examples:install": "pnpm examples:pack && pnpm --dir examples install",
     "examples:check": "pnpm --dir examples --recursive --filter \"!./deno\" --filter \"!./bun\" run check",

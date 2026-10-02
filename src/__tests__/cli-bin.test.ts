@@ -5,6 +5,9 @@
  * the way npx runs it: shebang, exit codes, output through a pipe, the
  * version from package.json. The package is built into .cache/ by
  * scripts/build.mjs, so the test doesn't depend on (or change) dist/.
+ *
+ * test/smoke/cli.test.mjs runs it from the packed tarball with npx, on
+ * Node 20 (the Compat job, and `pnpm smoke`).
  */
 import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
