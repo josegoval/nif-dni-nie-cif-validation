@@ -89,5 +89,12 @@
     "type": null,
     "rule": "DNI-1",
     "note": "no check letter"
+  },
+  {
+    "input": "11111111H",
+    "expected": "valid",
+    "type": "DNI",
+    "rule": "NIF-1",
+    "note": "a digit first selects the DNI format"
   }
 ]
