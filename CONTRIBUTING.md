@@ -94,19 +94,21 @@ The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it 
 | Entry (`.size-limit.json`) | Size | Limit |
 | --- | ---: | ---: |
 | `import { isValidNif }` | 929 B | 960 B |
-| `import { isValidDni }` | 624 B | 645 B |
+| `import { isValidDni }` | 623 B | 645 B |
 | `import { isValidNie }` | 586 B | 605 B |
-| `import { isValidCif }` | 562 B | 580 B |
+| `import { isValidCif }` | 568 B | 580 B |
 | `import { isValidSpanishVat }` | 965 B | 995 B |
-| `import { validate }` (English built in) | 2713 B | 2795 B |
-| `import { validate }` + `locales/es` | 3528 B | 3635 B |
-| `import *` (the whole ES module build) | 4648 B | 4790 B |
-| `import { generateDni }` from `/generate` | 1897 B | 1955 B |
-| `import { generateInvalid }` from `/generate` | 2040 B | 2100 B |
-| `import *` from `/generate` (every generator) | 3132 B | 3225 B |
-| `import { zNif }` from `/zod` (without Zod) | 3065 B | 3160 B |
+| `import { validate }` (English built in) | 2719 B | 2795 B |
+| `import { validate }` + `locales/es` | 3534 B | 3635 B |
+| `import *` (the whole ES module build) | 4678 B | 4790 B |
+| `import { generateDni }` from `/generate` | 1895 B | 1955 B |
+| `import { generateInvalid }` from `/generate` | 2041 B | 2100 B |
+| `import *` from `/generate` (every generator) | 3130 B | 3225 B |
+| `import { zNif }` from `/zod` (without Zod) | 3066 B | 3160 B |
 | `import { vNif }` from `/valibot` (without Valibot) | 3160 B | 3255 B |
 | `import { yNif }` from `/yup` (without Yup) | 3108 B | 3205 B |
+
+**The accepted size targets.** The first plan for the package (#48) asked for a single validator of at most 600 B and the whole core of at most 1.2 kB, minified and gzipped. Those numbers were set before the v2 API, and the revised budgets above are the accepted targets: `isValidNif` 960 B, `isValidDni` 645 B, `isValidNie` 605 B, `isValidCif` 580 B, and the whole ES module build 4.79 kB. Each validator is smaller than in v1, where any single import costs 1,517 B minified and gzipped (`bench/results/latest.json`, which is also where the README and the site take their numbers). The whole library is bigger than v1 (1,514 B) because v2 adds much more: `validate()` with its English messages and organisation names, `normalize()`, `format()` and `isValidSpanishVat()` in the root entry point, and, as separate entry points that the 4.79 kB does not include, the other languages, the generators and the schema adapters. A consumer pays only for what it imports, so the budget of each validator is the one that matters. Keep the limits where they are, and raise one only with the reason in the same commit.
 
 The booleans stay this small because they never reach `normalize()` or `validate()`: their slow path only removes separators (`removeSeparators`) and checks again, and POLICY-1 reads the number of the document (`isPlaceholderDocument`). Keep module-level code to declarations: a table filled by a loop when the module loads can't be dropped by a bundler, so prefer a string or arithmetic.
 
