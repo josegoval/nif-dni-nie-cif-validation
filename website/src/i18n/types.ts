@@ -78,7 +78,14 @@ export interface SiteStrings {
     heading: string;
     intro: string;
     tabsLabel: string;
-    tabs: { basic: string; validate: string; zod: string; generators: string };
+    tabs: {
+      basic: string;
+      validate: string;
+      zod: string;
+      valibot: string;
+      yup: string;
+      generators: string;
+    };
     /** Comments in the code samples (the code itself stays in English). */
     comments: {
       normalized: string;

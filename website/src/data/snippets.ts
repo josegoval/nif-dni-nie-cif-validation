@@ -44,6 +44,8 @@ export interface Snippets {
   basic: string;
   validate: string;
   zod: string;
+  valibot: string;
+  yup: string;
   generators: string;
 }
 
@@ -116,6 +118,39 @@ export function snippetsFor(lang: Lang, t: SiteStrings["code"]): Snippets {
     ]),
   ].join("\n");
 
+  const valibot = [
+    `import * as v from "valibot";`,
+    `${localeImport}import { vNif } from "${PACKAGE}/valibot";`,
+    "",
+    `const schema = v.object({ nif: vNif({ types: ["DNI", "NIE"]${zodLocale} }) });`,
+    "",
+    aligned([
+      [
+        `v.parse(schema, { nif: " 12.345.678-z " });`,
+        `{ nif: ${str(validate(" 12.345.678-z ").normalized)} }`,
+      ],
+      [
+        `v.safeParse(schema, { nif: "B12345674" }).success;`,
+        `false: ${c.cifRejected}`,
+      ],
+    ]),
+  ].join("\n");
+
+  const yup = [
+    `import { object } from "yup";`,
+    `${localeImport}import { yNif } from "${PACKAGE}/yup";`,
+    "",
+    `const schema = object({ nif: yNif({ types: ["DNI", "NIE"]${zodLocale} }) });`,
+    "",
+    aligned([
+      [
+        `schema.validateSync({ nif: " 12.345.678-z " });`,
+        `{ nif: ${str(validate(" 12.345.678-z ").normalized)} }`,
+      ],
+      [`schema.isValidSync({ nif: "B12345674" });`, `false: ${c.cifRejected}`],
+    ]),
+  ].join("\n");
+
   const generator = createGenerator(42);
   const generators = [
     `import { createGenerator, generateCif, generateDni, generateNie } from "${PACKAGE}/generate";`,
@@ -146,5 +181,5 @@ export function snippetsFor(lang: Lang, t: SiteStrings["code"]): Snippets {
     ]),
   ].join("\n");
 
-  return { basic, validate: validateSample, zod, generators };
+  return { basic, validate: validateSample, zod, valibot, yup, generators };
 }

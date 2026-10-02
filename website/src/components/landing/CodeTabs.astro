@@ -12,6 +12,8 @@ const tabs = [
   { id: "basic", label: t.tabs.basic, code: snippets.basic },
   { id: "validate", label: t.tabs.validate, code: snippets.validate },
   { id: "zod", label: t.tabs.zod, code: snippets.zod },
+  { id: "valibot", label: t.tabs.valibot, code: snippets.valibot },
+  { id: "yup", label: t.tabs.yup, code: snippets.yup },
   { id: "generators", label: t.tabs.generators, code: snippets.generators },
 ];
 ---
@@ -98,6 +100,8 @@ const tabs = [
     .tabs:has(#code-tab-basic:checked) [data-panel="basic"],
     .tabs:has(#code-tab-validate:checked) [data-panel="validate"],
     .tabs:has(#code-tab-zod:checked) [data-panel="zod"],
+    .tabs:has(#code-tab-valibot:checked) [data-panel="valibot"],
+    .tabs:has(#code-tab-yup:checked) [data-panel="yup"],
     .tabs:has(#code-tab-generators:checked) [data-panel="generators"] {
       display: block;
     }

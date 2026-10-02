@@ -423,7 +423,10 @@ describe("agreement with validate()", () => {
     ["vat", zSpanishVat],
   ];
 
-  it("every schema accepts exactly what checkNif accepts, and outputs the same", () => {
+  // 3000 fast-check runs: well under a second locally, but slower on shared CI runners.
+  it("every schema accepts exactly what checkNif accepts, and outputs the same", {
+    timeout: 30_000,
+  }, () => {
     const gen = createGenerator(SEED);
     const values: string[] = [];
     for (let i = 0; i < 400; i++) {

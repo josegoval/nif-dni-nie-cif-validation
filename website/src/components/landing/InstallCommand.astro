@@ -1,40 +1,91 @@
 ---
-// The install command, with a copy button. Without JavaScript the command is
-// plain, selectable text and the button stays hidden.
+// The install command, with a package manager selector and a copy button. The
+// selector is a radio group (arrow keys move between managers) and CSS shows
+// the selected command, so without JavaScript it still works and the command
+// stays plain, selectable text. The copy button stays hidden.
 import { langOf, stringsFor } from "../../i18n";
 
 const t = stringsFor(langOf(Astro.locals.starlightRoute.lang));
-const command = "npm i nif-dni-nie-cif-validation";
+const managers = [
+  { id: "npm", command: "npm i nif-dni-nie-cif-validation" },
+  { id: "yarn", command: "yarn add nif-dni-nie-cif-validation" },
+  { id: "pnpm", command: "pnpm add nif-dni-nie-cif-validation" },
+  { id: "bun", command: "bun add nif-dni-nie-cif-validation" },
+];
 ---
 
 <div class="install" data-install>
-  <code
-    ><span class="sr-only">{t.hero.installLabel}: </span><span
-      class="prompt"
-      aria-hidden="true">$</span
-    > {command}</code
-  >
-  <button
-    type="button"
-    hidden
-    data-copy={command}
-    data-copied-label={t.hero.copied}>{t.hero.copy}</button
-  >
+  <fieldset>
+    <legend class="sr-only">{t.hero.installLabel}</legend>
+    {
+      managers.map((manager, index) => (
+        <>
+          <input
+            type="radio"
+            name="install-manager"
+            id={`install-${manager.id}`}
+            value={manager.id}
+            data-command={manager.command}
+            checked={index === 0}
+            class="sr-only"
+          />
+          <label for={`install-${manager.id}`}>{manager.id}</label>
+        </>
+      ))
+    }
+  </fieldset>
+  <div class="row">
+    {
+      managers.map((manager) => (
+        <code data-manager={manager.id}>
+          <span class="prompt" aria-hidden="true">
+            $
+          </span>{" "}
+          {manager.command}
+        </code>
+      ))
+    }
+    <button type="button" hidden data-copied-label={t.hero.copied}
+      >{t.hero.copy}</button
+    >
+  </div>
   <span class="sr-only" aria-live="polite" data-copy-status></span>
 </div>
 
 <script>
+  const STORAGE_KEY = "install-manager";
+
   for (const group of document.querySelectorAll<HTMLElement>(
     "[data-install]"
   )) {
+    const inputs = [
+      ...group.querySelectorAll<HTMLInputElement>("input[type=radio]"),
+    ];
     const button = group.querySelector<HTMLButtonElement>("button");
     const status = group.querySelector<HTMLElement>("[data-copy-status]");
     if (!button || !status || !navigator.clipboard) continue;
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const match = inputs.find((input) => input.value === saved);
+      if (match) match.checked = true;
+    } catch {
+      // Storage can be blocked; the default manager is fine.
+    }
+    group.addEventListener("change", (event) => {
+      try {
+        localStorage.setItem(STORAGE_KEY, (event.target as HTMLInputElement).value);
+      } catch {
+        // Not remembering the choice is harmless.
+      }
+    });
+
     const label = button.textContent ?? "";
     const copied = button.dataset.copiedLabel ?? label;
     button.hidden = false;
     button.addEventListener("click", async () => {
-      await navigator.clipboard.writeText(button.dataset.copy ?? "");
+      const selected = inputs.find((input) => input.checked);
+      await navigator.clipboard.writeText(selected?.dataset.command ?? "");
       button.textContent = copied;
       status.textContent = copied;
       setTimeout(() => {
@@ -48,14 +99,60 @@ const command = "npm i nif-dni-nie-cif-validation";
 <style>
   .install {
     display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 0.25rem;
     max-width: 100%;
     padding: 0.375rem 0.375rem 0.375rem 1rem;
     border-radius: var(--brand-radius-lg);
     background: var(--brand-ink);
     color: var(--brand-paper);
     border: 1px solid var(--brand-ink-800);
+  }
+  fieldset {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  label {
+    padding: 0.125rem 0.5rem;
+    margin-inline-start: -0.5rem;
+    border-radius: var(--brand-radius-sm);
+    color: var(--brand-slate-400);
+    font-family: var(--brand-font-mono);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  label:hover {
+    color: var(--brand-paper);
+  }
+  input:checked + label {
+    background: var(--brand-ink-800);
+    color: var(--brand-paper);
+  }
+  input:focus-visible + label {
+    outline: 2px solid var(--brand-gualda);
+    outline-offset: 2px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  /* A browser without :has() shows every command, one after the other. */
+  @supports selector(:has(*)) {
+    code {
+      display: none;
+    }
+    .install:has(#install-npm:checked) [data-manager="npm"],
+    .install:has(#install-yarn:checked) [data-manager="yarn"],
+    .install:has(#install-pnpm:checked) [data-manager="pnpm"],
+    .install:has(#install-bun:checked) [data-manager="bun"] {
+      display: block;
+    }
   }
   code {
     overflow-x: auto;
@@ -70,6 +167,7 @@ const command = "npm i nif-dni-nie-cif-validation";
     color: var(--brand-gualda); /* 11.44:1 on Ink */
   }
   button {
+    margin-inline-start: auto;
     flex-shrink: 0;
     min-height: 2.25rem;
     padding: 0.375rem 0.875rem;

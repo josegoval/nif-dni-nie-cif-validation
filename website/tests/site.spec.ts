@@ -91,6 +91,11 @@ test.describe("without JavaScript", () => {
     await page.getByText(en.code.tabs.zod, { exact: true }).click();
     await expect(page.locator('[data-panel="zod"]')).toBeVisible();
     await expect(page.locator('[data-panel="basic"]')).toBeHidden();
+    for (const id of ["valibot", "yup"] as const) {
+      await page.getByText(en.code.tabs[id], { exact: true }).click();
+      await expect(page.locator(`[data-panel="${id}"]`)).toBeVisible();
+      await expect(page.locator('[data-panel="zod"]')).toBeHidden();
+    }
   });
 });
 
@@ -128,4 +133,28 @@ test("the root files are served", async ({ request }) => {
   expect(await (await request.get("llms.txt")).text()).toContain(
     "# nif-dni-nie-cif-validation"
   );
+});
+
+test("the install command follows the selected package manager", async ({
+  context,
+  page,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("");
+  const install = page.locator("[data-install]").first();
+  await expect(install.locator("code:visible")).toContainText(
+    "npm i nif-dni-nie-cif-validation"
+  );
+  await install.locator("label[for=install-pnpm]").click();
+  await expect(install.locator("code:visible")).toContainText(
+    "pnpm add nif-dni-nie-cif-validation"
+  );
+  await install.getByRole("button").click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "pnpm add nif-dni-nie-cif-validation"
+  );
+  await page.reload();
+  await expect(
+    page.locator("[data-install]").first().locator("code:visible")
+  ).toContainText("pnpm add");
 });
