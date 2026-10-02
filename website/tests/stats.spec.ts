@@ -43,7 +43,9 @@ function stubFetch(
       headers: init?.headers as Record<string, string>,
       signal: init?.signal ?? undefined,
     });
-    return url.includes("api.github.com") ? answers.github() : answers.npm();
+    return new URL(url).hostname === "api.github.com"
+      ? answers.github()
+      : answers.npm();
   }) as typeof fetch;
   return { fetchFn, calls };
 }
