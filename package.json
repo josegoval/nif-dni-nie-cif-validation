@@ -1,6 +1,6 @@
 {
   "name": "nif-dni-nie-cif-validation",
-  "version": "1.0.12",
+  "version": "2.0.0",
   "description": "Validates Spanish NIF, DNI, K/L/M, NIE and CIF numbers against the official rules (BOE, AEAT): 0 dependencies, typed, ESM and CommonJS, input normalization, errors in 5 languages, test-data generators and Zod, Valibot and Yup schemas.",
   "type": "module",
   "main": "./dist/cjs/index.cjs",
