@@ -1,0 +1,66 @@
+{
+  "status": {
+    "code": "200",
+    "text": "ok"
+  },
+  "data": [
+    {
+      "bloque": [
+        {
+          "id": "preambulo",
+          "titulo": "",
+          "fecha_actualizacion": "20080226",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/preambulo"
+        },
+        {
+          "id": "a1",
+          "titulo": "Art\u00edculo 1",
+          "fecha_actualizacion": "20080226",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/a1"
+        },
+        {
+          "id": "a2",
+          "titulo": "Art\u00edculo 2",
+          "fecha_actualizacion": "20080226",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/a2"
+        },
+        {
+          "id": "a3",
+          "titulo": "Art\u00edculo 3",
+          "fecha_actualizacion": "20160115",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/a3"
+        },
+        {
+          "id": "a4",
+          "titulo": "Art\u00edculo 4",
+          "fecha_actualizacion": "20080226",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/a4"
+        },
+        {
+          "id": "a5",
+          "titulo": "Art\u00edculo 5",
+          "fecha_actualizacion": "20080226",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/a5"
+        },
+        {
+          "id": "dtunica",
+          "titulo": "Disposici\u00f3n transitoria \u00fanica",
+          "fecha_actualizacion": "20080226",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/dtunica"
+        },
+        {
+          "id": "dfunica",
+          "titulo": "Disposici\u00f3n final \u00fanica",
+          "fecha_actualizacion": "20080226",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/dfunica"
+        },
+        {
+          "id": "firma",
+          "titulo": "",
+          "fecha_actualizacion": "20080226",
+          "url": "https:\/\/www.boe.es\/datosabiertos\/api\/legislacion-consolidada\/id\/BOE-A-2008-3580\/texto\/bloque\/firma"
+        }
+      ]
+    }
+  ]
+}

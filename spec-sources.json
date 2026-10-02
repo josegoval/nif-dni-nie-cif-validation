@@ -1,0 +1,206 @@
+{
+  "$comment": "The official sources SPEC.md cites (T1 and T2), with the values recorded when a maintainer last reviewed them. Checked monthly by .github/workflows/spec-sources.yml; record new values with `pnpm spec:sources:update` (CONTRIBUTING.md, \"Official sources\").",
+  "sources": [
+    {
+      "id": "rd-1065-2007",
+      "name": "RD 1065/2007 (RGAT), arts. 19–22, 24 and 25",
+      "short": "RD 1065/2007",
+      "tier": "T1",
+      "kind": "boe-consolidated",
+      "boeId": "BOE-A-2007-15984",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2007-15984",
+      "articles": [
+        "Artículo 19",
+        "Artículo 20",
+        "Artículo 21",
+        "Artículo 22",
+        "Artículo 24",
+        "Artículo 25"
+      ],
+      "citedBy": "NIF-1, DNI-1, KLM-1, KLM-3, CIF-1, VAT-1, NORM-1",
+      "recorded": {
+        "last update": "2026-09-30",
+        "repealed": "N",
+        "annulled": "N",
+        "expired": "N",
+        "Artículo 19": "2007-09-05",
+        "Artículo 20": "2007-09-05",
+        "Artículo 21": "2011-11-26",
+        "Artículo 22": "2007-09-05",
+        "Artículo 24": "2017-12-30",
+        "Artículo 25": "2010-03-02"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "BOE open data API"
+    },
+    {
+      "id": "orden-eha-451-2008",
+      "name": "Orden EHA/451/2008 (consolidated, as amended by Orden HAP/5/2016)",
+      "short": "Orden EHA/451/2008",
+      "tier": "T1",
+      "kind": "boe-consolidated",
+      "boeId": "BOE-A-2008-3580",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2008-3580",
+      "citedBy": "CIF-1, CIF-2, CIF-5",
+      "recorded": {
+        "last update": "2016-01-15",
+        "repealed": "N",
+        "annulled": "N",
+        "expired": "N"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "BOE open data API"
+    },
+    {
+      "id": "orden-hap-5-2016",
+      "name": "Orden HAP/5/2016",
+      "short": "Orden HAP/5/2016",
+      "tier": "T1",
+      "kind": "boe-document",
+      "boeId": "BOE-A-2016-358",
+      "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2016-358",
+      "citedBy": "CIF-2",
+      "recorded": {
+        "repealed": "N",
+        "annulled": "N",
+        "expired": "N",
+        "later references": "none"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "BOE document XML"
+    },
+    {
+      "id": "orden-int-2058-2008",
+      "name": "Orden INT/2058/2008",
+      "short": "Orden INT/2058/2008",
+      "tier": "T1",
+      "kind": "boe-document",
+      "boeId": "BOE-A-2008-12050",
+      "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2008-12050",
+      "citedBy": "NIE-1, NIE-3",
+      "recorded": {
+        "repealed": "N",
+        "annulled": "N",
+        "expired": "N",
+        "later references": "none"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "BOE document XML"
+    },
+    {
+      "id": "orden-7-2-1997",
+      "name": "Orden 7/2/1997 (consolidated), apartado sexto",
+      "short": "Orden 7/2/1997",
+      "tier": "T1",
+      "kind": "boe-consolidated",
+      "boeId": "BOE-A-1997-3364",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-1997-3364",
+      "articles": ["Sexto"],
+      "citedBy": "NIE-1, NIE-3 (apartado sexto.a, as amended by Orden INT/2058/2008)",
+      "recorded": {
+        "last update": "2008-07-15",
+        "repealed": "N",
+        "annulled": "N",
+        "expired": "N",
+        "Sexto": "2008-07-15"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "BOE open data API"
+    },
+    {
+      "id": "rd-255-2025",
+      "name": "RD 255/2025 (DNI)",
+      "short": "RD 255/2025",
+      "tier": "T1",
+      "kind": "boe-consolidated",
+      "boeId": "BOE-A-2025-6601",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2025-6601",
+      "citedBy": "Source tiers (the DNI; replaced RD 1553/2005)",
+      "recorded": {
+        "last update": "2025-04-02",
+        "repealed": "N",
+        "annulled": "N",
+        "expired": "N"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "BOE open data API"
+    },
+    {
+      "id": "rd-1155-2024",
+      "name": "RD 1155/2024 (extranjería), art. 205",
+      "short": "RD 1155/2024",
+      "tier": "T1",
+      "kind": "boe-consolidated",
+      "boeId": "BOE-A-2024-24099",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2024-24099",
+      "articles": ["Artículo 205"],
+      "citedBy": "Source tiers (the NIE; replaced RD 557/2011)",
+      "recorded": {
+        "last update": "2026-09-22",
+        "repealed": "N",
+        "annulled": "N",
+        "expired": "N",
+        "Artículo 205": "2024-11-20"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "BOE open data API"
+    },
+    {
+      "id": "interior-nif-nie",
+      "name": "Ministerio del Interior, «Cálculo del dígito de control del NIF/NIE»",
+      "short": "Interior check-letter page",
+      "tier": "T2",
+      "kind": "page",
+      "url": "https://www.interior.gob.es/opencms/es/servicios-al-ciudadano/tramites-y-gestiones/dni/calculo-del-digito-de-control-del-nif-nie/",
+      "section": {
+        "from": "class=\"piece-heading\"",
+        "to": "class=\"col-lg-3 order-lg-first"
+      },
+      "citedBy": "DNI-2, NIE-2",
+      "recorded": {
+        "section hash": "sha256:443574ee458b0c26061f5dc4c4dbee410186b8fac525fb43d545402d692dd814",
+        "section length": "951 characters"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "Wayback Machine snapshot of 2026-02-28 (live page: HTTP 403)"
+    },
+    {
+      "id": "aeat-personas-fisicas",
+      "name": "AEAT Sede, «Composición del NIF: personas físicas»",
+      "short": "AEAT NIF of natural persons",
+      "tier": "T2",
+      "kind": "page",
+      "url": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-fisicas.html",
+      "section": {
+        "from": "id=\"acc-main\"",
+        "to": "<!--MODAL IMPRESI"
+      },
+      "citedBy": "DNI-1, NIE-1, NIE-3, NORM-4",
+      "recorded": {
+        "section hash": "sha256:ec9e207a01037e842376ad5a4febb93bf32dda8fee75c4e3d8978718c00ddd10",
+        "section length": "33512 characters"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "live page"
+    },
+    {
+      "id": "aeat-personas-juridicas",
+      "name": "AEAT Sede, «Composición del NIF: personas jurídicas y entidades»",
+      "short": "AEAT NIF of legal persons",
+      "tier": "T2",
+      "kind": "page",
+      "url": "https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html",
+      "section": {
+        "from": "id=\"acc-main\"",
+        "to": "<!--MODAL IMPRESI"
+      },
+      "citedBy": "Source tiers (the NIF of legal persons and entities)",
+      "recorded": {
+        "section hash": "sha256:7342a6382e0d1343aad2786fe72da1bda7d7631a084a4a5907f4f29af530d303",
+        "section length": "10374 characters"
+      },
+      "checked": "2026-10-02",
+      "checkedVia": "live page"
+    }
+  ]
+}

@@ -186,6 +186,17 @@ gualda
 # Heading anchors of SPEC.md, repeated in llms-full.txt
 getniftype
 
+# Field names of the BOE open data API, URL slugs and page markers of the
+# official sources (scripts/spec-sources.mjs, spec-sources.json)
+actualizacion
+aeat
+anulacion
+codigo
+derogacion
+fisicas
+IMPRESI
+juridicas
+
 # English words missing from the dictionaries
 alikes
 dotless
@@ -225,3 +236,4 @@ typedoc
 valibot
 vite
 vitest
+wayback

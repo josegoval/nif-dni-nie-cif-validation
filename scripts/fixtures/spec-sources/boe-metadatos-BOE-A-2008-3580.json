@@ -1,0 +1,40 @@
+{
+  "status": {
+    "code": "200",
+    "text": "ok"
+  },
+  "data": [
+    {
+      "fecha_actualizacion": "20251219T114506Z",
+      "identificador": "BOE-A-2008-3580",
+      "ambito": {
+        "codigo": "1",
+        "texto": "Estatal"
+      },
+      "departamento": {
+        "codigo": "5130",
+        "texto": "Ministerio de Econom\u00eda y Hacienda"
+      },
+      "rango": {
+        "codigo": "1350",
+        "texto": "Orden"
+      },
+      "fecha_disposicion": "20080220",
+      "numero_oficial": "EHA\/451\/2008",
+      "titulo": "Orden EHA\/451\/2008, de 20 de febrero, por la que se regula la composici\u00f3n del n\u00famero de identificaci\u00f3n fiscal de las personas jur\u00eddicas y entidades sin personalidad jur\u00eddica.",
+      "diario": "Bolet\u00edn Oficial del Estado",
+      "fecha_publicacion": "20080226",
+      "diario_numero": "49",
+      "fecha_vigencia": "20080701",
+      "estatus_derogacion": "N",
+      "estatus_anulacion": "N",
+      "vigencia_agotada": "N",
+      "estado_consolidacion": {
+        "codigo": "3",
+        "texto": "Finalizado"
+      },
+      "url_eli": "https:\/\/www.boe.es\/eli\/es\/o\/2008\/02\/20\/eha451",
+      "url_html_consolidada": "https:\/\/www.boe.es\/buscar\/act.php?id=BOE-A-2008-3580"
+    }
+  ]
+}
