@@ -169,6 +169,9 @@ jobs:
   release:
     name: Release
     if: github.event_name == 'push'
+    # RELEASE_DEPLOY_KEY is an environment secret, and the environment only
+    # accepts the release branches, so no other branch's workflow can read it.
+    environment: release
     needs: [check, compat]
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -186,6 +189,7 @@ jobs:
           # release commit pushed by semantic-release can't have. That push
           # goes through this write deploy key, which the ruleset lets
           # bypass. GitHub releases and comments still use GITHUB_TOKEN.
+          # The secret lives in the `release` environment, not the repo.
           ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
       - name: Setup pnpm
         # Version comes from `packageManager` in package.json.
