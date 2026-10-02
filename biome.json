@@ -8,6 +8,7 @@
   "files": {
     "includes": [
       "**",
+      "!docs/agent-test",
       "!!**/dist",
       "!!**/coverage",
       "!bench/results/*.json",
