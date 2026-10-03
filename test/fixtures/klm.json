@@ -61,5 +61,19 @@
     "type": "CIF",
     "rule": "CIF-3",
     "note": "J is an organisation key, not K/L/M: J takes a digit"
+  },
+  {
+    "input": "L2222222P",
+    "expected": "valid",
+    "type": "NIF_KLM",
+    "rule": "NIF-1",
+    "note": "K, L or M first selects the K/L/M format"
+  },
+  {
+    "input": "M7654321J",
+    "expected": "valid",
+    "type": "NIF_KLM",
+    "rule": "KLM-3",
+    "note": "the 7 characters after the prefix are digits"
   }
 ]

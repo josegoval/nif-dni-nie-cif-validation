@@ -34,7 +34,7 @@ pnpm typecheck     # tsc --noEmit
 pnpm test          # Vitest, 100% coverage enforced
 pnpm build         # dist/esm and dist/cjs
 pnpm spell         # cspell (British English; README.es.md also in Spanish)
-pnpm spec:check    # rule IDs in src/ and tests match SPEC.md
+pnpm spec:check    # rule IDs in src/ and tests match SPEC.md; a valid and an invalid fixture per rule
 pnpm docs:jsdoc    # every export has a summary, @param, @returns, two @example, @see, @since
 pnpm examples:install && pnpm examples:check   # pack the package, install and check examples/ (CI: examples.yml)
 pnpm build && pnpm --dir website install && pnpm --dir website check   # the website (CI: pages.yml)

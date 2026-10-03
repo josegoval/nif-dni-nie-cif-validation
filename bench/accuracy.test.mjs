@@ -13,12 +13,16 @@ import {
 
 const FIXTURES = join(process.cwd(), "test", "fixtures");
 
-// Fixture files that test an option, so they don't hold the default-options
-// expectations that other libraries are compared with.
-const OPTION_FILES = [
+// Fixture files that other libraries are not compared with: the ones that
+// test an option (so they don't hold the default-options expectations), and
+// not-a-string.json, whose inputs are not strings (INPUT-1), while the
+// libraries are called on an input string.
+const NOT_COMPARED_FILES = [
   "cif-lenient.json",
   "normalization-off.json",
+  "not-a-string.json",
   "placeholders-rejected.json",
+  "types-dni-nie.json",
   "vat-allowed.json",
 ];
 
@@ -34,12 +38,12 @@ const fixture = (input, expected, rule = "DNI-2", type = "DNI") => ({
 });
 
 describe("fixture files", () => {
-  it("every fixture file is either default-options or an option test", () =>
+  it("every fixture file is either compared or left out on purpose", () =>
     expect(
       readdirSync(FIXTURES)
         .filter((name) => name.endsWith(".json"))
         .sort()
-    ).toEqual([...DEFAULT_FIXTURE_FILES, ...OPTION_FILES].sort()));
+    ).toEqual([...DEFAULT_FIXTURE_FILES, ...NOT_COMPARED_FILES].sort()));
 
   it("loads the default-options fixtures with their file", () => {
     const fixtures = loadFixtures(FIXTURES);
