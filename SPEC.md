@@ -51,7 +51,7 @@ Last verified: 2026-09-30
 | **T1: Law (BOE)** | Published legal text in force | RD 1065/2007 (RGAT) arts. 19–22, 24, 25 · Orden EHA/451/2008 (as amended by Orden HAP/5/2016) · Orden INT/2058/2008 (in Orden 7/2/1997, apartado sexto.a) · RD 255/2025 (DNI; replaced RD 1553/2005 on 2025-04-02) · RD 1155/2024 art. 205 (NIE; replaced RD 557/2011 on 2025-05-20) |
 | **T2: Official government page** | Published by the responsible administration | Ministerio del Interior, "Cálculo del dígito de control del NIF/NIE" · AEAT Sede, "Composición del NIF" (personas físicas / personas jurídicas) |
 | **T3: Semi-official** | Internal AEAT technical document | AEAT D.I.T. note "Número de Identificación Fiscal (N.I.F.)", updated 2008-04-15, hosted by CAIB (see [Source URLs](#source-urls)) |
-| **T4: Convention** | Industry practice with no official text | Documented. Never on by default unless it only affects input cleanup. |
+| **T4: Convention** | Industry practice with no official text | Documented. Never on by default unless it only affects input cleanup, with one documented exception: no official text publishes the CIF control arithmetic, so the universal algorithm applies by default ([CIF-4](#cif-4)). |
 
 ## Rules
 
@@ -125,7 +125,7 @@ These rules don't decide which documents are valid. They say how the library tre
 
 ### Opt-in policies (off by default)
 
-These rules are not in any official source. They never apply unless the caller asks for them, so the default result always follows the official rules above.
+These rules are not in any official source. They never apply unless the caller asks for them, so they never change the default result, which follows only the rules above (official rules and the documented T4 conventions: input cleanup, and the CIF control arithmetic of [CIF-4](#cif-4)).
 
 | ID | Rule | Tier | Source |
 |---|---|---|---|
@@ -199,6 +199,7 @@ With `cifControl: "lenient"`, the digit and the letter of the same control value
 ### CIF-4: the control arithmetic is not published anywhere official
 
 - No official text defines the control arithmetic for legal-entity NIFs (see the list of texts checked in CIF-4). It is a T4 convention.
+- It is the only T4 rule that decides validity by default: without it, the control character of a legal-entity NIF could not be checked at all.
 - It is the universal industry algorithm, and it was checked against the real public-body NIFs P2807900B (Ayuntamiento de Madrid) and Q2826000H (AEAT).
 - Because it is a T4 convention, an official publication of the algorithm would take precedence over this entry.
 
