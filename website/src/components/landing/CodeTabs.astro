@@ -1,9 +1,10 @@
 ---
 // Code samples in tabs that work without JavaScript: the tabs are a radio
 // group (arrow keys move between them), and CSS shows the selected panel.
+// The last tab is the command line, with a link to its guide.
 import { Code } from "@astrojs/starlight/components";
 import { snippetsFor } from "../../data/snippets";
-import { langOf, stringsFor } from "../../i18n";
+import { langOf, localePath, stringsFor } from "../../i18n";
 
 const lang = langOf(Astro.locals.starlightRoute.lang);
 const t = stringsFor(lang).code;
@@ -15,7 +16,9 @@ const tabs = [
   { id: "valibot", label: t.tabs.valibot, code: snippets.valibot },
   { id: "yup", label: t.tabs.yup, code: snippets.yup },
   { id: "generators", label: t.tabs.generators, code: snippets.generators },
+  { id: "cli", label: t.tabs.cli, code: snippets.cli, lang: "sh" },
 ];
+const cliGuide = localePath(lang, "guides/command-line/");
 ---
 
 <section class="code not-content" aria-labelledby="code-heading">
@@ -43,7 +46,12 @@ const tabs = [
     {
       tabs.map((tab) => (
         <div class="panel" data-panel={tab.id}>
-          <Code code={tab.code} lang="ts" />
+          <Code code={tab.code} lang={tab.lang ?? "ts"} />
+          {tab.id === "cli" && (
+            <p class="note">
+              {t.cliNote.before}<a href={cliGuide}>{t.cliNote.link}</a>{t.cliNote.after}
+            </p>
+          )}
         </div>
       ))
     }
@@ -92,6 +100,15 @@ const tabs = [
     outline-offset: -2px;
     border-radius: var(--brand-radius-sm);
   }
+  .note {
+    margin: 0.75rem 0 0;
+    max-width: 45rem;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+  .note a {
+    color: var(--sl-color-text-accent);
+  }
   /* A browser without :has() shows every sample, one after the other. */
   @supports selector(:has(*)) {
     .panel {
@@ -102,7 +119,8 @@ const tabs = [
     .tabs:has(#code-tab-zod:checked) [data-panel="zod"],
     .tabs:has(#code-tab-valibot:checked) [data-panel="valibot"],
     .tabs:has(#code-tab-yup:checked) [data-panel="yup"],
-    .tabs:has(#code-tab-generators:checked) [data-panel="generators"] {
+    .tabs:has(#code-tab-generators:checked) [data-panel="generators"],
+    .tabs:has(#code-tab-cli:checked) [data-panel="cli"] {
       display: block;
     }
   }

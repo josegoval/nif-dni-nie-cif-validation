@@ -102,7 +102,7 @@ export const eu: SiteStrings = {
   code: {
     heading: "Erabili",
     intro:
-      "Egiaztapen boolearrak bai edo ez jakiteko, validate() zergatia jakin behar duzunean, eta aukerako sarrera-puntuak eskemetarako eta proba-datuetarako.",
+      "Egiaztapen boolearrak bai edo ez jakiteko, validate() zergatia jakin behar duzunean, aukerako sarrera-puntuak eskemetarako eta proba-datuetarako, eta komando-lerro bat terminaletarako, scriptetarako eta AA agenteetarako.",
     tabsLabel: "Kode-adibideak",
     tabs: {
       basic: "Oinarrizkoa",
@@ -111,6 +111,13 @@ export const eu: SiteStrings = {
       valibot: "Valibot",
       yup: "Yup",
       generators: "Sorgailuak",
+      cli: "Komando-lerroa",
+    },
+    cliNote: {
+      before:
+        "npx-ek paketea deskargatzen du lehen aldian. Script eta agenteentzako JSON irteera, irteera-kodeak, proba-datuak eta CSV fitxategien egiaztapena ",
+      link: "komando-lerroaren gidan",
+      after: " daude.",
     },
     comments: {
       normalized:

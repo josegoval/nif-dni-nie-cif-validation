@@ -103,7 +103,7 @@ export const gl: SiteStrings = {
   code: {
     heading: "Úsea",
     intro:
-      "Comprobacións booleanas para un si ou un non, validate() cando precise saber por que, e puntos de entrada opcionais para esquemas e datos de proba.",
+      "Comprobacións booleanas para un si ou un non, validate() cando precise saber por que, puntos de entrada opcionais para esquemas e datos de proba, e unha liña de comandos para terminais, scripts e axentes de IA.",
     tabsLabel: "Exemplos de código",
     tabs: {
       basic: "Básico",
@@ -112,6 +112,13 @@ export const gl: SiteStrings = {
       valibot: "Valibot",
       yup: "Yup",
       generators: "Xeradores",
+      cli: "Liña de comandos",
+    },
+    cliNote: {
+      before:
+        "npx descarga o paquete a primeira vez. A saída JSON para scripts e axentes, os códigos de saída, os datos de proba e a revisión de ficheiros CSV están na ",
+      link: "guía da liña de comandos",
+      after: ".",
     },
     comments: {
       normalized:

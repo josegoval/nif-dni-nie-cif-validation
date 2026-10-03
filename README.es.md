@@ -61,6 +61,15 @@ isValidNif("B12345675");      // false: el dígito de control no es correcto
 validate("12345678A", { locale: es }).error?.message; // "El carácter de control no es correcto: para este DNI debería ser «Z»."
 ```
 
+Desde un terminal o un script, sin escribir código:
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678Z
+# 12345678Z: valid DNI 12345678Z
+```
+
+Hay más comandos (salida `--json`, códigos de salida, datos de prueba, revisión de archivos CSV) en [Línea de comandos](#línea-de-comandos) y en la [guía de la línea de comandos](https://josegoval.github.io/nif-dni-nie-cif-validation/es/guides/command-line/) de la web.
+
 ## Contenido
 
 - [¿Qué función necesito?](#qué-función-necesito)

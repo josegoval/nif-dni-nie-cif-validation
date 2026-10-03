@@ -103,7 +103,7 @@ export const ca: SiteStrings = {
   code: {
     heading: "Feu-la servir",
     intro:
-      "Comprovacions booleanes per a un sí o un no, validate() quan necessiteu saber per què, i punts d'entrada opcionals per a esquemes i dades de prova.",
+      "Comprovacions booleanes per a un sí o un no, validate() quan necessiteu saber per què, punts d'entrada opcionals per a esquemes i dades de prova, i una línia d'ordres per a terminals, scripts i agents d'IA.",
     tabsLabel: "Exemples de codi",
     tabs: {
       basic: "Bàsic",
@@ -112,6 +112,13 @@ export const ca: SiteStrings = {
       valibot: "Valibot",
       yup: "Yup",
       generators: "Generadors",
+      cli: "Línia d'ordres",
+    },
+    cliNote: {
+      before:
+        "npx descarrega el paquet la primera vegada. La sortida JSON per a scripts i agents, els codis de sortida, les dades de prova i la revisió de fitxers CSV són a la ",
+      link: "guia de la línia d'ordres",
+      after: ".",
     },
     comments: {
       normalized:
