@@ -1,0 +1,14 @@
+import { z } from "zod";
+import { zNif } from "nif-dni-nie-cif-validation/zod";
+
+// The schema of the sign-up form. The form library (React Hook Form with
+// zodResolver) shows each issue's message next to its field.
+export const signupSchema = z.object({
+  name: z.string().trim().min(1, "Enter your name"),
+  email: z.email("Enter a valid email address"),
+  // Accepts a DNI, NIE, K/L/M NIF or CIF, tolerates spaces, dots and hyphens, and
+  // outputs the normalized value. The message says why the number is wrong.
+  nif: zNif(),
+});
+
+export type SignupForm = z.infer<typeof signupSchema>;

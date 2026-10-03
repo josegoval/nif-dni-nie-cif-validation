@@ -30,6 +30,9 @@ ignorePaths:
   - pnpm-lock.yaml
   # The examples: their own lockfile, installed packages, build output, the
   # package unpacked for them and the generated sample CSV.
+  # The agent test (docs/agent-test): the agents' files, outputs and
+  # transcripts are kept exactly as recorded. Its README.md is checked.
+  - docs/agent-test/*/**
   - examples/pnpm-lock.yaml
   - examples/**/node_modules/**
   - examples/**/dist/**

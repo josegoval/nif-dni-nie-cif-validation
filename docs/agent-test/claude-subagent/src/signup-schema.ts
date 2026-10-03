@@ -1,0 +1,17 @@
+import { z } from "zod";
+import { zNif } from "nif-dni-nie-cif-validation/zod";
+
+// The schema of the sign-up form. The form library (React Hook Form with
+// zodResolver) shows each issue's message next to its field.
+//
+// `nif` accepts any Spanish NIF (DNI, K/L/M, NIE or CIF). Its issue message
+// says what is wrong, for example 'The control character is not correct: for
+// this DNI it should be "Z".'. The parsed value is the normalized NIF
+// (" 12.345.678-z " becomes "12345678Z"), ready to store.
+export const signupSchema = z.object({
+  name: z.string().trim().min(1, "Enter your name"),
+  email: z.email("Enter a valid email address"),
+  nif: zNif(),
+});
+
+export type SignupForm = z.infer<typeof signupSchema>;

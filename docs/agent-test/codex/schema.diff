@@ -1,0 +1,17 @@
+diff --git a/src/signup-schema.ts b/src/signup-schema.ts
+index c1fdd34..6080d31 100644
+--- a/src/signup-schema.ts
++++ b/src/signup-schema.ts
+@@ -1,10 +1,12 @@
+ import { z } from "zod";
++import { zNif } from "nif-dni-nie-cif-validation/zod";
+ 
+ // The schema of the sign-up form. The form library (React Hook Form with
+ // zodResolver) shows each issue's message next to its field.
+ export const signupSchema = z.object({
+   name: z.string().trim().min(1, "Enter your name"),
+   email: z.email("Enter a valid email address"),
++  nif: zNif(),
+ });
+ 
+ export type SignupForm = z.infer<typeof signupSchema>;
