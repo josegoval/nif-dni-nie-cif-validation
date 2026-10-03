@@ -10,13 +10,19 @@
 
 `nif-dni-nie-cif-validation` comprueba identificadores fiscales españoles (NIF, DNI, NIF K/L/M, NIE y CIF) con las reglas oficiales, y te dice por qué un número no es válido. Cada regla que aplica tiene una fuente documentada en [SPEC.md](SPEC.md): legislación, documentación oficial, una nota técnica de la AEAT o una convención identificada como tal.
 
-[![npm version](https://img.shields.io/npm/v/nif-dni-nie-cif-validation)](https://www.npmjs.com/package/nif-dni-nie-cif-validation)
-[![npm downloads](https://img.shields.io/npm/dm/nif-dni-nie-cif-validation)](https://www.npmjs.com/package/nif-dni-nie-cif-validation)
-<!-- size-badge:start -->[![isValidNif: 929 B min+gzip](https://img.shields.io/badge/min%2Bgzip-isValidNif%20929%20B-blue)](#rendimiento)<!-- size-badge:end -->
-[![npm provenance](https://img.shields.io/badge/npm-provenance-blue)](https://www.npmjs.com/package/nif-dni-nie-cif-validation#provenance)
-[![CI](https://github.com/josegoval/nif-dni-nie-cif-validation/actions/workflows/release.yml/badge.svg?branch=master)](https://github.com/josegoval/nif-dni-nie-cif-validation/actions/workflows/release.yml)
-[![coverage](https://raw.githubusercontent.com/josegoval/nif-dni-nie-cif-validation/master/.github/badges/coverage.svg)](https://github.com/josegoval/nif-dni-nie-cif-validation/actions/workflows/release.yml)
-[![license: MIT](https://img.shields.io/npm/l/nif-dni-nie-cif-validation)](LICENSE)
+En la web están las guías, la referencia de la API (en inglés), un validador en vivo y los benchmarks, en español, inglés, catalán, euskera y gallego: <https://josegoval.github.io/nif-dni-nie-cif-validation/es/>.
+
+<!-- badges:start -->
+<p>
+  <a href="https://www.npmjs.com/package/nif-dni-nie-cif-validation"><img alt="npm version" src="https://img.shields.io/npm/v/nif-dni-nie-cif-validation?style=flat"></a>
+  <a href="https://npm-stat.com/charts.html?package=nif-dni-nie-cif-validation"><img alt="npm downloads per month" src="https://img.shields.io/npm/dm/nif-dni-nie-cif-validation?style=flat"></a>
+  <a href="#rendimiento"><img alt="isValidNif: 929 B min+gzip" src="https://img.shields.io/badge/min%2Bgzip-isValidNif%20929%20B-blue?style=flat"></a>
+  <a href="https://www.npmjs.com/package/nif-dni-nie-cif-validation#provenance"><img alt="npm provenance" src="https://img.shields.io/badge/npm-provenance-blue?style=flat"></a>
+  <a href="https://github.com/josegoval/nif-dni-nie-cif-validation/actions/workflows/release.yml"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/josegoval/nif-dni-nie-cif-validation/release.yml?branch=master&amp;label=CI&amp;style=flat"></a>
+  <a href="https://josegoval.github.io/nif-dni-nie-cif-validation/coverage/"><img alt="coverage: 100% required by CI" src="https://img.shields.io/endpoint?url=https://josegoval.github.io/nif-dni-nie-cif-validation/coverage/badge.json&amp;style=flat"></a>
+  <a href="LICENSE"><img alt="license: MIT" src="https://img.shields.io/npm/l/nif-dni-nie-cif-validation?style=flat"></a>
+</p>
+<!-- badges:end -->
 
 ## Inicio rápido
 

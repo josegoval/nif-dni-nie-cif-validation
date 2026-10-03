@@ -195,6 +195,10 @@ subpath
 subpaths
 uncited
 
+# The colour names of shields.io badges (scripts/coverage-badge.mjs)
+brightgreen
+yellowgreen
+
 # Tools, packages and accounts
 applebot
 arethetypeswrong

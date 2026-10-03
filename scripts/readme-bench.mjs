@@ -2,7 +2,8 @@
 // Writes the generated parts of README.md and README.es.md from
 // bench/results/latest.json (#53), so no number in them is typed by hand:
 //
-// - `<!-- size-badge:start -->…<!-- size-badge:end -->`: the bundle size badge;
+// - `<!-- badges:start -->…<!-- badges:end -->`: the row of badges, the bundle
+//   size among them, the same images in the same order in both READMEs;
 // - `<!-- bench:start -->…<!-- bench:end -->`: the Performance section
 //   (throughput, the speed-up against v1.0.11, bundle sizes, agreement with
 //   SPEC.md, the machine);
@@ -123,7 +124,6 @@ const TEXT = {
       "Size, any type (min+gzip)",
       "Last release",
     ],
-    badgeAlt: (bytes) => `isValidNif: ${bytes} min+gzip`,
     anchor: "#performance",
   },
   es: {
@@ -172,7 +172,6 @@ const TEXT = {
       "Tamaño, cualquier tipo (min+gzip)",
       "Fecha de la última versión",
     ],
-    badgeAlt: (bytes) => `isValidNif: ${bytes} min+gzip`,
     anchor: "#rendimiento",
   },
 };
@@ -375,17 +374,94 @@ function compareSection(report, lang) {
   ].join("\n");
 }
 
-function sizeBadge(report, lang) {
-  const size = bytes(report.sizes[report.subject].any.gzipBytes, lang);
-  const message = encodeURIComponent(
-    `isValidNif ${size.replace(" ", " ")}`
-  ).replaceAll("-", "--");
-  const t = TEXT[lang];
-  return `[![${t.badgeAlt(size)}](https://img.shields.io/badge/min%2Bgzip-${message}-blue)](${t.anchor})`;
+const PACKAGE = "nif-dni-nie-cif-validation";
+const REPO = `josegoval/${PACKAGE}`;
+const NPM_PAGE = `https://www.npmjs.com/package/${PACKAGE}`;
+const SITE = `https://josegoval.github.io/${PACKAGE}/`;
+
+/**
+ * The README's badges, in order: alt text, image and link. All are drawn by
+ * shields.io in the flat style. Both READMEs show the same images with the
+ * same alt text (the images are in English); only the size badge's link,
+ * a heading anchor, follows the language.
+ *
+ * - Downloads link to npm-stat, which charts the monthly downloads the
+ *   badge shows (npm's page only has the weekly figure).
+ * - Coverage is read from /coverage/badge.json on the website, which the
+ *   Pages build writes from the test run (scripts/coverage-badge.mjs); no
+ *   coverage service. The alt text states the threshold that
+ *   vitest.config.mts enforces, not a measured figure.
+ */
+function badges(report, lang) {
+  const size = bytes(report.sizes[report.subject].any.gzipBytes, "en");
+  const sizeMessage = encodeURIComponent(`isValidNif ${size}`).replaceAll(
+    "-",
+    "--"
+  );
+  const shields = (path) =>
+    `https://img.shields.io/${path}${path.includes("?") ? "&" : "?"}style=flat`;
+  return [
+    {
+      alt: "npm version",
+      src: shields(`npm/v/${PACKAGE}`),
+      href: NPM_PAGE,
+    },
+    {
+      alt: "npm downloads per month",
+      src: shields(`npm/dm/${PACKAGE}`),
+      href: `https://npm-stat.com/charts.html?package=${PACKAGE}`,
+    },
+    {
+      alt: `isValidNif: ${size} min+gzip`,
+      src: shields(
+        `badge/${encodeURIComponent("min+gzip")}-${sizeMessage}-blue`
+      ),
+      href: TEXT[lang].anchor,
+    },
+    {
+      alt: "npm provenance",
+      src: shields("badge/npm-provenance-blue"),
+      href: `${NPM_PAGE}#provenance`,
+    },
+    {
+      alt: "CI status",
+      src: shields(
+        `github/actions/workflow/status/${REPO}/release.yml?branch=master&label=CI`
+      ),
+      href: `https://github.com/${REPO}/actions/workflows/release.yml`,
+    },
+    {
+      alt: "coverage: 100% required by CI",
+      src: shields(`endpoint?url=${SITE}coverage/badge.json`),
+      href: `${SITE}coverage/`,
+    },
+    {
+      alt: "license: MIT",
+      src: shields(`npm/l/${PACKAGE}`),
+      href: "LICENSE",
+    },
+  ];
+}
+
+/**
+ * The badges as one HTML paragraph, one link per line. HTML, not Markdown:
+ * a line of Markdown badges next to an HTML block (or starting with a
+ * comment marker) is not parsed by GitHub and shows as raw text.
+ */
+function badgesBlock(report, lang) {
+  const attr = (value) => value.replaceAll("&", "&amp;");
+  return [
+    "<p>",
+    ...badges(report, lang).map(
+      ({ alt, src, href }) =>
+        `  <a href="${attr(href)}"><img alt="${attr(alt)}" src="${attr(src)}"></a>`
+    ),
+    "</p>",
+  ].join("\n");
 }
 
 /** Replaces what is between `<!-- name:start -->` and `<!-- name:end -->`. */
-function fill(markdown, name, content, file, { inline = false } = {}) {
+function fill(markdown, name, content, file) {
   const start = `<!-- ${name}:start -->`;
   const end = `<!-- ${name}:end -->`;
   const from = markdown.indexOf(start);
@@ -393,14 +469,11 @@ function fill(markdown, name, content, file, { inline = false } = {}) {
   if (from < 0 || to < from) {
     throw new Error(`${file}: the markers ${start} and ${end} are missing`);
   }
-  const body = inline ? content : `\n${content}\n`;
-  return markdown.slice(0, from + start.length) + body + markdown.slice(to);
+  return `${markdown.slice(0, from + start.length)}\n${content}\n${markdown.slice(to)}`;
 }
 
 function render(markdown, report, lang, file) {
-  let out = fill(markdown, "size-badge", sizeBadge(report, lang), file, {
-    inline: true,
-  });
+  let out = fill(markdown, "badges", badgesBlock(report, lang), file);
   out = fill(out, "bench", benchSection(report, lang), file);
   return fill(out, "compare", compareSection(report, lang), file);
 }

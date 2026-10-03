@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for AI coding agents, and people, working **on this repository**. To use the package, read [README.md](README.md) or [llms.txt](llms.txt) instead. The details behind each point are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Guidance for AI coding agents, and people, working **on this repository**. To use the package, read [README.md](README.md), [llms.txt](llms.txt) or the website (<https://josegoval.github.io/nif-dni-nie-cif-validation/>) instead. The details behind each point are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 `nif-dni-nie-cif-validation` is a zero-dependency TypeScript library that validates Spanish NIF, DNI, K/L/M NIF, NIE and CIF numbers. Every rule it applies has an ID, a source tier and a citation in [SPEC.md](SPEC.md) (the law in the BOE, AEAT and Ministerio del Interior pages, or a labelled convention). That traceability is the point of the project.
 
@@ -56,6 +56,7 @@ Before every commit, run `pnpm lint && pnpm typecheck && pnpm test && pnpm build
 - **100% coverage** of statements, branches, functions and lines, and the differential test against v1.0.11 stays green.
 - **One data source for numbers.** Benchmark figures come only from `bench/results/latest.json`, through `pnpm readme:bench` and `pnpm bench:report`. Never type a number between the `<!-- …:start -->` and `<!-- …:end -->` markers of the READMEs.
 - **Docs that run.** Every code sample in README.md, README.es.md and llms.txt runs in `readme-examples.test.ts`, every `@example` of the JSDoc in `jsdoc-examples.test.ts`, and every code sample of the website's pages in `website-examples.test.ts`; the comment after a statement is its expected value. Keep the two READMEs in step, the website's languages in step (the same pages and code), and llms.txt under about 2,000 tokens.
+- **README badges.** `pnpm readme:bench` writes the row of badges in both READMEs, as HTML and in the flat shields.io style; don't edit it by hand. `scripts/readme-badges.test.mjs` fails on a Markdown badge next to HTML, a badge without `style=flat`, alt text or a link, or badges that differ between the two READMEs.
 - **JSDoc on every export.** `pnpm docs:jsdoc` fails without a summary, `@since`, and for a function `@param`, `@returns`, two `@example` and a `@see`. An alias (`isValidCif`) is a constant with its own JSDoc, never a re-export under another name.
 - **Plain docs.** No hidden instructions for agents in docs, code comments or `package.json`.
 - **Atomic Conventional Commits.** One logical change per commit, every commit green, body lines of 100 characters at most, and no body line that starts with `word: ` (commitlint reads it as a footer).

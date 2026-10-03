@@ -10,6 +10,8 @@ Source: Overview (README.md), https://github.com/josegoval/nif-dni-nie-cif-valid
 
 `nif-dni-nie-cif-validation` checks Spanish tax IDs (NIF, DNI, K/L/M NIF, NIE and CIF) against the official rules, and tells you why a number is wrong. Every rule it applies has a source documented in [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md): the law, official guidance, an AEAT technical note, or a convention labelled as such.
 
+The website has the guides, the API reference, a live validator and the benchmarks, in English, Spanish, Catalan, Basque and Galician: <https://josegoval.github.io/nif-dni-nie-cif-validation/>.
+
 ## Quick start
 
 ```sh
@@ -838,7 +840,7 @@ Source: Migrating from v1 (MIGRATION.md), https://github.com/josegoval/nif-dni-n
 
 # Migrating from v1 to v2
 
-Version 2.0.0 makes the validators follow [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md), the official Spanish sources, by default. This page lists every breaking change, with code before and after, and how to get the v1 behaviour back.
+Version 2.0.0 makes the validators follow [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md), the official Spanish sources, by default. This page lists every breaking change, with code before and after, and how to get the v1 behaviour back. The website has a shorter, step-by-step version in English, Spanish, Catalan, Basque and Galician: [Migrating from v1](https://josegoval.github.io/nif-dni-nie-cif-validation/migration/from-v1/).
 
 ## Quick path: keep the v1 behaviour
 
