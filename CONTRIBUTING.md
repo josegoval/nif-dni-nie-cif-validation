@@ -131,6 +131,8 @@ It also fails unless every SPEC rule has at least one **valid** fixture (`"expec
 
 The law and the official pages change: RD 1553/2005 (DNI) was repealed in 2025, and Orden EHA/451/2008 was amended in 2016. The workflow `.github/workflows/spec-sources.yml` ("Official sources") checks them on the 1st of every month and opens an issue labelled `spec-change` when one has changed. It runs `scripts/spec-sources.mjs` (no dependencies), which compares each source with the values recorded in `spec-sources.json`:
 
+The issue is assigned to the repository owner, so GitHub notifies them whatever their watch settings are. Sources that can't be read are not changes: they only appear as a warning in the run's summary, so look at the latest run now and then. Each run takes seconds and installs nothing (Actions minutes are free for public repositories). GitHub disables scheduled workflows in a public repository after 60 days without activity in it; if that happens, the check stops without failing, so re-enable "Official sources" in the Actions tab.
+
 | Source | Read from | Recorded values |
 |---|---|---|
 | T1, consolidated BOE texts (`act.php`): RD 1065/2007, Orden EHA/451/2008, Orden 7/2/1997, RD 255/2025, RD 1155/2024 | The [BOE open data API](https://www.boe.es/datosabiertos/): `/legislacion-consolidada/id/<BOE id>/metadatos` and `/texto/indice` | The last update of the text (the newest date of its blocks, which is the "Última actualización" of `act.php`), the date of each article SPEC.md cites (`articles`), and the repeal, annulment and expiry flags (`N` = no) |
