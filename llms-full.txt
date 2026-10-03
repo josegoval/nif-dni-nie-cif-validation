@@ -585,9 +585,9 @@ Source: API reference and design (docs/api-design.md), https://github.com/josego
 
 # v2 API design
 
-Status: accepted for 2.0.0 (#56); the v2 pull requests are pending the maintainer's review.
+Status: accepted (#56) and released in 2.0.0 (2026-10-02). D13, the command line interface, was released in 2.1.0 (2026-10-03).
 
-This document describes the public API of `nif-dni-nie-cif-validation` 2.0.0 and the reasons behind each decision. Every behaviour follows [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md) lists what changes for v1 users.
+This document describes the public API of `nif-dni-nie-cif-validation` 2 and the reasons behind each decision. Every behaviour follows [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md) lists what changes for v1 users.
 
 ## Goals
 
@@ -1142,7 +1142,7 @@ Source: Validation rules and their sources (SPEC.md), https://github.com/josegov
 
 # Validation rules specification
 
-This document is the official specification of what `nif-dni-nie-cif-validation` accepts and rejects, and why. Every rule has an ID, a source tier and a citation, so any behaviour of the library can be traced back to the text that justifies it (or be labelled as convention when no official text exists).
+This document is the authoritative specification of what `nif-dni-nie-cif-validation` accepts and rejects, and why. It is the library's own document, not a government one: every rule has an ID, a source tier and a citation, so any behaviour of the library can be traced back to the official text that justifies it (or be labelled as convention when no official text exists).
 
 Last verified: 2026-09-30
 

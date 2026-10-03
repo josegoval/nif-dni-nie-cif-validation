@@ -1,8 +1,8 @@
 # v2 API design
 
-Status: accepted for 2.0.0 (#56); the v2 pull requests are pending the maintainer's review.
+Status: accepted (#56) and released in 2.0.0 (2026-10-02). D13, the command line interface, was released in 2.1.0 (2026-10-03).
 
-This document describes the public API of `nif-dni-nie-cif-validation` 2.0.0 and the reasons behind each decision. Every behaviour follows [SPEC.md](../SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](../MIGRATION.md) lists what changes for v1 users.
+This document describes the public API of `nif-dni-nie-cif-validation` 2 and the reasons behind each decision. Every behaviour follows [SPEC.md](../SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](../MIGRATION.md) lists what changes for v1 users.
 
 ## Goals
 

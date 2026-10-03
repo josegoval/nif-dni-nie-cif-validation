@@ -1,6 +1,6 @@
 # Validation rules specification
 
-This document is the official specification of what `nif-dni-nie-cif-validation` accepts and rejects, and why. Every rule has an ID, a source tier and a citation, so any behaviour of the library can be traced back to the text that justifies it (or be labelled as convention when no official text exists).
+This document is the authoritative specification of what `nif-dni-nie-cif-validation` accepts and rejects, and why. It is the library's own document, not a government one: every rule has an ID, a source tier and a citation, so any behaviour of the library can be traced back to the official text that justifies it (or be labelled as convention when no official text exists).
 
 Last verified: 2026-09-30
 
