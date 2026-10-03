@@ -2,6 +2,9 @@
 // (README.md, which the library's tests run), with the comments in the
 // page's language. The results in the comments are computed here, at build
 // time, by the package itself, so they can't drift from what it returns.
+// The command line sample runs the package's own executable the same way.
+import { spawnSync } from "node:child_process";
+import { join } from "node:path";
 import {
   isValidNif,
   type NifLocale,
@@ -40,6 +43,33 @@ const str = (value: unknown) =>
 const result = (value: boolean, comment?: string) =>
   comment ? `${value}: ${comment}` : String(value);
 
+/**
+ * A terminal session: each command, run with the package's executable
+ * (dist/esm/cli/bin.mjs, built before the site), followed by what it
+ * prints as `# ` lines, the way the docs show commands
+ * (src/__tests__/cli-docs.test.ts). The arguments have no spaces, so they
+ * need no quotes.
+ */
+function terminal(commands: string[][]): string {
+  const bin = join(import.meta.env.REPO_ROOT, "dist/esm/cli/bin.mjs");
+  return commands
+    .flatMap((args) => {
+      const run = spawnSync(process.execPath, [bin, ...args], {
+        encoding: "utf8",
+      });
+      if (run.error || run.status === null || run.status > 1)
+        throw new Error(
+          `snippets: \`${PACKAGE} ${args.join(" ")}\` failed: ${run.error ?? run.stderr}`
+        );
+      const output = `${run.stdout}${run.stderr}`.trimEnd().split("\n");
+      return [
+        `npx ${PACKAGE} ${args.join(" ")}`,
+        ...output.map((line) => `# ${line}`),
+      ];
+    })
+    .join("\n");
+}
+
 export interface Snippets {
   basic: string;
   validate: string;
@@ -47,6 +77,8 @@ export interface Snippets {
   valibot: string;
   yup: string;
   generators: string;
+  /** A shell session, not TypeScript. */
+  cli: string;
 }
 
 export function snippetsFor(lang: Lang, t: SiteStrings["code"]): Snippets {
@@ -181,5 +213,20 @@ export function snippetsFor(lang: Lang, t: SiteStrings["code"]): Snippets {
     ]),
   ].join("\n");
 
-  return { basic, validate: validateSample, zod, valibot, yup, generators };
+  // English is the default: the other languages pass --locale.
+  const localeFlag = lang === "en" ? [] : ["--locale", lang];
+  const cli = terminal([
+    ["validate", "12345678Z", "B12345674", "12345678A", ...localeFlag],
+    ["generate", "dni", "--count", "2", "--seed", "42"],
+  ]);
+
+  return {
+    basic,
+    validate: validateSample,
+    zod,
+    valibot,
+    yup,
+    generators,
+    cli,
+  };
 }

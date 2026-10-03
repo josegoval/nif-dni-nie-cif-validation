@@ -102,7 +102,7 @@ export const es: SiteStrings = {
   code: {
     heading: "Úsala",
     intro:
-      "Comprobaciones booleanas para un sí o un no, validate() cuando necesitas saber por qué, y puntos de entrada opcionales para esquemas y datos de prueba.",
+      "Comprobaciones booleanas para un sí o un no, validate() cuando necesitas saber por qué, puntos de entrada opcionales para esquemas y datos de prueba, y una línea de comandos para terminales, scripts y agentes de IA.",
     tabsLabel: "Ejemplos de código",
     tabs: {
       basic: "Básico",
@@ -111,6 +111,13 @@ export const es: SiteStrings = {
       valibot: "Valibot",
       yup: "Yup",
       generators: "Generadores",
+      cli: "Línea de comandos",
+    },
+    cliNote: {
+      before:
+        "npx descarga el paquete la primera vez. La salida JSON para scripts y agentes, los códigos de salida, los datos de prueba y la revisión de archivos CSV están en la ",
+      link: "guía de la línea de comandos",
+      after: ".",
     },
     comments: {
       normalized:

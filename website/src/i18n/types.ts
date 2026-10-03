@@ -101,7 +101,13 @@ export interface SiteStrings {
       valibot: string;
       yup: string;
       generators: string;
+      cli: string;
     };
+    /**
+     * Under the command line sample: `before`, then a link to the command
+     * line guide with the text `link`, then `after`.
+     */
+    cliNote: { before: string; link: string; after: string };
     /** Comments in the code samples (the code itself stays in English). */
     comments: {
       normalized: string;

@@ -95,7 +95,7 @@ export const en: SiteStrings = {
   code: {
     heading: "Use it",
     intro:
-      "Boolean checks for a yes or no, validate() when you need to know why, and opt-in entry points for schemas and test data.",
+      "Boolean checks for a yes or no, validate() when you need to know why, opt-in entry points for schemas and test data, and a command line for terminals, scripts and AI agents.",
     tabsLabel: "Code examples",
     tabs: {
       basic: "Basic",
@@ -104,6 +104,13 @@ export const en: SiteStrings = {
       valibot: "Valibot",
       yup: "Yup",
       generators: "Generators",
+      cli: "Command line",
+    },
+    cliNote: {
+      before:
+        "npx downloads the package the first time. JSON output for scripts and agents, exit codes, test data and CSV checks are in the ",
+      link: "command line guide",
+      after: ".",
     },
     comments: {
       normalized:

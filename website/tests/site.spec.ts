@@ -96,6 +96,17 @@ test.describe("without JavaScript", () => {
       await expect(page.locator(`[data-panel="${id}"]`)).toBeVisible();
       await expect(page.locator('[data-panel="zod"]')).toBeHidden();
     }
+    // The command line tab runs the package's executable at build time.
+    await page.getByText(en.code.tabs.cli, { exact: true }).click();
+    const cli = page.locator('[data-panel="cli"]');
+    await expect(cli).toBeVisible();
+    await expect(cli).toContainText(
+      "npx nif-dni-nie-cif-validation validate 12345678Z"
+    );
+    await expect(cli).toContainText("# 12345678Z: valid DNI 12345678Z");
+    await expect(
+      cli.getByRole("link", { name: en.code.cliNote.link })
+    ).toHaveAttribute("href", /\/guides\/command-line\/$/);
   });
 });
 
