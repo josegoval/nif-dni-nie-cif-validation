@@ -1,0 +1,18 @@
+{
+  "name": "example-bundle-nextjs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A Next.js production build whose client component imports only isValidDni, and a check that the client chunks hold no message or language of the package.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
+    "check": "pnpm build && node check-bundle.mjs"
+  },
+  "dependencies": {
+    "next": "^16.3.7",
+    "nif-dni-nie-cif-validation": "file:../.pack/package",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}

@@ -12,6 +12,8 @@ Runnable projects that use `nif-dni-nie-cif-validation`. Each one is small, has 
 | [yup](yup) | The `/yup` schemas: normalized output, localized error with code and rule | `pnpm start` |
 | [generate-test-data](generate-test-data) | A Vitest fixture factory built on `createGenerator(seed)` | `pnpm start` (`pnpm check` runs the tests once) |
 | [csv-bulk-validation](csv-bulk-validation) | Streams a CSV with Node streams, reports invalid rows with error codes and rules, and the throughput | `pnpm start` |
+| [bundle-webpack](bundle-webpack) | A webpack production build that imports only `isValidDni`, and a check that the bundle holds no message or language | `pnpm check` |
+| [bundle-nextjs](bundle-nextjs) | A Next.js production build with a client component that imports only `isValidDni`, and a check that the client chunks hold no message or language | `pnpm check` |
 | [deno](deno) | The package under Deno 2 | `pnpm start` (needs Deno) |
 | [bun](bun) | The package under Bun | `pnpm start` (needs Bun) |
 
@@ -39,6 +41,7 @@ The examples are copyable: in your own project, install the package from npm (`n
 
 1. Make `examples/<name>/` with a `package.json` (`"private": true`, the dependency above, and a `check` script that fails when the result is wrong) and a README with a one-line purpose and its run command.
 2. Run `pnpm add <what it needs>` in the folder, which updates [pnpm-lock.yaml](pnpm-lock.yaml); commit it.
-3. Add the name to the `matrix` of [.github/workflows/examples.yml](../.github/workflows/examples.yml) and to the table above, and link it from the README.
+3. If it checks a bundle, reuse `shared/bundle-check.mjs` (see `bundle-webpack/check-bundle.mjs`).
+4. Add the name to the `matrix` of [.github/workflows/examples.yml](../.github/workflows/examples.yml) and to the table above, and link it from the README.
 
 See CONTRIBUTING.md ("Examples") for how CI runs them, and why Deno and Bun are in it.

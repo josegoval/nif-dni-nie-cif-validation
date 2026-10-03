@@ -94,19 +94,21 @@ The emitted code targets ES2016 (`target` in `tsconfig.json`), as v1 did, so it 
 | Entry (`.size-limit.json`) | Size | Limit |
 | --- | ---: | ---: |
 | `import { isValidNif }` | 929 B | 960 B |
-| `import { isValidDni }` | 624 B | 645 B |
+| `import { isValidDni }` | 623 B | 645 B |
 | `import { isValidNie }` | 586 B | 605 B |
-| `import { isValidCif }` | 562 B | 580 B |
+| `import { isValidCif }` | 568 B | 580 B |
 | `import { isValidSpanishVat }` | 965 B | 995 B |
-| `import { validate }` (English built in) | 2713 B | 2795 B |
-| `import { validate }` + `locales/es` | 3528 B | 3635 B |
-| `import *` (the whole ES module build) | 4648 B | 4790 B |
-| `import { generateDni }` from `/generate` | 1897 B | 1955 B |
-| `import { generateInvalid }` from `/generate` | 2040 B | 2100 B |
-| `import *` from `/generate` (every generator) | 3132 B | 3225 B |
-| `import { zNif }` from `/zod` (without Zod) | 3065 B | 3160 B |
+| `import { validate }` (English built in) | 2719 B | 2795 B |
+| `import { validate }` + `locales/es` | 3534 B | 3635 B |
+| `import *` (the whole ES module build) | 4678 B | 4790 B |
+| `import { generateDni }` from `/generate` | 1895 B | 1955 B |
+| `import { generateInvalid }` from `/generate` | 2041 B | 2100 B |
+| `import *` from `/generate` (every generator) | 3130 B | 3225 B |
+| `import { zNif }` from `/zod` (without Zod) | 3066 B | 3160 B |
 | `import { vNif }` from `/valibot` (without Valibot) | 3160 B | 3255 B |
 | `import { yNif }` from `/yup` (without Yup) | 3108 B | 3205 B |
+
+**The accepted size targets.** The first plan for the package (#48) asked for a single validator of at most 600 B and the whole core of at most 1.2 kB, minified and gzipped. Those numbers were set before the v2 API, and the revised budgets above are the accepted targets: `isValidNif` 960 B, `isValidDni` 645 B, `isValidNie` 605 B, `isValidCif` 580 B, and the whole ES module build 4.79 kB. Each validator is smaller than in v1, where any single import costs 1,517 B minified and gzipped (`bench/results/latest.json`, which is also where the README and the site take their numbers). The whole library is bigger than v1 (1,514 B) because v2 adds much more: `validate()` with its English messages and organisation names, `normalize()`, `format()` and `isValidSpanishVat()` in the root entry point, and, as separate entry points that the 4.79 kB does not include, the other languages, the generators and the schema adapters. A consumer pays only for what it imports, so the budget of each validator is the one that matters. Keep the limits where they are, and raise one only with the reason in the same commit.
 
 The booleans stay this small because they never reach `normalize()` or `validate()`: their slow path only removes separators (`removeSeparators`) and checks again, and POLICY-1 reads the number of the document (`isPlaceholderDocument`). Keep module-level code to declarations: a table filled by a loop when the module loads can't be dropped by a bundler, so prefer a string or arithmetic.
 
@@ -199,10 +201,11 @@ Constants and types need a summary and `@since`; give them examples too when the
 
 ### Examples
 
-`examples/` has runnable projects (Node with CommonJS and ES modules, React Hook Form with Zod, Express, Valibot, Yup, a Vitest fixture factory, a CSV bulk validation, Deno and Bun), each with its own `package.json` and a README with its run command. See [examples/README.md](examples/README.md).
+`examples/` has runnable projects (Node with CommonJS and ES modules, React Hook Form with Zod, Express, Valibot, Yup, a Vitest fixture factory, a CSV bulk validation, a webpack build and a Next.js build that prove a bundle of `isValidDni` has no messages, Deno and Bun), each with its own `package.json` and a README with its run command. See [examples/README.md](examples/README.md).
 
 - **They use the packed package.** `pnpm examples:install` runs `pnpm pack` and unpacks the tarball into `examples/.pack/package` (`scripts/pack-for-examples.mjs`; ignored by Git). Every example depends on it with `"file:../.pack/package"`, so it runs against the `exports`, the `files` and the types that npm would ship, not against `src/`. Run `pnpm examples:pack` again after changing the library.
 - **They don't touch the library's install.** `examples/` is its own pnpm workspace (`examples/pnpm-workspace.yaml`, its own `pnpm-lock.yaml`), and the root `pnpm-workspace.yaml` has no `packages`, so the root `pnpm install --frozen-lockfile` never installs React, Vite or Express. The examples' workspace repeats the root's supply-chain policy: `minimumReleaseAge: 4320` and `allowBuilds` (esbuild's install script stays denied, as in the root). Dependabot is not set up for `examples/`: it would have to resolve the `file:../.pack/package` dependency, a folder that exists only after packing. Update the examples by hand with `pnpm examples:pack && pnpm --dir examples update`; GitHub's dependency alerts still read `examples/pnpm-lock.yaml`. Excluding the folder from the root workspace, rather than making the examples workspace packages of it with install filters, keeps the root install and its lockfile exactly as they were, and a change to an example can't alter the library's dependencies.
+- **Bundle examples check what a bundler ships.** `bundle-webpack` and `bundle-nextjs` (`next build`, a client component) build a production bundle whose only use of the package is `import { isValidDni }`, then `examples/shared/bundle-check.mjs` scans the emitted JavaScript (for Next.js, everything under `.next/static`, which is what the browser downloads). The strings it must not find are not typed in: it reads the English, Spanish, Catalan, Basque and Galician locales from the packed package (`dist/esm/locales`) and takes the long plain-text runs of every message, type name and organisation name (about 150 fragments, each checked to be in the shipped file). It also fails unless the bundle has the DNI control letters, so an empty bundle can't pass, and it prints the size it found. A new message or language is covered with no change to the script. Importing `validate` instead makes it fail, because `validate` brings the English messages.
 - **`pnpm check` is the check.** Every example has a `check` script that builds, type-checks or runs it with assertions, and exits with an error when the output is wrong (the CSV example takes `--expect-invalid`, the Express example posts to the app it starts).
 - **CI** is `.github/workflows/examples.yml`, not a job of `release.yml`, because the examples install packages from the registry, so a failure there can come from outside this repository and must not block a release. It runs on every pull request (any change to the library can break an example) and on the release branches. A `Pack` job audits the examples' dependencies (`pnpm --dir examples audit --audit-level high`, the same threshold as the library's) and packs the library once, and a matrix runs each example in its own job: it unpacks the tarball, installs only that example (`pnpm install --filter ./<name>`), checks that `examples/pnpm-lock.yaml` didn't change (`--frozen-lockfile` can't be used, see the comment in the workflow), and runs `pnpm check`. When you add an example, add it to the matrix.
 - **Deno and Bun run in CI**, with `denoland/setup-deno` and `oven-sh/setup-bun`, the official actions of the two projects, pinned to an exact release (Dependabot updates them) and only used by their own job. The package says it works there, so CI proves it: the cost is two more third-party actions, each limited to one matrix job that has no secrets (the workflow only has `contents: read`). Run them locally with `deno run main.ts` and `bun run index.ts`.
