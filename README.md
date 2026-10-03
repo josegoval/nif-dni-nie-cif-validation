@@ -104,7 +104,7 @@ validate("12345678A").error?.message; // 'The control character is not correct: 
 
 ## Features
 
-- **Correct, with sources.** Every rule has an ID (`DNI-2`, `NIE-3`, `CIF-3`…) and a source in [SPEC.md](SPEC.md): the law, an official government page, the AEAT's technical note, or a convention labelled as such. Every error names the rule that failed. The tests cover every rule, compare the results with [stdnum](https://www.npmjs.com/package/stdnum) on about 50,000 inputs, and compare every v1 function with v1.0.11 on about 490,000 inputs.
+- **Correct, with sources.** Every rule has an ID (`DNI-2`, `NIE-3`, `CIF-3`…) and a source in [SPEC.md](SPEC.md): the law, an official government page, the AEAT's technical note, or a convention labelled as such. Every error names the rule that failed. The tests cover every rule, compare the results with [stdnum](https://www.npmjs.com/package/stdnum) on about 100,000 inputs, and compare every v1 function with v1.0.11 on about 490,000 inputs.
 - **0 runtime dependencies.** Zod, Valibot and Yup are optional peer dependencies, needed only by their adapters.
 - **Small.** One boolean validator adds less than 1 kB minified and gzipped, and `validate()` with its English messages less than 3 kB. CI enforces these budgets (`pnpm size`); the size of each function is under [Performance](#performance).
 - **Typed.** Written in TypeScript, with declarations for `import` and for `require`, and the types exported (`ValidationResult`, `NifType`, `NifErrorCode`…).

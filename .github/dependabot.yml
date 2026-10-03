@@ -17,6 +17,13 @@ updates:
       dev-dependencies:
         dependency-type: development
         update-types: [minor, patch]
+    # @types/node follows the oldest Node.js the package supports (engines:
+    # >=20, the Compat job), not the newest: types of a newer major would let
+    # code use APIs that Node 20 doesn't have. Move it to a new major by hand
+    # when the engines floor moves.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # The website (website/) is its own pnpm workspace with its own lockfile and
   # the same 3-day `minimumReleaseAge`. Its `nif-dni-nie-cif-validation:
@@ -38,6 +45,10 @@ updates:
       website:
         patterns: ["*"]
         update-types: [minor, patch]
+    # Same rule as the root: @types/node moves to a new major by hand.
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # examples/ is deliberately not here. Every example depends on
   # `nif-dni-nie-cif-validation: file:../.pack/package`, the unpacked tarball

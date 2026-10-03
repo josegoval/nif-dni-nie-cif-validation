@@ -105,7 +105,7 @@ validate("12345678A", { locale: es }).error?.message; // "El carácter de contro
 
 ## Características
 
-- **Correcta y con fuentes.** Cada regla tiene un identificador (`DNI-2`, `NIE-3`, `CIF-3`…) y una fuente en [SPEC.md](SPEC.md): la ley, una página oficial de la Administración, la nota técnica de la AEAT o una convención identificada como tal. Cada error indica la regla que ha fallado. Los tests cubren todas las reglas, comparan los resultados con [stdnum](https://www.npmjs.com/package/stdnum) en unas 50 000 entradas y comparan cada función de la v1 con la v1.0.11 en unas 490 000 entradas.
+- **Correcta y con fuentes.** Cada regla tiene un identificador (`DNI-2`, `NIE-3`, `CIF-3`…) y una fuente en [SPEC.md](SPEC.md): la ley, una página oficial de la Administración, la nota técnica de la AEAT o una convención identificada como tal. Cada error indica la regla que ha fallado. Los tests cubren todas las reglas, comparan los resultados con [stdnum](https://www.npmjs.com/package/stdnum) en unas 100 000 entradas y comparan cada función de la v1 con la v1.0.11 en unas 490 000 entradas.
 - **0 dependencias en tiempo de ejecución.** Zod, Valibot y Yup son dependencias *peer* opcionales, que solo necesitan sus adaptadores.
 - **Pequeña.** Un validador booleano añade menos de 1 kB minificado y comprimido con gzip, y `validate()` con sus mensajes en inglés, menos de 3 kB. La integración continua (CI) hace cumplir esos límites (`pnpm size`); el tamaño de cada función está en [Rendimiento](#rendimiento).
 - **Tipada.** Escrita en TypeScript, con declaraciones para `import` y para `require`, y con los tipos exportados (`ValidationResult`, `NifType`, `NifErrorCode`…).
