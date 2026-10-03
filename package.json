@@ -142,6 +142,20 @@
     "dni validation",
     "nie validation",
     "cif validation",
+    "spain",
+    "spanish",
+    "tax id",
+    "vat",
+    "aeat",
+    "validator",
+    "validation",
+    "typescript",
+    "zod",
+    "valibot",
+    "yup",
+    "validar dni",
+    "validar nif",
+    "nif españa",
     "nif-dni-nie-cif-validation"
   ],
   "files": [
@@ -158,6 +172,13 @@
     "url": "git+https://github.com/josegoval/nif-dni-nie-cif-validation.git"
   },
   "homepage": "https://josegoval.github.io/nif-dni-nie-cif-validation/",
+  "bugs": {
+    "url": "https://github.com/josegoval/nif-dni-nie-cif-validation/issues"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://www.buymeacoffee.com/josegoval"
+  },
   "author": "josegoval <josegovalmusic@gmail.com>",
   "license": "MIT",
   "packageManager": "pnpm@12.8.1",
