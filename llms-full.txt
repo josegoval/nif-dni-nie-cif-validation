@@ -45,6 +45,15 @@ isValidNif("B12345675");      // false: wrong control digit
 validate("12345678A").error?.message; // 'The control character is not correct: for this DNI it should be "Z".'
 ```
 
+From a terminal or a script, with no code to write:
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678Z
+# 12345678Z: valid DNI 12345678Z
+```
+
+More commands (`--json` output, exit codes, test data, CSV checks) are under [Command line](#command-line) and in the [command line guide](https://josegoval.github.io/nif-dni-nie-cif-validation/guides/command-line/) on the website.
+
 ## Contents
 
 - [Which function do I need?](#which-function-do-i-need)

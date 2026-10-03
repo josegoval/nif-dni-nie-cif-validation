@@ -8,6 +8,8 @@ This file and llms-full.txt (the full reference) ship in the npm package.
 
 `npm install nif-dni-nie-cif-validation` (or `pnpm add`, `yarn add`, `bun add`, `deno add npm:nif-dni-nie-cif-validation`)
 
+From a shell, with no code: `npx nif-dni-nie-cif-validation validate 12345678Z`.
+
 ## Which function
 
 | Need | Use |
