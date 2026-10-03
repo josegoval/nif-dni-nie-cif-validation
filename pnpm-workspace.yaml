@@ -25,3 +25,14 @@ allowBuilds:
 # older than 3 days.
 minimumReleaseAgeExclude:
   - nif-dni-nie-cif-validation@1.0.11
+
+# `pnpm audit` findings that were reviewed and accepted. Each needs a reason
+# and is removed as soon as a fixed version exists.
+auditConfig:
+  ignoreGhsas:
+    # braces <= 3.0.3: a stack overflow on deeply nested brace patterns
+    # (CVE-2026-93687), with no fixed version yet. braces is only reached
+    # through development tools (globbing in semantic-release, es-check, the
+    # build and test tooling), which expand the repository's own patterns,
+    # never input from users, and the published package has no dependencies.
+    - GHSA-vfj7-8cjw-p6xm
