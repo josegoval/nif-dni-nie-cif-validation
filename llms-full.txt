@@ -98,7 +98,7 @@ More commands (`--json` output, exit codes, test data, CSV checks) are under [Co
 
 ## Features
 
-- **Correct, with sources.** Every rule has an ID (`DNI-2`, `NIE-3`, `CIF-3`…) and a source in [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md): the law, an official government page, the AEAT's technical note, or a convention labelled as such. Every error names the rule that failed. The tests cover every rule, compare the results with [stdnum](https://www.npmjs.com/package/stdnum) on about 50,000 inputs, and compare every v1 function with v1.0.11 on about 490,000 inputs.
+- **Correct, with sources.** Every rule has an ID (`DNI-2`, `NIE-3`, `CIF-3`…) and a source in [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md): the law, an official government page, the AEAT's technical note, or a convention labelled as such. Every error names the rule that failed. The tests cover every rule, compare the results with [stdnum](https://www.npmjs.com/package/stdnum) on about 100,000 inputs, and compare every v1 function with v1.0.11 on about 490,000 inputs.
 - **0 runtime dependencies.** Zod, Valibot and Yup are optional peer dependencies, needed only by their adapters.
 - **Small.** One boolean validator adds less than 1 kB minified and gzipped, and `validate()` with its English messages less than 3 kB. CI enforces these budgets (`pnpm size`); the size of each function is under [Performance](#performance).
 - **Typed.** Written in TypeScript, with declarations for `import` and for `require`, and the types exported (`ValidationResult`, `NifType`, `NifErrorCode`…).
@@ -594,14 +594,14 @@ Source: API reference and design (docs/api-design.md), https://github.com/josego
 
 # v2 API design
 
-Status: accepted for 2.0.0 (#56); the v2 pull requests are pending the maintainer's review.
+Status: accepted (#56) and released in 2.0.0 (2026-10-02). D13, the command line interface, was released in 2.1.0 (2026-10-03).
 
-This document describes the public API of `nif-dni-nie-cif-validation` 2.0.0 and the reasons behind each decision. Every behaviour follows [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md) lists what changes for v1 users.
+This document describes the public API of `nif-dni-nie-cif-validation` 2 and the reasons behind each decision. Every behaviour follows [SPEC.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/MIGRATION.md) lists what changes for v1 users.
 
 ## Goals
 
 - Tell the caller **why** a value failed (an error code, a SPEC rule ID and a message in the caller's language), **which** document it is, its **normalized** form to store, and the **expected** control character for "did you mean…?" hints (#56).
-- Follow SPEC.md exactly. Only official rules (tiers T1 to T3) decide validity by default. Conventions (T4) are either input cleanup or opt-in.
+- Follow SPEC.md exactly. By default only official rules (tiers T1 to T3) decide validity, with one documented exception: no official text publishes the CIF control arithmetic, so the universal algorithm (a T4 convention, [CIF-4](https://github.com/josegoval/nif-dni-nie-cif-validation/blob/master/SPEC.md#cif-4)) applies. Every other convention is either input cleanup or opt-in.
 - Never throw on untrusted input (#40).
 - Keep the boolean validators as fast as in 1.x on canonical input, with no allocations (#47).
 - Stay zero-dependency and tree-shakable: the booleans don't pull the messages or the organisation names, and `validate()` only pulls the languages the application imports.
@@ -1151,7 +1151,7 @@ Source: Validation rules and their sources (SPEC.md), https://github.com/josegov
 
 # Validation rules specification
 
-This document is the official specification of what `nif-dni-nie-cif-validation` accepts and rejects, and why. Every rule has an ID, a source tier and a citation, so any behaviour of the library can be traced back to the text that justifies it (or be labelled as convention when no official text exists).
+This document is the authoritative specification of what `nif-dni-nie-cif-validation` accepts and rejects, and why. It is the library's own document, not a government one: every rule has an ID, a source tier and a citation, so any behaviour of the library can be traced back to the official text that justifies it (or be labelled as convention when no official text exists).
 
 Last verified: 2026-09-30
 
@@ -1202,7 +1202,7 @@ Last verified: 2026-09-30
 | **T1: Law (BOE)** | Published legal text in force | RD 1065/2007 (RGAT) arts. 19–22, 24, 25 · Orden EHA/451/2008 (as amended by Orden HAP/5/2016) · Orden INT/2058/2008 (in Orden 7/2/1997, apartado sexto.a) · RD 255/2025 (DNI; replaced RD 1553/2005 on 2025-04-02) · RD 1155/2024 art. 205 (NIE; replaced RD 557/2011 on 2025-05-20) |
 | **T2: Official government page** | Published by the responsible administration | Ministerio del Interior, "Cálculo del dígito de control del NIF/NIE" · AEAT Sede, "Composición del NIF" (personas físicas / personas jurídicas) |
 | **T3: Semi-official** | Internal AEAT technical document | AEAT D.I.T. note "Número de Identificación Fiscal (N.I.F.)", updated 2008-04-15, hosted by CAIB (see [Source URLs](#source-urls)) |
-| **T4: Convention** | Industry practice with no official text | Documented. Never on by default unless it only affects input cleanup. |
+| **T4: Convention** | Industry practice with no official text | Documented. Never on by default unless it only affects input cleanup, with one documented exception: no official text publishes the CIF control arithmetic, so the universal algorithm applies by default ([CIF-4](#cif-4)). |
 
 ## Rules
 
@@ -1276,7 +1276,7 @@ These rules don't decide which documents are valid. They say how the library tre
 
 ### Opt-in policies (off by default)
 
-These rules are not in any official source. They never apply unless the caller asks for them, so the default result always follows the official rules above.
+These rules are not in any official source. They never apply unless the caller asks for them, so they never change the default result, which follows only the rules above (official rules and the documented T4 conventions: input cleanup, and the CIF control arithmetic of [CIF-4](#cif-4)).
 
 | ID | Rule | Tier | Source |
 |---|---|---|---|
@@ -1350,6 +1350,7 @@ With `cifControl: "lenient"`, the digit and the letter of the same control value
 ### CIF-4: the control arithmetic is not published anywhere official
 
 - No official text defines the control arithmetic for legal-entity NIFs (see the list of texts checked in CIF-4). It is a T4 convention.
+- It is the only T4 rule that decides validity by default: without it, the control character of a legal-entity NIF could not be checked at all.
 - It is the universal industry algorithm, and it was checked against the real public-body NIFs P2807900B (Ayuntamiento de Madrid) and Q2826000H (AEAT).
 - Because it is a T4 convention, an official publication of the algorithm would take precedence over this entry.
 
@@ -1360,7 +1361,7 @@ With `cifControl: "lenient"`, the digit and the letter of the same control value
 
 ## Differences from other libraries
 
-`src/__tests__/stdnum.test.ts` compares `validate()` (default options) with [stdnum](https://www.npmjs.com/package/stdnum) (the JavaScript port of python-stdnum, `stdnum.ES.nif`) on about 50,000 generated inputs. Every difference must be one of these decisions; any other difference fails the test.
+`src/__tests__/stdnum.test.ts` compares `validate()` (default options) with [stdnum](https://www.npmjs.com/package/stdnum) (the JavaScript port of python-stdnum, `stdnum.ES.nif`) on about 100,000 generated inputs. Every difference must be one of these decisions; any other difference fails the test.
 
 | Difference | stdnum | This library | Rule |
 |---|---|---|---|
@@ -1398,7 +1399,7 @@ Policy (valid by default, rejected with `rejectPlaceholders`): `00000000T` · `0
 
 ## Source URLs
 
-Live status checked on 2026-09-30 with `curl -sI -L`. Every source also has an archived copy in the Wayback Machine, so the sources survive URL changes. The archived link is the closest snapshot to 2026-10-02 (the number after `/web/` in each link is its date and time, UTC), found through `https://archive.org/wayback/available?url=<url>`, and each one answered HTTP 200 on 2026-10-02. No capture had to be requested. The oldest is the CAIB copy of the AEAT D.I.T. note (2020-10-11), which is the only snapshot there is. To check another date, look a page up at `https://web.archive.org/web/*/<url>`.
+Live status checked on 2026-09-30 with `curl -sI -L`. Every source also has an archived copy in the Wayback Machine, so the sources survive URL changes. The archived link is the closest snapshot to 2026-10-02 (the number after `/web/` in each link is its date and time, UTC), found through `https://archive.org/wayback/available?url=<url>`, and each one answered HTTP 200 on 2026-10-02. No capture had to be requested, except for the VIES help text (added on 2026-10-03, when it had no snapshot). The oldest is the CAIB copy of the AEAT D.I.T. note (2020-10-11), which is the only snapshot there is. To check another date, look a page up at `https://web.archive.org/web/*/<url>`.
 
 The T1 and T2 sources are watched for changes. `spec-sources.json`, in the repository, records for each BOE text the date of its last update (and of the articles cited here) and whether it was repealed, and for each T2 page a hash of the text of its relevant section. A monthly workflow compares them with the sources and opens an issue labelled `spec-change` when one changes (CONTRIBUTING.md, "Official sources").
 
@@ -1415,4 +1416,5 @@ The T1 and T2 sources are watched for changes. `spec-sources.json`, in the repos
 - AEAT, NIF of legal persons and entities: <https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html> ([archived](https://web.archive.org/web/20260423071917/https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/guia-practica-cumplimentacion-modelo-censal-036/anexos/anexo-01-solicitud-nif-documentacion-aportar/informacion-sobre-numero-identificacion-fiscal/composicion-nif/personas-juridicas-entidades.html))
 - AEAT D.I.T. note (CAIB copy): <https://www.caib.es/sites/civitasmanualsisuport/f/41519> ([archived](https://web.archive.org/web/20201011095754/http://www.caib.es/sites/civitasmanualsisuport/f/41519))
 - AEAT, checking the NIF of third parties (census check, not format): <https://sede.agenciatributaria.gob.es/Sede/ayuda/consultas-informaticas/presentacion-declaraciones-ayuda-tecnica/modelo-030/comprobacion-nif-terceros-efectos-censales.html> ([archived](https://web.archive.org/web/20260518130212/https://sede.agenciatributaria.gob.es/Sede/ayuda/consultas-informaticas/presentacion-declaraciones-ayuda-tecnica/modelo-030/comprobacion-nif-terceros-efectos-censales.html))
+- EU Commission, VIES help (NORM-2; live and archived copy checked on 2026-10-03): <https://ec.europa.eu/taxation_customs/vies/#/help>. The page loads the quoted text from <https://ec.europa.eu/taxation_customs/vies/assets/i18n/en.json> (key `help_txt_para00`), which is what the archived link captures ([archived](https://web.archive.org/web/20261003150619/https://ec.europa.eu/taxation_customs/vies/assets/i18n/en.json))
 - ESNIC placeholder examples (secondary): <https://www.openprovider.com/es/blog/comunicado-esnic> ([archived](https://web.archive.org/web/20260314051503/https://www.openprovider.com/es/blog/comunicado-esnic))

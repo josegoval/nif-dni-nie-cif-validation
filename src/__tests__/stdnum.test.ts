@@ -101,11 +101,11 @@ function mutate(value: string): string {
 }
 
 const inputs: string[] = [];
-for (let i = 0; i < 12_000; i++) {
+for (let i = 0; i < 24_000; i++) {
   const doc = document();
   inputs.push(doc, typed(doc), mutate(doc), mutate(typed(doc)));
 }
-for (let i = 0; i < 2_000; i++) {
+for (let i = 0; i < 4_000; i++) {
   let value = "";
   const length = randomInt(13);
   for (let j = 0; j < length; j++) value += pick(ALPHABET);
@@ -145,8 +145,8 @@ function explain(value: string): Difference | null {
 }
 
 describe(`differential test against stdnum (${inputs.length} inputs)`, () => {
-  it("compares about 50,000 inputs", () =>
-    expect(inputs.length).toBeGreaterThanOrEqual(50_000));
+  it("compares about 100,000 inputs", () =>
+    expect(inputs.length).toBeGreaterThanOrEqual(100_000));
 
   it("every difference is an allow-listed SPEC.md decision", () => {
     const seen = new Map<Difference, number>();
