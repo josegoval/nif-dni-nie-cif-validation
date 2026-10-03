@@ -38,6 +38,18 @@ After you change the library, run `pnpm examples:pack` (or `pnpm examples:instal
 
 The examples are copyable: in your own project, install the package from npm (`npm install nif-dni-nie-cif-validation`), as each README says.
 
+## Update their dependencies
+
+Dependabot updates the library and the website, but not the examples: each example depends on `file:../.pack/package`, a folder that `pnpm examples:pack` writes and .gitignore keeps out of the repository, so Dependabot can't resolve it. Update them by hand:
+
+```sh
+pnpm examples:pack
+pnpm --dir examples update --recursive   # within the ranges; add --latest for new majors
+pnpm examples:check
+```
+
+The 3-day `minimumReleaseAge` applies here too. Commit `examples/pnpm-lock.yaml` and any `package.json` that changed.
+
 ## Add an example
 
 1. Make `examples/<name>/` with a `package.json` (`"private": true`, the dependency above, and a `check` script that fails when the result is wrong) and a README with a one-line purpose and its run command.

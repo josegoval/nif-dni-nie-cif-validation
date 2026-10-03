@@ -18,6 +18,36 @@ updates:
         dependency-type: development
         update-types: [minor, patch]
 
+  # The website (website/) is its own pnpm workspace with its own lockfile and
+  # the same 3-day `minimumReleaseAge`. Its `nif-dni-nie-cif-validation:
+  # link:..` dependency points at the repository root, which Dependabot can
+  # read, so it needs no special handling. All its dependencies are grouped:
+  # the site is not published to npm, so a site dependency's type says nothing
+  # about who is affected.
+  - package-ecosystem: npm
+    directory: /website
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      website:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # examples/ is deliberately not here. Every example depends on
+  # `nif-dni-nie-cif-validation: file:../.pack/package`, the unpacked tarball
+  # that `pnpm examples:pack` writes and that .gitignore keeps out of the
+  # repository (the examples must run against what npm ships, not src/).
+  # Dependabot resolves path dependencies from the files in the repository, so
+  # it cannot find that folder and every update job would fail. Update the
+  # examples by hand instead; see "Update their dependencies" in
+  # examples/README.md.
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
