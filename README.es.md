@@ -296,7 +296,7 @@ Cada esquema acepta las opciones de `validate()` y admite exactamente lo que adm
 
 ## Recetas
 
-Cada receta, y más, es un proyecto ejecutable en [examples/](examples/): [Node, CommonJS](examples/node-cjs) y [módulos ES](examples/node-esm), [React Hook Form con Zod](examples/zod-react-hook-form) (Vite y React), [Express](examples/express-middleware), [Valibot](examples/valibot), [Yup](examples/yup), [fixtures de Vitest con los generadores](examples/generate-test-data), [validación masiva de un CSV, con su velocidad](examples/csv-bulk-validation), [Deno](examples/deno) y [Bun](examples/bun). La CI compila, comprueba los tipos o ejecuta cada uno contra el paquete empaquetado.
+Cada receta, y más, es un proyecto ejecutable en [examples/](examples/): [Node, CommonJS](examples/node-cjs) y [módulos ES](examples/node-esm), [React Hook Form con Zod](examples/zod-react-hook-form) (Vite y React), [Express](examples/express-middleware), [una server action de Next.js](examples/nextjs-server-action), [Valibot](examples/valibot), [Yup](examples/yup), [fixtures de Vitest con los generadores](examples/generate-test-data), [validación masiva de un CSV, con su velocidad](examples/csv-bulk-validation), [Deno](examples/deno) y [Bun](examples/bun). La CI compila, comprueba los tipos o ejecuta cada uno contra el paquete empaquetado.
 
 ### Zod y React Hook Form
 
