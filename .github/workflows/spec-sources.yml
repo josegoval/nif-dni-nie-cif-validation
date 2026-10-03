@@ -92,6 +92,9 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TITLE: ${{ steps.check.outputs.title }}
           FINGERPRINT: ${{ steps.check.outputs.fingerprint }}
+          # Assigned to the repository owner so that GitHub notifies them,
+          # whatever their watch settings for the repository are.
+          ASSIGNEE: ${{ github.repository_owner }}
         run: |
           # Fails when the label exists, which is fine.
           gh label create spec-change --color D93F0B \
@@ -104,5 +107,5 @@ jobs:
             exit 0
           fi
           url=$(gh issue create --title "$TITLE" --label spec-change \
-            --body-file "$RUNNER_TEMP/report.md")
+            --assignee "$ASSIGNEE" --body-file "$RUNNER_TEMP/report.md")
           echo "Opened $url" | tee -a "$GITHUB_STEP_SUMMARY"
