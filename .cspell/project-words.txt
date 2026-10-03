@@ -166,6 +166,10 @@ minificado
 semioficial
 tipada
 
+# Spanish search keywords of package.json
+españa
+validar
+
 # Catalan words of the README's example of the Catalan messages
 aquest
 caràcter
