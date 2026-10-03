@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/josegoval/nif-dni-nie-cif-validation/compare/v2.0.0...v2.1.0) (2026-10-03)
+
+
+### Features
+
+* **cli:** add a command line interface, npx nif-dni-nie-cif-validation ([544e095](https://github.com/josegoval/nif-dni-nie-cif-validation/commit/544e0957a5c0a7b30c8b4237cf450c38d189f279)), closes [#61](https://github.com/josegoval/nif-dni-nie-cif-validation/issues/61)
+
 # [2.0.0](https://github.com/josegoval/nif-dni-nie-cif-validation/compare/v1.0.12...v2.0.0) (2026-10-02)
 
 
