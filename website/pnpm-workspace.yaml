@@ -3,3 +3,14 @@ packages:
 minimumReleaseAge: 4320
 allowBuilds:
   esbuild: false
+
+# `pnpm audit` findings that were reviewed and accepted. Each needs a reason
+# and is removed as soon as a fixed version exists.
+auditConfig:
+  ignoreGhsas:
+    # http-cache-semantics <= 4.2.0: a shared cache can serve one user's
+    # response, cookies included, to another (CVE-2026-93748), with no fixed
+    # version yet. Astro only uses it to cache remote images while it builds
+    # the static site: there are no users, sessions or shared cache at build
+    # time, and GitHub Pages serves plain files.
+    - GHSA-ch52-4w7c-c8xp
