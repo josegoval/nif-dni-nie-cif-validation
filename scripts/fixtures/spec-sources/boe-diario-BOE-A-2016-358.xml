@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<documento fecha_actualizacion="20251219202601">
+  <metadatos>
+    <identificador>BOE-A-2016-358</identificador>
+    <origen_legislativo codigo="1">Estatal</origen_legislativo>
+    <departamento codigo="9216">Ministerio de Hacienda y Administraciones Públicas</departamento>
+    <rango codigo="1350">Orden</rango>
+    <fecha_disposicion>20160112</fecha_disposicion>
+    <numero_oficial>HAP/5/2016</numero_oficial>
+    <titulo>Orden HAP/5/2016, de 12 de enero, por la que se modifica la Orden EHA/451/2008, de 20 de febrero, por la que se regula la composición del número de identificación fiscal de las personas jurídicas y entidades sin personalidad jurídica.</titulo>
+    <diario codigo="BOE">Boletín Oficial del Estado</diario>
+    <fecha_publicacion>20160115</fecha_publicacion>
+    <diario_numero>13</diario_numero>
+    <seccion>1</seccion>
+    <subseccion/>
+    <pagina_inicial>2298</pagina_inicial>
+    <pagina_final>2299</pagina_final>
+    <suplemento_pagina_inicial/>
+    <suplemento_pagina_final/>
+    <url_pdf>https://www.boe.es/boe/dias/2016/01/15/pdfs/BOE-A-2016-358.pdf</url_pdf>
+    <url_epub>
+      <url_epub>https://www.boe.es/diario_boe/epub.php?id=BOE-A-2016-358</url_epub>
+    </url_epub>
+    <url_pdf_catalan/>
+    <url_pdf_euskera/>
+    <url_pdf_gallego/>
+    <url_pdf_valenciano/>
+    <estatus_legislativo>L</estatus_legislativo>
+    <fecha_vigencia>20160116</fecha_vigencia>
+    <estatus_derogacion>N</estatus_derogacion>
+    <fecha_derogacion/>
+    <judicialmente_anulada>N</judicialmente_anulada>
+    <fecha_anulacion/>
+    <vigencia_agotada>N</vigencia_agotada>
+    <estado_consolidacion codigo="0"/>
+    <letra_imagen>A</letra_imagen>
+    <suplemento_letra_imagen/>
+    <url_eli>https://www.boe.es/eli/es/o/2016/01/12/hap5</url_eli>
+  </metadatos>
+  <metadata-eli>
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:eli="http://data.europa.eu/eli/ontology#">
+      <eli:LegalResource rdf:about="https://www.boe.es/eli/es/o/2016/01/12/hap5">
+        <eli:jurisdiction rdf:resource="http://www.elidata.es/mdr/authority/jurisdiction/1/es"/>
+        <eli:type_document rdf:resource="http://www.elidata.es/mdr/authority/resource-type/1/o"/>
+        <eli:id_local rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BOE-A-2016-358</eli:id_local>
+        <eli:date_document rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2016-01-12</eli:date_document>
+        <eli:number rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hap5</eli:number>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/5564"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/6674"/>
+        <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/7917"/>
+        <eli:has_member>
+          <eli:LegalResource rdf:about="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof">
+            <eli:jurisdiction rdf:resource="http://www.elidata.es/mdr/authority/jurisdiction/1/es"/>
+            <eli:type_document rdf:resource="http://www.elidata.es/mdr/authority/resource-type/1/o"/>
+            <eli:id_local rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BOE-A-2016-358</eli:id_local>
+            <eli:date_document rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2016-01-12</eli:date_document>
+            <eli:number rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hap5</eli:number>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/5564"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/6674"/>
+            <eli:is_about rdf:resource="https://www.boe.es/legislacion/eli/materias/7917"/>
+            <eli:version rdf:resource="http://www.elidata.es/mdr/authority/version/dof"/>
+            <eli:is_member_of rdf:resource="https://www.boe.es/eli/es/o/2016/01/12/hap5"/>
+            <eli:is_realized_by>
+              <eli:LegalExpression rdf:about="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa">
+                <eli:language rdf:resource="http://www.elidata.es/mdr/authority/language/spa"/>
+                <eli:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Orden HAP/5/2016, de 12 de enero, por la que se modifica la Orden EHA/451/2008, de 20 de febrero, por la que se regula la composición del número de identificación fiscal de las personas jurídicas y entidades sin personalidad jurídica.</eli:title>
+                <eli:publisher_agent rdf:resource="https://www.boe.es"/>
+                <eli:date_publication rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2016-01-15</eli:date_publication>
+                <eli:realizes rdf:resource="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof"/>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa/epub">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/epub+zip"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa/html">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/text/html"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa/pdf">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/pdf"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+                <eli:is_embodied_by>
+                  <eli:Format rdf:about="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa/xml">
+                    <eli:format rdf:resource="http://www.iana.org/assignments/media-types/application/xml"/>
+                    <eli:embodies rdf:resource="https://www.boe.es/eli/es/o/2016/01/12/hap5/dof/spa"/>
+                  </eli:Format>
+                </eli:is_embodied_by>
+              </eli:LegalExpression>
+            </eli:is_realized_by>
+          </eli:LegalResource>
+        </eli:has_member>
+      </eli:LegalResource>
+    </rdf:RDF>
+  </metadata-eli>
+  <analisis>
+    <materias>
+      <materia codigo="7917" orden="">Número de Identificación Fiscal</materia>
+      <materia codigo="5564" orden="">Personas jurídicas</materia>
+      <materia codigo="6674" orden="">Sociedades</materia>
+    </materias>
+    <notas/>
+    <referencias>
+      <anteriores>
+        <anterior referencia="BOE-A-2008-3580" orden="2015">
+          <palabra codigo="270">MODIFICA</palabra>
+          <texto>el art. 3 de la Orden EHA/451/2008, de 20 de febrero</texto>
+        </anterior>
+        <anterior referencia="BOE-A-2014-12328" orden="3060">
+          <palabra codigo="440">DE CONFORMIDAD con</palabra>
+          <texto>la Ley 27/2014, de 27 de noviembre</texto>
+        </anterior>
+        <anterior referencia="BOE-A-2011-19939" orden="3060">
+          <palabra codigo="440">DE CONFORMIDAD con</palabra>
+          <texto>el Real Decreto 1823/2011, de 21 de diciembre</texto>
+        </anterior>
+        <anterior referencia="BOE-A-2003-23186" orden="5020">
+          <palabra codigo="330">CITA</palabra>
+          <texto>Ley 58/2003, de 17 de diciembre</texto>
+        </anterior>
+      </anteriores>
+      <posteriores/>
+    </referencias>
+    <alertas>
+      <alerta codigo="112" orden="">Derecho Mercantil</alerta>
+      <alerta codigo="128" orden="">Sistema tributario</alerta>
+    </alertas>
+  </analisis>
+  <texto>
+    <p class="parrafo">La Ley 27/2014, de 27 de noviembre, del Impuesto sobre Sociedades ha configurado como contribuyentes de este impuesto a las sociedades civiles, exclusivamente cuando tienen personalidad jurídica y objeto mercantil, distinguiéndose por tanto de aquellas sociedades civiles carentes de dicha personalidad o que, teniendo personalidad jurídica, carecen de objeto mercantil. Esta configuración, obliga a modificar la Orden Ministerial EHA/451/2008, de 20 de febrero, por la que se regula la composición del Número de Identificación Fiscal de las personas jurídicas y entidades sin personalidad jurídica.</p>
+    <p class="parrafo">Por un lado, la Orden EHA/451/2008 establece que la clave «J» del NIF corresponde, tanto a las sociedades civiles con personalidad jurídica, como a las sociedades civiles sin personalidad jurídica. Por motivo de la reforma tributaria mencionada en el apartado anterior, se considera necesario a efectos de control tributario mantener la clave «J» para las sociedades civiles sin distinción entre con y sin personalidad jurídica.</p>
+    <p class="parrafo">Por otro lado, la Orden EHA/451/2008 establece que la clave «E» del NIF correspondía a las comunidades de bienes y herencias yacentes. Dado que esta clave es utilizada para las entidades anteriores, encuadradas en el artículo 35.4 de la Ley 58/2003, de 17 de diciembre, General Tributaria, se considera necesaria su modificación para incluir a otras entidades sin personalidad jurídica, que también se incluyen en el artículo 35.4 mencionado y no disponen de clave específica.</p>
+    <p class="parrafo">El artículo 22.1 del Reglamento General de las actuaciones y los procedimientos de gestión e inspección tributaria y de desarrollo de las normas comunes de los procedimientos de aplicación de los tributos, aprobado por el Real Decreto 1065/2007, de 27 de julio, habilita al Ministro de Economía y Hacienda para establecer los términos de la composición del número de identificación fiscal de las personas jurídicas y entidades sin personalidad jurídica.</p>
+    <p class="parrafo">La habilitación otorgada al Ministro de Economía y Hacienda anteriormente citada debe entenderse conferida en la actualidad al Ministro de Hacienda y Administraciones Públicas, de acuerdo con lo dispuesto en el artículo 5 y en la disposición final segunda del Real Decreto 1823/2011, de 21 de diciembre, por el que se reestructuran los departamentos ministeriales.</p>
+    <p class="parrafo">En su virtud, dispongo:</p>
+    <p class="articulo">Artículo único. Modificación de la Orden EHA/451/2008, de 20 de febrero, por la que se regula la composición del número de identificación fiscal de las personas jurídicas y entidades sin personalidad jurídica.</p>
+    <p class="parrafo">Se modifica el artículo 3 de la Orden EHA/451/2008, de 20 de febrero, por la que se modifica el número de identificación fiscal que queda redactado como sigue:</p>
+    <p class="sangrado_articulo">«Artículo 3. Claves sobre la forma jurídica de entidades españolas.</p>
+    <p class="sangrado">Para las entidades españolas, el número de identificación fiscal comenzará con una letra, que incluirá información sobre su forma jurídica de acuerdo con las siguientes claves:</p>
+    <p class="sangrado_2">A. Sociedades anónimas.</p>
+    <p class="sangrado">B. Sociedades de responsabilidad limitada.</p>
+    <p class="sangrado">C. Sociedades colectivas.</p>
+    <p class="sangrado">D. Sociedades comanditarias.</p>
+    <p class="sangrado">E. Comunidades de bienes, herencias yacentes y demás entidades carentes de personalidad jurídica no incluidas expresamente en otras claves.</p>
+    <p class="sangrado">F. Sociedades cooperativas.</p>
+    <p class="sangrado">G. Asociaciones.</p>
+    <p class="sangrado">H. Comunidades de propietarios en régimen de propiedad horizontal.</p>
+    <p class="sangrado">J. Sociedades civiles.</p>
+    <p class="sangrado">P. Corporaciones Locales.</p>
+    <p class="sangrado">Q. Organismos públicos.</p>
+    <p class="sangrado">R. Congregaciones e instituciones religiosas.</p>
+    <p class="sangrado">S. Órganos de la Administración del Estado y de las Comunidades Autónomas.</p>
+    <p class="sangrado">U. Uniones Temporales de Empresas.</p>
+    <p class="sangrado">V. Otros tipos no definidos en el resto de claves.»</p>
+    <p class="articulo">Disposición final única. Entrada en vigor.</p>
+    <p class="parrafo">La presente Orden entrará en vigor el día siguiente al de su publicación en el «Boletín Oficial del Estado».</p>
+    <p class="parrafo_2">Madrid, 12 de enero de 2016.–El Ministro de Hacienda y Administraciones Públicas, Cristóbal Montoro Romero.</p>
+  </texto>
+</documento>

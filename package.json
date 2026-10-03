@@ -186,6 +186,8 @@
     "lint": "biome check .",
     "spell": "cspell --no-progress",
     "spec:check": "node scripts/check-spec-rules.mjs",
+    "spec:sources": "node scripts/spec-sources.mjs",
+    "spec:sources:update": "node scripts/spec-sources.mjs --update && biome format --write spec-sources.json",
     "bench": "pnpm build && node bench/run.mjs",
     "bench:competitors": "pnpm build && node bench/run-competitors.mjs",
     "bench:report": "node bench/report.mjs",

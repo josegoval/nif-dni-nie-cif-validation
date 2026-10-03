@@ -249,6 +249,8 @@ Policy (valid by default, rejected with `rejectPlaceholders`): `00000000T` · `0
 
 Live status checked on 2026-09-30 with `curl -sI -L`. Every source also has an archived copy in the Wayback Machine, so the sources survive URL changes. The archived link is the closest snapshot to 2026-10-02 (the number after `/web/` in each link is its date and time, UTC), found through `https://archive.org/wayback/available?url=<url>`, and each one answered HTTP 200 on 2026-10-02. No capture had to be requested. The oldest is the CAIB copy of the AEAT D.I.T. note (2020-10-11), which is the only snapshot there is. To check another date, look a page up at `https://web.archive.org/web/*/<url>`.
 
+The T1 and T2 sources are watched for changes. `spec-sources.json`, in the repository, records for each BOE text the date of its last update (and of the articles cited here) and whether it was repealed, and for each T2 page a hash of the text of its relevant section. A monthly workflow compares them with the sources and opens an issue labelled `spec-change` when one changes (CONTRIBUTING.md, "Official sources").
+
 - RD 1065/2007: <https://www.boe.es/buscar/act.php?id=BOE-A-2007-15984> ([archived](https://web.archive.org/web/20260930063029/https://www.boe.es/buscar/act.php?id=BOE-A-2007-15984))
 - Orden EHA/451/2008 (consolidated): <https://www.boe.es/buscar/act.php?id=BOE-A-2008-3580> ([archived](https://web.archive.org/web/20260307034313/https://www.boe.es/buscar/act.php?id=BOE-A-2008-3580))
 - Orden HAP/5/2016: <https://www.boe.es/buscar/doc.php?id=BOE-A-2016-358> ([archived](https://web.archive.org/web/20241111020505/https://www.boe.es/buscar/doc.php?id=BOE-A-2016-358))

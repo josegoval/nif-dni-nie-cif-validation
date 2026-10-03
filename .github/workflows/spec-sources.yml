@@ -1,0 +1,111 @@
+# Checks every month whether the official sources that SPEC.md cites (the BOE
+# texts and the Interior and AEAT pages) have changed, and opens an issue
+# labelled `spec-change` when one has (#42).
+#
+# scripts/spec-sources.mjs reads every source and compares it with the values
+# recorded in spec-sources.json; CONTRIBUTING.md ("Official sources") says
+# what each value is and how to respond to the issue.
+#
+# A source that can't be read is "unverifiable": the Interior page answers
+# 403 to automated requests (the script then reads its latest Wayback Machine
+# snapshot, which can be missing too), and any site can time out. It is
+# listed in the job summary and as a warning, but it doesn't fail the job: a
+# network problem is not a change in the law. So the job is green when
+# nothing changed, and also after it opened the issue (the issue is the
+# signal); it fails only if the script or `gh` fails.
+#
+# One issue per set of changes: the report ends with a fingerprint of the
+# changes (source, value, old and new), and no issue is opened when an open
+# `spec-change` issue already has it. Until a maintainer records the new
+# values with `pnpm spec:sources:update`, the next runs find the same
+# changes and open nothing new.
+name: Official sources
+
+on:
+  schedule:
+    # 06:17 UTC on the 1st of every month (off the hour, when GitHub's
+    # scheduler is less busy).
+    - cron: "17 6 1 * *"
+  workflow_dispatch:
+    inputs:
+      simulate_change:
+        description: Replace one recorded value in memory, to check that a change opens an issue (close the issue afterwards)
+        type: boolean
+        default: false
+
+# `issues: write` to create the `spec-change` label and open the issue, with
+# the built-in GITHUB_TOKEN; nothing is pushed.
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: spec-sources
+  cancel-in-progress: false
+
+env:
+  HUSKY: "0" # do not install git hooks in CI
+
+jobs:
+  check:
+    name: Check the official sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      # The script has no dependencies (Node's own fetch), so there is
+      # nothing to install: no pnpm, no node_modules, a few seconds per run.
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      # Writes the markdown report and a JSON summary (changed, unverifiable,
+      # fingerprint, issue title). The report goes to the job summary.
+      - name: Read the sources and compare them with spec-sources.json
+        id: check
+        env:
+          SIMULATE_CHANGE: ${{ inputs.simulate_change }}
+        run: |
+          args=(--report "$RUNNER_TEMP/report.md" --result "$RUNNER_TEMP/result.json")
+          if [ "$SIMULATE_CHANGE" = "true" ]; then
+            args+=(--simulate-change)
+          fi
+          node scripts/spec-sources.mjs "${args[@]}"
+          cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+          result="$RUNNER_TEMP/result.json"
+          {
+            echo "changed=$(jq -r .changed "$result")"
+            echo "fingerprint=$(jq -r '.fingerprint // ""' "$result")"
+            echo "title=$(jq -r '.title // ""' "$result")"
+          } >> "$GITHUB_OUTPUT"
+          unverifiable=$(jq -r .unverifiable "$result")
+          if [ "$unverifiable" != "0" ]; then
+            echo "::warning::$unverifiable official source(s) could not be read this time; see the job summary."
+          fi
+      - name: Open a spec-change issue
+        if: steps.check.outputs.changed != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TITLE: ${{ steps.check.outputs.title }}
+          FINGERPRINT: ${{ steps.check.outputs.fingerprint }}
+          # Assigned to the repository owner so that GitHub notifies them,
+          # whatever their watch settings for the repository are.
+          ASSIGNEE: ${{ github.repository_owner }}
+        run: |
+          # Fails when the label exists, which is fine.
+          gh label create spec-change --color D93F0B \
+            --description "An official source cited in SPEC.md changed" || true
+          existing=$(gh issue list --label spec-change --state open --limit 100 \
+            --json number,body \
+            --jq "map(select(.body | contains(\"spec-sources-fingerprint: $FINGERPRINT \"))) | .[0].number // empty")
+          if [ -n "$existing" ]; then
+            echo "Issue #$existing already reports these changes ($FINGERPRINT): no new issue." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          url=$(gh issue create --title "$TITLE" --label spec-change \
+            --assignee "$ASSIGNEE" --body-file "$RUNNER_TEMP/report.md")
+          echo "Opened $url" | tee -a "$GITHUB_STEP_SUMMARY"
