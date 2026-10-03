@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-30T22:52:13.798Z",
+  "generatedAt": "2026-10-02T12:19:47.598Z",
   "git": {
-    "sha": "3177752b68b6333884fa34fbd95c9a547c0e1f71",
+    "sha": "11662416342ce5c6761c69a7a39e82028a7d0407",
     "dirty": false
   },
   "machine": {
-    "cpu": "Apple M1",
-    "cores": 8,
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "cores": 4,
     "memoryGiB": 16,
-    "os": "darwin 25.3.0",
-    "arch": "arm64",
-    "runner": null
+    "os": "linux 6.17.0-1022-azure",
+    "arch": "x64",
+    "runner": "ubuntu24 20260927.320.1"
   },
-  "node": "v24.16.0",
+  "node": "v24.21.0",
   "tinybench": "6.2.0",
   "config": {
     "timePerTaskMs": 2000,
@@ -46,7 +46,7 @@
       "label": "nif-dni-nie-cif-validation (this build)",
       "kind": "subject",
       "package": "nif-dni-nie-cif-validation",
-      "version": "1.0.12+3177752",
+      "version": "2.0.0+1166241",
       "homepage": "https://github.com/josegoval/nif-dni-nie-cif-validation",
       "calls": {
         "DNI": "isValidDni(x)",
@@ -295,335 +295,335 @@
     "DNI": {
       "current": {
         "status": "ok",
-        "opsPerSecond": 60261910,
-        "rmePercent": 0.01,
-        "samples": 531581,
+        "opsPerSecond": 60119237,
+        "rmePercent": 0.02,
+        "samples": 530311,
         "rounds": [
-          60261910,
-          59865013,
-          60288976
+          58210971,
+          60125777,
+          60119237
         ],
-        "rangePercent": 0.7,
+        "rangePercent": 3.19,
         "accepted": 150,
         "inputs": 225,
         "subjectSpeedup": 1
       },
       "v1": {
         "status": "ok",
-        "opsPerSecond": 8826459,
-        "rmePercent": 0.04,
-        "samples": 77927,
+        "opsPerSecond": 8592961,
+        "rmePercent": 0.05,
+        "samples": 75537,
         "rounds": [
-          8834461,
-          8826459,
-          8820232
+          8631805,
+          8572710,
+          8592961
         ],
-        "rangePercent": 0.16,
+        "rangePercent": 0.69,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 6.83
+        "subjectSpeedup": 7
       },
       "spain-id": {
         "status": "ok",
-        "opsPerSecond": 7531102,
-        "rmePercent": 0.05,
-        "samples": 66375,
+        "opsPerSecond": 6962978,
+        "rmePercent": 0.07,
+        "samples": 60974,
         "rounds": [
-          7530126,
-          7531102,
-          7547225
+          6962978,
+          7095116,
+          6571109
         ],
-        "rangePercent": 0.23,
+        "rangePercent": 7.53,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 8
+        "subjectSpeedup": 8.63
       },
       "better-dni": {
         "status": "ok",
-        "opsPerSecond": 8043789,
-        "rmePercent": 0.04,
-        "samples": 70946,
+        "opsPerSecond": 8444180,
+        "rmePercent": 0.06,
+        "samples": 73937,
         "rounds": [
-          8043789,
-          8207304,
-          7911408
+          7961482,
+          8455777,
+          8444180
         ],
-        "rangePercent": 3.68,
+        "rangePercent": 5.85,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 7.49
+        "subjectSpeedup": 7.12
       },
       "dni-js": {
         "status": "ok",
-        "opsPerSecond": 9531653,
-        "rmePercent": 0.04,
-        "samples": 83922,
+        "opsPerSecond": 8896044,
+        "rmePercent": 0.06,
+        "samples": 77809,
         "rounds": [
-          9531653,
-          9563607,
-          9523361
+          8483563,
+          8903859,
+          8896044
         ],
-        "rangePercent": 0.42,
+        "rangePercent": 4.72,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 6.32
+        "subjectSpeedup": 6.76
       },
       "stdnum": {
         "status": "ok",
-        "opsPerSecond": 484063,
-        "rmePercent": 0.14,
-        "samples": 4292,
+        "opsPerSecond": 410903,
+        "rmePercent": 0.15,
+        "samples": 3644,
         "rounds": [
-          487985,
-          484063,
-          481934
+          409505,
+          412788,
+          410903
         ],
-        "rangePercent": 1.25,
+        "rangePercent": 0.8,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 124.49
+        "subjectSpeedup": 146.31
       },
       "validator-identity-card": {
         "status": "ok",
-        "opsPerSecond": 6654954,
-        "rmePercent": 0.06,
-        "samples": 58575,
+        "opsPerSecond": 5729235,
+        "rmePercent": 0.08,
+        "samples": 50149,
         "rounds": [
-          6660141,
-          6642456,
-          6654954
+          5639890,
+          5791313,
+          5729235
         ],
-        "rangePercent": 0.27,
+        "rangePercent": 2.64,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 9.06
+        "subjectSpeedup": 10.49
       },
       "validator-tax-id": {
         "status": "ok",
-        "opsPerSecond": 4714824,
-        "rmePercent": 0.06,
-        "samples": 41610,
+        "opsPerSecond": 4218107,
+        "rmePercent": 0.08,
+        "samples": 37008,
         "rounds": [
-          4714824,
-          4708703,
-          4716729
+          4098350,
+          4218107,
+          4331222
         ],
-        "rangePercent": 0.17,
+        "rangePercent": 5.52,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 12.78
+        "subjectSpeedup": 14.25
       },
       "maistik": {
         "status": "ok",
-        "opsPerSecond": 9693740,
-        "rmePercent": 0.04,
-        "samples": 85520,
+        "opsPerSecond": 9460351,
+        "rmePercent": 0.07,
+        "samples": 82387,
         "rounds": [
-          9673339,
-          9694184,
-          9693740
+          9460351,
+          8902942,
+          9570913
         ],
-        "rangePercent": 0.22,
+        "rangePercent": 7.06,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 6.22
+        "subjectSpeedup": 6.35
       },
       "kreyo": {
         "status": "ok",
-        "opsPerSecond": 2772367,
-        "rmePercent": 0.09,
-        "samples": 24456,
+        "opsPerSecond": 2783709,
+        "rmePercent": 0.14,
+        "samples": 24235,
         "rounds": [
-          2772367,
-          2776639,
-          2771541
+          2783709,
+          2852948,
+          2743748
         ],
-        "rangePercent": 0.18,
+        "rangePercent": 3.92,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 21.74
+        "subjectSpeedup": 21.6
       },
       "jsvat": {
         "status": "ok",
-        "opsPerSecond": 2708829,
-        "rmePercent": 0.1,
-        "samples": 23870,
+        "opsPerSecond": 2104781,
+        "rmePercent": 0.14,
+        "samples": 18431,
         "rounds": [
-          2708829,
-          2704432,
-          2720369
+          2104781,
+          2182111,
+          2067938
         ],
-        "rangePercent": 0.59,
+        "rangePercent": 5.42,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 22.25
+        "subjectSpeedup": 28.56
       }
     },
     "NIE": {
       "current": {
         "status": "ok",
-        "opsPerSecond": 60319874,
+        "opsPerSecond": 57603564,
         "rmePercent": 0.01,
-        "samples": 800982,
+        "samples": 761554,
         "rounds": [
-          60319874,
-          60450168,
-          59881954
+          59649297,
+          57603564,
+          57155795
         ],
-        "rangePercent": 0.94,
+        "rangePercent": 4.33,
         "accepted": 100,
         "inputs": 150,
         "subjectSpeedup": 1
       },
       "v1": {
         "status": "ok",
-        "opsPerSecond": 6555465,
-        "rmePercent": 0.02,
-        "samples": 87117,
+        "opsPerSecond": 6435992,
+        "rmePercent": 0.05,
+        "samples": 84470,
         "rounds": [
-          6618870,
-          6555465,
-          6520698
+          6618097,
+          6187506,
+          6435992
         ],
-        "rangePercent": 1.5,
+        "rangePercent": 6.69,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 9.2
+        "subjectSpeedup": 8.95
       },
       "spain-id": {
         "status": "ok",
-        "opsPerSecond": 4196112,
-        "rmePercent": 0.06,
-        "samples": 55443,
+        "opsPerSecond": 4009301,
+        "rmePercent": 0.07,
+        "samples": 52669,
         "rounds": [
-          4221640,
-          4177965,
-          4196112
+          4016286,
+          4009301,
+          3990875
         ],
-        "rangePercent": 1.04,
+        "rangePercent": 0.63,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 14.38
+        "subjectSpeedup": 14.37
       },
       "better-dni": {
         "status": "ok",
-        "opsPerSecond": 8004467,
-        "rmePercent": 0.03,
-        "samples": 105812,
+        "opsPerSecond": 8168807,
+        "rmePercent": 0.04,
+        "samples": 107303,
         "rounds": [
-          8004341,
-          8238243,
-          8004467
+          8159349,
+          8168807,
+          8208681
         ],
-        "rangePercent": 2.92,
+        "rangePercent": 0.6,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 7.54
+        "subjectSpeedup": 7.05
       },
       "dni-js": {
         "status": "ok",
-        "opsPerSecond": 5298745,
-        "rmePercent": 0.04,
-        "samples": 70078,
+        "opsPerSecond": 4494561,
+        "rmePercent": 0.06,
+        "samples": 59258,
         "rounds": [
-          5297643,
-          5298745,
-          5299966
+          4494561,
+          4435047,
+          4920374
         ],
-        "rangePercent": 0.04,
+        "rangePercent": 10.8,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 11.38
+        "subjectSpeedup": 12.82
       },
       "stdnum": {
         "status": "ok",
-        "opsPerSecond": 457608,
-        "rmePercent": 0.11,
-        "samples": 6088,
+        "opsPerSecond": 394604,
+        "rmePercent": 0.18,
+        "samples": 5225,
         "rounds": [
-          455967,
-          457608,
-          462744
+          394604,
+          396335,
+          393239
         ],
-        "rangePercent": 1.48,
+        "rangePercent": 0.78,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 131.82
+        "subjectSpeedup": 145.98
       },
       "validator-identity-card": {
         "status": "ok",
-        "opsPerSecond": 4264738,
-        "rmePercent": 0.06,
-        "samples": 56188,
+        "opsPerSecond": 3136475,
+        "rmePercent": 0.09,
+        "samples": 41059,
         "rounds": [
-          4257398,
-          4280890,
-          4264738
+          3136475,
+          3304525,
+          3028820
         ],
-        "rangePercent": 0.55,
+        "rangePercent": 8.79,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 14.14
+        "subjectSpeedup": 18.37
       },
       "validator-tax-id": {
         "status": "ok",
-        "opsPerSecond": 3717293,
-        "rmePercent": 0.06,
-        "samples": 49179,
+        "opsPerSecond": 3424467,
+        "rmePercent": 0.07,
+        "samples": 45050,
         "rounds": [
-          3717293,
-          3720733,
-          3701253
+          3406278,
+          3424467,
+          3441294
         ],
-        "rangePercent": 0.52,
+        "rangePercent": 1.02,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 16.23
+        "subjectSpeedup": 16.82
       },
       "maistik": {
         "status": "ok",
-        "opsPerSecond": 7842173,
-        "rmePercent": 0.03,
-        "samples": 103700,
+        "opsPerSecond": 8385566,
+        "rmePercent": 0.04,
+        "samples": 110288,
         "rounds": [
-          7842173,
-          7838736,
-          7853916
+          8433545,
+          7828786,
+          8385566
         ],
-        "rangePercent": 0.19,
+        "rangePercent": 7.21,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 7.69
+        "subjectSpeedup": 6.87
       },
       "kreyo": {
         "status": "ok",
-        "opsPerSecond": 2553561,
-        "rmePercent": 0.08,
-        "samples": 33731,
+        "opsPerSecond": 2649060,
+        "rmePercent": 0.12,
+        "samples": 34528,
         "rounds": [
-          2553561,
-          2558683,
-          2548887
+          2649060,
+          2651651,
+          2622593
         ],
-        "rangePercent": 0.38,
+        "rangePercent": 1.1,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 23.62
+        "subjectSpeedup": 21.74
       },
       "jsvat": {
         "status": "ok",
-        "opsPerSecond": 2151723,
-        "rmePercent": 0.09,
-        "samples": 28427,
+        "opsPerSecond": 1592703,
+        "rmePercent": 0.13,
+        "samples": 20954,
         "rounds": [
-          2155788,
-          2144740,
-          2151723
+          1586191,
+          1592703,
+          1597095
         ],
-        "rangePercent": 0.51,
+        "rangePercent": 0.68,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 28.03
+        "subjectSpeedup": 36.17
       }
     },
     "CIF": {
@@ -645,108 +645,108 @@
       },
       "current": {
         "status": "ok",
-        "opsPerSecond": 43386026,
-        "rmePercent": 0.01,
-        "samples": 320427,
+        "opsPerSecond": 55058041,
+        "rmePercent": 0.02,
+        "samples": 404700,
         "rounds": [
-          43386026,
-          43420908,
-          43258725
+          55058041,
+          55058242,
+          54916053
         ],
-        "rangePercent": 0.37,
+        "rangePercent": 0.26,
         "accepted": 180,
         "inputs": 270,
         "subjectSpeedup": 1
       },
       "v1": {
         "status": "ok",
-        "opsPerSecond": 6179633,
+        "opsPerSecond": 7267892,
         "rmePercent": 0.06,
-        "samples": 45369,
+        "samples": 53206,
         "rounds": [
-          6164212,
-          6179633,
-          6214954
+          7262209,
+          7378937,
+          7267892
         ],
-        "rangePercent": 0.82,
+        "rangePercent": 1.61,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 7.02
+        "subjectSpeedup": 7.58
       },
       "spain-id": {
         "status": "ok",
-        "opsPerSecond": 4534248,
-        "rmePercent": 0.09,
-        "samples": 32817,
+        "opsPerSecond": 4500985,
+        "rmePercent": 0.11,
+        "samples": 32752,
         "rounds": [
-          4534248,
-          4513817,
-          4575185
+          4500985,
+          4534139,
+          4393537
         ],
-        "rangePercent": 1.35,
+        "rangePercent": 3.12,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 9.57
+        "subjectSpeedup": 12.23
       },
       "stdnum": {
         "status": "ok",
-        "opsPerSecond": 440774,
-        "rmePercent": 0.13,
-        "samples": 3260,
+        "opsPerSecond": 375249,
+        "rmePercent": 0.14,
+        "samples": 2776,
         "rounds": [
-          439206,
-          444097,
-          440774
+          372426,
+          377101,
+          375249
         ],
-        "rangePercent": 1.11,
+        "rangePercent": 1.25,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 98.43
+        "subjectSpeedup": 146.72
       },
       "maistik": {
         "status": "ok",
-        "opsPerSecond": 6787776,
-        "rmePercent": 0.04,
-        "samples": 50043,
+        "opsPerSecond": 7736329,
+        "rmePercent": 0.06,
+        "samples": 56764,
         "rounds": [
-          6753406,
-          6815179,
-          6787776
+          7736329,
+          7953523,
+          7265163
         ],
-        "rangePercent": 0.91,
+        "rangePercent": 8.9,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 6.39
+        "subjectSpeedup": 7.12
       },
       "kreyo": {
         "status": "ok",
-        "opsPerSecond": 2354388,
-        "rmePercent": 0.1,
-        "samples": 17343,
+        "opsPerSecond": 2498607,
+        "rmePercent": 0.15,
+        "samples": 18235,
         "rounds": [
-          2355296,
-          2345458,
-          2354388
+          2483415,
+          2508589,
+          2498607
         ],
-        "rangePercent": 0.42,
+        "rangePercent": 1.01,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 18.43
+        "subjectSpeedup": 22.04
       },
       "jsvat": {
         "status": "ok",
-        "opsPerSecond": 2771975,
-        "rmePercent": 0.1,
-        "samples": 20374,
+        "opsPerSecond": 2370028,
+        "rmePercent": 0.16,
+        "samples": 17274,
         "rounds": [
-          2738046,
-          2777364,
-          2771975
+          2370028,
+          2272456,
+          2383130
         ],
-        "rangePercent": 1.42,
+        "rangePercent": 4.67,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 15.65
+        "subjectSpeedup": 23.23
       }
     },
     "mixed": {
@@ -768,108 +768,108 @@
       },
       "current": {
         "status": "ok",
-        "opsPerSecond": 39590490,
+        "opsPerSecond": 42016663,
         "rmePercent": 0.03,
-        "samples": 78828,
+        "samples": 83510,
         "rounds": [
-          39590490,
-          39644833,
-          39457095
+          42016663,
+          41867932,
+          42913073
         ],
-        "rangePercent": 0.47,
+        "rangePercent": 2.49,
         "accepted": 600,
         "inputs": 1001,
         "subjectSpeedup": 1
       },
       "v1": {
         "status": "ok",
-        "opsPerSecond": 6984514,
-        "rmePercent": 0.08,
-        "samples": 13914,
+        "opsPerSecond": 7152450,
+        "rmePercent": 0.13,
+        "samples": 14161,
         "rounds": [
-          6983670,
-          6995031,
-          6984514
+          7219930,
+          7053567,
+          7152450
         ],
-        "rangePercent": 0.16,
+        "rangePercent": 2.33,
         "accepted": 600,
         "inputs": 1001,
-        "subjectSpeedup": 5.67
+        "subjectSpeedup": 5.87
       },
       "spain-id": {
         "status": "ok",
-        "opsPerSecond": 2583269,
-        "rmePercent": 0.12,
-        "samples": 5151,
+        "opsPerSecond": 2183351,
+        "rmePercent": 0.2,
+        "samples": 4340,
         "rounds": [
-          2583269,
-          2602117,
-          2556641
+          2194243,
+          2151431,
+          2183351
         ],
-        "rangePercent": 1.76,
+        "rangePercent": 1.96,
         "accepted": 520,
         "inputs": 1001,
-        "subjectSpeedup": 15.33
+        "subjectSpeedup": 19.24
       },
       "stdnum": {
         "status": "ok",
-        "opsPerSecond": 334312,
-        "rmePercent": 0.26,
-        "samples": 668,
+        "opsPerSecond": 291642,
+        "rmePercent": 0.42,
+        "samples": 581,
         "rounds": [
-          333532,
-          336835,
-          334312
+          291642,
+          295650,
+          285429
         ],
-        "rangePercent": 0.99,
+        "rangePercent": 3.5,
         "accepted": 576,
         "inputs": 1001,
-        "subjectSpeedup": 118.42
+        "subjectSpeedup": 144.07
       },
       "maistik": {
         "status": "ok",
-        "opsPerSecond": 4993080,
-        "rmePercent": 0.09,
-        "samples": 9949,
+        "opsPerSecond": 4624655,
+        "rmePercent": 0.15,
+        "samples": 9180,
         "rounds": [
-          4993080,
-          4953116,
-          5012301
+          4624655,
+          4753085,
+          4534067
         ],
-        "rangePercent": 1.19,
+        "rangePercent": 4.74,
         "accepted": 516,
         "inputs": 1001,
-        "subjectSpeedup": 7.93
+        "subjectSpeedup": 9.09
       },
       "kreyo": {
         "status": "ok",
-        "opsPerSecond": 2656606,
-        "rmePercent": 0.12,
-        "samples": 5296,
+        "opsPerSecond": 2727765,
+        "rmePercent": 0.21,
+        "samples": 5414,
         "rounds": [
-          2667213,
-          2656606,
-          2652030
+          2741337,
+          2718161,
+          2727765
         ],
-        "rangePercent": 0.57,
+        "rangePercent": 0.85,
         "accepted": 516,
         "inputs": 1001,
-        "subjectSpeedup": 14.9
+        "subjectSpeedup": 15.4
       },
       "jsvat": {
         "status": "ok",
-        "opsPerSecond": 2561196,
-        "rmePercent": 0.13,
-        "samples": 5104,
+        "opsPerSecond": 1946115,
+        "rmePercent": 0.2,
+        "samples": 3872,
         "rounds": [
-          2555721,
-          2568918,
-          2561196
+          2013643,
+          1937286,
+          1946115
         ],
-        "rangePercent": 0.52,
+        "rangePercent": 3.92,
         "accepted": 576,
         "inputs": 1001,
-        "subjectSpeedup": 15.46
+        "subjectSpeedup": 21.59
       }
     }
   },
@@ -879,8 +879,8 @@
         "all": {
           "overall": {
             "supported": true,
-            "total": 117,
-            "agree": 117,
+            "total": 125,
+            "agree": 125,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -889,8 +889,8 @@
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 29,
+            "total": 30,
+            "agree": 30,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -899,8 +899,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 18,
+            "agree": 18,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -909,8 +909,8 @@
           },
           "CIF": {
             "supported": true,
-            "total": 58,
-            "agree": 58,
+            "total": 61,
+            "agree": 61,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -919,8 +919,8 @@
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
+            "total": 11,
+            "agree": 11,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -941,8 +941,8 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 95,
-            "agree": 95,
+            "total": 103,
+            "agree": 103,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -951,8 +951,8 @@
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -961,8 +961,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -971,8 +971,8 @@
           },
           "CIF": {
             "supported": true,
-            "total": 55,
-            "agree": 55,
+            "total": 58,
+            "agree": 58,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -981,8 +981,8 @@
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
+            "total": 11,
+            "agree": 11,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1007,48 +1007,48 @@
         "all": {
           "overall": {
             "supported": true,
-            "total": 117,
-            "agree": 97,
+            "total": 125,
+            "agree": 105,
             "falseAccepts": 8,
             "falseRejects": 12,
             "onDocumentedDecisions": 13,
             "threw": 0,
-            "agreementPercent": 82.91
+            "agreementPercent": 84
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 21,
+            "total": 30,
+            "agree": 22,
             "falseAccepts": 0,
             "falseRejects": 8,
             "onDocumentedDecisions": 4,
             "threw": 0,
-            "agreementPercent": 72.41
+            "agreementPercent": 73.33
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 14,
+            "total": 18,
+            "agree": 16,
             "falseAccepts": 0,
             "falseRejects": 2,
             "onDocumentedDecisions": 1,
             "threw": 0,
-            "agreementPercent": 87.5
+            "agreementPercent": 88.89
           },
           "CIF": {
             "supported": true,
-            "total": 58,
-            "agree": 48,
+            "total": 61,
+            "agree": 51,
             "falseAccepts": 8,
             "falseRejects": 2,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 82.76
+            "agreementPercent": 83.61
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
+            "total": 11,
+            "agree": 11,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1069,18 +1069,18 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 95,
-            "agree": 87,
+            "total": 103,
+            "agree": 95,
             "falseAccepts": 8,
             "falseRejects": 0,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 91.58
+            "agreementPercent": 92.23
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1089,8 +1089,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1099,18 +1099,18 @@
           },
           "CIF": {
             "supported": true,
-            "total": 55,
-            "agree": 47,
+            "total": 58,
+            "agree": 50,
             "falseAccepts": 8,
             "falseRejects": 0,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 85.45
+            "agreementPercent": 86.21
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
+            "total": 11,
+            "agree": 11,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1181,53 +1181,53 @@
         "all": {
           "overall": {
             "supported": true,
-            "total": 117,
-            "agree": 97,
+            "total": 125,
+            "agree": 103,
             "falseAccepts": 9,
-            "falseRejects": 11,
+            "falseRejects": 13,
             "onDocumentedDecisions": 13,
             "threw": 0,
-            "agreementPercent": 82.91
+            "agreementPercent": 82.4
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 26,
+            "total": 30,
+            "agree": 27,
             "falseAccepts": 0,
             "falseRejects": 3,
             "onDocumentedDecisions": 2,
             "threw": 0,
-            "agreementPercent": 89.66
+            "agreementPercent": 90
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 12,
+            "total": 18,
+            "agree": 14,
             "falseAccepts": 0,
             "falseRejects": 4,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 75
+            "agreementPercent": 77.78
           },
           "CIF": {
             "supported": true,
-            "total": 58,
-            "agree": 50,
+            "total": 61,
+            "agree": 53,
             "falseAccepts": 8,
             "falseRejects": 0,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 86.21
+            "agreementPercent": 86.89
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 4,
             "falseAccepts": 1,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 44.44
+            "agreementPercent": 36.36
           },
           "general": {
             "supported": true,
@@ -1243,18 +1243,18 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 95,
-            "agree": 82,
+            "total": 103,
+            "agree": 88,
             "falseAccepts": 9,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 86.32
+            "agreementPercent": 85.44
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1263,8 +1263,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1273,23 +1273,23 @@
           },
           "CIF": {
             "supported": true,
-            "total": 55,
-            "agree": 47,
+            "total": 58,
+            "agree": 50,
             "falseAccepts": 8,
             "falseRejects": 0,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 85.45
+            "agreementPercent": 86.21
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 4,
             "falseAccepts": 1,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 44.44
+            "agreementPercent": 36.36
           },
           "general": {
             "supported": true,
@@ -1319,6 +1319,24 @@
             "kind": "falseReject",
             "rule": "KLM-1",
             "note": "v1 test value",
+            "documentedDecision": null
+          },
+          {
+            "input": "L2222222P",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIF-1",
+            "note": "K, L or M first selects the K/L/M format",
+            "documentedDecision": null
+          },
+          {
+            "input": "M7654321J",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-3",
+            "note": "the 7 characters after the prefix are digits",
             "documentedDecision": null
           },
           {
@@ -1338,72 +1356,54 @@
             "rule": "CIF-3",
             "note": "G needs a digit (valid only in lenient mode)",
             "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
-          },
-          {
-            "input": "12.345.678Z",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-2",
-            "note": "dots",
-            "documentedDecision": null
-          },
-          {
-            "input": "X/1234567/L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-3",
-            "note": "slashes",
-            "documentedDecision": null
           }
         ],
-        "disagreementCount": 20
+        "disagreementCount": 22
       },
       "better-dni": {
         "all": {
           "overall": {
             "supported": true,
-            "total": 59,
-            "agree": 43,
+            "total": 64,
+            "agree": 46,
             "falseAccepts": 0,
-            "falseRejects": 16,
+            "falseRejects": 18,
             "onDocumentedDecisions": 7,
             "threw": 0,
-            "agreementPercent": 72.88
+            "agreementPercent": 71.88
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 21,
+            "total": 30,
+            "agree": 22,
             "falseAccepts": 0,
             "falseRejects": 8,
             "onDocumentedDecisions": 4,
             "threw": 0,
-            "agreementPercent": 72.41
+            "agreementPercent": 73.33
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 12,
+            "total": 18,
+            "agree": 14,
             "falseAccepts": 0,
             "falseRejects": 4,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 75
+            "agreementPercent": 77.78
           },
           "CIF": {
             "supported": false
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -1419,18 +1419,18 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 40,
-            "agree": 36,
+            "total": 45,
+            "agree": 39,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 90
+            "agreementPercent": 86.67
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1439,8 +1439,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1452,13 +1452,13 @@
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -1491,6 +1491,24 @@
             "documentedDecision": null
           },
           {
+            "input": "L2222222P",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIF-1",
+            "note": "K, L or M first selects the K/L/M format",
+            "documentedDecision": null
+          },
+          {
+            "input": "M7654321J",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-3",
+            "note": "the 7 characters after the prefix are digits",
+            "documentedDecision": null
+          },
+          {
             "input": "X01234567L",
             "expected": "valid",
             "got": "invalid",
@@ -1507,72 +1525,54 @@
             "rule": "NORM-2",
             "note": "surrounding spaces",
             "documentedDecision": null
-          },
-          {
-            "input": "12345678-Z",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-3",
-            "note": "hyphen",
-            "documentedDecision": null
-          },
-          {
-            "input": "1234567L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-4",
-            "note": "7-digit DNI, canonical 01234567L",
-            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
           }
         ],
-        "disagreementCount": 16
+        "disagreementCount": 18
       },
       "dni-js": {
         "all": {
           "overall": {
             "supported": true,
-            "total": 59,
-            "agree": 44,
+            "total": 64,
+            "agree": 47,
             "falseAccepts": 0,
-            "falseRejects": 15,
+            "falseRejects": 17,
             "onDocumentedDecisions": 7,
             "threw": 0,
-            "agreementPercent": 74.58
+            "agreementPercent": 73.44
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 22,
+            "total": 30,
+            "agree": 23,
             "falseAccepts": 0,
             "falseRejects": 7,
             "onDocumentedDecisions": 4,
             "threw": 0,
-            "agreementPercent": 75.86
+            "agreementPercent": 76.67
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 12,
+            "total": 18,
+            "agree": 14,
             "falseAccepts": 0,
             "falseRejects": 4,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 75
+            "agreementPercent": 77.78
           },
           "CIF": {
             "supported": false
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -1588,18 +1588,18 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 40,
-            "agree": 36,
+            "total": 45,
+            "agree": 39,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 90
+            "agreementPercent": 86.67
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1608,8 +1608,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1621,13 +1621,13 @@
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -1660,6 +1660,24 @@
             "documentedDecision": null
           },
           {
+            "input": "L2222222P",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIF-1",
+            "note": "K, L or M first selects the K/L/M format",
+            "documentedDecision": null
+          },
+          {
+            "input": "M7654321J",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-3",
+            "note": "the 7 characters after the prefix are digits",
+            "documentedDecision": null
+          },
+          {
             "input": "X01234567L",
             "expected": "valid",
             "got": "invalid",
@@ -1676,74 +1694,56 @@
             "rule": "NORM-2",
             "note": "surrounding spaces",
             "documentedDecision": null
-          },
-          {
-            "input": "X/1234567/L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-3",
-            "note": "slashes",
-            "documentedDecision": null
-          },
-          {
-            "input": "1234567L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-4",
-            "note": "7-digit DNI, canonical 01234567L",
-            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
           }
         ],
-        "disagreementCount": 15
+        "disagreementCount": 17
       },
       "stdnum": {
         "all": {
           "overall": {
             "supported": true,
-            "total": 117,
-            "agree": 88,
+            "total": 125,
+            "agree": 96,
             "falseAccepts": 23,
             "falseRejects": 6,
             "onDocumentedDecisions": 29,
             "threw": 0,
-            "agreementPercent": 75.21
+            "agreementPercent": 76.8
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 26,
+            "total": 30,
+            "agree": 27,
             "falseAccepts": 0,
             "falseRejects": 3,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 89.66
+            "agreementPercent": 90
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 13,
+            "total": 18,
+            "agree": 15,
             "falseAccepts": 0,
             "falseRejects": 3,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 81.25
+            "agreementPercent": 83.33
           },
           "CIF": {
             "supported": true,
-            "total": 58,
-            "agree": 36,
+            "total": 61,
+            "agree": 39,
             "falseAccepts": 22,
             "falseRejects": 0,
             "onDocumentedDecisions": 22,
             "threw": 0,
-            "agreementPercent": 62.07
+            "agreementPercent": 63.93
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
+            "total": 11,
+            "agree": 11,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1764,18 +1764,18 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 95,
-            "agree": 72,
+            "total": 103,
+            "agree": 80,
             "falseAccepts": 23,
             "falseRejects": 0,
             "onDocumentedDecisions": 23,
             "threw": 0,
-            "agreementPercent": 75.79
+            "agreementPercent": 77.67
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1784,8 +1784,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1794,18 +1794,18 @@
           },
           "CIF": {
             "supported": true,
-            "total": 55,
-            "agree": 33,
+            "total": 58,
+            "agree": 36,
             "falseAccepts": 22,
             "falseRejects": 0,
             "onDocumentedDecisions": 22,
             "threw": 0,
-            "agreementPercent": 60
+            "agreementPercent": 62.07
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
+            "total": 11,
+            "agree": 11,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1867,46 +1867,46 @@
         "all": {
           "overall": {
             "supported": true,
-            "total": 59,
-            "agree": 45,
+            "total": 64,
+            "agree": 48,
             "falseAccepts": 0,
-            "falseRejects": 14,
+            "falseRejects": 16,
             "onDocumentedDecisions": 6,
             "threw": 0,
-            "agreementPercent": 76.27
+            "agreementPercent": 75
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 23,
+            "total": 30,
+            "agree": 24,
             "falseAccepts": 0,
             "falseRejects": 6,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 79.31
+            "agreementPercent": 80
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 12,
+            "total": 18,
+            "agree": 14,
             "falseAccepts": 0,
             "falseRejects": 4,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 75
+            "agreementPercent": 77.78
           },
           "CIF": {
             "supported": false
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -1922,18 +1922,18 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 40,
-            "agree": 36,
+            "total": 45,
+            "agree": 39,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 90
+            "agreementPercent": 86.67
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1942,8 +1942,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -1955,13 +1955,13 @@
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -1994,6 +1994,24 @@
             "documentedDecision": null
           },
           {
+            "input": "L2222222P",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIF-1",
+            "note": "K, L or M first selects the K/L/M format",
+            "documentedDecision": null
+          },
+          {
+            "input": "M7654321J",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-3",
+            "note": "the 7 characters after the prefix are digits",
+            "documentedDecision": null
+          },
+          {
             "input": "X01234567L",
             "expected": "valid",
             "got": "invalid",
@@ -2010,67 +2028,49 @@
             "rule": "NORM-2",
             "note": "inner spaces",
             "documentedDecision": null
-          },
-          {
-            "input": "12345678-Z",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-3",
-            "note": "hyphen",
-            "documentedDecision": null
-          },
-          {
-            "input": "1234567L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-4",
-            "note": "7-digit DNI, canonical 01234567L",
-            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
           }
         ],
-        "disagreementCount": 14
+        "disagreementCount": 16
       },
       "validator-tax-id": {
         "all": {
           "overall": {
             "supported": true,
-            "total": 59,
-            "agree": 49,
+            "total": 64,
+            "agree": 54,
             "falseAccepts": 0,
             "falseRejects": 10,
             "onDocumentedDecisions": 5,
             "threw": 0,
-            "agreementPercent": 83.05
+            "agreementPercent": 84.38
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 23,
+            "total": 30,
+            "agree": 24,
             "falseAccepts": 0,
             "falseRejects": 6,
             "onDocumentedDecisions": 2,
             "threw": 0,
-            "agreementPercent": 79.31
+            "agreementPercent": 80
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 12,
+            "total": 18,
+            "agree": 14,
             "falseAccepts": 0,
             "falseRejects": 4,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 75
+            "agreementPercent": 77.78
           },
           "CIF": {
             "supported": false
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
+            "total": 11,
+            "agree": 11,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2091,8 +2091,8 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 40,
-            "agree": 40,
+            "total": 45,
+            "agree": 45,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2101,8 +2101,8 @@
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2111,8 +2111,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2124,8 +2124,8 @@
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
+            "total": 11,
+            "agree": 11,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2187,53 +2187,53 @@
         "all": {
           "overall": {
             "supported": true,
-            "total": 117,
-            "agree": 97,
+            "total": 125,
+            "agree": 103,
             "falseAccepts": 9,
-            "falseRejects": 11,
+            "falseRejects": 13,
             "onDocumentedDecisions": 14,
             "threw": 0,
-            "agreementPercent": 82.91
+            "agreementPercent": 82.4
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 25,
+            "total": 30,
+            "agree": 26,
             "falseAccepts": 1,
             "falseRejects": 3,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 86.21
+            "agreementPercent": 86.67
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 12,
+            "total": 18,
+            "agree": 14,
             "falseAccepts": 0,
             "falseRejects": 4,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 75
+            "agreementPercent": 77.78
           },
           "CIF": {
             "supported": true,
-            "total": 58,
-            "agree": 50,
+            "total": 61,
+            "agree": 53,
             "falseAccepts": 8,
             "falseRejects": 0,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 86.21
+            "agreementPercent": 86.89
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -2249,18 +2249,18 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 95,
-            "agree": 83,
+            "total": 103,
+            "agree": 89,
             "falseAccepts": 8,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 87.37
+            "agreementPercent": 86.41
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2269,8 +2269,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2279,23 +2279,23 @@
           },
           "CIF": {
             "supported": true,
-            "total": 55,
-            "agree": 47,
+            "total": 58,
+            "agree": 50,
             "falseAccepts": 8,
             "falseRejects": 0,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 85.45
+            "agreementPercent": 86.21
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -2328,6 +2328,24 @@
             "documentedDecision": null
           },
           {
+            "input": "L2222222P",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIF-1",
+            "note": "K, L or M first selects the K/L/M format",
+            "documentedDecision": null
+          },
+          {
+            "input": "M7654321J",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-3",
+            "note": "the 7 characters after the prefix are digits",
+            "documentedDecision": null
+          },
+          {
             "input": "X01234567L",
             "expected": "valid",
             "got": "invalid",
@@ -2344,79 +2362,61 @@
             "rule": "CIF-3",
             "note": "G needs a digit (valid only in lenient mode)",
             "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
-          },
-          {
-            "input": "X/1234567/L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-3",
-            "note": "slashes",
-            "documentedDecision": null
-          },
-          {
-            "input": "1234567L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-4",
-            "note": "7-digit DNI, canonical 01234567L",
-            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
           }
         ],
-        "disagreementCount": 20
+        "disagreementCount": 22
       },
       "kreyo": {
         "all": {
           "overall": {
             "supported": true,
-            "total": 117,
-            "agree": 97,
+            "total": 125,
+            "agree": 103,
             "falseAccepts": 8,
-            "falseRejects": 12,
+            "falseRejects": 14,
             "onDocumentedDecisions": 14,
             "threw": 0,
-            "agreementPercent": 82.91
+            "agreementPercent": 82.4
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 25,
+            "total": 30,
+            "agree": 26,
             "falseAccepts": 0,
             "falseRejects": 4,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 86.21
+            "agreementPercent": 86.67
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 12,
+            "total": 18,
+            "agree": 14,
             "falseAccepts": 0,
             "falseRejects": 4,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 75
+            "agreementPercent": 77.78
           },
           "CIF": {
             "supported": true,
-            "total": 58,
-            "agree": 50,
+            "total": 61,
+            "agree": 53,
             "falseAccepts": 8,
             "falseRejects": 0,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 86.21
+            "agreementPercent": 86.89
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -2432,18 +2432,18 @@
         "canonical": {
           "overall": {
             "supported": true,
-            "total": 95,
-            "agree": 83,
+            "total": 103,
+            "agree": 89,
             "falseAccepts": 8,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 87.37
+            "agreementPercent": 86.41
           },
           "DNI": {
             "supported": true,
-            "total": 16,
-            "agree": 16,
+            "total": 17,
+            "agree": 17,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2452,8 +2452,8 @@
           },
           "NIE": {
             "supported": true,
-            "total": 11,
-            "agree": 11,
+            "total": 13,
+            "agree": 13,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2462,23 +2462,23 @@
           },
           "CIF": {
             "supported": true,
-            "total": 55,
-            "agree": 47,
+            "total": 58,
+            "agree": 50,
             "falseAccepts": 8,
             "falseRejects": 0,
             "onDocumentedDecisions": 8,
             "threw": 0,
-            "agreementPercent": 85.45
+            "agreementPercent": 86.21
           },
           "KLM": {
             "supported": true,
-            "total": 9,
+            "total": 11,
             "agree": 5,
             "falseAccepts": 0,
-            "falseRejects": 4,
+            "falseRejects": 6,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 55.56
+            "agreementPercent": 45.45
           },
           "general": {
             "supported": true,
@@ -2511,6 +2511,24 @@
             "documentedDecision": null
           },
           {
+            "input": "L2222222P",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NIF-1",
+            "note": "K, L or M first selects the K/L/M format",
+            "documentedDecision": null
+          },
+          {
+            "input": "M7654321J",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "KLM-3",
+            "note": "the 7 characters after the prefix are digits",
+            "documentedDecision": null
+          },
+          {
             "input": "X01234567L",
             "expected": "valid",
             "got": "invalid",
@@ -2527,59 +2545,103 @@
             "rule": "CIF-3",
             "note": "G needs a digit (valid only in lenient mode)",
             "documentedDecision": "control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient)"
-          },
-          {
-            "input": "12.345.678Z",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-2",
-            "note": "dots",
-            "documentedDecision": null
-          },
-          {
-            "input": "X/1234567/L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NORM-3",
-            "note": "slashes",
-            "documentedDecision": null
           }
         ],
-        "disagreementCount": 20
+        "disagreementCount": 22
       },
       "jsvat": {
         "all": {
           "overall": {
             "supported": true,
-            "total": 117,
-            "agree": 100,
+            "total": 125,
+            "agree": 108,
             "falseAccepts": 11,
             "falseRejects": 6,
             "onDocumentedDecisions": 17,
             "threw": 0,
-            "agreementPercent": 85.47
+            "agreementPercent": 86.4
           },
           "DNI": {
             "supported": true,
-            "total": 29,
-            "agree": 26,
+            "total": 30,
+            "agree": 27,
             "falseAccepts": 0,
             "falseRejects": 3,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 89.66
+            "agreementPercent": 90
           },
           "NIE": {
             "supported": true,
-            "total": 16,
-            "agree": 13,
+            "total": 18,
+            "agree": 15,
             "falseAccepts": 0,
             "falseRejects": 3,
             "onDocumentedDecisions": 3,
             "threw": 0,
-            "agreementPercent": 81.25
+            "agreementPercent": 83.33
+          },
+          "CIF": {
+            "supported": true,
+            "total": 61,
+            "agree": 50,
+            "falseAccepts": 11,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 11,
+            "threw": 0,
+            "agreementPercent": 81.97
+          },
+          "KLM": {
+            "supported": true,
+            "total": 11,
+            "agree": 11,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "general": {
+            "supported": true,
+            "total": 5,
+            "agree": 5,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          }
+        },
+        "canonical": {
+          "overall": {
+            "supported": true,
+            "total": 103,
+            "agree": 92,
+            "falseAccepts": 11,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 11,
+            "threw": 0,
+            "agreementPercent": 89.32
+          },
+          "DNI": {
+            "supported": true,
+            "total": 17,
+            "agree": 17,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
+          },
+          "NIE": {
+            "supported": true,
+            "total": 13,
+            "agree": 13,
+            "falseAccepts": 0,
+            "falseRejects": 0,
+            "onDocumentedDecisions": 0,
+            "threw": 0,
+            "agreementPercent": 100
           },
           "CIF": {
             "supported": true,
@@ -2593,70 +2655,8 @@
           },
           "KLM": {
             "supported": true,
-            "total": 9,
-            "agree": 9,
-            "falseAccepts": 0,
-            "falseRejects": 0,
-            "onDocumentedDecisions": 0,
-            "threw": 0,
-            "agreementPercent": 100
-          },
-          "general": {
-            "supported": true,
-            "total": 5,
-            "agree": 5,
-            "falseAccepts": 0,
-            "falseRejects": 0,
-            "onDocumentedDecisions": 0,
-            "threw": 0,
-            "agreementPercent": 100
-          }
-        },
-        "canonical": {
-          "overall": {
-            "supported": true,
-            "total": 95,
-            "agree": 84,
-            "falseAccepts": 11,
-            "falseRejects": 0,
-            "onDocumentedDecisions": 11,
-            "threw": 0,
-            "agreementPercent": 88.42
-          },
-          "DNI": {
-            "supported": true,
-            "total": 16,
-            "agree": 16,
-            "falseAccepts": 0,
-            "falseRejects": 0,
-            "onDocumentedDecisions": 0,
-            "threw": 0,
-            "agreementPercent": 100
-          },
-          "NIE": {
-            "supported": true,
             "total": 11,
             "agree": 11,
-            "falseAccepts": 0,
-            "falseRejects": 0,
-            "onDocumentedDecisions": 0,
-            "threw": 0,
-            "agreementPercent": 100
-          },
-          "CIF": {
-            "supported": true,
-            "total": 55,
-            "agree": 44,
-            "falseAccepts": 11,
-            "falseRejects": 0,
-            "onDocumentedDecisions": 11,
-            "threw": 0,
-            "agreementPercent": 80
-          },
-          "KLM": {
-            "supported": true,
-            "total": 9,
-            "agree": 9,
             "falseAccepts": 0,
             "falseRejects": 0,
             "onDocumentedDecisions": 0,
@@ -2716,12 +2716,12 @@
         "placeholders-default.json",
         "vat-default.json"
       ],
-      "total": 117,
+      "total": 125,
       "byBucket": {
-        "DNI": 29,
-        "NIE": 16,
-        "CIF": 58,
-        "KLM": 9,
+        "DNI": 30,
+        "NIE": 18,
+        "CIF": 61,
+        "KLM": 11,
         "general": 5
       }
     }
@@ -2731,7 +2731,7 @@
       "DNI": {
         "import": "import { isValidDni } from \"dist/esm/index.mjs\";",
         "minBytes": 1362,
-        "gzipBytes": 624
+        "gzipBytes": 623
       },
       "NIE": {
         "import": "import { isValidNie } from \"dist/esm/index.mjs\";",
@@ -2740,8 +2740,8 @@
       },
       "CIF": {
         "import": "import { isValidCif } from \"dist/esm/index.mjs\";",
-        "minBytes": 1116,
-        "gzipBytes": 562
+        "minBytes": 1124,
+        "gzipBytes": 568
       },
       "any": {
         "import": "import { isValidNif } from \"dist/esm/index.mjs\";",
@@ -2750,8 +2750,8 @@
       },
       "full": {
         "import": "import * as lib from \"dist/esm/index.mjs\";",
-        "minBytes": 12976,
-        "gzipBytes": 4653
+        "minBytes": 13004,
+        "gzipBytes": 4679
       },
       "alternatives": []
     },
