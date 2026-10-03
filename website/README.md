@@ -24,6 +24,7 @@ pnpm dev                        # http://localhost:4321/nif-dni-nie-cif-validati
 | `pnpm lint` | Biome (its own configuration, `biome.json`) |
 | `pnpm typecheck` | `astro check`: the `.astro`, TypeScript and content files |
 | `pnpm check:links` | After a build: every `href` and `src` of every built page resolves, anchors included |
+| `pnpm check:source-links` | After a build: no link into `node_modules`, and every GitHub source link ("Defined in", SPEC.md, docs/) points at a file of the repository, at a line the file has |
 | `pnpm check:size` | After a build: the JavaScript of the landing page, and the live validator's budget (5 kB gzipped) |
 | `pnpm test:e2e` | After a build: Playwright, in Chromium (`pnpm exec playwright install chromium` once) |
 | `pnpm check` | All of the above, in order |
@@ -60,7 +61,7 @@ The code samples of the pages are tested by the library's own suite, not here: `
 Two kinds of page are written at build time (and when the dev server starts) into `src/content/docs/`, and ignored by git (`.gitignore`); restart `pnpm dev` after changing their sources.
 
 - **Official sources** (`plugins/official-sources.mjs`): `SPEC.md` itself, without its title and table of contents, after the translated introduction of `src/intros/official-sources/<code>.md`. The rules stay in English (marked `lang="en"`), the anchors are SPEC.md's own (`#cif-3`, and GitHub's heading slugs), the edit link opens SPEC.md, and "Last updated" is its "Last verified" date.
-- **API reference** (`plugins/api-reference.mjs`): [starlight-typedoc](https://github.com/HiDeoo/starlight-typedoc) runs TypeDoc and typedoc-plugin-markdown on `../src`, with the library's compiler options (`typedoc/tsconfig.json`), one page per entry point of the `exports` map, each named after its import specifier (`typedoc/plugin.mjs`). The post-processing step gives each page a description, points the SPEC.md links of the JSDoc at the official sources page, and replaces the generated sidebar group with one link per entry point.
+- **API reference** (`plugins/api-reference.mjs`): [starlight-typedoc](https://github.com/HiDeoo/starlight-typedoc) runs TypeDoc and typedoc-plugin-markdown on `../src`, with the library's compiler options (`typedoc/tsconfig.json`), one page per entry point of the `exports` map, each named after its import specifier (`typedoc/plugin.mjs`, which also drops the "Defined in" link of a member inherited from a dependency: its source is in `node_modules`, not in the repository). The post-processing step gives each page a description, points the SPEC.md links of the JSDoc at the official sources page, and replaces the generated sidebar group with one link per entry point.
   - **English only.** The reference's text is the JSDoc, so it is not translated. The other languages show the same pages under their own folder through Starlight's fallback: the sidebar and the page chrome are in the reader's language, the content is marked `lang="en"`, Starlight shows its "not translated yet" notice, and `src/routeData.ts` gives each fallback page a title and a description in its language. The introduction, `reference/api.mdx`, is translated.
 
 ## SEO

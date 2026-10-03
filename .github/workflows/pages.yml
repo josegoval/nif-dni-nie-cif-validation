@@ -109,6 +109,9 @@ jobs:
       # Every href and src of every built page, components included.
       - name: Check internal links
         run: pnpm --dir website check:links
+      # No link into node_modules; every GitHub source link is a file of the repository.
+      - name: Check the GitHub source links
+        run: pnpm --dir website check:source-links
       - name: Check the live validator's JavaScript budget
         run: pnpm --dir website check:size
       # Playwright's own Chromium build, cached per Playwright version.
