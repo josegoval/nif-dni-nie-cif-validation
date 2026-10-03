@@ -208,6 +208,8 @@ deno
 denoland
 esbuild
 fontsource
+ghsa
+ghsas
 googlebot
 grotesk
 hookform
