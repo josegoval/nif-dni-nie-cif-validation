@@ -1,13 +1,13 @@
 # v2 API design
 
-Status: accepted for 2.0.0 (#56); the v2 pull requests are pending the maintainer's review.
+Status: accepted (#56) and released in 2.0.0 (2026-10-02). D13, the command line interface, was released in 2.1.0 (2026-10-03).
 
-This document describes the public API of `nif-dni-nie-cif-validation` 2.0.0 and the reasons behind each decision. Every behaviour follows [SPEC.md](../SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](../MIGRATION.md) lists what changes for v1 users.
+This document describes the public API of `nif-dni-nie-cif-validation` 2 and the reasons behind each decision. Every behaviour follows [SPEC.md](../SPEC.md), and every error the API reports names the SPEC rule that failed. [MIGRATION.md](../MIGRATION.md) lists what changes for v1 users.
 
 ## Goals
 
 - Tell the caller **why** a value failed (an error code, a SPEC rule ID and a message in the caller's language), **which** document it is, its **normalized** form to store, and the **expected** control character for "did you mean…?" hints (#56).
-- Follow SPEC.md exactly. Only official rules (tiers T1 to T3) decide validity by default. Conventions (T4) are either input cleanup or opt-in.
+- Follow SPEC.md exactly. By default only official rules (tiers T1 to T3) decide validity, with one documented exception: no official text publishes the CIF control arithmetic, so the universal algorithm (a T4 convention, [CIF-4](../SPEC.md#cif-4)) applies. Every other convention is either input cleanup or opt-in.
 - Never throw on untrusted input (#40).
 - Keep the boolean validators as fast as in 1.x on canonical input, with no allocations (#47).
 - Stay zero-dependency and tree-shakable: the booleans don't pull the messages or the organisation names, and `validate()` only pulls the languages the application imports.
