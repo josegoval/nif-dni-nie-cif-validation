@@ -1,0 +1,148 @@
+---
+title: Command line
+description: Validate Spanish NIF, DNI, NIE and CIF numbers from a terminal, a shell script or an AI agent with npx nif-dni-nie-cif-validation, with JSON output, exit codes, test data and CSV checks.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+The package has a command line interface for shell scripts, data pipelines, CI jobs and the tool calls of AI agents. It applies the same rules as the library, with the same rule IDs, and has no dependencies. Run it with `npx`, which downloads the package the first time, or install the package and run `nif-dni-nie-cif-validation` from your project's scripts. It needs Node.js 20 or newer.
+
+```sh
+npx nif-dni-nie-cif-validation --help
+npx nif-dni-nie-cif-validation validate --help
+```
+
+| Command | What it does |
+| --- | --- |
+| `validate <value...>` | Validates each value, like `validate()` |
+| `type <value>` | Detects the type from the format only, like `getNifType()` |
+| `normalize <value>` | Prints the canonical form, like `normalize()` |
+| `generate <type>` | Prints test values: `dni`, `nie`, `cif` or `nif` |
+| `check --file <csv> --column <name>` | Validates one column of a CSV file |
+
+## Validating values
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678Z " x-0123456-7l " b-1234567-4 12345678A
+# 12345678Z: valid DNI 12345678Z
+# " x-0123456-7l ": valid NIE X1234567L
+# b-1234567-4: valid CIF B12345674 (Limited liability company)
+# 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+```
+
+Each value gets one line: valid, with its type and the canonical form to store, or invalid, with the [SPEC.md](/nif-dni-nie-cif-validation/reference/official-sources/) rule that failed, the error code and the message. A value with spaces is shown in quotes. Here the exit code is 1, because one value is invalid.
+
+The options of `validate()` are flags of `validate` and `check`. Without them, the command follows SPEC.md, as the library does:
+
+| Flag | What it does | Option of `validate()` |
+| --- | --- | --- |
+| `--types DNI,NIE` | Accepts only these types, separated by commas: `DNI`, `NIF_KLM`, `NIE`, `CIF`. Another type gives `UNSUPPORTED_TYPE` | `types` |
+| `--cif-control lenient` | C D F G J U V also take a letter as the control character, as v1 did. It has no official basis: use it for legacy data only | `cifControl` |
+| `--reject-placeholders` | Rejects the placeholder numbers `00000000T`, `00000001R`, `99999999R` and `X0000000T` | `rejectPlaceholders` |
+| `--allow-vat-prefix` | Also accepts a Spanish VAT number, `ES` and a NIF | `allowVatPrefix` |
+| `--locale es` | The language of the messages and of the organisation names: `en` (the default), `es`, `ca`, `eu` or `gl` | `locale` |
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678A B12345674 --locale es
+# 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] El carácter de control no es correcto: para este DNI debería ser «Z».
+# B12345674: valid CIF B12345674 (Sociedad de responsabilidad limitada)
+npx nif-dni-nie-cif-validation validate B12345674 --types DNI,NIE
+# B12345674: invalid [POLICY-2 UNSUPPORTED_TYPE] This NIF of a legal person or entity (CIF) is not accepted here.
+```
+
+The error codes and the languages are explained in [Error codes and localized messages](/nif-dni-nie-cif-validation/guides/errors-and-languages/).
+
+## JSON for scripts and agents
+
+`--json` prints one JSON document on standard output. For `validate`, it is an array with one object per value, in order: the value as given (`input`) and the result of `validate()`. It is an array even for one value, so a script reads every call the same way.
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678A --json
+# [
+#   {
+#     "input": "12345678A",
+#     "valid": false,
+#     "type": "DNI",
+#     "normalized": "12345678A",
+#     "error": {
+#       "code": "INVALID_CONTROL_CHARACTER",
+#       "message": "The control character is not correct: for this DNI it should be \"Z\".",
+#       "rule": "DNI-2",
+#       "expected": "Z"
+#     }
+#   }
+# ]
+```
+
+| Command | JSON document |
+| --- | --- |
+| `validate` | `[{ input, valid, type, normalized, error?, meta? }]`: the value and its result, for each value |
+| `type` | `{ input, type }`, where `type` is `null` when the format is not recognised |
+| `normalize` | `{ input, normalized }` |
+| `generate` | `{ seed, values }` |
+| `check` | `{ file, column, rows, valid, invalid, errors }`, where `errors` has `{ row, input, ...result }` for each invalid row |
+
+Later versions may add fields, but never remove or rename one.
+
+## Exit codes
+
+| Exit code | When |
+| --- | --- |
+| `0` | Everything is valid. `normalize`, `generate`, `--help` and `--version` also exit with 0 |
+| `1` | Something is invalid: a value, a row of the CSV file, or a format that `type` doesn't recognise |
+| `2` | The command is wrong: an unknown command or option, a bad option value, a file that can't be read or a column that doesn't exist. The message goes to standard error, and nothing to standard output |
+
+So a script can test a value without reading the output:
+
+```sh
+if npx nif-dni-nie-cif-validation validate "$NIF" > /dev/null; then echo "valid"; fi
+```
+
+## Type and canonical form
+
+```sh
+npx nif-dni-nie-cif-validation type 12345678A
+# DNI
+npx nif-dni-nie-cif-validation normalize " x-0123456-7l "
+# X1234567L
+```
+
+`type` gives the type that the format shows: `DNI`, `NIF_KLM`, `NIE` or `CIF`. It doesn't check the control character, so `12345678A` is a DNI here, and an invalid one for `validate`. When the format isn't one of them, it exits with 1. `normalize` removes spaces, dots, hyphens and slashes and gives the upper-case form, but it doesn't validate: to store a value, validate it and keep its canonical form. See [Normalizing and formatting input](/nif-dni-nie-cif-validation/guides/normalizing-and-formatting/).
+
+## Test data
+
+```sh
+npx nif-dni-nie-cif-validation generate dni --count 3 --seed 42
+# 60110375J
+# 44829056D
+# 85246578E
+npx nif-dni-nie-cif-validation generate cif --seed 1 --format
+# P-0027357-C
+```
+
+`generate` prints valid values of a type: `dni`, `nie`, `cif`, or `nif` for any of them. `--count` sets how many (up to 1,000,000). With `--seed`, the values are the same on every run and machine; without it, the seed is random, and `--json` prints it, so you can make the same values again. `--format` gives the display form, with hyphens.
+
+<Aside type="caution">
+Generated numbers are made up, but one may match a real person or company by chance. Use them in tests only, never as real data. More in [Generating test data](/nif-dni-nie-cif-validation/guides/test-data/).
+</Aside>
+
+## Checking a CSV file
+
+For a file `customers.csv` with the names of the columns in its first row:
+
+```csv
+id,nif,name
+1,12345678Z,Ana
+2,"B-1234567-4","Acme, S.L."
+3,12345678A,Luis
+```
+
+```sh
+npx nif-dni-nie-cif-validation check --file customers.csv --column nif
+# row 4: 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+# 3 rows checked in customers.csv, column "nif": 2 valid, 1 invalid
+```
+
+`check` validates the column that `--column` names and prints a line for each invalid row, then a summary. Rows are numbered as in a spreadsheet: the first row after the names is row 2. Blank lines are skipped, and an empty cell is invalid (`EMPTY`). It takes the same flags as `validate`, and `--json` gives the counts and the result of each invalid row.
+
+The file is read as UTF-8 CSV ([RFC 4180](https://www.rfc-editor.org/rfc/rfc4180)): a field in double quotes may contain commas, line breaks and doubled quotes, line breaks may be CRLF or LF, and a byte order mark is ignored. Spreadsheets in Spanish often save CSV files with semicolons: read them with `--delimiter ";"`. The whole file is read into memory; for very large files, use the library in a stream, as in the [CSV example](https://github.com/josegoval/nif-dni-nie-cif-validation/tree/master/examples/csv-bulk-validation).

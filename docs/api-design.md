@@ -278,6 +278,60 @@ zSpanishVat(opts?: Omit<ValidateOptions, "allowVatPrefix">)   vSpanishVat(...)  
 
   With Valibot, `import { valibotResolver } from "@hookform/resolvers/valibot"`, `v.object({ nif: vNif({ locale: es }) })` and `resolver: valibotResolver(schema)`; with Yup, `yupResolver(object({ nif: yNif({ locale: es }) }))`. `errors.nif.message` is the localized message in all three.
 
+### D13. Command line interface: `npx nif-dni-nie-cif-validation` (#61)
+
+The package has a `bin` with its own name, for shell scripts, data pipelines and the tool calls of AI agents. It has no dependencies (arguments are parsed with `node:util`'s `parseArgs`) and runs on Node.js 20 or newer. It calls only the public API, so it applies the same rules and reports the same rule IDs as the library.
+
+| Command | What it prints | Library function |
+| --- | --- | --- |
+| `validate <value...>` | One line per value: valid, with the type and the canonical form, or invalid, with the SPEC rule, the error code and the message | `validate()` |
+| `type <value>` | The type from the format only, or a message on stderr when the format is not recognised | `getNifType()` |
+| `normalize <value>` | The canonical form; it does not validate | `normalize()` |
+| `generate <type>` | Valid test values, one per line: `dni`, `nie`, `cif` or `nif` (any of the three); `--count <n>` (up to 1,000,000), `--seed <integer>`, `--format` | `createGenerator()` |
+| `check --file <csv> --column <name>` | A line for each invalid row, with its row number, and a summary | `validate()` |
+
+```sh
+npx nif-dni-nie-cif-validation validate 12345678Z " x-0123456-7l " b-1234567-4 12345678A
+# 12345678Z: valid DNI 12345678Z
+# " x-0123456-7l ": valid NIE X1234567L
+# b-1234567-4: valid CIF B12345674 (Limited liability company)
+# 12345678A: invalid [DNI-2 INVALID_CONTROL_CHARACTER] The control character is not correct: for this DNI it should be "Z".
+```
+
+- **The options of `validate()` are flags** of `validate` and `check`: `--types DNI,NIE` (comma-separated `NifType`s), `--cif-control lenient`, `--reject-placeholders`, `--allow-vat-prefix` and `--locale es` (`en`, `es`, `ca`, `eu` or `gl`: the language of the messages and of the organisation names). `type` takes `--allow-vat-prefix`. Their defaults are the library's, so the CLI follows SPEC.md by default. `normalize: false` has no flag: it exists for v1 compatibility in code.
+- **Exit codes.** 0 when everything is valid, 1 when something is invalid (a value, a CSV row, a format that `type` doesn't recognise), 2 for a usage error: an unknown command or option, a bad option value, a file that can't be read or isn't CSV, a column that doesn't exist. A usage error writes a message to stderr and nothing to stdout. `normalize` and `generate` always exit with 0 when they run.
+- **`--json` prints one JSON document** on stdout, indented with two spaces. The shapes are stable: fields may be added in a minor release, never removed or renamed.
+
+  | Command | JSON document |
+  | --- | --- |
+  | `validate` | An array with one object per value, in order: `{ input, ...ValidationResult }`, the value as given plus `validate()`'s result (`valid`, `type`, `normalized`, `error`, `meta`). Always an array, also for one value, so a script reads every call the same way |
+  | `type` | `{ input, type }`, where `type` is a `NifType` or `null` |
+  | `normalize` | `{ input, normalized }` |
+  | `generate` | `{ seed, values }`: the seed, also when it was random, reproduces the values with `--seed` |
+  | `check` | `{ file, column, rows, valid, invalid, errors }`: the counts, and `errors`, one `{ row, input, ...ValidationResult }` per invalid row |
+
+  ```sh
+  npx nif-dni-nie-cif-validation validate 12345678A --json
+  # [
+  #   {
+  #     "input": "12345678A",
+  #     "valid": false,
+  #     "type": "DNI",
+  #     "normalized": "12345678A",
+  #     "error": {
+  #       "code": "INVALID_CONTROL_CHARACTER",
+  #       "message": "The control character is not correct: for this DNI it should be \"Z\".",
+  #       "rule": "DNI-2",
+  #       "expected": "Z"
+  #     }
+  #   }
+  # ]
+  ```
+- **`generate`** uses `createGenerator(seed)`, so `--count` gives different values and the same seed gives the same list on every platform. Without `--seed` the seed is random (and `--json` reports it). The values are synthetic, for tests only, as the generators' are (D11).
+- **`check`** reads a UTF-8 CSV file (RFC 4180) whose first row has the column names: fields in double quotes may contain the delimiter, line breaks and doubled quotes; line breaks are CRLF, LF or CR; a byte order mark is ignored. `--delimiter ";"` reads the files that spreadsheets in Spanish save. `--column` is matched with the names of the first row, without leading or trailing spaces. Rows are numbered as in a spreadsheet (the first row after the names is row 2), blank lines are skipped, and a missing cell is an empty value (`EMPTY`). Where RFC 4180 has no answer the reader is lenient (a quote inside an unquoted field is kept); a quoted field that is never closed is a usage error that names its row. The whole file is read at once: the CLI is for files that fit in memory, and the library is for the rest ([examples/csv-bulk-validation](../examples/csv-bulk-validation)).
+- **`--help`** documents every command and option (`<command> --help` for one), and `--version` prints the package's version. Text has no colours, so the output is the same in a terminal, a pipe and a log.
+- **Not part of the library.** The CLI is built only as ES modules to `dist/esm/cli/` (`bin.mjs` is the executable, with its `#!/usr/bin/env node` line), without type declarations, and has no entry in `exports`: nothing can import it, so it is not API, the size budgets measure the same bytes with or without it, and a bundle never includes it. The executable has a single name, the package's: a short alias could be mistaken for another package on npm.
+
 ## Alternatives considered
 
 - **Languages selected by a string (`locale: "es"`)** from a table of all languages, as in the first v2 drafts. Rejected (#56): a bundler can't know which entries of the table are used, so every `validate()` user paid for every language (about 0.6 kB min+gz for Spanish alone), and each new language would have grown every bundle.
@@ -293,3 +347,5 @@ zSpanishVat(opts?: Omit<ValidateOptions, "allowVatPrefix">)   vSpanishVat(...)  
 - **Valibot's `rawTransform` or `rawCheck` for the schemas.** Rejected: their `addIssue` accepts no extra properties, so the error code and the SPEC rule would be lost. The code and the rule are the point of `validate()`, and a form library may want them for analytics or for its own messages.
 - **The schema libraries as dependencies, or the adapters as separate packages** (`nif-dni-nie-cif-validation-zod`). Rejected: a dependency would break "0 dependencies" for everyone, and separate packages would have to be published and versioned together for no gain over optional peers and entry points of the same package.
 - **Adapters that map `validate()`'s result without `transform`** (checking only, leaving the value as typed). Rejected: the normalized value is what should be stored, and a schema that returns the raw input would make every caller call `normalize()` again.
+- **One JSON object for a single value in `validate --json`, and an array for several.** Rejected (D13): the shape would depend on how many values a script passes, so `validate "$@" --json` would need two readers. Each element of the array is a `ValidationResult`.
+- **A short alias for the command (such as `nif`).** Rejected: it could be mistaken for, or collide with, another package of that name on npm; `npx` needs the package name anyway.

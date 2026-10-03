@@ -15,8 +15,9 @@ src/format.ts, vat.ts, organisations.ts, policy.ts, types.ts, localize.ts
 src/locales/        one locale object per language (en built in; es, ca, eu, gl)
 src/generate/       /generate entry point: seeded test-data generators
 src/adapter.ts, src/{zod,valibot,yup}/  schema adapters (optional peers)
+src/cli/            the command line interface, `bin` of package.json (no `exports` entry)
 src/__tests__/      Vitest suites (fixtures, properties, differential, stdnum, docs samples)
-test/fixtures/      SPEC test values as JSON; test/smoke/: tarball smoke tests
+test/fixtures/      SPEC test values as JSON; test/smoke/: tarball smoke tests (with npx for the CLI)
 bench/              benchmarks; bench/results/latest.json is the source of every number
 examples/           runnable projects (own pnpm workspace); they install the packed package
 website/            the site on GitHub Pages (Astro + Starlight, own pnpm workspace); website/README.md
@@ -37,6 +38,7 @@ pnpm spell         # cspell (British English; README.es.md also in Spanish)
 pnpm spec:check    # rule IDs in src/ and tests match SPEC.md; a valid and an invalid fixture per rule
 pnpm docs:jsdoc    # every export has a summary, @param, @returns, two @example, @see, @since
 pnpm examples:install && pnpm examples:check   # pack the package, install and check examples/ (CI: examples.yml)
+pnpm smoke         # pack, install the tarball in a temporary folder, run test/smoke/ (CI: the Compat job)
 pnpm build && pnpm --dir website install && pnpm --dir website check   # the website (CI: pages.yml)
 pnpm size          # bundle size budgets (.size-limit.json)
 pnpm check:es      # dist/ uses nothing newer than ES2016
@@ -55,7 +57,7 @@ Before every commit, run `pnpm lint && pnpm typecheck && pnpm test && pnpm build
 - **Cite SPEC rule IDs.** Every validation branch has a comment with its rule ID (`// CIF-3`), and every rule has a test whose name starts with its ID. A new rule needs an official source (or a T4 label) in SPEC.md first. Accepting more or fewer inputs by default is a breaking change.
 - **100% coverage** of statements, branches, functions and lines, and the differential test against v1.0.11 stays green.
 - **One data source for numbers.** Benchmark figures come only from `bench/results/latest.json`, through `pnpm readme:bench` and `pnpm bench:report`. Never type a number between the `<!-- …:start -->` and `<!-- …:end -->` markers of the READMEs.
-- **Docs that run.** Every code sample in README.md, README.es.md and llms.txt runs in `readme-examples.test.ts`, every `@example` of the JSDoc in `jsdoc-examples.test.ts`, and every code sample of the website's pages in `website-examples.test.ts`; the comment after a statement is its expected value. Keep the two READMEs in step, the website's languages in step (the same pages and code), and llms.txt under about 2,000 tokens.
+- **Docs that run.** Every code sample in README.md, README.es.md and llms.txt runs in `readme-examples.test.ts`, every `@example` of the JSDoc in `jsdoc-examples.test.ts`, every code sample of the website's pages in `website-examples.test.ts`, and every `npx nif-dni-nie-cif-validation` command line of the docs in `cli-docs.test.ts`; the comment after a statement (or a command) is its expected value. Keep the two READMEs in step, the website's languages in step (the same pages and code), and llms.txt under about 2,000 tokens.
 - **README badges.** `pnpm readme:bench` writes the row of badges in both READMEs, as HTML and in the flat shields.io style; don't edit it by hand. `scripts/readme-badges.test.mjs` fails on a Markdown badge next to HTML, a badge without `style=flat`, alt text or a link, or badges that differ between the two READMEs.
 - **JSDoc on every export.** `pnpm docs:jsdoc` fails without a summary, `@since`, and for a function `@param`, `@returns`, two `@example` and a `@see`. An alias (`isValidCif`) is a constant with its own JSDoc, never a re-export under another name.
 - **Plain docs.** No hidden instructions for agents in docs, code comments or `package.json`.

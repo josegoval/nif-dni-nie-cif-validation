@@ -3,7 +3,13 @@
 //   dist/esm/**/*.mjs, *.d.mts   ES modules (tsconfig.build.json)
 //   dist/cjs/**/*.cjs, *.d.cts   CommonJS   (tsconfig.build.cjs.json)
 //
-// Subdirectories of src/ (src/locales/) keep their place in dist/.
+// Subdirectories of src/ (src/locales/) keep their place in dist/. The
+// command line interface (src/cli/) is built only as ES modules, without
+// declarations (nothing imports it): dist/esm/cli/bin.mjs is the `bin` of
+// package.json, and must start with its `#!/usr/bin/env node` line.
+//
+// `node scripts/build.mjs <dir>` builds into <dir> instead of dist/ (the
+// end-to-end tests of the CLI build into a folder of their own).
 //
 // TypeScript emits .js and .d.ts files whose relative imports have no file
 // extension, because the sources are written that way. Node resolves ES module
@@ -22,26 +28,30 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const tsc = join(root, "node_modules/typescript/bin/tsc");
+const out = process.argv[2] ? resolve(process.argv[2]) : join(root, "dist");
 
 const builds = [
   {
     project: "tsconfig.build.json",
-    dir: "dist/esm",
+    dir: "esm",
     js: ".mjs",
     dts: ".d.mts",
   },
   {
     project: "tsconfig.build.cjs.json",
-    dir: "dist/cjs",
+    dir: "cjs",
     js: ".cjs",
     dts: ".d.cts",
   },
 ];
+
+const BIN = "esm/cli/bin.mjs";
+const SHEBANG = "#!/usr/bin/env node\n";
 
 // A relative specifier in `from "./x"`, `import("./x")` or `require("./x")`.
 const RELATIVE_SPECIFIER =
@@ -55,17 +65,24 @@ function listFiles(dir) {
   });
 }
 
-rmSync(join(root, "dist"), { recursive: true, force: true });
+rmSync(out, { recursive: true, force: true });
 
 for (const { project, dir, js, dts } of builds) {
-  execFileSync(process.execPath, [tsc, "-p", join(root, project)], {
-    stdio: "inherit",
-  });
+  const outDir = join(out, dir);
+  execFileSync(
+    process.execPath,
+    [tsc, "-p", join(root, project), "--outDir", outDir],
+    { stdio: "inherit" }
+  );
 
-  const outDir = join(root, dir);
   for (const file of listFiles(outDir)) {
     const name = relative(outDir, file);
     const isDts = name.endsWith(".d.ts");
+    // The CLI has no types: nothing imports it.
+    if (isDts && name.startsWith(`cli${sep}`)) {
+      rmSync(file);
+      continue;
+    }
     if (!isDts && !name.endsWith(".js")) {
       throw new Error(
         `${dir}/${name}: unexpected file in the TypeScript output`
@@ -100,5 +117,9 @@ for (const { project, dir, js, dts } of builds) {
       }
     }
   }
-  console.log(`${dir}: ${files.length} files`);
+  console.log(`${relative(root, outDir)}: ${files.length} files`);
+}
+
+if (!readFileSync(join(out, BIN), "utf8").startsWith(SHEBANG)) {
+  throw new Error(`${BIN} does not start with ${JSON.stringify(SHEBANG)}`);
 }
