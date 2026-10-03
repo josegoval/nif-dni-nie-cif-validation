@@ -209,7 +209,7 @@ With `cifControl: "lenient"`, the digit and the letter of the same control value
 
 ## Differences from other libraries
 
-`src/__tests__/stdnum.test.ts` compares `validate()` (default options) with [stdnum](https://www.npmjs.com/package/stdnum) (the JavaScript port of python-stdnum, `stdnum.ES.nif`) on about 50,000 generated inputs. Every difference must be one of these decisions; any other difference fails the test.
+`src/__tests__/stdnum.test.ts` compares `validate()` (default options) with [stdnum](https://www.npmjs.com/package/stdnum) (the JavaScript port of python-stdnum, `stdnum.ES.nif`) on about 100,000 generated inputs. Every difference must be one of these decisions; any other difference fails the test.
 
 | Difference | stdnum | This library | Rule |
 |---|---|---|---|
