@@ -102,9 +102,13 @@ jobs:
       - name: Type check (astro check)
         run: pnpm --dir website typecheck
       # Fails on a broken link in a page's Markdown (starlight-links-validator).
+      # The landing page's stars and downloads are fetched here, once
+      # (website/src/data/stats.ts); the job's read-only token lifts GitHub's
+      # limit for unauthenticated requests, which runners share.
       - name: Build
         env:
           SITE_REQUIRE_COVERAGE: ${{ env.DEPLOY == 'true' && '1' || '0' }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: pnpm --dir website build
       # Every href and src of every built page, components included.
       - name: Check internal links

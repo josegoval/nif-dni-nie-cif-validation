@@ -12,6 +12,16 @@ export const ca: SiteStrings = {
     copy: "Copieu",
     copied: "Copiat",
   },
+  stats: {
+    label: "El projecte en xifres",
+    stars: (count, value) =>
+      `${count} ${value === 1 ? "estrella" : "estrelles"} a GitHub`,
+    downloads: (count, value) =>
+      `${count} ${value === 1 ? "baixada" : "baixades"} d'npm en l'última setmana`,
+    starsLink: "Estrelles a GitHub",
+    downloadsLink: "Baixades d'npm",
+    asOf: (date) => `Dades del ${date}`,
+  },
   validator: {
     heading: "Proveu-la",
     intro:

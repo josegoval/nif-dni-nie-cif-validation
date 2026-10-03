@@ -13,6 +13,14 @@ export const eu: SiteStrings = {
     copy: "Kopiatu",
     copied: "Kopiatuta",
   },
+  stats: {
+    label: "Proiektua zenbakitan",
+    stars: (count) => `${count} izar GitHub-en`,
+    downloads: (count) => `${count} deskarga npm-n azken astean`,
+    starsLink: "Izarrak GitHub-en",
+    downloadsLink: "Deskargak npm-n",
+    asOf: (date) => `Datuen data: ${date}`,
+  },
   validator: {
     heading: "Probatu",
     intro:
