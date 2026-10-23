@@ -12,7 +12,7 @@
     "nif-dni-nie-cif-validation": "file:../.pack/package"
   },
   "devDependencies": {
-    "webpack": "^5.111.1",
+    "webpack": "^5.112.0",
     "webpack-cli": "^7.2.3"
   }
 }

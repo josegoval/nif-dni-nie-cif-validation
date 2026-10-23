@@ -10,9 +10,9 @@
     "check": "pnpm build && node check-bundle.mjs"
   },
   "dependencies": {
-    "next": "^16.3.7",
+    "next": "^16.4.2",
     "nif-dni-nie-cif-validation": "file:../.pack/package",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }
