@@ -18,13 +18,28 @@ const DOCS = [
   "gl/reference/api/nif-dni-nie-cif-validation/",
 ];
 
+// Starlight's search button shows a "⌘ K" hint that its aria-label ("Search")
+// doesn't repeat; the shortcut is announced through the button's ARIA key shortcuts attribute instead.
+// axe-core 4.14 flags it as label-content-name-mismatch (WCAG 2.5.3). It is
+// Starlight's markup, so only that node is exempt from that one rule.
+const STARLIGHT_SEARCH = 'button[data-open-modal=""]';
+
 async function violations(page: Page) {
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
     .analyze();
-  return results.violations.map(
-    (v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`
-  );
+  return results.violations
+    .map((v) => ({
+      id: v.id,
+      targets: v.nodes
+        .map((n) => n.target.join(" "))
+        .filter(
+          (t) =>
+            !(v.id === "label-content-name-mismatch" && t === STARLIGHT_SEARCH)
+        ),
+    }))
+    .filter((v) => v.targets.length > 0)
+    .map((v) => `${v.id}: ${v.targets.join(", ")}`);
 }
 
 for (const theme of ["dark", "light"] as const) {
