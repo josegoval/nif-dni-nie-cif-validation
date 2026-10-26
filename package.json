@@ -227,7 +227,7 @@
     "check:es": "pnpm build && es-check es2016 \"dist/cjs/**/*.cjs\" --checkFeatures && es-check es2016 \"dist/esm/**/*.mjs\" --module --checkFeatures"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@cspell/dict-es-es": "^3.0.8",
