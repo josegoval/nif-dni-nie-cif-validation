@@ -203,8 +203,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.5(vitest@5.0.5)
       better-dni:
-        specifier: 4.4.2
-        version: 4.4.2
+        specifier: 5.3.0
+        version: 5.3.0
       cspell:
         specifier: ^10.3.4
         version: 10.4.0
@@ -1354,9 +1354,9 @@ packages:
   before-after-hook@4.0.0:
     resolution: {integrity: sha512-q6tR3RPqIB1pMiTRMFcZwuG5T8vwp+vUvEG0vuI6B+Rikh5BfPp2fQ82c925FOs+b0lcFQ8CFrL+KbilfZFhOQ==}
 
-  better-dni@4.4.2:
-    resolution: {integrity: sha512-T8Tg0LxpcLOepm/zGvwpc5dj2jznRoZOaUQOueY8PS/S5iIJRy9RKo4nBGDoxLvbnYAZaLdQIFzvSAGV9BaVUg==}
-    engines: {node: '>=10'}
+  better-dni@5.3.0:
+    resolution: {integrity: sha512-v7RjuitzvH4SiRBD/Q+iod3wLuMs75liB49/1OX5w0t1pfkW8ietGtmwPAFmWKvO8TSGNPKJ9//nLqmRsKWcsA==}
+    engines: {node: '>=20'}
 
   bottleneck@2.19.5:
     resolution: {integrity: sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==}
@@ -3823,7 +3823,7 @@ snapshots:
 
   before-after-hook@4.0.0: {}
 
-  better-dni@4.4.2: {}
+  better-dni@5.3.0: {}
 
   bottleneck@2.19.5: {}
 
