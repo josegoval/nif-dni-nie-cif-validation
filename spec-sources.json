@@ -19,7 +19,7 @@
       ],
       "citedBy": "NIF-1, DNI-1, KLM-1, KLM-3, CIF-1, VAT-1, NORM-1",
       "recorded": {
-        "last update": "2026-09-30",
+        "last update": "2026-10-07",
         "repealed": "N",
         "annulled": "N",
         "expired": "N",
@@ -30,7 +30,7 @@
         "Artículo 24": "2017-12-30",
         "Artículo 25": "2010-03-02"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "BOE open data API"
     },
     {
@@ -48,7 +48,7 @@
         "annulled": "N",
         "expired": "N"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "BOE open data API"
     },
     {
@@ -66,7 +66,7 @@
         "expired": "N",
         "later references": "none"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "BOE document XML"
     },
     {
@@ -84,7 +84,7 @@
         "expired": "N",
         "later references": "none"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "BOE document XML"
     },
     {
@@ -104,7 +104,7 @@
         "expired": "N",
         "Sexto": "2008-07-15"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "BOE open data API"
     },
     {
@@ -122,7 +122,7 @@
         "annulled": "N",
         "expired": "N"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "BOE open data API"
     },
     {
@@ -142,7 +142,7 @@
         "expired": "N",
         "Artículo 205": "2024-11-20"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "BOE open data API"
     },
     {
@@ -161,7 +161,7 @@
         "section hash": "sha256:443574ee458b0c26061f5dc4c4dbee410186b8fac525fb43d545402d692dd814",
         "section length": "951 characters"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "Wayback Machine snapshot of 2026-02-28 (live page: HTTP 403)"
     },
     {
@@ -180,7 +180,7 @@
         "section hash": "sha256:ec9e207a01037e842376ad5a4febb93bf32dda8fee75c4e3d8978718c00ddd10",
         "section length": "33512 characters"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "live page"
     },
     {
@@ -199,7 +199,7 @@
         "section hash": "sha256:7342a6382e0d1343aad2786fe72da1bda7d7631a084a4a5907f4f29af530d303",
         "section length": "10374 characters"
       },
-      "checked": "2026-10-02",
+      "checked": "2026-11-24",
       "checkedVia": "live page"
     }
   ]
