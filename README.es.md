@@ -473,7 +473,7 @@ Por defecto, solo T1 a T3 deciden qué es válido. Las convenciones T4 solo se a
 ## Rendimiento
 
 <!-- bench:start -->
-Medido con `pnpm bench:competitors` en un AMD EPYC 9V74 80-Core Processor (4 núcleos, 16 GiB, linux 6.17.0-1022-azure, x64), con Node.js v24.21.0, el 2026-10-02, en el commit `1166241`. Todos los números de esta sección salen de [`bench/results/latest.json`](bench/results/latest.json) y los escribe `pnpm readme:bench`. Cómo se miden y sus limitaciones: [bench/README.md](bench/README.md) (en inglés). Resultados completos: [bench/results/latest.md](bench/results/latest.md).
+Medido con `pnpm bench:competitors` en un AMD EPYC 9V45 96-Core Processor (4 núcleos, 16 GiB, linux 7.0.0-1020-azure, x64), con Node.js v24.22.3, el 2026-11-24, en el commit `d0ae9ca`. Todos los números de esta sección salen de [`bench/results/latest.json`](bench/results/latest.json) y los escribe `pnpm readme:bench`. Cómo se miden y sus limitaciones: [bench/README.md](bench/README.md) (en inglés). Resultados completos: [bench/results/latest.md](bench/results/latest.md).
 
 #### Velocidad
 
@@ -481,19 +481,19 @@ Millones de validaciones por segundo (**M ops/s: cuanto mayor sea el valor, mayo
 
 | Biblioteca | DNI | NIE | CIF |
 | --- | ---: | ---: | ---: |
-| **nif-dni-nie-cif-validation** (esta versión) | **60,12** | **57,60** | **55,06** |
-| [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 8,59 | 6,44 | 7,27 |
-| [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 6,96 | 4,01 | 4,50 |
-| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | 8,44 | 8,17 | *no admitido* |
-| [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | 8,90 | 4,49 | *no admitido* |
-| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | 0,41 | 0,39 | 0,38 |
-| [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 5,73 | 3,14 | *no admitido* |
-| [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 4,22 | 3,42 | *no admitido* |
-| [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | 9,46 | 8,39 | 7,74 |
-| [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 2,78 | 2,65 | 2,50 |
-| [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 2,10 | 1,59 | 2,37 |
+| **nif-dni-nie-cif-validation** (esta versión) | **88,61** | **86,55** | **65,69** |
+| [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 12,91 | 9,19 | 7,97 |
+| [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 10,13 | 5,69 | 5,14 |
+| [better-dni](https://www.npmjs.com/package/better-dni) 5.3.0 | 8,92 | 9,37 | *no admitido* |
+| [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | 13,49 | 7,34 | *no admitido* |
+| [stdnum](https://www.npmjs.com/package/stdnum) 1.17.3 | 0,89 | 0,80 | 0,78 |
+| [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 8,21 | 3,63 | *no admitido* |
+| [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 6,11 | 4,24 | *no admitido* |
+| [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | 13,74 | 11,10 | 8,30 |
+| [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 4,06 | 3,75 | 3,32 |
+| [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 2,81 | 1,99 | 2,89 |
 
-Esta versión alcanza 7,0 veces (DNI), 8,9 veces (NIE) y 7,6 veces (CIF) la velocidad de la v1.0.11.
+Esta versión alcanza 6,9 veces (DNI), 9,4 veces (NIE) y 8,2 veces (CIF) la velocidad de la v1.0.11.
 Ninguna otra biblioteca fue más rápida en ninguno de estos conjuntos.
 
 #### Tamaño
@@ -505,16 +505,16 @@ Minificado y comprimido con gzip (**min+gzip: cuanto menor sea el valor, menor s
 | **nif-dni-nie-cif-validation** (esta versión) | **623 B** | **586 B** | **568 B** | **929 B** | **4679 B** |
 | [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 1517 B | 1517 B | 1518 B | 1517 B | 1514 B |
 | [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 165 B | 237 B | 363 B | 583 B | 704 B |
-| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | 1135 B | 1135 B | *no admitido* | 1134 B | 1132 B |
+| [better-dni](https://www.npmjs.com/package/better-dni) 5.3.0 | 255 B | 248 B | *no admitido* | 202 B | 887 B |
 | [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | 883 B | 882 B | *no admitido* | 882 B | 880 B |
-| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | 51 063 B | 51 063 B | 51 063 B | 51 063 B | 51 054 B |
+| [stdnum](https://www.npmjs.com/package/stdnum) 1.17.3 | 84 828 B | 84 828 B | 84 829 B | 84 828 B | 84 819 B |
 | [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 2539 B | 2539 B | *no admitido* | 2539 B | 44 449 B |
 | [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 6537 B | 6537 B | *no admitido* | 6537 B | 44 449 B |
 | [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | 215 B | 243 B | 319 B | 456 B | 1189 B |
 | [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 | 533 B | 533 B | 533 B | 533 B | 746 B |
 | [jsvat](https://www.npmjs.com/package/jsvat) 2.5.4 | 1186 B | 1186 B | 1186 B | 1186 B | 5266 B |
 
-Más pequeñas que esta versión para un validador de cualquier tipo: [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 (583 B), [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 (882 B), [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 (456 B) y [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 (533 B). Algunas de las bibliotecas más pequeñas validan menos tipos. Este paquete dedica bytes a normalizar la entrada (NORM-1 a NORM-4), a los tipos de control de CIF-3 y a los NIF K/L/M. Las bibliotecas publicadas solo como CommonJS no admiten *tree-shaking*, así que una función cuesta la biblioteca entera. Las bibliotecas de muchos países o de propósito general (stdnum, validator.js) son más grandes por diseño. También se ha medido [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6, con una importación directa de su módulo del NIF español (no documentada): 2468 B.
+Más pequeñas que esta versión para un validador de cualquier tipo: [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 (583 B), [better-dni](https://www.npmjs.com/package/better-dni) 5.3.0 (202 B), [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 (882 B), [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 (456 B) y [@kreyo/nif-validator](https://www.npmjs.com/package/@kreyo/nif-validator) 0.1.0 (533 B). Algunas de las bibliotecas más pequeñas validan menos tipos. Este paquete dedica bytes a normalizar la entrada (NORM-1 a NORM-4), a los tipos de control de CIF-3 y a los NIF K/L/M. Las bibliotecas publicadas solo como CommonJS no admiten *tree-shaking*, así que una función cuesta la biblioteca entera. Las bibliotecas de muchos países o de propósito general (stdnum, validator.js) son más grandes por diseño. También se ha medido [stdnum](https://www.npmjs.com/package/stdnum) 1.17.3, con una importación directa de su módulo del NIF español (no documentada): 2636 B.
 
 #### Coincidencia con SPEC.md
 
@@ -525,9 +525,9 @@ El porcentaje de los 125 casos de `test/fixtures` (opciones por defecto) que cad
 | **nif-dni-nie-cif-validation** (esta versión) | **100,0 %** | **100,0 %** | **100,0 %** | **100,0 %** | **100,0 %** | **100,0 %** |
 | [nif-dni-nie-cif-validation](https://www.npmjs.com/package/nif-dni-nie-cif-validation) 1.0.11 | 73,3 % | 88,9 % | 83,6 % | 100,0 % | 84,0 % | 92,2 % |
 | [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | 90,0 % | 77,8 % | 86,9 % | 36,4 % | 82,4 % | 85,4 % |
-| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | 73,3 % | 77,8 % | *no admitido* | 45,5 % | 71,9 % | 86,7 % |
+| [better-dni](https://www.npmjs.com/package/better-dni) 5.3.0 | 73,3 % | 77,8 % | *no admitido* | 100,0 % | 81,3 % | 100,0 % |
 | [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | 76,7 % | 77,8 % | *no admitido* | 45,5 % | 73,4 % | 86,7 % |
-| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | 90,0 % | 83,3 % | 63,9 % | 100,0 % | 76,8 % | 77,7 % |
+| [stdnum](https://www.npmjs.com/package/stdnum) 1.17.3 | 90,0 % | 83,3 % | 63,9 % | 100,0 % | 76,8 % | 77,7 % |
 | [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 80,0 % | 77,8 % | *no admitido* | 45,5 % | 75,0 % | 86,7 % |
 | [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | 80,0 % | 77,8 % | *no admitido* | 100,0 % | 84,4 % | 100,0 % |
 | [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | 86,7 % | 77,8 % | 86,9 % | 45,5 % | 82,4 % | 86,4 % |
@@ -538,15 +538,15 @@ El porcentaje de los 125 casos de `test/fixtures` (opciones por defecto) que cad
 ## Comparación con otras bibliotecas
 
 <!-- compare:start -->
-Revisado el 2026-10-01, a partir del README, el package.json y la página de npm de cada biblioteca, y del benchmark de arriba (las versiones y los tamaños salen de latest.json).
+Revisado el 2026-11-24, a partir del README, el package.json y la página de npm de cada biblioteca, y del benchmark de arriba (las versiones y los tamaños salen de latest.json).
 
 | Biblioteca | Tipos | K/L/M | Normaliza la entrada | Objeto de resultado | Mensajes traducidos | Generadores de datos de prueba | Esquemas | Módulos | Tamaño, cualquier tipo (min+gzip) | Fecha de la última versión |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **nif-dni-nie-cif-validation** (esta versión) | DNI, NIE, CIF, K/L/M | sí | sí | sí: código, regla de SPEC, mensaje | EN, ES, CA, EU, GL | sí | Zod, Valibot, Yup | ESM + CJS | 929 B | esta versión |
 | [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | DNI, NIE, CIF | no | parcial | no (solo el tipo) | no | no | no | ESM + CJS | 583 B | 2026-06-12 |
-| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | DNI, NIE | no | `normalize()` aparte | no | no | sí | no | solo CJS / UMD | 1134 B | 2021-05-30 |
+| [better-dni](https://www.npmjs.com/package/better-dni) 5.3.0 | DNI, NIE, K/L/M | sí | `normalize()` aparte | no | no | sí | no | ESM + CJS | 202 B | 2026-10-13 |
 | [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | DNI, NIE | no | parcial | no | no | no | no | solo CJS | 882 B | 2026-08-08 |
-| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | DNI, NIE, CIF, K/L/M y unos 90 países | sí | sí | sí: clase de error | solo inglés | no | no | ESM + CJS | 51 063 B | 2026-08-01 |
+| [stdnum](https://www.npmjs.com/package/stdnum) 1.17.3 | DNI, NIE, CIF, K/L/M y unos 90 países | sí | sí | sí: clase de error | solo inglés | no | no | ESM + CJS | 84 828 B | 2026-11-20 |
 | [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | DNI, NIE | no | no | no | no | no | no | ESM (rutas internas) + CJS | 2539 B | 2026-04-02 |
 | [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | DNI, NIE, K/L/M | sí | no | no | no | no | no | ESM (rutas internas) + CJS | 6537 B | 2026-04-02 |
 | [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | DNI, NIE, CIF | no | parcial | parcial: `parse()`, sin el motivo | no | no | no | ESM + CJS | 456 B | 2026-06-14 |
@@ -592,7 +592,7 @@ isValidNif("G1234567D", { normalize: false, cifControl: "lenient" }); // true, c
 
 | Si usas | Usa en su lugar | Notas |
 | --- | --- | --- |
-| better-dni `isValid(x)` | `isValidNaturalPersonNif(x)` | También acepta NIF K/L/M, la forma antigua del NIE y separadores. `isValidNif` acepta además un CIF |
+| better-dni `isValid(x)` | `isValidNaturalPersonNif(x)` | También acepta la forma antigua del NIE y separadores. `isValidNif` acepta además un CIF |
 | better-dni `isNIF(x)`, `isNIE(x)` | `isValidDni(x)`, `isValidNie(x)` | |
 | better-dni `ctrlChar(x)` | `computeControlCharacter(x)` | Pasa el número sin su carácter de control |
 | better-dni `randomNIF()`, `randomNIE()` | `generateDni()`, `generateNie()` | De `/generate`; pasa `{ seed }` para obtener valores fijos |

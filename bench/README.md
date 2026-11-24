@@ -104,7 +104,7 @@ The share of the fixtures of `test/fixtures` that each library judges as SPEC.md
 The minified and gzipped size (**min+gzip, lower is smaller**) of the equivalent single-function import of each call, and of the whole library. The method is the one of `pnpm size` (`@size-limit/esbuild` and `@size-limit/file`): an entry file imports the function and uses it (`console.log`), esbuild bundles it (bundle, minify identifiers, syntax and whitespace, tree shaking), gzip runs at level 9, and the cost of an empty import (34 B minified, 46 B gzipped) is subtracted, as size-limit does. So the figures for this package equal the ones of `pnpm size`.
 
 - Imports are the ones each library documents: `import { fn } from "pkg"`, `validator/es/lib/<fn>` for validator.js, `import { stdnum } from "stdnum"` for stdnum. `latest.md` lists the exact import measured for each cell.
-- Libraries published as CommonJS (v1.0.11, better-dni, dni-js) cannot be tree-shaken, so a single function costs the whole library.
+- Libraries published as CommonJS (v1.0.11, dni-js) cannot be tree-shaken, so a single function costs the whole library.
 - Multi-country and multi-purpose libraries (stdnum, validator.js) are larger by design; stdnum is also measured with a deep import of its Spanish module (not documented), for reference.
 - A smaller library costs less to ship. This package is larger than a few of the others for one function because it normalizes input (NORM-1 to NORM-4), follows CIF-3, and supports K/L/M; that is shown, not hidden.
 

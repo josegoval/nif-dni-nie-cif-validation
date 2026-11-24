@@ -292,7 +292,6 @@ export const gl: SiteStrings = {
         englishOnly: "só inglés",
         typesStdnum: "DNI, NIE, CIF, K/L/M e uns 90 países",
         typesJsvat: "NIF-IVE da UE (ES + NIF)",
-        cjsUmdOnly: "só CJS / UMD",
         cjsOnly: "só CJS",
         esmDeepImportsCjs: "ESM (rutas internas) + CJS",
         thisRelease: "esta versión",

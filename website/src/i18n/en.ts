@@ -281,7 +281,6 @@ export const en: SiteStrings = {
         englishOnly: "English only",
         typesStdnum: "DNI, NIE, CIF, K/L/M, and about 90 countries",
         typesJsvat: "EU VAT numbers (ES + NIF)",
-        cjsUmdOnly: "CJS / UMD only",
         cjsOnly: "CJS only",
         esmDeepImportsCjs: "ESM (deep imports) + CJS",
         thisRelease: "this release",

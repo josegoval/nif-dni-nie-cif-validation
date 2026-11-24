@@ -291,7 +291,6 @@ export const eu: SiteStrings = {
         englishOnly: "ingelesa bakarrik",
         typesStdnum: "NAN, AIZ, IFK, K/L/M eta 90 herrialde inguru",
         typesJsvat: "EBko IFZ-BEZak (ES + IFZ)",
-        cjsUmdOnly: "CJS / UMD bakarrik",
         cjsOnly: "CJS bakarrik",
         esmDeepImportsCjs: "ESM (barne-bideak) + CJS",
         thisRelease: "bertsio hau",
