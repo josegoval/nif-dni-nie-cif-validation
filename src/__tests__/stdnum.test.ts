@@ -17,8 +17,6 @@ const ALLOWED = {
   "NORM-1":
     "stdnum folds non-ASCII look-alikes to ASCII (Unicode digits such as ０, ſ -> S, ı -> I); SPEC accepts ASCII only",
   "VAT-1": "stdnum always strips an ES prefix; validate() needs allowVatPrefix",
-  "KLM-3":
-    "stdnum doesn't check that the 7 characters after K, L or M are digits",
 } as const;
 type Difference = keyof typeof ALLOWED;
 
@@ -128,7 +126,6 @@ function explain(value: string): Difference | null {
     if (/[^\x00-\x7f]/.test(normalize(value))) return "NORM-1";
     const rule = validate(compact, { allowVatPrefix: true }).error?.rule;
     if (CIF_SHAPE.test(compact) && rule === "CIF-3") return "CIF-3";
-    if (rule === "KLM-3" || rule === "KLM-2") return "KLM-3";
     if (normalize(value).startsWith("ES")) return "VAT-1";
     return null;
   }
