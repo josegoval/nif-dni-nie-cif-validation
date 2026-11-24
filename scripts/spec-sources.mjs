@@ -90,7 +90,8 @@ export function consolidatedValues(metadata, index, articles = []) {
   }
   const dates = blocks.map((block) => boeDate(block.fecha_actualizacion));
   const values = {
-    "last update": dates.reduce((a, b) => (b > a ? b : a)),
+    // ISO dates (YYYY-MM-DD) sort as strings: the last one is the latest.
+    "last update": dates.sort().at(-1),
     repealed: String(meta.estatus_derogacion),
     annulled: String(meta.estatus_anulacion),
     expired: String(meta.vigencia_agotada),
