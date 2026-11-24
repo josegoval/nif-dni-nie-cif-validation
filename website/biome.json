@@ -28,6 +28,11 @@
       "trailingCommas": "es5"
     }
   },
+  "markdown": {
+    "formatter": {
+      "enabled": false
+    }
+  },
   "html": {
     "experimentalFullSupportEnabled": true,
     "formatter": {
