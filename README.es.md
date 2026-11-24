@@ -538,15 +538,15 @@ El porcentaje de los 125 casos de `test/fixtures` (opciones por defecto) que cad
 ## Comparación con otras bibliotecas
 
 <!-- compare:start -->
-Revisado el 2026-10-01, a partir del README, el package.json y la página de npm de cada biblioteca, y del benchmark de arriba (las versiones y los tamaños salen de latest.json).
+Revisado el 2026-11-24, a partir del README, el package.json y la página de npm de cada biblioteca, y del benchmark de arriba (las versiones y los tamaños salen de latest.json).
 
 | Biblioteca | Tipos | K/L/M | Normaliza la entrada | Objeto de resultado | Mensajes traducidos | Generadores de datos de prueba | Esquemas | Módulos | Tamaño, cualquier tipo (min+gzip) | Fecha de la última versión |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **nif-dni-nie-cif-validation** (esta versión) | DNI, NIE, CIF, K/L/M | sí | sí | sí: código, regla de SPEC, mensaje | EN, ES, CA, EU, GL | sí | Zod, Valibot, Yup | ESM + CJS | 929 B | esta versión |
 | [spain-id](https://www.npmjs.com/package/spain-id) 1.1.14 | DNI, NIE, CIF | no | parcial | no (solo el tipo) | no | no | no | ESM + CJS | 583 B | 2026-06-12 |
-| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | DNI, NIE | no | `normalize()` aparte | no | no | sí | no | solo CJS / UMD | 1134 B | 2021-05-30 |
+| [better-dni](https://www.npmjs.com/package/better-dni) 4.4.2 | DNI, NIE, K/L/M | sí | `normalize()` aparte | no | no | sí | no | ESM + CJS | 1134 B | 2026-10-13 |
 | [dni-js](https://www.npmjs.com/package/dni-js) 1.0.0 | DNI, NIE | no | parcial | no | no | no | no | solo CJS | 882 B | 2026-08-08 |
-| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | DNI, NIE, CIF, K/L/M y unos 90 países | sí | sí | sí: clase de error | solo inglés | no | no | ESM + CJS | 51 063 B | 2026-08-01 |
+| [stdnum](https://www.npmjs.com/package/stdnum) 1.12.6 | DNI, NIE, CIF, K/L/M y unos 90 países | sí | sí | sí: clase de error | solo inglés | no | no | ESM + CJS | 51 063 B | 2026-11-20 |
 | [validator.js `isIdentityCard(x, "ES")`](https://www.npmjs.com/package/validator) 13.15.35 | DNI, NIE | no | no | no | no | no | no | ESM (rutas internas) + CJS | 2539 B | 2026-04-02 |
 | [validator.js `isTaxID(x, "es-ES")`](https://www.npmjs.com/package/validator) 13.15.35 | DNI, NIE, K/L/M | sí | no | no | no | no | no | ESM (rutas internas) + CJS | 6537 B | 2026-04-02 |
 | [@maistik/validate-nif](https://www.npmjs.com/package/@maistik/validate-nif) 2.0.1 | DNI, NIE, CIF | no | parcial | parcial: `parse()`, sin el motivo | no | no | no | ESM + CJS | 456 B | 2026-06-14 |
@@ -592,7 +592,7 @@ isValidNif("G1234567D", { normalize: false, cifControl: "lenient" }); // true, c
 
 | Si usas | Usa en su lugar | Notas |
 | --- | --- | --- |
-| better-dni `isValid(x)` | `isValidNaturalPersonNif(x)` | También acepta NIF K/L/M, la forma antigua del NIE y separadores. `isValidNif` acepta además un CIF |
+| better-dni `isValid(x)` | `isValidNaturalPersonNif(x)` | También acepta la forma antigua del NIE y separadores. `isValidNif` acepta además un CIF |
 | better-dni `isNIF(x)`, `isNIE(x)` | `isValidDni(x)`, `isValidNie(x)` | |
 | better-dni `ctrlChar(x)` | `computeControlCharacter(x)` | Pasa el número sin su carácter de control |
 | better-dni `randomNIF()`, `randomNIE()` | `generateDni()`, `generateNie()` | De `/generate`; pasa `{ seed }` para obtener valores fijos |

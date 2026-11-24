@@ -12,7 +12,7 @@
 // Update CHECKED_ON whenever you check the rows again against each library's
 // README, package.json and npm page.
 
-export const CHECKED_ON = "2026-10-01";
+export const CHECKED_ON = "2026-11-24";
 
 /** Every phrase a cell can use. Consumers translate each one. */
 export const PHRASES = /** @type {const} */ ([
@@ -29,7 +29,6 @@ export const PHRASES = /** @type {const} */ ([
   "englishOnly",
   "typesStdnum",
   "typesJsvat",
-  "cjsUmdOnly",
   "cjsOnly",
   "esmDeepImportsCjs",
   "thisRelease",
@@ -85,15 +84,15 @@ export const COMPARISON = [
   },
   {
     id: "better-dni",
-    types: "DNI, NIE",
-    klm: no,
+    types: "DNI, NIE, K/L/M",
+    klm: yes,
     normalizes: { phrase: "separateNormalize" },
     result: no,
     messages: no,
     generators: yes,
     schemas: no,
-    modules: { phrase: "cjsUmdOnly" },
-    released: "2021-05-30",
+    modules: ESM_CJS,
+    released: "2026-10-13",
   },
   {
     id: "dni-js",
@@ -117,7 +116,7 @@ export const COMPARISON = [
     generators: no,
     schemas: no,
     modules: ESM_CJS,
-    released: "2026-08-01",
+    released: "2026-11-20",
   },
   {
     id: "validator-identity-card",

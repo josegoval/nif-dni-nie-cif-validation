@@ -156,7 +156,7 @@ export const CONTENDERS = [
       full: whole("better-dni"),
     },
     notes: [
-      "DNI and NIE only: no CIF. Its documentation says that it validates a DNI (NIE / NIF), and it doesn't normalize (spaces and separators are rejected).",
+      "DNI, NIE and K/L/M: no CIF. Its documentation says that it validates a DNI (NIE / NIF), with K/L/M NIFs since version 5, and it doesn't normalize (spaces and separators are rejected).",
     ],
   },
   {
