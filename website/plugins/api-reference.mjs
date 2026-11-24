@@ -135,7 +135,10 @@ export function apiReference(group) {
     {
       name: "api-reference-post-process",
       hooks: {
-        "config:setup"({ astroConfig, config, updateConfig }) {
+        "config:setup"({ astroConfig, command, config, updateConfig }) {
+          // starlight-typedoc generates nothing for these commands (`astro
+          // check` runs as "sync"), so there is nothing to post-process.
+          if (command === "preview" || command === "sync") return;
           const base = astroConfig.base.replace(/\/?$/, "/");
           postProcess(
             join(site, "src/content/docs", API_OUTPUT),

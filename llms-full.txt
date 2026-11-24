@@ -1371,7 +1371,6 @@ With `cifControl: "lenient"`, the digit and the letter of the same control value
 | White space other than a space (tab, no-break space, …) | Kept, so the value is invalid | Removed, like spaces | [NORM-2](#norm-2) |
 | Non-ASCII look-alikes (`０`, `ſ`, `ı`, …) | Folded to ASCII | Kept, so the value is invalid: the canonical form is ASCII upper case | [NORM-1](#norm-1) |
 | `ES` prefix | Always stripped | Only with `allowVatPrefix`, or `isValidSpanishVat` | [VAT-1](#vat-1) |
-| K/L/M NIF with non-digits after the prefix | Not checked (the number is read with `parseInt`) | Invalid | [KLM-3](#klm-3) |
 | Placeholders (`00000000T`, …) | Valid | Valid by default; rejected with `rejectPlaceholders` | [POLICY-1](#policy-1) |
 
 ## Test values (all computed and checked)
