@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-02T12:19:47.598Z",
+  "generatedAt": "2026-11-24T10:54:14.812Z",
   "git": {
-    "sha": "11662416342ce5c6761c69a7a39e82028a7d0407",
+    "sha": "d0ae9ca3d171fdb57b9869981a09a763985536a1",
     "dirty": false
   },
   "machine": {
-    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "cpu": "AMD EPYC 9V45 96-Core Processor",
     "cores": 4,
     "memoryGiB": 16,
-    "os": "linux 6.17.0-1022-azure",
+    "os": "linux 7.0.0-1020-azure",
     "arch": "x64",
-    "runner": "ubuntu24 20260927.320.1"
+    "runner": "ubuntu26 20261116.202.1"
   },
-  "node": "v24.21.0",
-  "tinybench": "6.2.0",
+  "node": "v24.22.3",
+  "tinybench": "6.2.4",
   "config": {
     "timePerTaskMs": 2000,
     "warmupPerTaskMs": 500,
@@ -46,7 +46,7 @@
       "label": "nif-dni-nie-cif-validation (this build)",
       "kind": "subject",
       "package": "nif-dni-nie-cif-validation",
-      "version": "2.0.0+1166241",
+      "version": "2.1.0+d0ae9ca",
       "homepage": "https://github.com/josegoval/nif-dni-nie-cif-validation",
       "calls": {
         "DNI": "isValidDni(x)",
@@ -113,7 +113,7 @@
       "label": "better-dni",
       "kind": "competitor",
       "package": "better-dni",
-      "version": "4.4.2",
+      "version": "5.3.0",
       "homepage": "https://github.com/singuerinc/better-dni",
       "calls": {
         "DNI": "isNIF(x)",
@@ -128,7 +128,7 @@
       },
       "inputTransform": null,
       "notes": [
-        "DNI and NIE only: no CIF. Its documentation says that it validates a DNI (NIE / NIF), and it doesn't normalize (spaces and separators are rejected)."
+        "DNI, NIE and K/L/M: no CIF. Its documentation says that it validates a DNI (NIE / NIF), with K/L/M NIFs since version 5, and it doesn't normalize (spaces and separators are rejected)."
       ]
     },
     {
@@ -159,7 +159,7 @@
       "label": "stdnum",
       "kind": "competitor",
       "package": "stdnum",
-      "version": "1.12.6",
+      "version": "1.17.3",
       "homepage": "https://github.com/koblas/stdnum-js",
       "calls": {
         "DNI": "stdnum.ES.dni.validate(x).isValid",
@@ -295,335 +295,335 @@
     "DNI": {
       "current": {
         "status": "ok",
-        "opsPerSecond": 60119237,
-        "rmePercent": 0.02,
-        "samples": 530311,
+        "opsPerSecond": 88608306,
+        "rmePercent": 0.03,
+        "samples": 761199,
         "rounds": [
-          58210971,
-          60125777,
-          60119237
+          88608306,
+          88262509,
+          89434483
         ],
-        "rangePercent": 3.19,
+        "rangePercent": 1.32,
         "accepted": 150,
         "inputs": 225,
         "subjectSpeedup": 1
       },
       "v1": {
         "status": "ok",
-        "opsPerSecond": 8592961,
-        "rmePercent": 0.05,
-        "samples": 75537,
+        "opsPerSecond": 12909546,
+        "rmePercent": 0.04,
+        "samples": 113605,
         "rounds": [
-          8631805,
-          8572710,
-          8592961
+          12978119,
+          12873025,
+          12909546
         ],
-        "rangePercent": 0.69,
+        "rangePercent": 0.81,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 7
+        "subjectSpeedup": 6.86
       },
       "spain-id": {
         "status": "ok",
-        "opsPerSecond": 6962978,
+        "opsPerSecond": 10126390,
         "rmePercent": 0.07,
-        "samples": 60974,
+        "samples": 86925,
         "rounds": [
-          6962978,
-          7095116,
-          6571109
+          10126390,
+          10087398,
+          10447127
         ],
-        "rangePercent": 7.53,
+        "rangePercent": 3.55,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 8.63
+        "subjectSpeedup": 8.75
       },
       "better-dni": {
         "status": "ok",
-        "opsPerSecond": 8444180,
-        "rmePercent": 0.06,
-        "samples": 73937,
+        "opsPerSecond": 8920821,
+        "rmePercent": 0.05,
+        "samples": 78399,
         "rounds": [
-          7961482,
-          8455777,
-          8444180
+          8675599,
+          8920821,
+          9578659
         ],
-        "rangePercent": 5.85,
+        "rangePercent": 10.12,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 7.12
+        "subjectSpeedup": 9.93
       },
       "dni-js": {
         "status": "ok",
-        "opsPerSecond": 8896044,
-        "rmePercent": 0.06,
-        "samples": 77809,
+        "opsPerSecond": 13492887,
+        "rmePercent": 0.04,
+        "samples": 118194,
         "rounds": [
-          8483563,
-          8903859,
-          8896044
+          13018228,
+          13492887,
+          13505484
         ],
-        "rangePercent": 4.72,
+        "rangePercent": 3.61,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 6.76
+        "subjectSpeedup": 6.57
       },
       "stdnum": {
         "status": "ok",
-        "opsPerSecond": 410903,
-        "rmePercent": 0.15,
-        "samples": 3644,
+        "opsPerSecond": 893128,
+        "rmePercent": 0.13,
+        "samples": 7902,
         "rounds": [
-          409505,
-          412788,
-          410903
+          896687,
+          893128,
+          855515
         ],
-        "rangePercent": 0.8,
+        "rangePercent": 4.61,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 146.31
+        "subjectSpeedup": 99.21
       },
       "validator-identity-card": {
         "status": "ok",
-        "opsPerSecond": 5729235,
+        "opsPerSecond": 8213209,
         "rmePercent": 0.08,
-        "samples": 50149,
+        "samples": 70144,
         "rounds": [
-          5639890,
-          5791313,
-          5729235
+          8321611,
+          7672779,
+          8213209
         ],
-        "rangePercent": 2.64,
+        "rangePercent": 7.9,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 10.49
+        "subjectSpeedup": 10.79
       },
       "validator-tax-id": {
         "status": "ok",
-        "opsPerSecond": 4218107,
-        "rmePercent": 0.08,
-        "samples": 37008,
+        "opsPerSecond": 6106260,
+        "rmePercent": 0.07,
+        "samples": 53681,
         "rounds": [
-          4098350,
-          4218107,
-          4331222
+          6106260,
+          5915001,
+          6154723
         ],
-        "rangePercent": 5.52,
+        "rangePercent": 3.93,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 14.25
+        "subjectSpeedup": 14.51
       },
       "maistik": {
         "status": "ok",
-        "opsPerSecond": 9460351,
-        "rmePercent": 0.07,
-        "samples": 82387,
+        "opsPerSecond": 13740097,
+        "rmePercent": 0.04,
+        "samples": 120054,
         "rounds": [
-          9460351,
-          8902942,
-          9570913
+          13824769,
+          13618525,
+          13740097
         ],
-        "rangePercent": 7.06,
+        "rangePercent": 1.5,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 6.35
+        "subjectSpeedup": 6.45
       },
       "kreyo": {
         "status": "ok",
-        "opsPerSecond": 2783709,
-        "rmePercent": 0.14,
-        "samples": 24235,
+        "opsPerSecond": 4061637,
+        "rmePercent": 0.12,
+        "samples": 35009,
         "rounds": [
-          2783709,
-          2852948,
-          2743748
+          4171196,
+          4061637,
+          4015855
         ],
-        "rangePercent": 3.92,
+        "rangePercent": 3.82,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 21.6
+        "subjectSpeedup": 21.82
       },
       "jsvat": {
         "status": "ok",
-        "opsPerSecond": 2104781,
-        "rmePercent": 0.14,
-        "samples": 18431,
+        "opsPerSecond": 2805207,
+        "rmePercent": 0.12,
+        "samples": 24519,
         "rounds": [
-          2104781,
-          2182111,
-          2067938
+          2837205,
+          2805207,
+          2709962
         ],
-        "rangePercent": 5.42,
+        "rangePercent": 4.54,
         "accepted": 150,
         "inputs": 225,
-        "subjectSpeedup": 28.56
+        "subjectSpeedup": 31.59
       }
     },
     "NIE": {
       "current": {
         "status": "ok",
-        "opsPerSecond": 57603564,
-        "rmePercent": 0.01,
-        "samples": 761554,
+        "opsPerSecond": 86554997,
+        "rmePercent": 0.02,
+        "samples": 1130178,
         "rounds": [
-          59649297,
-          57603564,
-          57155795
+          88498587,
+          86554997,
+          85738456
         ],
-        "rangePercent": 4.33,
+        "rangePercent": 3.19,
         "accepted": 100,
         "inputs": 150,
         "subjectSpeedup": 1
       },
       "v1": {
         "status": "ok",
-        "opsPerSecond": 6435992,
-        "rmePercent": 0.05,
-        "samples": 84470,
+        "opsPerSecond": 9188042,
+        "rmePercent": 0.03,
+        "samples": 121826,
         "rounds": [
-          6618097,
-          6187506,
-          6435992
+          9224039,
+          9003900,
+          9188042
         ],
-        "rangePercent": 6.69,
+        "rangePercent": 2.4,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 8.95
+        "subjectSpeedup": 9.42
       },
       "spain-id": {
         "status": "ok",
-        "opsPerSecond": 4009301,
-        "rmePercent": 0.07,
-        "samples": 52669,
-        "rounds": [
-          4016286,
-          4009301,
-          3990875
-        ],
-        "rangePercent": 0.63,
-        "accepted": 100,
-        "inputs": 150,
-        "subjectSpeedup": 14.37
-      },
-      "better-dni": {
-        "status": "ok",
-        "opsPerSecond": 8168807,
-        "rmePercent": 0.04,
-        "samples": 107303,
-        "rounds": [
-          8159349,
-          8168807,
-          8208681
-        ],
-        "rangePercent": 0.6,
-        "accepted": 100,
-        "inputs": 150,
-        "subjectSpeedup": 7.05
-      },
-      "dni-js": {
-        "status": "ok",
-        "opsPerSecond": 4494561,
+        "opsPerSecond": 5689210,
         "rmePercent": 0.06,
-        "samples": 59258,
+        "samples": 74768,
         "rounds": [
-          4494561,
-          4435047,
-          4920374
-        ],
-        "rangePercent": 10.8,
-        "accepted": 100,
-        "inputs": 150,
-        "subjectSpeedup": 12.82
-      },
-      "stdnum": {
-        "status": "ok",
-        "opsPerSecond": 394604,
-        "rmePercent": 0.18,
-        "samples": 5225,
-        "rounds": [
-          394604,
-          396335,
-          393239
-        ],
-        "rangePercent": 0.78,
-        "accepted": 100,
-        "inputs": 150,
-        "subjectSpeedup": 145.98
-      },
-      "validator-identity-card": {
-        "status": "ok",
-        "opsPerSecond": 3136475,
-        "rmePercent": 0.09,
-        "samples": 41059,
-        "rounds": [
-          3136475,
-          3304525,
-          3028820
-        ],
-        "rangePercent": 8.79,
-        "accepted": 100,
-        "inputs": 150,
-        "subjectSpeedup": 18.37
-      },
-      "validator-tax-id": {
-        "status": "ok",
-        "opsPerSecond": 3424467,
-        "rmePercent": 0.07,
-        "samples": 45050,
-        "rounds": [
-          3406278,
-          3424467,
-          3441294
-        ],
-        "rangePercent": 1.02,
-        "accepted": 100,
-        "inputs": 150,
-        "subjectSpeedup": 16.82
-      },
-      "maistik": {
-        "status": "ok",
-        "opsPerSecond": 8385566,
-        "rmePercent": 0.04,
-        "samples": 110288,
-        "rounds": [
-          8433545,
-          7828786,
-          8385566
-        ],
-        "rangePercent": 7.21,
-        "accepted": 100,
-        "inputs": 150,
-        "subjectSpeedup": 6.87
-      },
-      "kreyo": {
-        "status": "ok",
-        "opsPerSecond": 2649060,
-        "rmePercent": 0.12,
-        "samples": 34528,
-        "rounds": [
-          2649060,
-          2651651,
-          2622593
+          5632613,
+          5689210,
+          5695315
         ],
         "rangePercent": 1.1,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 21.74
+        "subjectSpeedup": 15.21
+      },
+      "better-dni": {
+        "status": "ok",
+        "opsPerSecond": 9366372,
+        "rmePercent": 0.04,
+        "samples": 123640,
+        "rounds": [
+          9395561,
+          9149396,
+          9366372
+        ],
+        "rangePercent": 2.63,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 9.24
+      },
+      "dni-js": {
+        "status": "ok",
+        "opsPerSecond": 7343902,
+        "rmePercent": 0.05,
+        "samples": 96678,
+        "rounds": [
+          7343902,
+          6774067,
+          7395755
+        ],
+        "rangePercent": 8.47,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 11.79
+      },
+      "stdnum": {
+        "status": "ok",
+        "opsPerSecond": 801271,
+        "rmePercent": 0.1,
+        "samples": 10639,
+        "rounds": [
+          813031,
+          788223,
+          801271
+        ],
+        "rangePercent": 3.1,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 108.02
+      },
+      "validator-identity-card": {
+        "status": "ok",
+        "opsPerSecond": 3627542,
+        "rmePercent": 0.1,
+        "samples": 46475,
+        "rounds": [
+          3433746,
+          3627542,
+          3755823
+        ],
+        "rangePercent": 8.88,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 23.86
+      },
+      "validator-tax-id": {
+        "status": "ok",
+        "opsPerSecond": 4240206,
+        "rmePercent": 0.09,
+        "samples": 54517,
+        "rounds": [
+          4273488,
+          4240206,
+          4134768
+        ],
+        "rangePercent": 3.27,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 20.41
+      },
+      "maistik": {
+        "status": "ok",
+        "opsPerSecond": 11098955,
+        "rmePercent": 0.03,
+        "samples": 146268,
+        "rounds": [
+          11232742,
+          10966736,
+          11098955
+        ],
+        "rangePercent": 2.4,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 7.8
+      },
+      "kreyo": {
+        "status": "ok",
+        "opsPerSecond": 3746915,
+        "rmePercent": 0.09,
+        "samples": 48943,
+        "rounds": [
+          3746915,
+          3697502,
+          3767517
+        ],
+        "rangePercent": 1.87,
+        "accepted": 100,
+        "inputs": 150,
+        "subjectSpeedup": 23.1
       },
       "jsvat": {
         "status": "ok",
-        "opsPerSecond": 1592703,
-        "rmePercent": 0.13,
-        "samples": 20954,
+        "opsPerSecond": 1990996,
+        "rmePercent": 0.12,
+        "samples": 26044,
         "rounds": [
-          1586191,
-          1592703,
-          1597095
+          1996111,
+          1940997,
+          1990996
         ],
-        "rangePercent": 0.68,
+        "rangePercent": 2.77,
         "accepted": 100,
         "inputs": 150,
-        "subjectSpeedup": 36.17
+        "subjectSpeedup": 43.47
       }
     },
     "CIF": {
@@ -645,108 +645,108 @@
       },
       "current": {
         "status": "ok",
-        "opsPerSecond": 55058041,
+        "opsPerSecond": 65687917,
         "rmePercent": 0.02,
-        "samples": 404700,
+        "samples": 479867,
         "rounds": [
-          55058041,
-          55058242,
-          54916053
+          65687917,
+          65619479,
+          66011128
         ],
-        "rangePercent": 0.26,
+        "rangePercent": 0.6,
         "accepted": 180,
         "inputs": 270,
         "subjectSpeedup": 1
       },
       "v1": {
         "status": "ok",
-        "opsPerSecond": 7267892,
-        "rmePercent": 0.06,
-        "samples": 53206,
+        "opsPerSecond": 7970025,
+        "rmePercent": 0.05,
+        "samples": 58516,
         "rounds": [
-          7262209,
-          7378937,
-          7267892
+          7984303,
+          7826978,
+          7970025
         ],
-        "rangePercent": 1.61,
+        "rangePercent": 1.97,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 7.58
+        "subjectSpeedup": 8.24
       },
       "spain-id": {
         "status": "ok",
-        "opsPerSecond": 4500985,
-        "rmePercent": 0.11,
-        "samples": 32752,
+        "opsPerSecond": 5141800,
+        "rmePercent": 0.08,
+        "samples": 37702,
         "rounds": [
-          4500985,
-          4534139,
-          4393537
+          5141800,
+          5102062,
+          5165925
         ],
-        "rangePercent": 3.12,
+        "rangePercent": 1.24,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 12.23
+        "subjectSpeedup": 12.78
       },
       "stdnum": {
         "status": "ok",
-        "opsPerSecond": 375249,
-        "rmePercent": 0.14,
-        "samples": 2776,
+        "opsPerSecond": 776196,
+        "rmePercent": 0.13,
+        "samples": 5732,
         "rounds": [
-          372426,
-          377101,
-          375249
+          776196,
+          764758,
+          787824
         ],
-        "rangePercent": 1.25,
+        "rangePercent": 2.97,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 146.72
+        "subjectSpeedup": 84.63
       },
       "maistik": {
         "status": "ok",
-        "opsPerSecond": 7736329,
-        "rmePercent": 0.06,
-        "samples": 56764,
+        "opsPerSecond": 8302805,
+        "rmePercent": 0.05,
+        "samples": 60869,
         "rounds": [
-          7736329,
-          7953523,
-          7265163
+          8302805,
+          8572829,
+          8181530
         ],
-        "rangePercent": 8.9,
+        "rangePercent": 4.71,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 7.12
+        "subjectSpeedup": 7.91
       },
       "kreyo": {
         "status": "ok",
-        "opsPerSecond": 2498607,
-        "rmePercent": 0.15,
-        "samples": 18235,
+        "opsPerSecond": 3318752,
+        "rmePercent": 0.12,
+        "samples": 24234,
         "rounds": [
-          2483415,
-          2508589,
-          2498607
+          3259473,
+          3318752,
+          3342843
         ],
-        "rangePercent": 1.01,
+        "rangePercent": 2.51,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 22.04
+        "subjectSpeedup": 19.79
       },
       "jsvat": {
         "status": "ok",
-        "opsPerSecond": 2370028,
-        "rmePercent": 0.16,
-        "samples": 17274,
+        "opsPerSecond": 2894009,
+        "rmePercent": 0.12,
+        "samples": 21200,
         "rounds": [
-          2370028,
-          2272456,
-          2383130
+          2913962,
+          2824865,
+          2894009
         ],
-        "rangePercent": 4.67,
+        "rangePercent": 3.08,
         "accepted": 180,
         "inputs": 270,
-        "subjectSpeedup": 23.23
+        "subjectSpeedup": 22.7
       }
     },
     "mixed": {
@@ -768,108 +768,108 @@
       },
       "current": {
         "status": "ok",
-        "opsPerSecond": 42016663,
-        "rmePercent": 0.03,
-        "samples": 83510,
+        "opsPerSecond": 58810759,
+        "rmePercent": 0.04,
+        "samples": 115279,
         "rounds": [
-          42016663,
-          41867932,
-          42913073
+          61515599,
+          58186841,
+          58810759
         ],
-        "rangePercent": 2.49,
+        "rangePercent": 5.66,
         "accepted": 600,
         "inputs": 1001,
         "subjectSpeedup": 1
       },
       "v1": {
         "status": "ok",
-        "opsPerSecond": 7152450,
-        "rmePercent": 0.13,
-        "samples": 14161,
+        "opsPerSecond": 9359176,
+        "rmePercent": 0.09,
+        "samples": 18590,
         "rounds": [
-          7219930,
-          7053567,
-          7152450
+          9620685,
+          9139594,
+          9359176
         ],
-        "rangePercent": 2.33,
+        "rangePercent": 5.14,
         "accepted": 600,
         "inputs": 1001,
-        "subjectSpeedup": 5.87
+        "subjectSpeedup": 6.28
       },
       "spain-id": {
         "status": "ok",
-        "opsPerSecond": 2183351,
-        "rmePercent": 0.2,
-        "samples": 4340,
+        "opsPerSecond": 3058918,
+        "rmePercent": 0.16,
+        "samples": 6084,
         "rounds": [
-          2194243,
-          2151431,
-          2183351
+          3058918,
+          3069178,
+          2932714
         ],
-        "rangePercent": 1.96,
+        "rangePercent": 4.46,
         "accepted": 520,
         "inputs": 1001,
-        "subjectSpeedup": 19.24
+        "subjectSpeedup": 19.23
       },
       "stdnum": {
         "status": "ok",
-        "opsPerSecond": 291642,
-        "rmePercent": 0.42,
-        "samples": 581,
+        "opsPerSecond": 603531,
+        "rmePercent": 0.43,
+        "samples": 1192,
         "rounds": [
-          291642,
-          295650,
-          285429
+          587990,
+          619901,
+          603531
         ],
-        "rangePercent": 3.5,
+        "rangePercent": 5.29,
         "accepted": 576,
         "inputs": 1001,
-        "subjectSpeedup": 144.07
+        "subjectSpeedup": 97.44
       },
       "maistik": {
         "status": "ok",
-        "opsPerSecond": 4624655,
-        "rmePercent": 0.15,
-        "samples": 9180,
+        "opsPerSecond": 6562473,
+        "rmePercent": 0.13,
+        "samples": 12980,
         "rounds": [
-          4624655,
-          4753085,
-          4534067
+          6674686,
+          6562473,
+          6390559
         ],
-        "rangePercent": 4.74,
+        "rangePercent": 4.33,
         "accepted": 516,
         "inputs": 1001,
-        "subjectSpeedup": 9.09
+        "subjectSpeedup": 8.96
       },
       "kreyo": {
         "status": "ok",
-        "opsPerSecond": 2727765,
-        "rmePercent": 0.21,
-        "samples": 5414,
+        "opsPerSecond": 3833549,
+        "rmePercent": 0.16,
+        "samples": 7614,
         "rounds": [
-          2741337,
-          2718161,
-          2727765
+          3925993,
+          3833549,
+          3749184
         ],
-        "rangePercent": 0.85,
+        "rangePercent": 4.61,
         "accepted": 516,
         "inputs": 1001,
-        "subjectSpeedup": 15.4
+        "subjectSpeedup": 15.34
       },
       "jsvat": {
         "status": "ok",
-        "opsPerSecond": 1946115,
-        "rmePercent": 0.2,
-        "samples": 3872,
+        "opsPerSecond": 2584216,
+        "rmePercent": 0.15,
+        "samples": 5146,
         "rounds": [
-          2013643,
-          1937286,
-          1946115
+          2584216,
+          2795230,
+          2578825
         ],
-        "rangePercent": 3.92,
+        "rangePercent": 8.37,
         "accepted": 576,
         "inputs": 1001,
-        "subjectSpeedup": 21.59
+        "subjectSpeedup": 22.76
       }
     }
   },
@@ -1365,12 +1365,12 @@
           "overall": {
             "supported": true,
             "total": 64,
-            "agree": 46,
+            "agree": 52,
             "falseAccepts": 0,
-            "falseRejects": 18,
+            "falseRejects": 12,
             "onDocumentedDecisions": 7,
             "threw": 0,
-            "agreementPercent": 71.88
+            "agreementPercent": 81.25
           },
           "DNI": {
             "supported": true,
@@ -1398,12 +1398,12 @@
           "KLM": {
             "supported": true,
             "total": 11,
-            "agree": 5,
+            "agree": 11,
             "falseAccepts": 0,
-            "falseRejects": 6,
+            "falseRejects": 0,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 45.45
+            "agreementPercent": 100
           },
           "general": {
             "supported": true,
@@ -1420,12 +1420,12 @@
           "overall": {
             "supported": true,
             "total": 45,
-            "agree": 39,
+            "agree": 45,
             "falseAccepts": 0,
-            "falseRejects": 6,
+            "falseRejects": 0,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 86.67
+            "agreementPercent": 100
           },
           "DNI": {
             "supported": true,
@@ -1453,12 +1453,12 @@
           "KLM": {
             "supported": true,
             "total": 11,
-            "agree": 5,
+            "agree": 11,
             "falseAccepts": 0,
-            "falseRejects": 6,
+            "falseRejects": 0,
             "onDocumentedDecisions": 0,
             "threw": 0,
-            "agreementPercent": 45.45
+            "agreementPercent": 100
           },
           "general": {
             "supported": true,
@@ -1472,42 +1472,6 @@
           }
         },
         "disagreements": [
-          {
-            "input": "K1234567L",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "KLM-2",
-            "note": "K: Spaniard under 14 without DNI",
-            "documentedDecision": null
-          },
-          {
-            "input": "K0867756N",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "KLM-1",
-            "note": "v1 test value",
-            "documentedDecision": null
-          },
-          {
-            "input": "L2222222P",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "NIF-1",
-            "note": "K, L or M first selects the K/L/M format",
-            "documentedDecision": null
-          },
-          {
-            "input": "M7654321J",
-            "expected": "valid",
-            "got": "invalid",
-            "kind": "falseReject",
-            "rule": "KLM-3",
-            "note": "the 7 characters after the prefix are digits",
-            "documentedDecision": null
-          },
           {
             "input": "X01234567L",
             "expected": "valid",
@@ -1525,9 +1489,27 @@
             "rule": "NORM-2",
             "note": "surrounding spaces",
             "documentedDecision": null
+          },
+          {
+            "input": "12345678-Z",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-3",
+            "note": "hyphen",
+            "documentedDecision": null
+          },
+          {
+            "input": "1234567L",
+            "expected": "valid",
+            "got": "invalid",
+            "kind": "falseReject",
+            "rule": "NORM-4",
+            "note": "7-digit DNI, canonical 01234567L",
+            "documentedDecision": "a DNI with fewer than 8 digits is left-padded with zeros"
           }
         ],
-        "disagreementCount": 18
+        "disagreementCount": 12
       },
       "dni-js": {
         "all": {
@@ -2814,24 +2796,24 @@
     "better-dni": {
       "DNI": {
         "import": "import { isNIF } from \"better-dni\";",
-        "minBytes": 2618,
-        "gzipBytes": 1135
+        "minBytes": 312,
+        "gzipBytes": 255
       },
       "NIE": {
         "import": "import { isNIE } from \"better-dni\";",
-        "minBytes": 2618,
-        "gzipBytes": 1135
+        "minBytes": 301,
+        "gzipBytes": 248
       },
       "CIF": null,
       "any": {
         "import": "import { isValid } from \"better-dni\";",
-        "minBytes": 2620,
-        "gzipBytes": 1134
+        "minBytes": 280,
+        "gzipBytes": 202
       },
       "full": {
         "import": "import * as lib from \"better-dni\";",
-        "minBytes": 2612,
-        "gzipBytes": 1132
+        "minBytes": 1867,
+        "gzipBytes": 887
       },
       "alternatives": []
     },
@@ -2862,35 +2844,35 @@
     "stdnum": {
       "DNI": {
         "import": "import { stdnum } from \"stdnum\"; console.log(stdnum.ES.dni.validate);",
-        "minBytes": 210969,
-        "gzipBytes": 51063
+        "minBytes": 370903,
+        "gzipBytes": 84828
       },
       "NIE": {
         "import": "import { stdnum } from \"stdnum\"; console.log(stdnum.ES.nie.validate);",
-        "minBytes": 210969,
-        "gzipBytes": 51063
+        "minBytes": 370903,
+        "gzipBytes": 84828
       },
       "CIF": {
         "import": "import { stdnum } from \"stdnum\"; console.log(stdnum.ES.cif.validate);",
-        "minBytes": 210969,
-        "gzipBytes": 51063
+        "minBytes": 370903,
+        "gzipBytes": 84829
       },
       "any": {
         "import": "import { stdnum } from \"stdnum\"; console.log(stdnum.ES.nif.validate);",
-        "minBytes": 210969,
-        "gzipBytes": 51063
+        "minBytes": 370903,
+        "gzipBytes": 84828
       },
       "full": {
         "import": "import { stdnum } from \"stdnum\";",
-        "minBytes": 210953,
-        "gzipBytes": 51054
+        "minBytes": 370887,
+        "gzipBytes": 84819
       },
       "alternatives": [
         {
           "label": "deep import of the Spanish NIF module (not documented)",
           "import": "import { validate } from \"stdnum/lib/esm/es/nif.js\"; console.log(validate);",
-          "minBytes": 7694,
-          "gzipBytes": 2468
+          "minBytes": 8171,
+          "gzipBytes": 2636
         }
       ]
     },

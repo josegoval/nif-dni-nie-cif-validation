@@ -2,10 +2,10 @@
 
 Generated from `latest.json` by `bench/report.mjs`: do not edit by hand. The method is in [bench/README.md](../README.md).
 
-- Date: 2026-10-02T12:19:47.598Z
-- Code: 11662416342ce5c6761c69a7a39e82028a7d0407
-- Machine: AMD EPYC 9V74 80-Core Processor, 4 cores, 16 GiB, linux 6.17.0-1022-azure (x64), runner image ubuntu24 20260927.320.1
-- Node.js v24.21.0, tinybench 6.2.0, 2000 ms per task after 500 ms of warmup, 3 rounds
+- Date: 2026-11-24T10:54:14.812Z
+- Code: d0ae9ca3d171fdb57b9869981a09a763985536a1
+- Machine: AMD EPYC 9V45 96-Core Processor, 4 cores, 16 GiB, linux 7.0.0-1020-azure (x64), runner image ubuntu26 20261116.202.1
+- Node.js v24.22.3, tinybench 6.2.4, 2000 ms per task after 500 ms of warmup, 3 rounds
 - Absolute numbers depend on the machine and on what else it is doing. **The ratios of one run are what carries over**; see "Noise" in the README.
 
 ## Throughput
@@ -23,17 +23,17 @@ The libraries accept different numbers of the mixed inputs (some reject lower ca
 
 | Library | DNI | NIE | CIF | Mixed |
 | --- | ---: | ---: | ---: | ---: |
-| **nif-dni-nie-cif-validation (this build) 2.0.0+1166241** | 60.12 ±0.02% (range 3.19%) | 57.60 ±0.01% (range 4.33%) | 55.06 ±0.02% (range 0.26%) | 42.02 ±0.03% (range 2.49%) |
-| nif-dni-nie-cif-validation (previous major) 1.0.11 | 8.59 ±0.05% (range 0.69%) | 6.44 ±0.05% (range 6.69%) | 7.27 ±0.06% (range 1.61%) | 7.15 ±0.13% (range 2.33%) |
-| spain-id 1.1.14 | 6.96 ±0.07% (range 7.53%) | 4.01 ±0.07% (range 0.63%) | 4.50 ±0.11% (range 3.12%) | 2.18 ±0.2% (range 1.96%) |
-| better-dni 4.4.2 | 8.44 ±0.06% (range 5.85%) | 8.17 ±0.04% (range 0.6%) | *unsupported* | *unsupported* |
-| dni-js 1.0.0 | 8.90 ±0.06% (range 4.72%) | 4.49 ±0.06% (range 10.8%) | *unsupported* | *unsupported* |
-| stdnum 1.12.6 | 0.41 ±0.15% (range 0.8%) | 0.39 ±0.18% (range 0.78%) | 0.38 ±0.14% (range 1.25%) | 0.29 ±0.42% (range 3.5%) |
-| validator.js isIdentityCard(x, "ES") 13.15.35 | 5.73 ±0.08% (range 2.64%) | 3.14 ±0.09% (range 8.79%) | *unsupported* | *unsupported* |
-| validator.js isTaxID(x, "es-ES") 13.15.35 | 4.22 ±0.08% (range 5.52%) | 3.42 ±0.07% (range 1.02%) | *unsupported* | *unsupported* |
-| @maistik/validate-nif 2.0.1 | 9.46 ±0.07% (range 7.06%) | 8.39 ±0.04% (range 7.21%) | 7.74 ±0.06% (range 8.9%) | 4.62 ±0.15% (range 4.74%) |
-| @kreyo/nif-validator 0.1.0 | 2.78 ±0.14% (range 3.92%) | 2.65 ±0.12% (range 1.1%) | 2.50 ±0.15% (range 1.01%) | 2.73 ±0.21% (range 0.85%) |
-| jsvat (Spain) 2.5.4 | 2.10 ±0.14% (range 5.42%) | 1.59 ±0.13% (range 0.68%) | 2.37 ±0.16% (range 4.67%) | 1.95 ±0.2% (range 3.92%) |
+| **nif-dni-nie-cif-validation (this build) 2.1.0+d0ae9ca** | 88.61 ±0.03% (range 1.32%) | 86.55 ±0.02% (range 3.19%) | 65.69 ±0.02% (range 0.6%) | 58.81 ±0.04% (range 5.66%) |
+| nif-dni-nie-cif-validation (previous major) 1.0.11 | 12.91 ±0.04% (range 0.81%) | 9.19 ±0.03% (range 2.4%) | 7.97 ±0.05% (range 1.97%) | 9.36 ±0.09% (range 5.14%) |
+| spain-id 1.1.14 | 10.13 ±0.07% (range 3.55%) | 5.69 ±0.06% (range 1.1%) | 5.14 ±0.08% (range 1.24%) | 3.06 ±0.16% (range 4.46%) |
+| better-dni 5.3.0 | 8.92 ±0.05% (range 10.12%) | 9.37 ±0.04% (range 2.63%) | *unsupported* | *unsupported* |
+| dni-js 1.0.0 | 13.49 ±0.04% (range 3.61%) | 7.34 ±0.05% (range 8.47%) | *unsupported* | *unsupported* |
+| stdnum 1.17.3 | 0.89 ±0.13% (range 4.61%) | 0.80 ±0.1% (range 3.1%) | 0.78 ±0.13% (range 2.97%) | 0.60 ±0.43% (range 5.29%) |
+| validator.js isIdentityCard(x, "ES") 13.15.35 | 8.21 ±0.08% (range 7.9%) | 3.63 ±0.1% (range 8.88%) | *unsupported* | *unsupported* |
+| validator.js isTaxID(x, "es-ES") 13.15.35 | 6.11 ±0.07% (range 3.93%) | 4.24 ±0.09% (range 3.27%) | *unsupported* | *unsupported* |
+| @maistik/validate-nif 2.0.1 | 13.74 ±0.04% (range 1.5%) | 11.10 ±0.03% (range 2.4%) | 8.30 ±0.05% (range 4.71%) | 6.56 ±0.13% (range 4.33%) |
+| @kreyo/nif-validator 0.1.0 | 4.06 ±0.12% (range 3.82%) | 3.75 ±0.09% (range 1.87%) | 3.32 ±0.12% (range 2.51%) | 3.83 ±0.16% (range 4.61%) |
+| jsvat (Spain) 2.5.4 | 2.81 ±0.12% (range 4.54%) | 1.99 ±0.12% (range 2.77%) | 2.89 ±0.12% (range 3.08%) | 2.58 ±0.15% (range 8.37%) |
 
 ### nif-dni-nie-cif-validation (this build) against each library
 
@@ -41,16 +41,16 @@ How many times as fast as the library this build is, measured in the same run. A
 
 | Library | DNI | NIE | CIF | Mixed |
 | --- | ---: | ---: | ---: | ---: |
-| nif-dni-nie-cif-validation (previous major) 1.0.11 | 7.00× | 8.95× | 7.58× | 5.87× |
-| spain-id 1.1.14 | 8.63× | 14.37× | 12.23× | 19.24× |
-| better-dni 4.4.2 | 7.12× | 7.05× | *unsupported* | *unsupported* |
-| dni-js 1.0.0 | 6.76× | 12.82× | *unsupported* | *unsupported* |
-| stdnum 1.12.6 | 146.31× | 145.98× | 146.72× | 144.07× |
-| validator.js isIdentityCard(x, "ES") 13.15.35 | 10.49× | 18.37× | *unsupported* | *unsupported* |
-| validator.js isTaxID(x, "es-ES") 13.15.35 | 14.25× | 16.82× | *unsupported* | *unsupported* |
-| @maistik/validate-nif 2.0.1 | 6.35× | 6.87× | 7.12× | 9.09× |
-| @kreyo/nif-validator 0.1.0 | 21.60× | 21.74× | 22.04× | 15.40× |
-| jsvat (Spain) 2.5.4 | 28.56× | 36.17× | 23.23× | 21.59× |
+| nif-dni-nie-cif-validation (previous major) 1.0.11 | 6.86× | 9.42× | 8.24× | 6.28× |
+| spain-id 1.1.14 | 8.75× | 15.21× | 12.78× | 19.23× |
+| better-dni 5.3.0 | 9.93× | 9.24× | *unsupported* | *unsupported* |
+| dni-js 1.0.0 | 6.57× | 11.79× | *unsupported* | *unsupported* |
+| stdnum 1.17.3 | 99.21× | 108.02× | 84.63× | 97.44× |
+| validator.js isIdentityCard(x, "ES") 13.15.35 | 10.79× | 23.86× | *unsupported* | *unsupported* |
+| validator.js isTaxID(x, "es-ES") 13.15.35 | 14.51× | 20.41× | *unsupported* | *unsupported* |
+| @maistik/validate-nif 2.0.1 | 6.45× | 7.80× | 7.91× | 8.96× |
+| @kreyo/nif-validator 0.1.0 | 21.82× | 23.10× | 19.79× | 15.34× |
+| jsvat (Spain) 2.5.4 | 31.59× | 43.47× | 22.70× | 22.76× |
 
 
 ### What was called
@@ -59,12 +59,12 @@ The loop of every task is compiled from these calls (`x` is the input string), e
 
 | Library | DNI | NIE | CIF | any |
 | --- | --- | --- | --- | --- |
-| nif-dni-nie-cif-validation (this build) 2.0.0+1166241 | `isValidDni(x)` | `isValidNie(x)` | `isValidCif(x)` | `isValidNif(x)` |
+| nif-dni-nie-cif-validation (this build) 2.1.0+d0ae9ca | `isValidDni(x)` | `isValidNie(x)` | `isValidCif(x)` | `isValidNif(x)` |
 | nif-dni-nie-cif-validation (previous major) 1.0.11 | `isValidDni(x)` | `isValidNie(x)` | `isValidCif(x)` | `isValidNif(x)` |
 | spain-id 1.1.14 | `validDNI(x)` | `validNIE(x)` | `validCIF(x)` | `validateSpanishId(x)` |
-| better-dni 4.4.2 | `isNIF(x)` | `isNIE(x)` | *unsupported* | `isValid(x)` |
+| better-dni 5.3.0 | `isNIF(x)` | `isNIE(x)` | *unsupported* | `isValid(x)` |
 | dni-js 1.0.0 | `dni.isDNI(x)` | `dni.isNIE(x)` | *unsupported* | `dni.isValid(x)` |
-| stdnum 1.12.6 | `stdnum.ES.dni.validate(x).isValid` | `stdnum.ES.nie.validate(x).isValid` | `stdnum.ES.cif.validate(x).isValid` | `stdnum.ES.nif.validate(x).isValid` |
+| stdnum 1.17.3 | `stdnum.ES.dni.validate(x).isValid` | `stdnum.ES.nie.validate(x).isValid` | `stdnum.ES.cif.validate(x).isValid` | `stdnum.ES.nif.validate(x).isValid` |
 | validator.js isIdentityCard(x, "ES") 13.15.35 | `validator.isIdentityCard(x, "ES")` | `validator.isIdentityCard(x, "ES")` | *unsupported* | `validator.isIdentityCard(x, "ES")` |
 | validator.js isTaxID(x, "es-ES") 13.15.35 | `validator.isTaxID(x, "es-ES")` | `validator.isTaxID(x, "es-ES")` | *unsupported* | `validator.isTaxID(x, "es-ES")` |
 | @maistik/validate-nif 2.0.1 | `isValidDNI(x)` | `isValidNIE(x)` | `isValidCIF(x)` | `isValid(x)` |
@@ -83,12 +83,12 @@ Fixtures per column: DNI 30, NIE 18, CIF 61, K/L/M 11, Other 5. "Other" holds in
 
 | Library | DNI | NIE | CIF | K/L/M | Other | All | False accepts | False rejects | On a documented decision |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| **nif-dni-nie-cif-validation (this build) 2.0.0+1166241** | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
+| **nif-dni-nie-cif-validation (this build) 2.1.0+d0ae9ca** | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
 | nif-dni-nie-cif-validation (previous major) 1.0.11 | 73.3% | 88.9% | 83.6% | 100.0% | 100.0% | 84.0% | 8 | 12 | 13 |
 | spain-id 1.1.14 | 90.0% | 77.8% | 86.9% | 36.4% | 100.0% | 82.4% | 9 | 13 | 13 |
-| better-dni 4.4.2 | 73.3% | 77.8% | *unsupported* | 45.5% | 100.0% | 71.9% | 0 | 18 | 7 |
+| better-dni 5.3.0 | 73.3% | 77.8% | *unsupported* | 100.0% | 100.0% | 81.3% | 0 | 12 | 7 |
 | dni-js 1.0.0 | 76.7% | 77.8% | *unsupported* | 45.5% | 100.0% | 73.4% | 0 | 17 | 7 |
-| stdnum 1.12.6 | 90.0% | 83.3% | 63.9% | 100.0% | 80.0% | 76.8% | 23 | 6 | 29 |
+| stdnum 1.17.3 | 90.0% | 83.3% | 63.9% | 100.0% | 80.0% | 76.8% | 23 | 6 | 29 |
 | validator.js isIdentityCard(x, "ES") 13.15.35 | 80.0% | 77.8% | *unsupported* | 45.5% | 100.0% | 75.0% | 0 | 16 | 6 |
 | validator.js isTaxID(x, "es-ES") 13.15.35 | 80.0% | 77.8% | *unsupported* | 100.0% | 100.0% | 84.4% | 0 | 10 | 5 |
 | @maistik/validate-nif 2.0.1 | 86.7% | 77.8% | 86.9% | 45.5% | 100.0% | 82.4% | 9 | 13 | 14 |
@@ -101,12 +101,12 @@ The same, on the fixtures whose input is already in canonical form (upper-case l
 
 | Library | DNI | NIE | CIF | K/L/M | Other | All | False accepts | False rejects | On a documented decision |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| **nif-dni-nie-cif-validation (this build) 2.0.0+1166241** | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
+| **nif-dni-nie-cif-validation (this build) 2.1.0+d0ae9ca** | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
 | nif-dni-nie-cif-validation (previous major) 1.0.11 | 100.0% | 100.0% | 86.2% | 100.0% | 100.0% | 92.2% | 8 | 0 | 8 |
 | spain-id 1.1.14 | 100.0% | 100.0% | 86.2% | 36.4% | 100.0% | 85.4% | 9 | 6 | 8 |
-| better-dni 4.4.2 | 100.0% | 100.0% | *unsupported* | 45.5% | 100.0% | 86.7% | 0 | 6 | 0 |
+| better-dni 5.3.0 | 100.0% | 100.0% | *unsupported* | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
 | dni-js 1.0.0 | 100.0% | 100.0% | *unsupported* | 45.5% | 100.0% | 86.7% | 0 | 6 | 0 |
-| stdnum 1.12.6 | 100.0% | 100.0% | 62.1% | 100.0% | 75.0% | 77.7% | 23 | 0 | 23 |
+| stdnum 1.17.3 | 100.0% | 100.0% | 62.1% | 100.0% | 75.0% | 77.7% | 23 | 0 | 23 |
 | validator.js isIdentityCard(x, "ES") 13.15.35 | 100.0% | 100.0% | *unsupported* | 45.5% | 100.0% | 86.7% | 0 | 6 | 0 |
 | validator.js isTaxID(x, "es-ES") 13.15.35 | 100.0% | 100.0% | *unsupported* | 100.0% | 100.0% | 100.0% | 0 | 0 | 0 |
 | @maistik/validate-nif 2.0.1 | 100.0% | 100.0% | 86.2% | 45.5% | 100.0% | 86.4% | 8 | 6 | 8 |
@@ -131,13 +131,11 @@ Up to six per library, the first of each SPEC rule ("expected" is what SPEC.md s
   - `"M7654321J"`: expected valid, got invalid (KLM-3, the 7 characters after the prefix are digits).
   - `"X01234567L"`: expected valid, got invalid (NIE-3, old 10-character form, canonical X1234567L). *Documented SPEC decision: the old 10-character NIE form X0nnnnnnnL is valid.*
   - `"G1234567D"`: expected invalid (INVALID_CONTROL_CHARACTER), got valid (CIF-3, G needs a digit (valid only in lenient mode)). *Documented SPEC decision: control of C D F G J U V: a digit only by default (a letter only with cifControl: lenient).*
-- **better-dni** (18 disagreements):
-  - `"K1234567L"`: expected valid, got invalid (KLM-2, K: Spaniard under 14 without DNI).
-  - `"K0867756N"`: expected valid, got invalid (KLM-1, v1 test value).
-  - `"L2222222P"`: expected valid, got invalid (NIF-1, K, L or M first selects the K/L/M format).
-  - `"M7654321J"`: expected valid, got invalid (KLM-3, the 7 characters after the prefix are digits).
+- **better-dni** (12 disagreements):
   - `"X01234567L"`: expected valid, got invalid (NIE-3, old 10-character form, canonical X1234567L). *Documented SPEC decision: the old 10-character NIE form X0nnnnnnnL is valid.*
   - `" 12345678Z "`: expected valid, got invalid (NORM-2, surrounding spaces).
+  - `"12345678-Z"`: expected valid, got invalid (NORM-3, hyphen).
+  - `"1234567L"`: expected valid, got invalid (NORM-4, 7-digit DNI, canonical 01234567L). *Documented SPEC decision: a DNI with fewer than 8 digits is left-padded with zeros.*
 - **dni-js** (17 disagreements):
   - `"K1234567L"`: expected valid, got invalid (KLM-2, K: Spaniard under 14 without DNI).
   - `"K0867756N"`: expected valid, got invalid (KLM-1, v1 test value).
@@ -187,12 +185,12 @@ Minified and gzipped size (**min+gzip, lower is smaller**), with the minified si
 
 | Library | DNI | NIE | CIF | any | Whole library |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| **nif-dni-nie-cif-validation (this build) 2.0.0+1166241** | 623 B (1,362 B) | 586 B (1,231 B) | 568 B (1,124 B) | 929 B (2,130 B) | 4,679 B (13,004 B) |
+| **nif-dni-nie-cif-validation (this build) 2.1.0+d0ae9ca** | 623 B (1,362 B) | 586 B (1,231 B) | 568 B (1,124 B) | 929 B (2,130 B) | 4,679 B (13,004 B) |
 | nif-dni-nie-cif-validation (previous major) 1.0.11 | 1,517 B (5,697 B) | 1,517 B (5,697 B) | 1,518 B (5,697 B) | 1,517 B (5,697 B) | 1,514 B (5,686 B) |
 | spain-id 1.1.14 | 165 B (192 B) | 237 B (335 B) | 363 B (551 B) | 583 B (1,069 B) | 704 B (1,262 B) |
-| better-dni 4.4.2 | 1,135 B (2,618 B) | 1,135 B (2,618 B) | *unsupported* | 1,134 B (2,620 B) | 1,132 B (2,612 B) |
+| better-dni 5.3.0 | 255 B (312 B) | 248 B (301 B) | *unsupported* | 202 B (280 B) | 887 B (1,867 B) |
 | dni-js 1.0.0 | 883 B (1,542 B) | 882 B (1,542 B) | *unsupported* | 882 B (1,544 B) | 880 B (1,536 B) |
-| stdnum 1.12.6 | 51,063 B (210,969 B) | 51,063 B (210,969 B) | 51,063 B (210,969 B) | 51,063 B (210,969 B) | 51,054 B (210,953 B) |
+| stdnum 1.17.3 | 84,828 B (370,903 B) | 84,828 B (370,903 B) | 84,829 B (370,903 B) | 84,828 B (370,903 B) | 84,819 B (370,887 B) |
 | validator.js isIdentityCard(x, "ES") 13.15.35 | 2,539 B (5,670 B) | 2,539 B (5,670 B) | *unsupported* | 2,539 B (5,670 B) | 44,449 B (133,464 B) |
 | validator.js isTaxID(x, "es-ES") 13.15.35 | 6,537 B (18,796 B) | 6,537 B (18,796 B) | *unsupported* | 6,537 B (18,796 B) | 44,449 B (133,464 B) |
 | @maistik/validate-nif 2.0.1 | 215 B (277 B) | 243 B (316 B) | 319 B (451 B) | 456 B (813 B) | 1,189 B (2,280 B) |
@@ -201,7 +199,7 @@ Minified and gzipped size (**min+gzip, lower is smaller**), with the minified si
 
 Other imports, for reference:
 
-- stdnum, deep import of the Spanish NIF module (not documented): 2,468 B (7,694 B).
+- stdnum, deep import of the Spanish NIF module (not documented): 2,636 B (8,171 B).
 
 The imports measured:
 
@@ -221,12 +219,12 @@ The imports measured:
 
 ## Notes on each library
 
-- **nif-dni-nie-cif-validation (this build)** 2.0.0+1166241 (this build, https://github.com/josegoval/nif-dni-nie-cif-validation). Default options: the input is normalized (NORM-1 to NORM-4) and CIF control characters follow CIF-3.
+- **nif-dni-nie-cif-validation (this build)** 2.1.0+d0ae9ca (this build, https://github.com/josegoval/nif-dni-nie-cif-validation). Default options: the input is normalized (NORM-1 to NORM-4) and CIF control characters follow CIF-3.
 - **nif-dni-nie-cif-validation (previous major)** 1.0.11 (our previous major version, https://github.com/josegoval/nif-dni-nie-cif-validation). The previous major version. It is published as CommonJS only, so a bundler cannot drop what an import doesn't use.
 - **spain-id** 1.1.14 (competitor, https://github.com/coixinet/spain-id).
-- **better-dni** 4.4.2 (competitor, https://github.com/singuerinc/better-dni). DNI and NIE only: no CIF. Its documentation says that it validates a DNI (NIE / NIF), and it doesn't normalize (spaces and separators are rejected).
+- **better-dni** 5.3.0 (competitor, https://github.com/singuerinc/better-dni). DNI, NIE and K/L/M: no CIF. Its documentation says that it validates a DNI (NIE / NIF), with K/L/M NIFs since version 5, and it doesn't normalize (spaces and separators are rejected).
 - **dni-js** 1.0.0 (competitor, https://github.com/albertfdp/dni-js). DNI and NIE only: no CIF. It is published as CommonJS only.
-- **stdnum** 1.12.6 (competitor, https://github.com/koblas/stdnum-js). A multi-country library (about 90 countries): its size is larger by design. `ES.nif` validates DNI, NIE, K/L/M and CIF.
+- **stdnum** 1.17.3 (competitor, https://github.com/koblas/stdnum-js). A multi-country library (about 90 countries): its size is larger by design. `ES.nif` validates DNI, NIE, K/L/M and CIF.
 - **validator.js isIdentityCard(x, "ES")** 13.15.35 (competitor, https://github.com/validatorjs/validator.js). Spanish DNI and NIE only: validator.js has no CIF check. The one call covers both, so the DNI and NIE rows use the same function. A multi-purpose library (emails, URLs, and more).
 - **validator.js isTaxID(x, "es-ES")** 13.15.35 (competitor, https://github.com/validatorjs/validator.js). Its source (`src/lib/isTaxID.js`, which the README points to for the exact support) says persons only: DNI and NIE, no CIF. The one call covers both. Its size includes the tax ID rules of every country it supports.
 - **@maistik/validate-nif** 2.0.1 (competitor, https://github.com/Maistik-Studio/validate-nif).
